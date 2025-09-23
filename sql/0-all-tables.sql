@@ -51,3 +51,16 @@ CREATE EXTENSION IF NOT EXISTS "pgvector";
 \i sql/rls/2-hospitality_rls.sql
 \i sql/rls/3-staff_rls.sql
 \i sql/rls/4-ai_rls.sql
+
+-- Security and Rate Limiting
+\i sql/security/1-rate_limiting.sql
+\i sql/security/2-security_policies.sql
+
+-- Validation and Constraints
+\i sql/validation/1-validation_constraints.sql
+
+-- Database Enums and Types
+\i sql/enums/1-database_enums.sql
+
+-- Audit Logging
+\i sql/audit/1-audit_logging.sql
