@@ -20,7 +20,7 @@ CREATE TABLE Customer (
     postal_code VARCHAR(20),
     emergency_contact_name VARCHAR(255),
     emergency_contact_phone VARCHAR(20),
-    kyc_status VARCHAR(50) DEFAULT 'pending',
+    kyc_status kyc_status_enum DEFAULT 'pending',
     kyc_verified_at TIMESTAMP WITH TIME ZONE,
     kyc_expires_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

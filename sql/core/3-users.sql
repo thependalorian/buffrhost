@@ -9,7 +9,7 @@ CREATE TABLE BuffrHostUser (
     name VARCHAR(255) NOT NULL,
     property_id INTEGER REFERENCES HospitalityProperty(property_id) ON DELETE CASCADE,
     user_type_id INTEGER REFERENCES UserType(user_type_id) DEFAULT 5,
-    role VARCHAR(50) NOT NULL DEFAULT 'hospitality_staff',
+    role user_role_enum NOT NULL DEFAULT 'hospitality_staff',
     permissions TEXT[],
     is_active BOOLEAN DEFAULT TRUE,
     last_login TIMESTAMP WITH TIME ZONE,

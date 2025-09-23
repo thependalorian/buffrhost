@@ -4,7 +4,7 @@
 CREATE TABLE HospitalityProperty (
     property_id SERIAL PRIMARY KEY,
     property_name VARCHAR(255) NOT NULL,
-    property_type VARCHAR(50) NOT NULL DEFAULT 'restaurant',
+    property_type property_type_enum NOT NULL DEFAULT 'restaurant',
     logo_url VARCHAR(500),
     address TEXT NOT NULL,
     phone VARCHAR(20),
