@@ -69,3 +69,8 @@ CREATE EXTENSION IF NOT EXISTS "pgvector";
 -- Notifications and Email
 \i sql/notifications/1-notification_system.sql
 \i sql/email/1-sendgrid_integration.sql
+
+-- Payment Integrations
+\i sql/payments/1-payment_gateways.sql
+\i sql/payments/2-realpay_integration.sql
+\i sql/payments/3-adume_integration.sql
