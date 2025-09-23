@@ -64,3 +64,8 @@ CREATE EXTENSION IF NOT EXISTS "pgvector";
 
 -- Audit Logging
 \i sql/audit/1-audit_logging.sql
+\i sql/audit/2-page_component_audit.sql
+
+-- Notifications and Email
+\i sql/notifications/1-notification_system.sql
+\i sql/email/1-sendgrid_integration.sql
