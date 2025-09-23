@@ -1,0 +1,118 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install Python quality tools
+      run: |
+        pip install black isort flake8 mypy
+    
+    - name: Install Node.js quality tools
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Run Python formatting check
+      run: |
+        cd backend
+        black --check .
+        isort --check-only .
+    
+    - name: Run Python linting
+      run: |
+        cd backend
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Run Python type checking
+      run: |
+        cd backend
+        mypy . --ignore-missing-imports
+    
+    - name: Run Node.js linting
+      run: |
+        cd frontend
+        npm run lint
+    
+    - name: Run Node.js type checking
+      run: |
+        cd frontend
+        npm run type-check
+
+  documentation-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install documentation tools
+      run: |
+        pip install sphinx sphinx-rtd-theme
+    
+    - name: Check documentation
+      run: |
+        # Check if all Python modules have docstrings
+        cd backend
+        python -c "
+        import ast
+        import os
+        
+        def check_docstrings(filepath):
+            with open(filepath, 'r') as f:
+                tree = ast.parse(f.read())
+            
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
+                    if not ast.get_docstring(node):
+                        print(f'Missing docstring in {filepath}:{node.lineno} - {node.name}')
+        
+        for root, dirs, files in os.walk('.'):
+            for file in files:
+                if file.endswith('.py') and not file.startswith('__'):
+                    check_docstrings(os.path.join(root, file))
+        "
+
+  performance-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install performance tools
+      run: |
+        pip install pytest-benchmark memory-profiler
+    
+    - name: Run performance tests
+      run: |
+        cd backend
+        python -m pytest tests/ --benchmark-only --benchmark-save=performance

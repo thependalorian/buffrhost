@@ -1,0 +1,98 @@
+# Environment files with secrets
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.buffr
+
+# Google Drive credentials and tokens
+credentials.json
+token.json
+service_account.json
+
+# API Keys and Secrets
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Documentation with secrets
+GOOGLE_OAUTH_SETUP.md
+GOOGLE_SIGNUP_IMPLEMENTATION_SUMMARY.md
+VERCEL_WORKLOAD_IDENTITY_SETUP.md
+
+# Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+shandi/
+
+# Development files
+README.md
+*.md
+docs/
+documentation/
+
+# Test files
+__tests__/
+*.test.*
+*.spec.*
+coverage/
+.nyc_output/
+.pytest_cache/
+
+# Development tools
+.eslintrc*
+.prettierrc*
+.editorconfig
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Git
+.git/
+.gitignore

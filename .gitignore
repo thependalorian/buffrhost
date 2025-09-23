@@ -1,0 +1,306 @@
+# Dependencies
+node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+shandi/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.development
+.env.production
+.env.buffr
+.env.staging
+env.example
+.env.example
+
+# Google Drive credentials and tokens
+credentials.json
+token.json
+service_account.json
+
+# API Keys and Secrets
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Sensitive files with specific patterns
+*SECRET*.md
+*API_KEY*.md
+*CREDENTIAL*.md
+*PASSWORD*.md
+*TOKEN*.md
+*OAUTH*.md
+*GOOGLE*.md
+*SENDGRID*.md
+*STRIPE*.md
+*TWILIO*.md
+*AWS*.md
+*SECURITY*.md
+*CONFIG*.md
+*SETUP*.md
+*IMPLEMENTATION*.md
+*SUMMARY*.md
+*UPDATE*.md
+*ANALYSIS*.md
+*REPORT*.md
+*DOCUMENTATION*.md
+*CONSOLIDATED*.md
+*UNIFIED*.md
+*BUFFR*.md
+*EMAIL*.md
+*HOST*.md
+*AGENT*.md
+*SYSTEM*.md
+*INTEGRATION*.md
+*DEPLOYMENT*.md
+*ENVIRONMENT*.md
+*PROCESS*.md
+*CRITICAL*.md
+*ENHANCED*.md
+*AUDIT*.md
+*CI_CD*.md
+*CMS*.md
+*PYTHON*.md
+*RAG*.md
+*AI*.md
+*ML*.md
+*TESTING*.md
+*BUSINESS*.md
+*STRATEGIC*.md
+*MARKET*.md
+*REVENUE*.md
+*LOYALTY*.md
+*FRONTEND*.md
+*BACKEND*.md
+*DATABASE*.md
+*MODEL*.md
+*SYNCHRONIZATION*.md
+*CURRENCY*.md
+*IMPROVEMENTS*.md
+*DEPENDENCY*.md
+*FIX*.md
+*PRIORITY*.md
+*GAP*.md
+*NAMIBIAN*.md
+*SOUTHERN*.md
+*AFRICAN*.md
+*MOCKS*.md
+*SIMULATIONS*.md
+*TODOS*.md
+*PIPELINE*.md
+*RECEPTIONIST*.md
+*HOST*.md
+*AGENT*.md
+*README*.md
+
+# Documentation with secrets
+GOOGLE_OAUTH_SETUP.md
+GOOGLE_SIGNUP_IMPLEMENTATION_SUMMARY.md
+VERCEL_WORKLOAD_IDENTITY_SETUP.md
+
+# Markdown files that may contain secrets
+*SECRET*.md
+*API_KEY*.md
+*CREDENTIAL*.md
+*PASSWORD*.md
+*TOKEN*.md
+*OAUTH*.md
+*GOOGLE*.md
+*SENDGRID*.md
+*STRIPE*.md
+*TWILIO*.md
+*AWS*.md
+*SECURITY*.md
+*CONFIG*.md
+*SETUP*.md
+*IMPLEMENTATION*.md
+*SUMMARY*.md
+*UPDATE*.md
+*ANALYSIS*.md
+*REPORT*.md
+*DOCUMENTATION*.md
+*CONSOLIDATED*.md
+*UNIFIED*.md
+*BUFFR*.md
+*EMAIL*.md
+*HOST*.md
+*AGENT*.md
+*SYSTEM*.md
+*INTEGRATION*.md
+*DEPLOYMENT*.md
+*ENVIRONMENT*.md
+*PROCESS*.md
+*CRITICAL*.md
+*ENHANCED*.md
+*AUDIT*.md
+*CI_CD*.md
+*CMS*.md
+*PYTHON*.md
+*RAG*.md
+*AI*.md
+*ML*.md
+*TESTING*.md
+*BUSINESS*.md
+*STRATEGIC*.md
+*MARKET*.md
+*REVENUE*.md
+*LOYALTY*.md
+*FRONTEND*.md
+*BACKEND*.md
+*DATABASE*.md
+*MODEL*.md
+*SYNCHRONIZATION*.md
+*CURRENCY*.md
+*IMPROVEMENTS*.md
+*DEPENDENCY*.md
+*FIX*.md
+*PRIORITY*.md
+*GAP*.md
+*NAMIBIAN*.md
+*SOUTHERN*.md
+*AFRICAN*.md
+*MOCKS*.md
+*SIMULATIONS*.md
+*TODOS*.md
+*PIPELINE*.md
+*RECEPTIONIST*.md
+*HOST*.md
+*AGENT*.md
+*README*.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next/
+out/
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Vercel
+.vercel
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.dockerignore
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build outputs
+build/
+dist/
