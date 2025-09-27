@@ -6,7 +6,7 @@ Provides comprehensive permission management for hospitality properties.
 from typing import List, Dict, Set, Optional
 from enum import Enum
 from dataclasses import dataclass
-from models.user import BuffrHostUser
+from models.user import User, Profile
 
 class Permission(Enum):
     """System permissions for hospitality ecosystem"""
@@ -345,7 +345,7 @@ class RBACManager:
             )
         }
     
-    def has_permission(self, user: BuffrHostUser, permission: Permission) -> bool:
+    def has_permission(self, user: User, permission: Permission) -> bool:
         """Check if user has specific permission"""
         if not user.role:
             return False
@@ -361,15 +361,15 @@ class RBACManager:
         except ValueError:
             return False
     
-    def has_any_permission(self, user: BuffrHostUser, permissions: List[Permission]) -> bool:
+    def has_any_permission(self, user: User, permissions: List[Permission]) -> bool:
         """Check if user has any of the specified permissions"""
         return any(self.has_permission(user, perm) for perm in permissions)
     
-    def has_all_permissions(self, user: BuffrHostUser, permissions: List[Permission]) -> bool:
+    def has_all_permissions(self, user: User, permissions: List[Permission]) -> bool:
         """Check if user has all of the specified permissions"""
         return all(self.has_permission(user, perm) for perm in permissions)
     
-    def get_user_permissions(self, user: BuffrHostUser) -> Set[Permission]:
+    def get_user_permissions(self, user: User) -> Set[Permission]:
         """Get all permissions for a user"""
         if not user.role:
             return set()
@@ -385,7 +385,7 @@ class RBACManager:
         except ValueError:
             return set()
     
-    def can_access_property(self, user: BuffrHostUser, property_id: int) -> bool:
+    def can_access_property(self, user: User, property_id: int) -> bool:
         """Check if user can access specific property"""
         # Super admin can access all properties
         if self.has_permission(user, Permission.MANAGE_SYSTEM):
@@ -394,21 +394,21 @@ class RBACManager:
         # User must belong to the property
         return user.property_id == property_id
     
-    def can_manage_property(self, user: BuffrHostUser, property_id: int) -> bool:
+    def can_manage_property(self, user: User, property_id: int) -> bool:
         """Check if user can manage specific property"""
         if not self.can_access_property(user, property_id):
             return False
         
         return self.has_permission(user, Permission.MANAGE_PROPERTY)
     
-    def can_view_analytics(self, user: BuffrHostUser, property_id: int) -> bool:
+    def can_view_analytics(self, user: User, property_id: int) -> bool:
         """Check if user can view analytics for property"""
         if not self.can_access_property(user, property_id):
             return False
         
         return self.has_permission(user, Permission.VIEW_ANALYTICS)
     
-    def can_manage_users(self, user: BuffrHostUser, property_id: int) -> bool:
+    def can_manage_users(self, user: User, property_id: int) -> bool:
         """Check if user can manage users for property"""
         if not self.can_access_property(user, property_id):
             return False

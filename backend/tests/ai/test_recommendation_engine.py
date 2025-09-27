@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 from unittest.mock import patch, MagicMock
 from ai.recommendation_engine import RecommendationEngine
-from models.customer import Customer
+from models.user import User, Profile
 from models.menu import Menu
 from models.order import Order
 

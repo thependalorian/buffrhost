@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from database import get_db
-from models.user import BuffrHostUser
+from models.user import User, Profile, UserRoleEnum
 from config import settings
 
 security = HTTPBearer()
@@ -19,13 +19,12 @@ security = HTTPBearer()
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db)
-) -> BuffrHostUser:
+) -> User:
     """Get the current authenticated user."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+        headers={"WWW-Authenticate": "Bearer"})
     
     try:
         payload = jwt.decode(
@@ -40,7 +39,7 @@ async def get_current_user(
         raise credentials_exception
     
     # Get user from database
-    result = await db.execute(select(BuffrHostUser).where(BuffrHostUser.owner_id == user_id))
+    result = await db.execute(select(User).where(User.owner_id == user_id))
     user = result.scalar_one_or_none()
     
     if user is None:
@@ -50,8 +49,8 @@ async def get_current_user(
 
 
 async def get_current_active_user(
-    current_user: BuffrHostUser = Depends(get_current_user)
-) -> BuffrHostUser:
+    current_user: User = Depends(get_current_user)
+) -> User:
     """Get the current active user."""
     if not current_user.is_active:
         raise HTTPException(
@@ -62,10 +61,10 @@ async def get_current_active_user(
 
 
 async def get_current_admin_user(
-    current_user: BuffrHostUser = Depends(get_current_active_user)
-) -> BuffrHostUser:
+    current_user: User = Depends(get_current_active_user)
+) -> User:
     """Get the current admin user."""
-    if current_user.role != "admin":
+    if current_user.role != UserRoleEnum.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"

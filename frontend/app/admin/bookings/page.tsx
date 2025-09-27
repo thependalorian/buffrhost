@@ -18,7 +18,7 @@ export default function BookingManagementPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="stats shadow">
           <div className="stat">
-            <div className="stat-title">Today's Bookings</div>
+            <div className="stat-title">Today&apos;s Bookings</div>
             <div className="stat-value text-primary">23</div>
             <div className="stat-desc">Active reservations</div>
           </div>
@@ -263,7 +263,7 @@ export default function BookingManagementPage() {
 
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">Today's Schedule</h2>
+              <h2 className="card-title">Today&apos;s Schedule</h2>
               <div className="space-y-3">
                 <div className="text-sm">
                   <p className="font-medium text-success">9:00 AM - Check-out</p>

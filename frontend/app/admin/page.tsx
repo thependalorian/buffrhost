@@ -144,7 +144,7 @@ export default function AdminDashboardPage() {
 
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
-            <h2 className="card-title">Today's Schedule</h2>
+            <h2 className="card-title">Today&apos;s Schedule</h2>
             <div className="space-y-2">
               <div className="text-sm">
                 <p className="font-medium">9:00 AM - Check-out (Room 101)</p>

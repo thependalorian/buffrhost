@@ -15,28 +15,21 @@ from sqlalchemy import select
 from database import get_db
 from models.financial_settings import (
     PropertyFinancialSettings, 
-    BankAccount, 
     ServiceRate, 
-    Quotation, 
-    Invoice, 
-    Receipt
+    Receipt,
+    ReceiptItem,
+    FinancialTransaction
 )
 from schemas.financial_settings import (
     PropertyFinancialSettingsCreate,
     PropertyFinancialSettingsUpdate,
-    BankAccountCreate,
-    BankAccountUpdate,
+    PropertyFinancialSettingsResponse,
     ServiceRateCreate,
     ServiceRateUpdate,
-    QuotationCreate,
-    QuotationUpdate,
-    InvoiceCreate,
-    InvoiceUpdate,
+    ServiceRateResponse,
     ReceiptCreate,
-    QuotationResponse,
-    InvoiceResponse,
     ReceiptResponse,
-    FinancialSettingsResponse
+    FinancialTransactionResponse
 )
 from services.financial_service import FinancialService
 
@@ -46,7 +39,7 @@ router = APIRouter()
 async def get_financial_service(db: AsyncSession = Depends(get_db)) -> FinancialService:
     return FinancialService(db)
 
-@router.get("/settings/{property_id}", response_model=FinancialSettingsResponse)
+@router.get("/settings/{property_id}", response_model=PropertyFinancialSettingsResponse)
 async def get_financial_settings(
     property_id: UUID,
     financial_service: FinancialService = Depends(get_financial_service)
@@ -66,13 +59,13 @@ async def get_financial_settings(
             detail=f"Error retrieving financial settings: {str(e)}"
         )
 
-@router.post("/settings/{property_id}", response_model=FinancialSettingsResponse)
+@router.post("/settings/{property_id}", response_model=PropertyFinancialSettingsResponse)
 async def create_financial_settings(
     property_id: UUID,
     settings_data: PropertyFinancialSettingsCreate,
     financial_service: FinancialService = Depends(get_financial_service)
 ):
-    """Create or update financial settings for a property"""
+    """PropertyFinancialSettingsCreate or update financial settings for a property"""
     try:
         settings = await financial_service.create_or_update_financial_settings(
             property_id, 
@@ -85,7 +78,7 @@ async def create_financial_settings(
             detail=f"Error creating financial settings: {str(e)}"
         )
 
-@router.put("/settings/{property_id}", response_model=FinancialSettingsResponse)
+@router.put("/settings/{property_id}", response_model=PropertyFinancialSettingsResponse)
 async def update_financial_settings(
     property_id: UUID,
     settings_data: PropertyFinancialSettingsUpdate,
@@ -104,10 +97,10 @@ async def update_financial_settings(
             detail=f"Error updating financial settings: {str(e)}"
         )
 
-@router.post("/bank-accounts/{property_id}", response_model=BankAccount)
+@router.post("/bank-accounts/{property_id}", response_model=PropertyFinancialSettingsResponse)
 async def add_bank_account(
     property_id: UUID,
-    bank_data: BankAccountCreate,
+    bank_data: PropertyFinancialSettingsCreate,
     financial_service: FinancialService = Depends(get_financial_service)
 ):
     """Add a bank account for a property"""
@@ -123,7 +116,7 @@ async def add_bank_account(
             detail=f"Error adding bank account: {str(e)}"
         )
 
-@router.get("/service-rates/{property_id}", response_model=List[ServiceRate])
+@router.get("/service-rates/{property_id}", response_model=List[ServiceRateResponse])
 async def get_service_rates(
     property_id: UUID,
     financial_service: FinancialService = Depends(get_financial_service)
@@ -138,13 +131,13 @@ async def get_service_rates(
             detail=f"Error retrieving service rates: {str(e)}"
         )
 
-@router.post("/service-rates/{property_id}", response_model=ServiceRate)
+@router.post("/service-rates/{property_id}", response_model=ServiceRateResponse)
 async def create_service_rate(
     property_id: UUID,
     rate_data: ServiceRateCreate,
     financial_service: FinancialService = Depends(get_financial_service)
 ):
-    """Create or update a service rate"""
+    """PropertyFinancialSettingsCreate or update a service rate"""
     try:
         rate = await financial_service.create_or_update_service_rate(
             property_id, 
@@ -157,7 +150,7 @@ async def create_service_rate(
             detail=f"Error creating service rate: {str(e)}"
         )
 
-@router.put("/service-rates/{property_id}/{service_name}", response_model=ServiceRate)
+@router.put("/service-rates/{property_id}/{service_name}", response_model=ServiceRateResponse)
 async def update_service_rate(
     property_id: UUID,
     service_name: str,
@@ -179,14 +172,14 @@ async def update_service_rate(
             detail=f"Error updating service rate: {str(e)}"
         )
 
-# Quotation endpoints
-@router.post("/quotations/{property_id}", response_model=QuotationResponse)
+# endpoints
+@router.post("/quotations/{property_id}", response_model=PropertyFinancialSettingsResponse)
 async def create_quotation(
     property_id: UUID,
-    quotation_data: QuotationCreate,
+    quotation_data: PropertyFinancialSettingsCreate,
     financial_service: FinancialService = Depends(get_financial_service)
 ):
-    """Create a new quotation"""
+    """PropertyFinancialSettingsCreate a new quotation"""
     try:
         quotation = await financial_service.create_quotation(
             property_id, 
@@ -199,7 +192,7 @@ async def create_quotation(
             detail=f"Error creating quotation: {str(e)}"
         )
 
-@router.get("/quotations/{quotation_id}", response_model=QuotationResponse)
+@router.get("/quotations/{quotation_id}", response_model=PropertyFinancialSettingsResponse)
 async def get_quotation(
     quotation_id: UUID,
     financial_service: FinancialService = Depends(get_financial_service)
@@ -210,7 +203,7 @@ async def get_quotation(
         if not quotation:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Quotation not found"
+                detail="not found"
             )
         return quotation
     except HTTPException:
@@ -221,7 +214,7 @@ async def get_quotation(
             detail=f"Error retrieving quotation: {str(e)}"
         )
 
-@router.get("/quotations/property/{property_id}", response_model=List[QuotationResponse])
+@router.get("/quotations/property/{property_id}", response_model=List[PropertyFinancialSettingsResponse])
 async def get_property_quotations(
     property_id: UUID,
     skip: int = Query(0, ge=0),
@@ -239,14 +232,14 @@ async def get_property_quotations(
             detail=f"Error retrieving quotations: {str(e)}"
         )
 
-# Invoice endpoints
-@router.post("/invoices/from-quotation/{quotation_id}", response_model=InvoiceResponse)
+# endpoints
+@router.post("/invoices/from-quotation/{quotation_id}", response_model=PropertyFinancialSettingsResponse)
 async def create_invoice_from_quotation(
     quotation_id: UUID,
-    invoice_data: InvoiceCreate,
+    invoice_data: PropertyFinancialSettingsCreate,
     financial_service: FinancialService = Depends(get_financial_service)
 ):
-    """Create an invoice from a quotation"""
+    """PropertyFinancialSettingsCreate an invoice from a quotation"""
     try:
         invoice = await financial_service.create_invoice_from_quotation(
             quotation_id, 
@@ -264,7 +257,7 @@ async def create_invoice_from_quotation(
             detail=f"Error creating invoice: {str(e)}"
         )
 
-@router.get("/invoices/{invoice_id}", response_model=InvoiceResponse)
+@router.get("/invoices/{invoice_id}", response_model=PropertyFinancialSettingsResponse)
 async def get_invoice(
     invoice_id: UUID,
     financial_service: FinancialService = Depends(get_financial_service)
@@ -275,7 +268,7 @@ async def get_invoice(
         if not invoice:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Invoice not found"
+                detail="not found"
             )
         return invoice
     except HTTPException:
@@ -321,7 +314,7 @@ async def create_receipt(
     receipt_data: ReceiptCreate,
     financial_service: FinancialService = Depends(get_financial_service)
 ):
-    """Create a receipt for payment"""
+    """PropertyFinancialSettingsCreate a receipt for payment"""
     try:
         receipt = await financial_service.create_receipt(
             property_id, 

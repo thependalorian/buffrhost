@@ -11,7 +11,7 @@ import uuid
 import json
 
 from database import get_db
-from models.user import BuffrHostUser
+from models.user import User
 from routes.auth import get_current_user
 from schemas.preview import (
     PreviewRequest, PreviewResponse, DraftContent, 
@@ -26,7 +26,7 @@ preview_storage: Dict[str, Dict[str, Any]] = {}
 @router.post("/generate", response_model=PreviewResponse)
 async def generate_preview(
     request: PreviewRequest,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -115,7 +115,7 @@ async def get_preview_content(
 @router.put("/{preview_id}/publish", response_model=Dict[str, Any])
 async def publish_preview(
     preview_id: str,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -162,7 +162,7 @@ async def publish_preview(
 @router.get("/user/{user_id}/drafts", response_model=List[Dict[str, Any]])
 async def get_user_drafts(
     user_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -204,7 +204,7 @@ async def get_user_drafts(
 @router.delete("/{preview_id}", response_model=Dict[str, Any])
 async def delete_preview(
     preview_id: str,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -245,7 +245,7 @@ async def delete_preview(
 @router.post("/qr-code", response_model=Dict[str, Any])
 async def generate_qr_code(
     preview_id: str,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -289,7 +289,7 @@ async def generate_qr_code(
 @router.get("/analytics/{preview_id}", response_model=Dict[str, Any])
 async def get_preview_analytics(
     preview_id: str,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """

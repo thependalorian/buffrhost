@@ -27,8 +27,7 @@ SQLALCHEMY_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "postgresql://buffrhost
 # Create test engine
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    poolclass=StaticPool,
-)
+    poolclass=StaticPool)
 
 # Create test session
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

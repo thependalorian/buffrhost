@@ -6,8 +6,7 @@ from datetime import datetime, timedelta
 
 from main import app
 from database import Base, engine, get_db
-from models.revenue_model import Subscription, ServiceFee, CommissionStructure, Invoice
-from models.user import BuffrHostUser # Assuming BuffrHostUser is defined here
+from models.revenue_model import Subscription, ServiceFee, CommissionStructure, from models.user import User # Assuming User is defined here
 
 # Setup for async tests
 @pytest.fixture(autouse=True)
@@ -33,7 +32,7 @@ async def client(db_session: AsyncSession):
 @pytest.fixture
 async def admin_user(db_session: AsyncSession):
     user_id = uuid4()
-    admin = BuffrHostUser(
+    admin = User(
         owner_id=user_id,
         email="admin_rev@example.com",
         name="Admin Rev User",
@@ -47,14 +46,14 @@ async def admin_user(db_session: AsyncSession):
     return admin
 
 @pytest.fixture
-async def auth_headers(admin_user: BuffrHostUser):
+async def auth_headers(admin_user: User):
     # In a real test, generate a valid JWT token for the admin_user
     # For now, a placeholder
     return {"Authorization": "Bearer mock_admin_token"}
 
 # --- Subscription Tests ---
 @pytest.mark.asyncio
-async def test_create_subscription(client: AsyncClient, auth_headers: dict, admin_user: BuffrHostUser):
+async def test_create_subscription(client: AsyncClient, auth_headers: dict, admin_user: User):
     subscription_data = {
         "user_id": str(uuid4()),
         "plan_name": "Basic",
@@ -66,8 +65,8 @@ async def test_create_subscription(client: AsyncClient, auth_headers: dict, admi
     assert response.json()["plan_name"] == subscription_data["plan_name"]
 
 @pytest.mark.asyncio
-async def test_get_subscriptions(client: AsyncClient, auth_headers: dict, admin_user: BuffrHostUser):
+async def test_get_subscriptions(client: AsyncClient, auth_headers: dict, admin_user: User):
     response = await client.get("/revenue-model/subscriptions", headers=auth_headers)
     assert response.status_code == 200
 
-# Add more tests for Subscription, ServiceFee, CommissionStructure, Invoice CRUD operations
+# Add more tests for Subscription, ServiceFee, CommissionStructure, CRUD operations

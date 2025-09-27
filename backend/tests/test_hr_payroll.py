@@ -6,7 +6,7 @@ from uuid import uuid4
 from main import app
 from database import Base, engine, get_db
 from models.hr_payroll import Employee, PayrollRecord, TaxDetail, BenefitEnrollment
-from models.user import BuffrHostUser # Assuming BuffrHostUser is defined here
+from models.user import User # Assuming User is defined here
 
 # Setup for async tests
 @pytest.fixture(autouse=True)
@@ -32,7 +32,7 @@ async def client(db_session: AsyncSession):
 @pytest.fixture
 async def admin_user(db_session: AsyncSession):
     user_id = uuid4()
-    admin = BuffrHostUser(
+    admin = User(
         owner_id=user_id,
         email="admin@example.com",
         name="Admin User",
@@ -46,14 +46,14 @@ async def admin_user(db_session: AsyncSession):
     return admin
 
 @pytest.fixture
-async def auth_headers(admin_user: BuffrHostUser):
+async def auth_headers(admin_user: User):
     # In a real test, generate a valid JWT token for the admin_user
     # For now, a placeholder
     return {"Authorization": "Bearer mock_admin_token"}
 
 # --- Employee Tests ---
 @pytest.mark.asyncio
-async def test_create_employee(client: AsyncClient, auth_headers: dict, admin_user: BuffrHostUser):
+async def test_create_employee(client: AsyncClient, auth_headers: dict, admin_user: User):
     employee_data = {
         "user_id": str(uuid4()),
         "first_name": "Test",
@@ -68,7 +68,7 @@ async def test_create_employee(client: AsyncClient, auth_headers: dict, admin_us
     assert response.json()["email"] == employee_data["email"]
 
 @pytest.mark.asyncio
-async def test_get_employees(client: AsyncClient, auth_headers: dict, admin_user: BuffrHostUser):
+async def test_get_employees(client: AsyncClient, auth_headers: dict, admin_user: User):
     # Create an employee first
     employee_data = {
         "user_id": str(uuid4()),
@@ -86,7 +86,7 @@ async def test_get_employees(client: AsyncClient, auth_headers: dict, admin_user
     assert len(response.json()) > 0
 
 @pytest.mark.asyncio
-async def test_get_employee(client: AsyncClient, auth_headers: dict, admin_user: BuffrHostUser):
+async def test_get_employee(client: AsyncClient, auth_headers: dict, admin_user: User):
     employee_data = {
         "user_id": str(uuid4()),
         "first_name": "Test",
@@ -104,7 +104,7 @@ async def test_get_employee(client: AsyncClient, auth_headers: dict, admin_user:
     assert response.json()["id"] == employee_id
 
 @pytest.mark.asyncio
-async def test_update_employee(client: AsyncClient, auth_headers: dict, admin_user: BuffrHostUser):
+async def test_update_employee(client: AsyncClient, auth_headers: dict, admin_user: User):
     employee_data = {
         "user_id": str(uuid4()),
         "first_name": "Test",
@@ -124,7 +124,7 @@ async def test_update_employee(client: AsyncClient, auth_headers: dict, admin_us
     assert response.json()["salary"] == update_data["salary"]
 
 @pytest.mark.asyncio
-async def test_delete_employee(client: AsyncClient, auth_headers: dict, admin_user: BuffrHostUser):
+async def test_delete_employee(client: AsyncClient, auth_headers: dict, admin_user: User):
     employee_data = {
         "user_id": str(uuid4()),
         "first_name": "Test",
@@ -145,7 +145,7 @@ async def test_delete_employee(client: AsyncClient, auth_headers: dict, admin_us
 
 # --- Payroll Record Tests ---
 @pytest.mark.asyncio
-async def test_create_payroll_record(client: AsyncClient, auth_headers: dict, admin_user: BuffrHostUser, db_session: AsyncSession):
+async def test_create_payroll_record(client: AsyncClient, auth_headers: dict, admin_user: User, db_session: AsyncSession):
     employee_id = str(uuid4())
     employee = Employee(id=employee_id, user_id=uuid4(), first_name="P", last_name="R", email="pr@example.com")
     db_session.add(employee)

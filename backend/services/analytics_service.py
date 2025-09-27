@@ -9,7 +9,7 @@ from sqlalchemy.orm import selectinload
 
 from models.order import Order, OrderItem
 from models.menu import Menu
-from models.customer import Customer
+from models.user import User, Profile
 from models.hospitality_property import HospitalityProperty
 
 

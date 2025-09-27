@@ -104,7 +104,7 @@ class Quotation(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-class QuotationItem(Base):
+class Item(Base):
     __tablename__ = "quotationitem"
     quotation_item_id = Column(Integer, primary_key=True, index=True)
     quotation_id = Column(UUID(as_uuid=True), ForeignKey("quotation.quotation_id"))
@@ -141,7 +141,7 @@ class Invoice(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-class InvoiceItem(Base):
+class Item(Base):
     __tablename__ = "invoiceitem"
     invoice_item_id = Column(Integer, primary_key=True, index=True)
     invoice_id = Column(UUID(as_uuid=True), ForeignKey("invoice.invoice_id"))

@@ -68,7 +68,7 @@ class ContentVersion(Base):
     created_by = Column(String(255), ForeignKey('buffr_host_user.owner_id'))
     
     content = relationship("CMSContent")
-    creator = relationship("BuffrHostUser")
+    creator = relationship("User")
 
 class ContentTemplate(Base):
     __tablename__ = 'cms_content_template'
@@ -103,7 +103,7 @@ class MediaLibrary(Base):
     is_deleted = Column(Boolean, default=False)
     
     property = relationship("HospitalityProperty")
-    uploader = relationship("BuffrHostUser")
+    uploader = relationship("User")
 
 class ContentCollection(Base):
     __tablename__ = 'cms_content_collection'
@@ -143,4 +143,4 @@ class ContentWorkflow(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     content = relationship("CMSContent")
-    assignee = relationship("BuffrHostUser")
+    assignee = relationship("User")

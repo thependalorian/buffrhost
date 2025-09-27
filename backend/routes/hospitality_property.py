@@ -8,13 +8,13 @@ from typing import List
 
 from database import get_db
 from models.hospitality_property import HospitalityProperty
-from models.user import BuffrHostUser
+from models.user import User, Profile
 from schemas.hospitality_property import (
-    HospitalityPropertyCreate, 
-    HospitalityPropertyUpdate, 
-    HospitalityPropertyResponse, 
-    HospitalityPropertySummary,
-    HospitalityPropertyStats
+    PropertyCreate, 
+    PropertyUpdate, 
+    PropertyResponse, 
+    PropertySummary,
+    PropertySearch
 )
 from services.hospitality_property_service import HospitalityPropertyService
 from routes.auth import get_current_user, require_permission, require_property_access
@@ -23,10 +23,10 @@ from auth.rbac import Permission
 router = APIRouter()
 
 
-@router.get("/{property_id}", response_model=HospitalityPropertyResponse)
+@router.get("/{property_id}", response_model=PropertyResponse)
 async def get_hospitality_property(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get hospitality property information."""
@@ -38,14 +38,14 @@ async def get_hospitality_property(
             detail="Property not found"
         )
     
-    return HospitalityPropertyResponse.from_orm(property)
+    return PropertyResponse.from_orm(property)
 
 
-@router.put("/{property_id}", response_model=HospitalityPropertyResponse)
+@router.put("/{property_id}", response_model=PropertyResponse)
 async def update_hospitality_property(
     property_id: int,
-    property_update: HospitalityPropertyUpdate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    property_update: PropertyUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Update hospitality property information."""
@@ -61,12 +61,12 @@ async def update_hospitality_property(
             detail="Property not found"
         )
     
-    return HospitalityPropertyResponse.from_orm(property)
+    return PropertyResponse.from_orm(property)
 
 
-@router.get("/", response_model=List[HospitalityPropertySummary])
+@router.get("/", response_model=List[PropertySummary])
 async def list_hospitality_properties(
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """List hospitality properties accessible to the current user."""
@@ -79,13 +79,13 @@ async def list_hospitality_properties(
     if not property:
         return []
     
-    return [HospitalityPropertySummary.from_orm(property)]
+    return [PropertySummary.from_orm(property)]
 
 
 @router.get("/{property_id}/stats")
 async def get_hospitality_property_stats(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get hospitality property statistics and metrics."""

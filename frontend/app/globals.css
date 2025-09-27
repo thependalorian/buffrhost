@@ -25,3 +25,174 @@
      @apply text-2xl md:text-3xl font-bold;
   }
 }
+
+@layer components {
+  /* Nude color CSS variables for consistent theming */
+  :root {
+    /* Base nude palette */
+    --nude-50: #fef7f0;
+    --nude-100: #fceee0;
+    --nude-200: #f8dcc0;
+    --nude-300: #f2c49f;
+    --nude-400: #e8a87a;
+    --nude-500: #d18b5c;
+    --nude-600: #b8704a;
+    --nude-700: #9d5a3a;
+    --nude-800: #7d452e;
+    --nude-900: #5d3322;
+    --nude-950: #3d1f15;
+
+    /* MAC-inspired shades */
+    --mac-velvet-teddy: #c49b7b;
+    --mac-honey-love: #d4a574;
+    --mac-mocha: #8b5a3c;
+    --mac-taupe: #a67c68;
+    --mac-whirl: #8b6f47;
+    --mac-persistence: #9d6a43;
+
+    /* Charlotte Tilbury-inspired shades */
+    --charlotte-pillow-talk: #d4a574;
+    --charlotte-very-victoria: #b8704a;
+    --charlotte-penelope-pink: #f2c49f;
+    --charlotte-bond-girl: #8b5a3c;
+
+    /* Fenty Beauty-inspired shades */
+    --fenty-spanked: #c49b7b;
+    --fenty-shawty: #8b5a3c;
+    --fenty-freckle-fiesta: #d4a574;
+    --fenty-unbutton: #a67c68;
+
+    /* Universal nude tones */
+    --universal-light: #f5e1da;
+    --universal-medium: #d8b4a0;
+    --universal-deep: #a67c68;
+    --universal-rich: #8b5a3c;
+    --universal-warm: #d4a574;
+    --universal-cool: #c49b7b;
+  }
+
+  /* Nude-themed component classes */
+  .nude-card {
+    @apply bg-white border border-nude-200 rounded-lg shadow-sm;
+  }
+
+  .nude-button {
+    @apply bg-nude-600 hover:bg-nude-700 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+  }
+
+  .nude-button-light {
+    @apply bg-nude-200 hover:bg-nude-300 text-nude-800 font-medium px-4 py-2 rounded-lg transition-colors;
+  }
+
+  .nude-accent {
+    @apply bg-charlotte-pillow-talk text-white;
+  }
+
+  .nude-accent-hover {
+    @apply hover:bg-charlotte-very-victoria;
+  }
+
+  /* MAC-inspired components */
+  .mac-velvet-teddy {
+    @apply bg-mac-velvet-teddy text-white;
+  }
+
+  .mac-honey-love {
+    @apply bg-mac-honey-love text-white;
+  }
+
+  .mac-mocha {
+    @apply bg-mac-mocha text-white;
+  }
+
+  /* Charlotte Tilbury-inspired components */
+  .charlotte-pillow-talk {
+    @apply bg-charlotte-pillow-talk text-white;
+  }
+
+  .charlotte-very-victoria {
+    @apply bg-charlotte-very-victoria text-white;
+  }
+
+  .charlotte-penelope-pink {
+    @apply bg-charlotte-penelope-pink text-nude-800;
+  }
+
+  /* Fenty Beauty-inspired components */
+  .fenty-spanked {
+    @apply bg-fenty-spanked text-white;
+  }
+
+  .fenty-shawty {
+    @apply bg-fenty-shawty text-white;
+  }
+
+  /* Universal nude components */
+  .nude-light {
+    @apply bg-universal-light text-nude-800;
+  }
+
+  .nude-medium {
+    @apply bg-universal-medium text-nude-800;
+  }
+
+  .nude-deep {
+    @apply bg-universal-deep text-white;
+  }
+
+  .nude-rich {
+    @apply bg-universal-rich text-white;
+  }
+
+  .nude-warm {
+    @apply bg-universal-warm text-nude-800;
+  }
+
+  .nude-cool {
+    @apply bg-universal-cool text-white;
+  }
+
+  /* Nude gradient backgrounds */
+  .nude-gradient-light {
+    background: linear-gradient(135deg, var(--nude-100), var(--nude-200));
+  }
+
+  .nude-gradient-medium {
+    background: linear-gradient(135deg, var(--nude-300), var(--nude-400));
+  }
+
+  .nude-gradient-deep {
+    background: linear-gradient(135deg, var(--nude-600), var(--nude-700));
+  }
+
+  /* Nude text colors */
+  .text-nude-primary {
+    color: var(--nude-600);
+  }
+
+  .text-nude-secondary {
+    color: var(--nude-500);
+  }
+
+  .text-nude-accent {
+    color: var(--charlotte-pillow-talk);
+  }
+
+  /* Nude border utilities */
+  .border-nude {
+    border-color: var(--nude-300);
+  }
+
+  .border-nude-accent {
+    border-color: var(--charlotte-pillow-talk);
+  }
+
+  /* Nude shadow utilities */
+  .shadow-nude {
+    box-shadow: 0 4px 6px -1px rgba(212, 165, 116, 0.1), 0 2px 4px -1px rgba(212, 165, 116, 0.06);
+  }
+
+  .shadow-nude-lg {
+    box-shadow: 0 10px 15px -3px rgba(212, 165, 116, 0.1), 0 4px 6px -2px rgba(212, 165, 116, 0.05);
+  }
+}

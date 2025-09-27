@@ -54,7 +54,7 @@ class PropertyFinancialSettings(Base):
     buffr_commission_rate = Column(Numeric(5, 2), default=5.00)  # 5% commission to Buffr
     minimum_commission_amount = Column(Numeric(10, 2), default=0.00)
     
-    # Invoice/Quotation Settings
+    # /Settings
     invoice_prefix = Column(String(10), default="INV")
     quotation_prefix = Column(String(10), default="QUO")
     receipt_prefix = Column(String(10), default="RCP")

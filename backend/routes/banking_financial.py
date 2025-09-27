@@ -6,13 +6,13 @@ from uuid import UUID
 from database import get_db
 from services.banking_financial_service import BankingFinancialService
 from schemas.banking_financial import (
-    BankAccountCreate, BankAccountUpdate, BankAccountResponse,
+    Create, Update, Response,
     TransactionCreate, TransactionUpdate, TransactionResponse,
     PaymentGatewayCreate, PaymentGatewayUpdate, PaymentGatewayResponse,
     DisbursementCreate, DisbursementUpdate, DisbursementResponse
 )
 from auth.dependencies import get_current_admin_user # Assuming only admins can manage banking/financial
-from models.user import BuffrHostUser
+from models.user import User
 
 router = APIRouter()
 
@@ -21,30 +21,30 @@ async def get_banking_financial_service(db: AsyncSession = Depends(get_db)) -> B
     return BankingFinancialService(db)
 
 # --- Bank Account Endpoints ---
-@router.post("/bank-accounts", response_model=BankAccountResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/bank-accounts", response_model=Response, status_code=status.HTTP_201_CREATED)
 async def create_bank_account(
-    account_data: BankAccountCreate,
+    account_data: Create,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new bank account record."""
     return await banking_service.create_bank_account(account_data)
 
-@router.get("/bank-accounts", response_model=List[BankAccountResponse])
+@router.get("/bank-accounts", response_model=List[Response])
 async def get_bank_accounts(
     skip: int = 0,
     limit: int = 100,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a list of bank accounts."""
     return await banking_service.get_bank_accounts(skip=skip, limit=limit)
 
-@router.get("/bank-accounts/{account_id}", response_model=BankAccountResponse)
+@router.get("/bank-accounts/{account_id}", response_model=Response)
 async def get_bank_account(
     account_id: UUID,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single bank account record by ID."""
     account = await banking_service.get_bank_account(account_id)
@@ -52,12 +52,12 @@ async def get_bank_account(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bank account not found")
     return account
 
-@router.put("/bank-accounts/{account_id}", response_model=BankAccountResponse)
+@router.put("/bank-accounts/{account_id}", response_model=Response)
 async def update_bank_account(
     account_id: UUID,
-    account_data: BankAccountUpdate,
+    account_data: Update,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing bank account record."""
     account = await banking_service.update_bank_account(account_id, account_data)
@@ -69,7 +69,7 @@ async def update_bank_account(
 async def delete_bank_account(
     account_id: UUID,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete a bank account record."""
     success = await banking_service.delete_bank_account(account_id)
@@ -82,7 +82,7 @@ async def delete_bank_account(
 async def create_transaction(
     transaction_data: TransactionCreate,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new transaction record."""
     return await banking_service.create_transaction(transaction_data)
@@ -92,7 +92,7 @@ async def get_transactions(
     skip: int = 0,
     limit: int = 100,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a list of transactions."""
     return await banking_service.get_transactions(skip=skip, limit=limit)
@@ -101,7 +101,7 @@ async def get_transactions(
 async def get_transaction(
     transaction_id: UUID,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single transaction record by ID."""
     transaction = await banking_service.get_transaction(transaction_id)
@@ -114,7 +114,7 @@ async def update_transaction(
     transaction_id: UUID,
     transaction_data: TransactionUpdate,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing transaction record."""
     transaction = await banking_service.update_transaction(transaction_id, transaction_data)
@@ -126,7 +126,7 @@ async def update_transaction(
 async def delete_transaction(
     transaction_id: UUID,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete a transaction record."""
     success = await banking_service.delete_transaction(transaction_id)
@@ -139,7 +139,7 @@ async def delete_transaction(
 async def create_payment_gateway(
     gateway_data: PaymentGatewayCreate,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new payment gateway record."""
     return await banking_service.create_payment_gateway(gateway_data)
@@ -149,7 +149,7 @@ async def get_payment_gateways(
     skip: int = 0,
     limit: int = 100,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a list of payment gateways."""
     return await banking_service.get_payment_gateways(skip=skip, limit=limit)
@@ -158,7 +158,7 @@ async def get_payment_gateways(
 async def get_payment_gateway(
     gateway_id: UUID,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single payment gateway record by ID."""
     gateway = await banking_service.get_payment_gateway(gateway_id)
@@ -171,7 +171,7 @@ async def update_payment_gateway(
     gateway_id: UUID,
     gateway_data: PaymentGatewayUpdate,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing payment gateway record."""
     gateway = await banking_service.update_payment_gateway(gateway_id, gateway_data)
@@ -183,7 +183,7 @@ async def update_payment_gateway(
 async def delete_payment_gateway(
     gateway_id: UUID,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete a payment gateway record."""
     success = await banking_service.delete_payment_gateway(gateway_id)
@@ -196,7 +196,7 @@ async def delete_payment_gateway(
 async def create_disbursement(
     disbursement_data: DisbursementCreate,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new disbursement record."""
     return await banking_service.create_disbursement(disbursement_data)
@@ -206,7 +206,7 @@ async def get_disbursements(
     skip: int = 0,
     limit: int = 100,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a list of disbursements."""
     return await banking_service.get_disbursements(skip=skip, limit=limit)
@@ -215,7 +215,7 @@ async def get_disbursements(
 async def get_disbursement(
     disbursement_id: UUID,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single disbursement record by ID."""
     disbursement = await banking_service.get_disbursement(disbursement_id)
@@ -228,7 +228,7 @@ async def update_disbursement(
     disbursement_id: UUID,
     disbursement_data: DisbursementUpdate,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing disbursement record."""
     disbursement = await banking_service.update_disbursement(disbursement_id, disbursement_data)
@@ -240,7 +240,7 @@ async def update_disbursement(
 async def delete_disbursement(
     disbursement_id: UUID,
     banking_service: BankingFinancialService = Depends(get_banking_financial_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete a disbursement record."""
     success = await banking_service.delete_disbursement(disbursement_id)

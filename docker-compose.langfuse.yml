@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # AI Service with Langfuse
+  ai-service:
+    build: ./microservices/ai-service
+    ports:
+      - "8012:8012"
+    environment:
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
+      - LANGFUSE_HOST=${LANGFUSE_HOST}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DATABASE_URL=${AI_SERVICE_DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./microservices/ai-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8012 --reload
+
+  # Analytics Service with Langfuse
+  analytics-service:
+    build: ./microservices/analytics-service
+    ports:
+      - "8011:8011"
+    environment:
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
+      - LANGFUSE_HOST=${LANGFUSE_HOST}
+      - DATABASE_URL=${ANALYTICS_SERVICE_DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./microservices/analytics-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8011 --reload
+
+  # Communication Service with Langfuse
+  communication-service:
+    build: ./microservices/communication-service
+    ports:
+      - "8013:8013"
+    environment:
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
+      - LANGFUSE_HOST=${LANGFUSE_HOST}
+      - DATABASE_URL=${COMMUNICATION_SERVICE_DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./microservices/communication-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8013 --reload
+
+  # Content Service with Langfuse
+  content-service:
+    build: ./microservices/content-service
+    ports:
+      - "8014:8014"
+    environment:
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
+      - LANGFUSE_HOST=${LANGFUSE_HOST}
+      - DATABASE_URL=${CONTENT_SERVICE_DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./microservices/content-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8014 --reload
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=theshandi
+      - POSTGRES_USER=theshandi_user
+      - POSTGRES_PASSWORD=theshandi_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

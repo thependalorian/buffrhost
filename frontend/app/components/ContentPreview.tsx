@@ -8,6 +8,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Eye, Smartphone, Monitor, Tablet, X, RefreshCw } from 'lucide-react';
 
 interface ContentPreviewProps {
@@ -158,9 +159,11 @@ const ContentPreview: React.FC<ContentPreviewProps> = ({
   const renderImagePreview = (imageData: any) => (
     <div className="bg-white min-h-screen flex items-center justify-center p-6">
       <div className="max-w-4xl mx-auto text-center">
-        <img
+        <Image
           src={imageData.url || imageData.preview}
           alt={imageData.alt || 'Preview image'}
+          width={800}
+          height={600}
           className="max-w-full h-auto rounded-lg shadow-lg"
         />
         {imageData.caption && (

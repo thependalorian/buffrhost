@@ -125,10 +125,10 @@ export function LoginForm({
   };
 
   return (
-    <Card className={`w-full max-w-md mx-auto ${className}`}>
+    <Card className={`w-full max-w-sm mx-auto sm:max-w-md ${className}`}>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Welcome to BuffrHost</CardTitle>
-        <CardDescription className="text-center">
+        <CardTitle className="text-xl font-bold text-center sm:text-2xl">Welcome to BuffrHost</CardTitle>
+        <CardDescription className="text-center text-sm sm:text-base">
           Sign in to your BuffrHost account
         </CardDescription>
       </CardHeader>
@@ -137,7 +137,7 @@ export function LoginForm({
         <CardContent className="space-y-4">
           {/* Error Display */}
           {errors.length > 0 && (
-            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+            <div className="p-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded-md sm:text-sm">
               <ul className="space-y-1">
                 {errors.map((error, index) => (
                   <li key={index}>{error}</li>

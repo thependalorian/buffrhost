@@ -3,9 +3,9 @@ from sqlalchemy import select, update, delete
 from typing import List, Optional
 from uuid import UUID
 
-from models.banking_financial import BankAccount, Transaction, PaymentGateway, Disbursement
+from models.banking_financial import Transaction, PaymentGateway, Disbursement
 from schemas.banking_financial import (
-    BankAccountCreate, BankAccountUpdate, 
+    Create, Update, 
     TransactionCreate, TransactionUpdate, 
     PaymentGatewayCreate, PaymentGatewayUpdate, 
     DisbursementCreate, DisbursementUpdate
@@ -15,23 +15,23 @@ class BankingFinancialService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    # BankAccount Operations
-    async def create_bank_account(self, account_data: BankAccountCreate) -> BankAccount:
-        account = BankAccount(**account_data.model_dump())
+    # Operations
+    async def create_bank_account(self, account_data: Create) -> :
+        account = (**account_data.model_dump())
         self.db.add(account)
         await self.db.commit()
         await self.db.refresh(account)
         return account
 
-    async def get_bank_account(self, account_id: UUID) -> Optional[BankAccount]:
-        result = await self.db.execute(select(BankAccount).where(BankAccount.id == account_id))
+    async def get_bank_account(self, account_id: UUID) -> Optional[]:
+        result = await self.db.execute(select().where(.id == account_id))
         return result.scalar_one_or_none()
 
-    async def get_bank_accounts(self, skip: int = 0, limit: int = 100) -> List[BankAccount]:
-        result = await self.db.execute(select(BankAccount).offset(skip).limit(limit))
+    async def get_bank_accounts(self, skip: int = 0, limit: int = 100) -> List[]:
+        result = await self.db.execute(select().offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_bank_account(self, account_id: UUID, account_data: BankAccountUpdate) -> Optional[BankAccount]:
+    async def update_bank_account(self, account_id: UUID, account_data: Update) -> Optional[]:
         account = await self.get_bank_account(account_id)
         if account:
             update_data = account_data.model_dump(exclude_unset=True)

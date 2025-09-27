@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Digital Menu - Buffr Host',
@@ -28,7 +29,7 @@ export default function DigitalMenuPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-food.jpg" alt="Caesar Salad" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-food.jpg" alt="Caesar Salad" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Caesar Salad</h2>
@@ -42,7 +43,7 @@ export default function DigitalMenuPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-food.jpg" alt="Grilled Chicken" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-food.jpg" alt="Grilled Chicken" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Grilled Chicken Breast</h2>
@@ -56,7 +57,7 @@ export default function DigitalMenuPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-food.jpg" alt="Ribeye Steak" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-food.jpg" alt="Ribeye Steak" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Ribeye Steak</h2>
@@ -70,7 +71,7 @@ export default function DigitalMenuPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-food.jpg" alt="Chocolate Cake" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-food.jpg" alt="Chocolate Cake" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Chocolate Lava Cake</h2>
@@ -84,7 +85,7 @@ export default function DigitalMenuPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-food.jpg" alt="Fresh Juice" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-food.jpg" alt="Fresh Juice" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Fresh Orange Juice</h2>
@@ -98,7 +99,7 @@ export default function DigitalMenuPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-food.jpg" alt="Cappuccino" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-food.jpg" alt="Cappuccino" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Cappuccino</h2>

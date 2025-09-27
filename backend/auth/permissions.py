@@ -4,7 +4,7 @@ Permission system for Buffr Host platform.
 from enum import Enum
 from fastapi import HTTPException, status
 from typing import List, Optional
-from models.user import BuffrHostUser
+from models.user import User, Profile
 
 
 class HospitalityPermissions(Enum):
@@ -127,7 +127,7 @@ ROLE_PERMISSIONS = {
 }
 
 
-def has_permission(user: BuffrHostUser, permission: HospitalityPermissions) -> bool:
+def has_permission(user: User, permission: HospitalityPermissions) -> bool:
     """Check if user has a specific permission."""
     user_permissions = ROLE_PERMISSIONS.get(user.role, [])
     return permission in user_permissions
@@ -140,13 +140,13 @@ def require_permission(permission: HospitalityPermissions):
             # Find the current_user parameter
             current_user = None
             for arg in args:
-                if isinstance(arg, BuffrHostUser):
+                if isinstance(arg, User):
                     current_user = arg
                     break
             
             if not current_user:
                 for key, value in kwargs.items():
-                    if isinstance(value, BuffrHostUser):
+                    if isinstance(value, User):
                         current_user = value
                         break
             
@@ -168,7 +168,7 @@ def require_permission(permission: HospitalityPermissions):
 
 
 async def require_permission_async(
-    user: BuffrHostUser, 
+    user: User, 
     permission: HospitalityPermissions, 
     property_id: Optional[int] = None
 ) -> None:
@@ -187,6 +187,6 @@ async def require_permission_async(
         )
 
 
-def get_user_permissions(user: BuffrHostUser) -> List[HospitalityPermissions]:
+def get_user_permissions(user: User) -> List[HospitalityPermissions]:
     """Get all permissions for a user."""
     return ROLE_PERMISSIONS.get(user.role, [])

@@ -35,7 +35,7 @@ from models.menu import Menu
 from models.services import SpaService
 from models.services import ConferenceRoom
 from models.services import TransportationService
-from models.customer import Customer
+from models.user import User, Profile
 from models.order import Order
 from models.order import OrderItem
 
@@ -219,7 +219,7 @@ class RecommendationEngine:
         try:
             # Get customer basic info
             customer_result = await self.db_session.execute(
-                select(Customer).where(Customer.customer_id == customer_id)
+                select(Profile).where(Customer.customer_id == customer_id)
             )
             customer = customer_result.scalar_one_or_none()
             

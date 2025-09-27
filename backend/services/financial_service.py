@@ -15,25 +15,21 @@ from sqlalchemy.orm import selectinload
 
 from models.financial_settings import (
     PropertyFinancialSettings, 
-    BankAccount, 
     ServiceRate, 
-    TaxConfiguration,
-    Quotation, 
-    QuotationItem, 
-    Invoice, 
-    InvoiceItem,
     Receipt,
-    ReceiptItem
+    ReceiptItem,
+    FinancialTransaction
 )
+from models.corporate import Quotation, Invoice
 from models.corporate import CorporateCustomer, CorporateBooking
 from schemas.financial_settings import (
-    QuotationCreate, 
-    QuotationUpdate,
-    InvoiceCreate, 
-    InvoiceUpdate,
+    Create, 
+    Update,
+    Create, 
+    Update,
     ReceiptCreate,
     ServiceRateCreate,
-    TaxConfigurationCreate
+    Create
 )
 
 logger = logging.getLogger(__name__)
@@ -156,10 +152,10 @@ class FinancialService:
         self, 
         property_id: UUID, 
         bank_data: Dict[str, Any]
-    ) -> BankAccount:
+    ) -> PropertyFinancialSettings:
         """Add a bank account for a property"""
         try:
-            bank_account = BankAccount(
+            bank_account = PropertyFinancialSettings(
                 property_id=property_id,
                 **bank_data
             )
@@ -264,8 +260,8 @@ class FinancialService:
     async def create_quotation(
         self, 
         property_id: UUID, 
-        quotation_data: QuotationCreate
-    ) -> Quotation:
+        quotation_data: Create
+    ) -> PropertyFinancialSettings:
         """Create a new quotation"""
         try:
             # Generate quotation number
@@ -305,7 +301,7 @@ class FinancialService:
             
             # Create quotation items
             for item_data in quotation_data.items:
-                item = QuotationItem(
+                item = Item(
                     quotation_id=quotation.quotation_id,
                     item_type=item_data.item_type,
                     item_name=item_data.item_name,
@@ -328,8 +324,8 @@ class FinancialService:
     async def create_invoice_from_quotation(
         self, 
         quotation_id: UUID, 
-        invoice_data: InvoiceCreate
-    ) -> Invoice:
+        invoice_data: Create
+    ) -> PropertyFinancialSettings:
         """Create an invoice from a quotation"""
         try:
             # Get the quotation
@@ -341,7 +337,7 @@ class FinancialService:
             quotation = quotation_result.scalar_one_or_none()
             
             if not quotation:
-                raise ValueError("Quotation not found")
+                raise ValueError("not found")
             
             # Generate invoice number
             invoice_number = await self._generate_invoice_number(quotation.property_id)
@@ -370,7 +366,7 @@ class FinancialService:
             
             # Create invoice items from quotation items
             for quotation_item in quotation.items:
-                item = InvoiceItem(
+                item = Item(
                     invoice_id=invoice.invoice_id,
                     item_type=quotation_item.item_type,
                     item_name=quotation_item.item_name,
@@ -540,7 +536,7 @@ class FinancialService:
         payment_amount: Decimal, 
         payment_method: str,
         payment_reference: str = None
-    ) -> Invoice:
+    ) -> PropertyFinancialSettings:
         """Update invoice with payment information"""
         try:
             result = await self.db_session.execute(
@@ -550,7 +546,7 @@ class FinancialService:
             invoice = result.scalar_one_or_none()
             
             if not invoice:
-                raise ValueError("Invoice not found")
+                raise ValueError("not found")
             
             # Update payment information
             invoice.paid_amount += payment_amount

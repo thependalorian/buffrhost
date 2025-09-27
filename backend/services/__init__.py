@@ -4,7 +4,7 @@ Provides business logic layer for all operations.
 """
 
 from .hospitality_property_service import HospitalityPropertyService
-from .customer_service import CustomerService
+from .customer_service import ProfileService
 from .menu_service import MenuService
 from .order_service import OrderService
 from .cms_service import CMSService
@@ -14,7 +14,7 @@ from .calendar_service import CalendarService
 
 __all__ = [
     "HospitalityPropertyService",
-    "CustomerService", 
+    "ProfileService", 
     "MenuService",
     "OrderService",
     "CMSService",

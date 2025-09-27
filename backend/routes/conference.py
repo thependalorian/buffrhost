@@ -9,7 +9,7 @@ from typing import List, Optional
 from datetime import date
 
 from database import get_db
-from models.user import BuffrHostUser
+from models.user import User
 from routes.auth import get_current_user, require_property_access, require_permission
 from auth.rbac import Permission
 from services.conference_service import ConferenceService
@@ -20,7 +20,7 @@ router = APIRouter()
 @router.get("/{property_id}/conference/rooms", response_model=List[ConferenceRoom])
 async def get_conference_rooms(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get available conference rooms for a property"""
@@ -32,7 +32,7 @@ async def get_conference_bookings(
     property_id: int,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get conference room bookings for a property"""
@@ -43,7 +43,7 @@ async def get_conference_bookings(
 async def create_conference_booking(
     property_id: int,
     booking_data: ConferenceBookingCreate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new conference room booking"""
@@ -56,7 +56,7 @@ async def create_conference_booking(
 @router.get("/{property_id}/conference/amenities", response_model=List[ConferenceAmenity])
 async def get_conference_amenities(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get available conference amenities for a property"""
@@ -66,7 +66,7 @@ async def get_conference_amenities(
 @router.get("/{property_id}/conference/packages", response_model=List[ConferencePackage])
 async def get_conference_packages(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get conference packages for a property"""

@@ -9,7 +9,7 @@ from typing import List, Optional
 from datetime import date
 
 from database import get_db
-from models.user import BuffrHostUser
+from models.user import User
 from routes.auth import get_current_user, require_property_access, require_permission
 from auth.rbac import Permission
 from services.spa_service import SpaServiceClass
@@ -20,7 +20,7 @@ router = APIRouter()
 @router.get("/{property_id}/spa/services", response_model=List[SpaService])
 async def get_spa_services(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get available spa services for a property"""
@@ -32,7 +32,7 @@ async def get_spa_appointments(
     property_id: int,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get spa appointments for a property"""
@@ -43,7 +43,7 @@ async def get_spa_appointments(
 async def create_spa_appointment(
     property_id: int,
     appointment_data: SpaAppointmentCreate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new spa appointment"""
@@ -56,7 +56,7 @@ async def create_spa_appointment(
 @router.get("/{property_id}/spa/therapists", response_model=List[SpaTherapist])
 async def get_spa_therapists(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get available spa therapists for a property"""

@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Spa & Wellness - Buffr Host',
@@ -27,7 +28,7 @@ export default function SpaWellnessPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-spa.jpg" alt="Deep Tissue Massage" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-spa.jpg" alt="Deep Tissue Massage" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Deep Tissue Massage</h2>
@@ -44,7 +45,7 @@ export default function SpaWellnessPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-spa.jpg" alt="Swedish Massage" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-spa.jpg" alt="Swedish Massage" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Swedish Massage</h2>
@@ -61,7 +62,7 @@ export default function SpaWellnessPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-spa.jpg" alt="Hot Stone Massage" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-spa.jpg" alt="Hot Stone Massage" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Hot Stone Massage</h2>
@@ -78,7 +79,7 @@ export default function SpaWellnessPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-spa.jpg" alt="Aromatherapy Facial" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-spa.jpg" alt="Aromatherapy Facial" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Aromatherapy Facial</h2>
@@ -95,7 +96,7 @@ export default function SpaWellnessPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-spa.jpg" alt="Body Scrub" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-spa.jpg" alt="Body Scrub" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Exfoliating Body Scrub</h2>
@@ -112,7 +113,7 @@ export default function SpaWellnessPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <img src="/placeholder-spa.jpg" alt="Wellness Package" className="w-full h-48 object-cover" />
+                <Image src="/placeholder-spa.jpg" alt="Wellness Package" width={300} height={192} className="w-full h-48 object-cover" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Ultimate Wellness Package</h2>

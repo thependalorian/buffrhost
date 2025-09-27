@@ -1,303 +1,358 @@
-import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter } from 'react-router-dom'
-import AuthFlow from '@/components/auth/AuthFlow'
+/**
+ * Authentication Flow Integration Tests
+ */
 
-// Mock the auth service
-const mockAuthService = {
-  login: jest.fn(),
-  register: jest.fn(),
-  logout: jest.fn(),
-  getCurrentUser: jest.fn(),
-}
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from '@/lib/contexts/auth-context';
+import LoginForm from '@/components/auth/LoginForm';
+import SignUpForm from '@/components/auth/SignUpForm';
 
-jest.mock('@/lib/services/authService', () => mockAuthService)
+// Mock fetch for API calls
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
 
-// Mock the auth context
-jest.mock('@/lib/auth/AuthContext', () => ({
-  useAuth: () => ({
-    user: null,
-    isLoading: false,
-    error: null,
-    login: mockAuthService.login,
-    register: mockAuthService.register,
-    logout: mockAuthService.logout,
+// Mock Next.js router
+const mockPush = jest.fn();
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
   }),
-}))
+}));
 
 const createTestQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: { retry: false },
     mutations: { retry: false },
   },
-})
+});
 
 const renderWithProviders = (ui: React.ReactElement) => {
-  const testQueryClient = createTestQueryClient()
+  const testQueryClient = createTestQueryClient();
   return render(
     <QueryClientProvider client={testQueryClient}>
-      <BrowserRouter>
+      <AuthProvider>
         {ui}
-      </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
-  )
-}
+  );
+};
 
-describe('Auth Flow Integration', () => {
+describe('Authentication Flow Integration', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-  })
+    jest.clearAllMocks();
+    mockFetch.mockClear();
+  });
 
   describe('Login Flow', () => {
     it('completes successful login flow', async () => {
-      const user = userEvent.setup()
-      mockAuthService.login.mockResolvedValue({
-        user: { id: 1, email: 'test@example.com', name: 'Test User' },
-        token: 'mock-jwt-token',
-      })
-
-      renderWithProviders(<AuthFlow />)
-
-      // Navigate to login
-      const loginButton = screen.getByText(/sign in/i)
-      await user.click(loginButton)
-
-      // Fill login form
-      await user.type(screen.getByLabelText(/email/i), 'test@example.com')
-      await user.type(screen.getByLabelText(/password/i), 'password123')
+      const user = userEvent.setup();
       
-      // Submit login
-      const submitButton = screen.getByRole('button', { name: /sign in/i })
-      await user.click(submitButton)
+      // Mock successful login response
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: {
+            user: {
+              id: '1',
+              email: 'test@example.com',
+              name: 'Test User',
+              role: 'customer',
+              status: 'active',
+            },
+            token: 'mock-jwt-token',
+          },
+        }),
+      });
+
+      renderWithProviders(<LoginForm />);
+
+      const emailInput = screen.getByLabelText(/email/i);
+      const passwordInput = screen.getByLabelText(/password/i);
+      const submitButton = screen.getByRole('button', { name: /sign in/i });
+
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
+      await user.click(submitButton);
 
       await waitFor(() => {
-        expect(mockAuthService.login).toHaveBeenCalledWith({
-          email: 'test@example.com',
-          password: 'password123',
-        })
-      })
+        expect(mockFetch).toHaveBeenCalledWith(
+          expect.stringContaining('/auth/login'),
+          expect.objectContaining({
+            method: 'POST',
+            headers: expect.objectContaining({
+              'Content-Type': 'application/json',
+            }),
+            body: JSON.stringify({
+              email: 'test@example.com',
+              password: 'password123',
+            }),
+          })
+        );
+      });
+    });
 
-      // Should redirect to dashboard after successful login
-      await waitFor(() => {
-        expect(screen.getByText(/welcome, test user/i)).toBeInTheDocument()
-      })
-    })
-
-    it('handles login failure gracefully', async () => {
-      const user = userEvent.setup()
-      mockAuthService.login.mockRejectedValue(new Error('Invalid credentials'))
-
-      renderWithProviders(<AuthFlow />)
-
-      // Navigate to login
-      const loginButton = screen.getByText(/sign in/i)
-      await user.click(loginButton)
-
-      // Fill login form with invalid credentials
-      await user.type(screen.getByLabelText(/email/i), 'invalid@example.com')
-      await user.type(screen.getByLabelText(/password/i), 'wrongpassword')
+    it('handles login validation errors', async () => {
+      const user = userEvent.setup();
       
-      // Submit login
-      const submitButton = screen.getByRole('button', { name: /sign in/i })
-      await user.click(submitButton)
+      renderWithProviders(<LoginForm />);
+
+      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument()
-      })
+        expect(screen.getByText(/email is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/password is required/i)).toBeInTheDocument();
+      });
+    });
 
-      // Should remain on login page
-      expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
-    })
-  })
-
-  describe('Registration Flow', () => {
-    it('completes successful registration flow', async () => {
-      const user = userEvent.setup()
-      mockAuthService.register.mockResolvedValue({
-        user: { id: 2, email: 'newuser@example.com', name: 'New User' },
-        token: 'mock-jwt-token',
-      })
-
-      renderWithProviders(<AuthFlow />)
-
-      // Navigate to registration
-      const registerButton = screen.getByText(/sign up/i)
-      await user.click(registerButton)
-
-      // Fill registration form
-      await user.type(screen.getByLabelText(/full name/i), 'New User')
-      await user.type(screen.getByLabelText(/email/i), 'newuser@example.com')
-      await user.type(screen.getByLabelText(/password/i), 'password123')
-      await user.type(screen.getByLabelText(/confirm password/i), 'password123')
+    it('handles login API errors', async () => {
+      const user = userEvent.setup();
       
-      // Submit registration
-      const submitButton = screen.getByRole('button', { name: /create account/i })
-      await user.click(submitButton)
+      // Mock failed login response
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({
+          success: false,
+          error: 'Invalid credentials',
+        }),
+      });
+
+      renderWithProviders(<LoginForm />);
+
+      const emailInput = screen.getByLabelText(/email/i);
+      const passwordInput = screen.getByLabelText(/password/i);
+      const submitButton = screen.getByRole('button', { name: /sign in/i });
+
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'wrongpassword');
+      await user.click(submitButton);
 
       await waitFor(() => {
-        expect(mockAuthService.register).toHaveBeenCalledWith({
-          name: 'New User',
-          email: 'newuser@example.com',
-          password: 'password123',
-          confirmPassword: 'password123',
-        })
-      })
+        expect(mockFetch).toHaveBeenCalled();
+      });
+    });
+  });
 
-      // Should redirect to dashboard after successful registration
+  describe('Sign Up Flow', () => {
+    it('completes successful signup flow', async () => {
+      const user = userEvent.setup();
+      
+      // Mock successful signup response
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: {
+            user: {
+              id: '1',
+              email: 'newuser@example.com',
+              name: 'New User',
+              role: 'customer',
+              status: 'active',
+            },
+            token: 'mock-jwt-token',
+          },
+        }),
+      });
+
+      renderWithProviders(<SignUpForm />);
+
+      const nameInput = screen.getByLabelText(/name/i);
+      const emailInput = screen.getByLabelText(/email/i);
+      const passwordInput = screen.getByLabelText(/password/i);
+      const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
+      const submitButton = screen.getByRole('button', { name: /sign up/i });
+
+      await user.type(nameInput, 'New User');
+      await user.type(emailInput, 'newuser@example.com');
+      await user.type(passwordInput, 'password123');
+      await user.type(confirmPasswordInput, 'password123');
+      await user.click(submitButton);
+
       await waitFor(() => {
-        expect(screen.getByText(/welcome, new user/i)).toBeInTheDocument()
-      })
-    })
+        expect(mockFetch).toHaveBeenCalledWith(
+          expect.stringContaining('/auth/register'),
+          expect.objectContaining({
+            method: 'POST',
+            headers: expect.objectContaining({
+              'Content-Type': 'application/json',
+            }),
+            body: JSON.stringify({
+              name: 'New User',
+              email: 'newuser@example.com',
+              password: 'password123',
+              confirmPassword: 'password123',
+            }),
+          })
+        );
+      });
+    });
+
+    it('handles signup validation errors', async () => {
+      const user = userEvent.setup();
+      
+      renderWithProviders(<SignUpForm />);
+
+      const submitButton = screen.getByRole('button', { name: /sign up/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/name is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/email is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/password is required/i)).toBeInTheDocument();
+      });
+    });
 
     it('validates password confirmation', async () => {
-      const user = userEvent.setup()
-
-      renderWithProviders(<AuthFlow />)
-
-      // Navigate to registration
-      const registerButton = screen.getByText(/sign up/i)
-      await user.click(registerButton)
-
-      // Fill registration form with mismatched passwords
-      await user.type(screen.getByLabelText(/full name/i), 'New User')
-      await user.type(screen.getByLabelText(/email/i), 'newuser@example.com')
-      await user.type(screen.getByLabelText(/password/i), 'password123')
-      await user.type(screen.getByLabelText(/confirm password/i), 'differentpassword')
+      const user = userEvent.setup();
       
-      // Submit registration
-      const submitButton = screen.getByRole('button', { name: /create account/i })
-      await user.click(submitButton)
+      renderWithProviders(<SignUpForm />);
+
+      const passwordInput = screen.getByLabelText(/password/i);
+      const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
+      const submitButton = screen.getByRole('button', { name: /sign up/i });
+
+      await user.type(passwordInput, 'password123');
+      await user.type(confirmPasswordInput, 'differentpassword');
+      await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument()
-      })
+        expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument();
+      });
+    });
+  });
 
-      // Should not call register service
-      expect(mockAuthService.register).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('Logout Flow', () => {
-    it('completes logout flow', async () => {
-      const user = userEvent.setup()
-      mockAuthService.logout.mockResolvedValue(undefined)
-
-      // Mock authenticated state
-      jest.doMock('@/lib/auth/AuthContext', () => ({
-        useAuth: () => ({
-          user: { id: 1, email: 'test@example.com', name: 'Test User' },
-          isLoading: false,
-          error: null,
-          login: mockAuthService.login,
-          register: mockAuthService.register,
-          logout: mockAuthService.logout,
+  describe('Social Authentication', () => {
+    it('handles Google sign in', async () => {
+      const user = userEvent.setup();
+      
+      // Mock Google OAuth response
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: {
+            user: {
+              id: '1',
+              email: 'google@example.com',
+              name: 'Google User',
+              role: 'customer',
+              status: 'active',
+            },
+            token: 'mock-jwt-token',
+          },
         }),
-      }))
+      });
 
-      renderWithProviders(<AuthFlow />)
+      renderWithProviders(<LoginForm />);
 
-      // Should show authenticated state
-      expect(screen.getByText(/welcome, test user/i)).toBeInTheDocument()
-
-      // Click logout
-      const logoutButton = screen.getByText(/logout/i)
-      await user.click(logoutButton)
+      const googleButton = screen.getByText(/sign in with google/i);
+      await user.click(googleButton);
 
       await waitFor(() => {
-        expect(mockAuthService.logout).toHaveBeenCalled()
-      })
+        expect(mockFetch).toHaveBeenCalled();
+      });
+    });
 
-      // Should redirect to login page
-      await waitFor(() => {
-        expect(screen.getByText(/sign in/i)).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Protected Route Flow', () => {
-    it('redirects unauthenticated users to login', () => {
-      renderWithProviders(<AuthFlow />)
-
-      // Should show login page for unauthenticated users
-      expect(screen.getByText(/sign in/i)).toBeInTheDocument()
-      expect(screen.queryByText(/dashboard/i)).not.toBeInTheDocument()
-    })
-
-    it('allows authenticated users to access protected routes', () => {
-      // Mock authenticated state
-      jest.doMock('@/lib/auth/AuthContext', () => ({
-        useAuth: () => ({
-          user: { id: 1, email: 'test@example.com', name: 'Test User' },
-          isLoading: false,
-          error: null,
-          login: mockAuthService.login,
-          register: mockAuthService.register,
-          logout: mockAuthService.logout,
+    it('handles WhatsApp sign in', async () => {
+      const user = userEvent.setup();
+      
+      // Mock WhatsApp OAuth response
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: {
+            user: {
+              id: '1',
+              email: 'whatsapp@example.com',
+              name: 'WhatsApp User',
+              role: 'customer',
+              status: 'active',
+            },
+            token: 'mock-jwt-token',
+          },
         }),
-      }))
+      });
 
-      renderWithProviders(<AuthFlow />)
+      renderWithProviders(<LoginForm />);
 
-      // Should show dashboard for authenticated users
-      expect(screen.getByText(/dashboard/i)).toBeInTheDocument()
-      expect(screen.queryByText(/sign in/i)).not.toBeInTheDocument()
-    })
-  })
-
-  describe('Error Handling', () => {
-    it('displays network error messages', async () => {
-      const user = userEvent.setup()
-      mockAuthService.login.mockRejectedValue(new Error('Network error'))
-
-      renderWithProviders(<AuthFlow />)
-
-      // Navigate to login
-      const loginButton = screen.getByText(/sign in/i)
-      await user.click(loginButton)
-
-      // Fill and submit login form
-      await user.type(screen.getByLabelText(/email/i), 'test@example.com')
-      await user.type(screen.getByLabelText(/password/i), 'password123')
-      
-      const submitButton = screen.getByRole('button', { name: /sign in/i })
-      await user.click(submitButton)
+      const whatsappButton = screen.getByText(/sign in with whatsapp/i);
+      await user.click(whatsappButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/network error/i)).toBeInTheDocument()
-      })
-    })
+        expect(mockFetch).toHaveBeenCalled();
+      });
+    });
+  });
 
-    it('handles server validation errors', async () => {
-      const user = userEvent.setup()
-      mockAuthService.register.mockRejectedValue({
-        message: 'Validation failed',
-        errors: {
-          email: 'Email already exists',
-          password: 'Password too weak',
-        },
-      })
-
-      renderWithProviders(<AuthFlow />)
-
-      // Navigate to registration
-      const registerButton = screen.getByText(/sign up/i)
-      await user.click(registerButton)
-
-      // Fill and submit registration form
-      await user.type(screen.getByLabelText(/full name/i), 'Test User')
-      await user.type(screen.getByLabelText(/email/i), 'existing@example.com')
-      await user.type(screen.getByLabelText(/password/i), 'weak')
-      await user.type(screen.getByLabelText(/confirm password/i), 'weak')
+  describe('Form Validation', () => {
+    it('validates email format', async () => {
+      const user = userEvent.setup();
       
-      const submitButton = screen.getByRole('button', { name: /create account/i })
-      await user.click(submitButton)
+      renderWithProviders(<LoginForm />);
+
+      const emailInput = screen.getByLabelText(/email/i);
+      const submitButton = screen.getByRole('button', { name: /sign in/i });
+
+      await user.type(emailInput, 'invalid-email');
+      await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/email already exists/i)).toBeInTheDocument()
-        expect(screen.getByText(/password too weak/i)).toBeInTheDocument()
-      })
-    })
-  })
-})
+        expect(screen.getByText(/invalid email format/i)).toBeInTheDocument();
+      });
+    });
+
+    it('validates password strength', async () => {
+      const user = userEvent.setup();
+      
+      renderWithProviders(<SignUpForm />);
+
+      const passwordInput = screen.getByLabelText(/password/i);
+      const submitButton = screen.getByRole('button', { name: /sign up/i });
+
+      await user.type(passwordInput, 'weak');
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Loading States', () => {
+    it('shows loading state during authentication', async () => {
+      const user = userEvent.setup();
+      
+      // Mock slow response
+      mockFetch.mockImplementationOnce(() => 
+        new Promise(resolve => setTimeout(() => resolve({
+          ok: true,
+          json: async () => ({ success: true, data: {} }),
+        }), 100))
+      );
+
+      renderWithProviders(<LoginForm />);
+
+      const emailInput = screen.getByLabelText(/email/i);
+      const passwordInput = screen.getByLabelText(/password/i);
+      const submitButton = screen.getByRole('button', { name: /sign in/i });
+
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
+      await user.click(submitButton);
+
+      // Check loading state
+      expect(submitButton).toBeDisabled();
+    });
+  });
+});

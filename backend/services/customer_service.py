@@ -1,52 +1,52 @@
 """
-Customer Service for The Shandi Hospitality Ecosystem Management Platform
+Profile Service for The Shandi Hospitality Ecosystem Management Platform
 Provides business logic for customer operations.
 """
 
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_, or_
-from models.customer import Customer
+from models.user import User, Profile
 from models.order import Order
 from datetime import datetime
 import uuid
 
-class CustomerService:
+class ProfileService:
     """Service class for customer operations"""
     
     def __init__(self, db: Session):
         self.db = db
     
-    def create_customer(self, customer_data: Dict[str, Any]) -> Customer:
+    def create_customer(self, customer_data: Dict[str, Any]) -> Profile:
         """Create new customer"""
-        customer = Customer(**customer_data)
+        customer = Profile(**customer_data)
         self.db.add(customer)
         self.db.commit()
         self.db.refresh(customer)
         return customer
     
-    def get_customer(self, customer_id: uuid.UUID) -> Optional[Customer]:
+    def get_customer(self, customer_id: uuid.UUID) -> Optional[Profile]:
         """Get customer by ID"""
         result = self.db.execute(
-            select(Customer).where(Customer.customer_id == customer_id)
+            select(Profile).where(Profile.customer_id == customer_id)
         )
         return result.scalar_one_or_none()
     
-    def get_customer_by_email(self, email: str) -> Optional[Customer]:
+    def get_customer_by_email(self, email: str) -> Optional[Profile]:
         """Get customer by email"""
         result = self.db.execute(
-            select(Customer).where(Customer.email == email)
+            select(Profile).where(Profile.email == email)
         )
         return result.scalar_one_or_none()
     
-    def get_customer_by_phone(self, phone: str) -> Optional[Customer]:
+    def get_customer_by_phone(self, phone: str) -> Optional[Profile]:
         """Get customer by phone"""
         result = self.db.execute(
-            select(Customer).where(Customer.phone == phone)
+            select(Profile).where(Profile.phone == phone)
         )
         return result.scalar_one_or_none()
     
-    def update_customer(self, customer_id: uuid.UUID, update_data: Dict[str, Any]) -> Optional[Customer]:
+    def update_customer(self, customer_id: uuid.UUID, update_data: Dict[str, Any]) -> Optional[Profile]:
         """Update existing customer"""
         customer = self.get_customer(customer_id)
         if not customer:
@@ -77,17 +77,17 @@ class CustomerService:
         limit: int = 50,
         offset: int = 0,
         search_term: Optional[str] = None
-    ) -> List[Customer]:
+    ) -> List[Profile]:
         """List customers with optional search"""
-        query = select(Customer)
+        query = select(Profile)
         
         if search_term:
             query = query.where(
                 or_(
-                    Customer.first_name.ilike(f"%{search_term}%"),
-                    Customer.last_name.ilike(f"%{search_term}%"),
-                    Customer.email.ilike(f"%{search_term}%"),
-                    Customer.phone.ilike(f"%{search_term}%")
+                    Profile.first_name.ilike(f"%{search_term}%"),
+                    Profile.last_name.ilike(f"%{search_term}%"),
+                    Profile.email.ilike(f"%{search_term}%"),
+                    Profile.phone.ilike(f"%{search_term}%")
                 )
             )
         
@@ -151,14 +151,14 @@ class CustomerService:
         
         return stats
     
-    def search_customers(self, search_term: str) -> List[Customer]:
+    def search_customers(self, search_term: str) -> List[Profile]:
         """Search customers by name, email, or phone"""
-        query = select(Customer).where(
+        query = select(Profile).where(
             or_(
-                Customer.first_name.ilike(f"%{search_term}%"),
-                Customer.last_name.ilike(f"%{search_term}%"),
-                Customer.email.ilike(f"%{search_term}%"),
-                Customer.phone.ilike(f"%{search_term}%")
+                Profile.first_name.ilike(f"%{search_term}%"),
+                Profile.last_name.ilike(f"%{search_term}%"),
+                Profile.email.ilike(f"%{search_term}%"),
+                Profile.phone.ilike(f"%{search_term}%")
             )
         )
         result = self.db.execute(query)
@@ -166,7 +166,7 @@ class CustomerService:
     
     def get_top_customers(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Get top customers by loyalty points"""
-        query = select(Customer).order_by(Customer.loyalty_points.desc()).limit(limit)
+        query = select(Profile).order_by(Profile.loyalty_points.desc()).limit(limit)
         result = self.db.execute(query)
         customers = result.scalars().all()
         

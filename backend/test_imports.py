@@ -18,7 +18,7 @@ def test_imports():
         from models.hospitality_property import HospitalityProperty
         print("✅ HospitalityProperty imported")
         
-        from models.customer import Customer
+        from models.user import User, Profile
         print("✅ Customer imported")
         
         from models.room import RoomType, Room
@@ -30,7 +30,7 @@ def test_imports():
         from models.order import Order, OrderItem
         print("✅ Order models imported")
         
-        from models.user import BuffrHostUser
+        from models.user import User
         print("✅ User models imported")
         
         from models.user_type import UserType

@@ -7,7 +7,7 @@ from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_, or_, func
 from models.order import Order, OrderItem, OrderItemOption
-from models.customer import Customer
+from models.user import User, Profile
 from models.hospitality_property import HospitalityProperty
 from datetime import datetime, date
 from decimal import Decimal

@@ -9,7 +9,7 @@ from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
 
 from database import get_db
-from models.user import BuffrHostUser
+from models.user import User
 from routes.auth import get_current_user, require_property_access, require_permission
 from auth.rbac import Permission
 from services.qr_loyalty_service import QRLoyaltyService
@@ -20,7 +20,7 @@ router = APIRouter()
 async def generate_loyalty_enrollment_qr(
     property_id: int,
     customer_id: Optional[str] = Query(None, description="Customer ID for personalized QR"),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Generate QR code for loyalty program enrollment"""
@@ -46,7 +46,7 @@ async def generate_loyalty_enrollment_qr(
 async def generate_cross_business_redemption_qr(
     property_id: int,
     redemption_data: Dict[str, Any],
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Generate QR code for cross-business redemption"""
@@ -86,7 +86,7 @@ async def generate_cross_business_redemption_qr(
 async def generate_menu_with_loyalty_qr(
     property_id: int,
     customer_id: Optional[str] = Query(None, description="Customer ID for personalized experience"),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Generate QR code that combines menu access with loyalty enrollment"""
@@ -113,7 +113,7 @@ async def generate_menu_with_loyalty_qr(
 async def scan_loyalty_qr(
     property_id: int,
     qr_data: Dict[str, Any],
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Process scanned QR code for loyalty operations"""
@@ -147,7 +147,7 @@ async def get_loyalty_qr_analytics(
     property_id: int,
     start_date: Optional[datetime] = Query(None, description="Start date for analytics"),
     end_date: Optional[datetime] = Query(None, description="End date for analytics"),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get analytics for QR code loyalty interactions"""
@@ -165,7 +165,7 @@ async def get_loyalty_qr_analytics(
 async def get_loyalty_wallet_qr(
     property_id: int,
     customer_id: str = Query(..., description="Customer ID for loyalty wallet"),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Generate QR code for customer loyalty wallet access"""
@@ -197,7 +197,7 @@ async def generate_quick_redemption_qr(
     customer_id: str = Query(..., description="Customer ID"),
     service_type: str = Query(..., description="Service type for redemption"),
     points: int = Query(..., description="Points to redeem"),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Generate QR code for quick loyalty redemption"""

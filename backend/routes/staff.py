@@ -8,7 +8,7 @@ from datetime import date
 
 from database import get_db
 from auth.dependencies import get_current_user
-from models.user import BuffrHostUser
+from models.user import User
 from services.staff_service import StaffService
 from schemas.staff import (
     StaffDepartment, StaffDepartmentCreate, StaffDepartmentUpdate,
@@ -30,7 +30,7 @@ router = APIRouter(prefix="/staff", tags=["Staff Management"])
 async def create_department(
     department_data: StaffDepartmentCreate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new staff department."""
     
@@ -44,7 +44,7 @@ async def get_departments(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all departments for a property."""
     
@@ -56,7 +56,7 @@ async def get_departments(
 async def get_department(
     department_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get a specific department by ID."""
     
@@ -72,7 +72,7 @@ async def update_department(
     department_id: int,
     department_data: StaffDepartmentUpdate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a department."""
     
@@ -87,7 +87,7 @@ async def update_department(
 async def delete_department(
     department_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a department."""
     
@@ -101,7 +101,7 @@ async def delete_department(
 async def create_position(
     position_data: StaffPositionCreate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new staff position."""
     
@@ -116,7 +116,7 @@ async def get_positions(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all positions for a property, optionally filtered by department."""
     
@@ -128,7 +128,7 @@ async def get_positions(
 async def get_position(
     position_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get a specific position by ID."""
     
@@ -144,7 +144,7 @@ async def update_position(
     position_id: int,
     position_data: StaffPositionUpdate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a position."""
     
@@ -159,7 +159,7 @@ async def update_position(
 async def delete_position(
     position_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a position."""
     
@@ -173,7 +173,7 @@ async def delete_position(
 async def create_staff_profile(
     profile_data: StaffProfileCreate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new staff profile."""
     
@@ -189,7 +189,7 @@ async def get_staff_profiles(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all staff profiles for a property with optional filters."""
     
@@ -201,7 +201,7 @@ async def get_staff_profiles(
 async def get_staff_profile(
     staff_id: str,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get a specific staff profile by ID."""
     
@@ -217,7 +217,7 @@ async def update_staff_profile(
     staff_id: str,
     profile_data: StaffProfileUpdate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a staff profile."""
     
@@ -232,7 +232,7 @@ async def update_staff_profile(
 async def delete_staff_profile(
     staff_id: str,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a staff profile."""
     
@@ -246,7 +246,7 @@ async def delete_staff_profile(
 async def create_schedule(
     schedule_data: StaffScheduleCreate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new staff schedule."""
     
@@ -263,7 +263,7 @@ async def get_schedules(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get staff schedules with optional filters."""
     
@@ -275,7 +275,7 @@ async def get_schedules(
 async def get_schedule(
     schedule_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get a specific schedule by ID."""
     
@@ -291,7 +291,7 @@ async def update_schedule(
     schedule_id: int,
     schedule_data: StaffScheduleUpdate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a schedule."""
     
@@ -306,7 +306,7 @@ async def update_schedule(
 async def delete_schedule(
     schedule_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a schedule."""
     
@@ -320,7 +320,7 @@ async def delete_schedule(
 async def create_attendance(
     attendance_data: StaffAttendanceCreate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new attendance record."""
     
@@ -337,7 +337,7 @@ async def get_attendance(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get attendance records with optional filters."""
     
@@ -349,7 +349,7 @@ async def get_attendance(
 async def get_attendance_record(
     attendance_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get a specific attendance record by ID."""
     
@@ -365,7 +365,7 @@ async def update_attendance(
     attendance_id: int,
     attendance_data: StaffAttendanceUpdate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update an attendance record."""
     
@@ -380,7 +380,7 @@ async def update_attendance(
 async def delete_attendance(
     attendance_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete an attendance record."""
     
@@ -394,7 +394,7 @@ async def delete_attendance(
 async def create_task(
     task_data: StaffTaskCreate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new staff task."""
     
@@ -411,7 +411,7 @@ async def get_tasks(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get staff tasks with optional filters."""
     
@@ -423,7 +423,7 @@ async def get_tasks(
 async def get_task(
     task_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get a specific task by ID."""
     
@@ -439,7 +439,7 @@ async def update_task(
     task_id: int,
     task_data: StaffTaskUpdate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a task."""
     
@@ -454,7 +454,7 @@ async def update_task(
 async def delete_task(
     task_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a task."""
     
@@ -468,7 +468,7 @@ async def delete_task(
 async def create_performance_review(
     performance_data: StaffPerformanceCreate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new performance review."""
     
@@ -483,7 +483,7 @@ async def get_performance_reviews(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get performance reviews with optional filters."""
     
@@ -495,7 +495,7 @@ async def get_performance_reviews(
 async def get_performance_review(
     performance_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get a specific performance review by ID."""
     
@@ -511,7 +511,7 @@ async def update_performance_review(
     performance_id: int,
     performance_data: StaffPerformanceUpdate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a performance review."""
     
@@ -526,7 +526,7 @@ async def update_performance_review(
 async def delete_performance_review(
     performance_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a performance review."""
     
@@ -540,7 +540,7 @@ async def delete_performance_review(
 async def create_communication(
     communication_data: StaffCommunicationCreate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new staff communication."""
     
@@ -557,7 +557,7 @@ async def get_communications(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get staff communications with optional filters."""
     
@@ -569,7 +569,7 @@ async def get_communications(
 async def get_communication(
     communication_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get a specific communication by ID."""
     
@@ -585,7 +585,7 @@ async def update_communication(
     communication_id: int,
     communication_data: StaffCommunicationUpdate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a communication."""
     
@@ -600,7 +600,7 @@ async def update_communication(
 async def delete_communication(
     communication_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a communication."""
     
@@ -614,7 +614,7 @@ async def delete_communication(
 async def create_leave_request(
     leave_data: StaffLeaveRequestCreate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new leave request."""
     
@@ -631,7 +631,7 @@ async def get_leave_requests(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get leave requests with optional filters."""
     
@@ -643,7 +643,7 @@ async def get_leave_requests(
 async def get_leave_request(
     leave_request_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get a specific leave request by ID."""
     
@@ -659,7 +659,7 @@ async def update_leave_request(
     leave_request_id: int,
     leave_data: StaffLeaveRequestUpdate,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a leave request."""
     
@@ -674,7 +674,7 @@ async def update_leave_request(
 async def delete_leave_request(
     leave_request_id: int,
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a leave request."""
     
@@ -690,7 +690,7 @@ async def get_staff_analytics(
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
     db: Session = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get staff analytics and metrics."""
     

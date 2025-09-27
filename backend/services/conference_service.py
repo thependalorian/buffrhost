@@ -54,8 +54,7 @@ class ConferenceService:
     async def create_conference_booking(
         self, 
         property_id: int,
-        booking_data: ConferenceBookingCreate,
-    ) -> ServiceBooking:
+        booking_data: ConferenceBookingCreate) -> ServiceBooking:
         """Create a new conference booking."""
         room_query = select(ConferenceRoom).where(
             and_(

@@ -11,7 +11,7 @@ from decimal import Decimal
 from uuid import UUID
 
 from database import get_db
-from models.user import BuffrHostUser
+from models.user import User
 from routes.auth import get_current_user, require_property_access, require_permission
 from auth.rbac import Permission
 from services.calendar_service import CalendarService
@@ -26,7 +26,7 @@ async def get_room_availability(
     check_in_date: date = Query(..., description="Check-in date (YYYY-MM-DD)"),
     check_out_date: date = Query(..., description="Check-out date (YYYY-MM-DD)"),
     room_type_id: Optional[int] = Query(None, description="Filter by room type ID"),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """Get available rooms for a given date range and optional room type."""
@@ -38,7 +38,7 @@ async def get_room_availability(
 async def create_room_reservation(
     property_id: int,
     reservation_data: Dict[str, Any],
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """Create a new room reservation."""
@@ -68,7 +68,7 @@ async def update_room_reservation_status(
     property_id: int,
     reservation_id: UUID,
     new_status: str = Query(..., description="New status for the reservation"),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """Update the status of a room reservation."""
@@ -88,7 +88,7 @@ async def get_service_availability(
     start_time: time = Query(..., description="Start time (HH:MM)"),
     end_time: time = Query(..., description="End time (HH:MM)"),
     service_id: Optional[int] = Query(None, description="Filter by specific service instance ID"),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """Check availability for a specific service (spa, conference, etc.)."""
@@ -100,7 +100,7 @@ async def get_service_availability(
 async def create_service_booking(
     property_id: int,
     booking_data: Dict[str, Any],
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """Create a new service booking."""
@@ -126,7 +126,7 @@ async def update_service_booking_status(
     property_id: int,
     booking_id: UUID,
     new_status: str = Query(..., description="New status for the service booking"),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """Update the status of a service booking."""
@@ -142,7 +142,7 @@ async def update_service_booking_status(
 async def get_combined_schedule(
     property_id: int,
     target_date: date = Query(..., description="Target date for the schedule (YYYY-MM-DD)"),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """Get a combined daily schedule of room reservations and service bookings."""

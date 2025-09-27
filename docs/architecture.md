@@ -1,10 +1,10 @@
 # Buffr Host Architecture Documentation
 
-## 🎯 **IMPLEMENTATION STATUS: COMPLETE**
+## 🎯 **IMPLEMENTATION STATUS: BACKEND COMPLETE**
 
 **Date**: January 2025  
 **Status**: Full backend architecture implemented with all components  
-**Components**: 50+ database tables, complete API, AI features, staff management, document processing, Arcade MCP integration
+**Components**: 50+ database tables, complete API, AI features, staff management, document processing, Arcade MCP integration, unified user/profile system
 
 ---
 
@@ -172,10 +172,11 @@ Buffr Host is a cloud-based comprehensive hospitality ecosystem management platf
 ### Core Tables
 
 **Hospitality Property Management:**
-- `hospitality_property`: Property information and settings for restaurants, hotels, spas, conference facilities
-- `shandi_user`: System users with role-based access across all hospitality services
-- `menu_category`: Menu organization for F&B services
-- `menu`: Menu items with pricing and details for all F&B services
+- `hospitality_properties`: Property information and settings for restaurants, hotels, spas, conference facilities
+- `users`: System users with unified authentication
+- `profiles`: User profiles with role-based access across all hospitality services
+- `menu_categories`: Menu organization for F&B services
+- `menu_items`: Menu items with pricing and details for all F&B services
 
 **Inventory System:**
 - `unit_of_measurement`: Units for inventory tracking

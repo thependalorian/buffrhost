@@ -103,7 +103,7 @@ export default function GuestPortalPage() {
             <p>Get instant help with our AI-powered concierge service</p>
             <div className="chat chat-start">
               <div className="chat-bubble chat-bubble-primary">
-                Hi! I'm your AI assistant. How can I help you today?
+                Hi! I&apos;m your AI assistant. How can I help you today?
               </div>
             </div>
             <div className="form-control mt-4">

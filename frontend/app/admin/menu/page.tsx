@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Menu Management - Buffr Host',
@@ -89,7 +90,7 @@ export default function MenuManagementPage() {
                         <div className="flex items-center space-x-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img src="/placeholder-food.jpg" alt="Grilled Chicken" />
+                              <Image src="/placeholder-food.jpg" alt="Grilled Chicken" width={60} height={60} className="rounded" />
                             </div>
                           </div>
                           <div>
@@ -110,7 +111,7 @@ export default function MenuManagementPage() {
                         <div className="flex items-center space-x-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img src="/placeholder-food.jpg" alt="Caesar Salad" />
+                              <Image src="/placeholder-food.jpg" alt="Caesar Salad" width={60} height={60} className="rounded" />
                             </div>
                           </div>
                           <div>
@@ -131,7 +132,7 @@ export default function MenuManagementPage() {
                         <div className="flex items-center space-x-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img src="/placeholder-food.jpg" alt="Chocolate Cake" />
+                              <Image src="/placeholder-food.jpg" alt="Chocolate Cake" width={60} height={60} className="rounded" />
                             </div>
                           </div>
                           <div>
@@ -152,7 +153,7 @@ export default function MenuManagementPage() {
                         <div className="flex items-center space-x-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img src="/placeholder-food.jpg" alt="Fresh Juice" />
+                              <Image src="/placeholder-food.jpg" alt="Fresh Juice" width={60} height={60} className="rounded" />
                             </div>
                           </div>
                           <div>
@@ -173,7 +174,7 @@ export default function MenuManagementPage() {
                         <div className="flex items-center space-x-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img src="/placeholder-food.jpg" alt="Beef Steak" />
+                              <Image src="/placeholder-food.jpg" alt="Beef Steak" width={60} height={60} className="rounded" />
                             </div>
                           </div>
                           <div>

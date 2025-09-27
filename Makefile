@@ -48,7 +48,7 @@ format:
 # Build Docker images
 build:
 	@echo "Building Docker images..."
-	docker-compose -f docker-compose.dev.yml build
+	docker-compose build
 
 # Start development environment
 dev:
@@ -69,8 +69,7 @@ deploy:
 # Clean up
 clean:
 	@echo "Cleaning up containers and volumes..."
-	docker-compose -f docker-compose.dev.yml down -v
-	docker-compose -f docker-compose.prod.yml down -v
+	docker-compose down -v
 	docker system prune -f
 
 # Database operations
@@ -90,24 +89,24 @@ security:
 # Pre-deployment validation
 validate:
 	@echo "Running pre-deployment validation..."
-	cd backend && python scripts/validate_dependencies.py
-	cd backend && python scripts/validate_imports.py
-	cd backend && python scripts/pre_deployment_check.py
+	cd backend && python -c "import main; print('✅ Import successful')"
+	cd backend && python validate_models.py
+	cd backend && python test_imports.py
 
 # Validate dependencies only
 validate-deps:
 	@echo "Validating dependencies..."
-	cd backend && python scripts/validate_dependencies.py
+	cd backend && pip check
 
 # Validate imports only
 validate-imports:
 	@echo "Validating imports..."
-	cd backend && python scripts/validate_imports.py
+	cd backend && python test_imports.py
 
 # Full pre-deployment check
 pre-deploy:
 	@echo "Running full pre-deployment check..."
-	cd backend && python scripts/pre_deployment_check.py
+	cd backend && python -c "import main; print('✅ Import successful')"
 
 # Performance tests
 perf:

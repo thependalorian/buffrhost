@@ -11,10 +11,13 @@ import logging
 import sys
 from redis.asyncio import Redis
 from fastapi_limiter import FastAPILimiter
+from datetime import datetime # Added for timestamp
+import uuid # Added for unique ID generation
 
 from config import settings
 from database import create_tables, close_db
-from routes import auth, hospitality_property, menu, inventory, customer, order, analytics, cms, knowledge_base, spa, conference, transportation, loyalty, qr_loyalty, staff, ai_knowledge, calendar, arcade, payment, demo_requests, buffr_agent, preview, financial
+from routes import auth, hospitality_property, menu, inventory, customer, order, analytics, cms, knowledge_base, spa, conference, transportation, loyalty, qr_loyalty, staff, ai_knowledge, calendar, arcade, payment, demo_requests, buffr_agent, preview, financial, etuna_demo_ai, etuna_demo, waitlist
+from routes import email_send_route, email_analytics_route, email_preferences_route, email_templates_route, email_queue_route, email_blacklist_route, email_booking_confirmation_route, email_check_in_reminder_route, email_check_out_reminder_route, email_property_update_route, email_booking_cancellation_route, email_host_summary_route, email_webhook_sendgrid_route, email_webhook_resend_route, email_webhook_ses_route
 
 
 # Configure logging
@@ -72,8 +75,7 @@ app.add_middleware(
     allow_origins=settings.ALLOWED_ORIGINS.split(",") if settings.ALLOWED_ORIGINS else ["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-)
+    allow_headers=["*"])
 
 # Trusted host middleware (production only)
 if settings.ENVIRONMENT == "production":
@@ -102,6 +104,9 @@ app.include_router(staff.router, prefix="/api/v1", tags=["staff"])
 app.include_router(calendar.router, prefix="/api/v1", tags=["calendar"])
 app.include_router(arcade.router, prefix="/api/v1/arcade", tags=["arcade-mcp"])
 app.include_router(buffr_agent.router, prefix="/api/v1/agent", tags=["buffr-agent"])
+app.include_router(etuna_demo_ai.router, prefix="/api/v1/etuna-ai", tags=["etuna-demo-ai"])
+app.include_router(etuna_demo.router, prefix="/api/v1/etuna-demo", tags=["etuna-demo"])
+app.include_router(waitlist.router, prefix="/api/v1/waitlist", tags=["waitlist"])
 app.include_router(payment.router, prefix="/api/v1", tags=["payments"])
 app.include_router(financial.router, prefix="/api/v1/financial", tags=["financial"])
 app.include_router(demo_requests.router, prefix="/api/v1", tags=["demo-requests"])
@@ -139,7 +144,19 @@ from routes import email_webhook_sendgrid_route
 from routes import email_webhook_resend_route
 from routes import email_webhook_ses_route
 
+from pydantic import BaseModel # Ensure BaseModel is imported
+from typing import Optional
 
+# Pydantic model for Employee Loan Application
+class EmployeeLoanApplication(BaseModel):
+    employee_id: str
+    property_id: str
+    requested_amount: float
+    loan_purpose: str
+    employment_start_date: str
+    salary: float
+    contact_email: str
+    contact_phone: Optional[str] = None
 
 @app.get("/")
 async def root():
@@ -151,6 +168,24 @@ async def root():
         "status": "operational",
         "domain": "host.buffr.ai",
         "contact": "george@buffr.ai"
+    }
+
+@app.post("/employee-loan-applications")
+async def receive_employee_loan_application(application: EmployeeLoanApplication):
+    """
+    Endpoint to receive employee loan applications from BuffrLend.
+    This would typically store the application and trigger an internal review process.
+    """
+    # Placeholder for actual application processing logic
+    print(f"Received employee loan application for employee: {application.employee_id}")
+    # In a real scenario, this would save the application to the database
+    # and potentially notify relevant staff for review.
+    return {
+        "message": "Employee loan application received successfully",
+        "application_id": "app-" + application.employee_id + "-" + str(uuid.uuid4()), # Generate a unique ID
+        "employee_id": application.employee_id,
+        "status": "received",
+        "received_at": str(datetime.now())
     }
 
 

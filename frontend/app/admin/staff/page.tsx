@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Staff Management - Buffr Host',
@@ -92,7 +93,7 @@ export default function StaffManagementPage() {
                         <div className="flex items-center space-x-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img src="/placeholder-avatar.jpg" alt="John Smith" />
+                              <Image src="/placeholder-avatar.jpg" alt="John Smith" width={40} height={40} className="rounded-full" />
                             </div>
                           </div>
                           <div>
@@ -114,7 +115,7 @@ export default function StaffManagementPage() {
                         <div className="flex items-center space-x-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img src="/placeholder-avatar.jpg" alt="Sarah Johnson" />
+                              <Image src="/placeholder-avatar.jpg" alt="Sarah Johnson" width={40} height={40} className="rounded-full" />
                             </div>
                           </div>
                           <div>
@@ -136,7 +137,7 @@ export default function StaffManagementPage() {
                         <div className="flex items-center space-x-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img src="/placeholder-avatar.jpg" alt="Mike Wilson" />
+                              <Image src="/placeholder-avatar.jpg" alt="Mike Wilson" width={40} height={40} className="rounded-full" />
                             </div>
                           </div>
                           <div>
@@ -158,7 +159,7 @@ export default function StaffManagementPage() {
                         <div className="flex items-center space-x-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img src="/placeholder-avatar.jpg" alt="Emma Davis" />
+                              <Image src="/placeholder-avatar.jpg" alt="Emma Davis" width={40} height={40} className="rounded-full" />
                             </div>
                           </div>
                           <div>
@@ -180,7 +181,7 @@ export default function StaffManagementPage() {
                         <div className="flex items-center space-x-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img src="/placeholder-avatar.jpg" alt="David Brown" />
+                              <Image src="/placeholder-avatar.jpg" alt="David Brown" width={40} height={40} className="rounded-full" />
                             </div>
                           </div>
                           <div>
@@ -271,7 +272,7 @@ export default function StaffManagementPage() {
 
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">Today's Schedule</h2>
+              <h2 className="card-title">Today&apos;s Schedule</h2>
               <div className="space-y-3">
                 <div className="text-sm">
                   <p className="font-medium text-success">6:00 AM - Morning Shift</p>

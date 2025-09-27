@@ -9,7 +9,7 @@ from typing import List, Optional
 from datetime import date
 
 from database import get_db
-from models.user import BuffrHostUser
+from models.user import User
 from routes.auth import get_current_user, require_property_access, require_permission
 from auth.rbac import Permission
 from services.transportation_service import TransportationServiceClass
@@ -20,7 +20,7 @@ router = APIRouter()
 @router.get("/{property_id}/transportation/services", response_model=List[TransportationService])
 async def get_transportation_services(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get available transportation services for a property"""
@@ -32,7 +32,7 @@ async def get_transportation_bookings(
     property_id: int,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get transportation bookings for a property"""
@@ -43,7 +43,7 @@ async def get_transportation_bookings(
 async def create_transportation_booking(
     property_id: int,
     booking_data: TransportationBookingCreate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new transportation booking"""
@@ -56,7 +56,7 @@ async def create_transportation_booking(
 @router.get("/{property_id}/transportation/vehicles", response_model=List[TransportationVehicle])
 async def get_transportation_vehicles(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get available transportation vehicles for a property"""
@@ -66,7 +66,7 @@ async def get_transportation_vehicles(
 @router.get("/{property_id}/transportation/routes", response_model=List[TransportationRoute])
 async def get_transportation_routes(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get available transportation routes for a property"""

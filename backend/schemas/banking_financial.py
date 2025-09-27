@@ -3,7 +3,7 @@ from typing import Optional, List
 from datetime import datetime
 from uuid import UUID
 
-class BankAccountBase(BaseModel):
+class Base(BaseModel):
     user_id: UUID
     account_name: str
     bank_name: str
@@ -12,10 +12,10 @@ class BankAccountBase(BaseModel):
     currency: Optional[str] = "NAD"
     is_primary: Optional[bool] = False
 
-class BankAccountCreate(BankAccountBase):
+class Create(Base):
     pass
 
-class BankAccountUpdate(BaseModel):
+class Update(BaseModel):
     account_name: Optional[str] = None
     bank_name: Optional[str] = None
     account_number: Optional[str] = None
@@ -23,7 +23,7 @@ class BankAccountUpdate(BaseModel):
     currency: Optional[str] = None
     is_primary: Optional[bool] = None
 
-class BankAccountResponse(BankAccountBase):
+class Response(Base):
     id: UUID
     created_at: datetime
     updated_at: datetime

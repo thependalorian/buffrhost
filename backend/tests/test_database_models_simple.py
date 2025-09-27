@@ -5,7 +5,7 @@ Tests only the models that actually exist and work.
 import pytest
 from sqlalchemy.orm import Session
 from models.hospitality_property import HospitalityProperty
-from models.customer import Customer
+from models.user import User, Profile
 from models.room import RoomType, Room
 from models.menu import MenuCategory, Menu
 from models.user_type import UserType

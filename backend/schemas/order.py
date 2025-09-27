@@ -1,20 +1,43 @@
 """
 Pydantic schemas for order-related API operations.
+Uses standardized types from the unified database schema.
 """
-from pydantic import BaseModel, Field
-from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
+from enum import Enum
+from typing import Any, Dict, List, Optional
 from uuid import UUID
+
+from pydantic import BaseModel, Field
+
+
+# Enums matching the database schema
+class BookingStatusEnum(str, Enum):
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    CHECKED_IN = "checked_in"
+    CHECKED_OUT = "checked_out"
+    CANCELLED = "cancelled"
+    NO_SHOW = "no_show"
+
+
+class PaymentStatusEnum(str, Enum):
+    PENDING = "pending"
+    PAID = "paid"
+    PARTIAL = "partial"
+    FAILED = "failed"
+    REFUNDED = "refunded"
 
 
 class OrderItemOptionCreate(BaseModel):
     """Schema for creating order item option."""
+
     option_value_id: int
 
 
 class OrderItemCreate(BaseModel):
     """Schema for creating order item."""
+
     menu_item_id: int
     quantity: int = Field(..., ge=1)
     special_instructions: Optional[str] = Field(None, max_length=500)
@@ -23,22 +46,30 @@ class OrderItemCreate(BaseModel):
 
 class OrderCreate(BaseModel):
     """Schema for creating a new order."""
+
     customer_id: Optional[UUID] = None
+    property_id: int
     order_items: List[OrderItemCreate] = Field(..., min_items=1)
-    payment_method: Optional[str] = Field(None, max_length=50)
+    payment_method: Optional[str] = Field(None, max_length=100)
     special_instructions: Optional[str] = Field(None, max_length=1000)
+    service_type: str = "restaurant"
+    order_type: str = "dine_in"
+    order_metadata: Dict[str, Any] = {}
 
 
 class OrderUpdate(BaseModel):
     """Schema for updating order."""
-    status: Optional[str] = Field(None, pattern="^(pending|in_progress|completed|cancelled)$")
-    payment_method: Optional[str] = Field(None, max_length=50)
-    payment_status: Optional[str] = Field(None, pattern="^(unpaid|pending|paid|failed|refunded)$")
+
+    status: Optional[BookingStatusEnum] = None
+    payment_method: Optional[str] = Field(None, max_length=100)
+    payment_status: Optional[PaymentStatusEnum] = None
     special_instructions: Optional[str] = Field(None, max_length=1000)
+    metadata: Optional[Dict[str, Any]] = None
 
 
 class OrderItemOptionResponse(BaseModel):
     """Schema for order item option responses."""
+
     order_item_id: int
     option_value_id: int
     option_value: Optional[dict] = None
@@ -49,6 +80,7 @@ class OrderItemOptionResponse(BaseModel):
 
 class OrderItemResponse(BaseModel):
     """Schema for order item API responses."""
+
     order_item_id: int
     order_id: UUID
     menu_item_id: int
@@ -64,16 +96,21 @@ class OrderItemResponse(BaseModel):
 
 class OrderResponse(BaseModel):
     """Schema for order API responses."""
+
     order_id: UUID
     order_number: int
     customer_id: Optional[UUID] = None
-    restaurant_id: int
-    status: str
+    property_id: int
+    status: BookingStatusEnum
     order_date: datetime
     total: Decimal
+    currency: str = "NAD"
     payment_method: Optional[str] = None
-    payment_status: str = "unpaid"
+    payment_status: PaymentStatusEnum
+    service_type: str
+    order_type: str
     special_instructions: Optional[str] = None
+    order_metadata: Dict[str, Any] = {}
     created_at: datetime
     updated_at: Optional[datetime] = None
     order_items: List[OrderItemResponse] = []
@@ -85,6 +122,7 @@ class OrderResponse(BaseModel):
 
 class OrderSummary(BaseModel):
     """Simplified order schema for lists."""
+
     order_id: UUID
     order_number: int
     customer_name: Optional[str] = None
@@ -99,13 +137,17 @@ class OrderSummary(BaseModel):
 
 class OrderStatusUpdate(BaseModel):
     """Schema for updating order status."""
+
     status: str = Field(..., pattern="^(pending|in_progress|completed|cancelled)$")
     notes: Optional[str] = Field(None, max_length=500)
 
 
 class OrderSearch(BaseModel):
     """Schema for order search parameters."""
-    status: Optional[str] = Field(None, pattern="^(pending|in_progress|completed|cancelled)$")
+
+    status: Optional[str] = Field(
+        None, pattern="^(pending|in_progress|completed|cancelled)$"
+    )
     customer_id: Optional[UUID] = None
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
@@ -115,6 +157,7 @@ class OrderSearch(BaseModel):
 
 class OrderAnalytics(BaseModel):
     """Schema for order analytics data."""
+
     total_orders: int
     total_revenue: Decimal
     average_order_value: Decimal
@@ -129,6 +172,7 @@ class OrderAnalytics(BaseModel):
 
 class OrderItemAnalytics(BaseModel):
     """Schema for order item analytics."""
+
     menu_item_id: int
     menu_item_name: str
     quantity_sold: int
@@ -142,6 +186,7 @@ class OrderItemAnalytics(BaseModel):
 
 class PaymentIntent(BaseModel):
     """Schema for payment intent creation."""
+
     order_id: UUID
     amount: Decimal
     currency: str = Field(default="nad", max_length=3)
@@ -150,6 +195,7 @@ class PaymentIntent(BaseModel):
 
 class PaymentConfirmation(BaseModel):
     """Schema for payment confirmation."""
+
     payment_intent_id: str
     order_id: UUID
     status: str

@@ -12,7 +12,7 @@ from schemas.calendar_scheduling import (
     EventCreate, EventUpdate, EventResponse
 )
 from auth.dependencies import get_current_admin_user # Assuming only admins can manage calendar/scheduling
-from models.user import BuffrHostUser
+from models.user import User
 
 router = APIRouter()
 
@@ -25,7 +25,7 @@ async def get_calendar_scheduling_service(db: AsyncSession = Depends(get_db)) ->
 async def create_booking(
     booking_data: BookingCreate,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new booking."""
     return await calendar_service.create_booking(booking_data)
@@ -35,7 +35,7 @@ async def get_bookings(
     skip: int = 0,
     limit: int = 100,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a list of bookings."""
     return await calendar_service.get_bookings(skip=skip, limit=limit)
@@ -44,7 +44,7 @@ async def get_bookings(
 async def get_booking(
     booking_id: UUID,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single booking by ID."""
     booking = await calendar_service.get_booking(booking_id)
@@ -57,7 +57,7 @@ async def update_booking(
     booking_id: UUID,
     booking_data: BookingUpdate,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing booking."""
     booking = await calendar_service.update_booking(booking_id, booking_data)
@@ -69,7 +69,7 @@ async def update_booking(
 async def delete_booking(
     booking_id: UUID,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete a booking."""
     success = await calendar_service.delete_booking(booking_id)
@@ -82,7 +82,7 @@ async def delete_booking(
 async def create_schedule(
     schedule_data: ScheduleCreate,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new schedule."""
     return await calendar_service.create_schedule(schedule_data)
@@ -92,7 +92,7 @@ async def get_schedules(
     skip: int = 0,
     limit: int = 100,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a list of schedules."""
     return await calendar_service.get_schedules(skip=skip, limit=limit)
@@ -101,7 +101,7 @@ async def get_schedules(
 async def get_schedule(
     schedule_id: UUID,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single schedule by ID."""
     schedule = await calendar_service.get_schedule(schedule_id)
@@ -114,7 +114,7 @@ async def update_schedule(
     schedule_id: UUID,
     schedule_data: ScheduleUpdate,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing schedule."""
     schedule = await calendar_service.update_schedule(schedule_id, schedule_data)
@@ -126,7 +126,7 @@ async def update_schedule(
 async def delete_schedule(
     schedule_id: UUID,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete a schedule."""
     success = await calendar_service.delete_schedule(schedule_id)
@@ -139,7 +139,7 @@ async def delete_schedule(
 async def create_resource(
     resource_data: ResourceCreate,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new resource."""
     return await calendar_service.create_resource(resource_data)
@@ -149,7 +149,7 @@ async def get_resources(
     skip: int = 0,
     limit: int = 100,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a list of resources."""
     return await calendar_service.get_resources(skip=skip, limit=limit)
@@ -158,7 +158,7 @@ async def get_resources(
 async def get_resource(
     resource_id: UUID,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single resource by ID."""
     resource = await calendar_service.get_resource(resource_id)
@@ -171,7 +171,7 @@ async def update_resource(
     resource_id: UUID,
     resource_data: ResourceUpdate,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing resource."""
     resource = await calendar_service.update_resource(resource_id, resource_data)
@@ -183,7 +183,7 @@ async def update_resource(
 async def delete_resource(
     resource_id: UUID,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete a resource."""
     success = await calendar_service.delete_resource(resource_id)
@@ -196,7 +196,7 @@ async def delete_resource(
 async def create_event(
     event_data: EventCreate,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new event."""
     return await calendar_service.create_event(event_data)
@@ -206,7 +206,7 @@ async def get_events(
     skip: int = 0,
     limit: int = 100,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a list of events."""
     return await calendar_service.get_events(skip=skip, limit=limit)
@@ -215,7 +215,7 @@ async def get_events(
 async def get_event(
     event_id: UUID,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single event by ID."""
     event = await calendar_service.get_event(event_id)
@@ -228,7 +228,7 @@ async def update_event(
     event_id: UUID,
     event_data: EventUpdate,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing event."""
     event = await calendar_service.update_event(event_id, event_data)
@@ -240,7 +240,7 @@ async def update_event(
 async def delete_event(
     event_id: UUID,
     calendar_service: CalendarSchedulingService = Depends(get_calendar_scheduling_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete an event."""
     success = await calendar_service.delete_event(event_id)

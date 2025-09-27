@@ -74,7 +74,7 @@ from sqlalchemy import select, text
 
 from models.knowledge import KnowledgeDocument
 from models.hospitality_property import HospitalityProperty
-from models.customer import Customer
+from models.user import User, Profile
 from models.order import Order
 from models.room import RoomReservation
 
@@ -153,8 +153,7 @@ class RAGSystem:
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=200,
-            length_function=len,
-        )
+            length_function=len)
         
         # Initialize Pydantic AI agent for structured responses
         self.agent = Agent(

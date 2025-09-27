@@ -6,8 +6,8 @@ from datetime import datetime
 
 from main import app
 from database import Base, engine, get_db
-from models.banking_financial import BankAccount, Transaction, PaymentGateway, Disbursement
-from models.user import BuffrHostUser # Assuming BuffrHostUser is defined here
+from models.banking_financial import Transaction, PaymentGateway, Disbursement
+from models.user import User # Assuming User is defined here
 
 # Setup for async tests
 @pytest.fixture(autouse=True)
@@ -33,7 +33,7 @@ async def client(db_session: AsyncSession):
 @pytest.fixture
 async def admin_user(db_session: AsyncSession):
     user_id = uuid4()
-    admin = BuffrHostUser(
+    admin = User(
         owner_id=user_id,
         email="admin_fin@example.com",
         name="Admin Fin User",
@@ -47,14 +47,14 @@ async def admin_user(db_session: AsyncSession):
     return admin
 
 @pytest.fixture
-async def auth_headers(admin_user: BuffrHostUser):
+async def auth_headers(admin_user: User):
     # In a real test, generate a valid JWT token for the admin_user
     # For now, a placeholder
     return {"Authorization": "Bearer mock_admin_token"}
 
 # --- Bank Account Tests ---
 @pytest.mark.asyncio
-async def test_create_bank_account(client: AsyncClient, auth_headers: dict, admin_user: BuffrHostUser):
+async def test_create_bank_account(client: AsyncClient, auth_headers: dict, admin_user: User):
     account_data = {
         "user_id": str(uuid4()),
         "account_name": "Checking",
@@ -66,8 +66,8 @@ async def test_create_bank_account(client: AsyncClient, auth_headers: dict, admi
     assert response.json()["account_name"] == account_data["account_name"]
 
 @pytest.mark.asyncio
-async def test_get_bank_accounts(client: AsyncClient, auth_headers: dict, admin_user: BuffrHostUser):
+async def test_get_bank_accounts(client: AsyncClient, auth_headers: dict, admin_user: User):
     response = await client.get("/banking-financial/bank-accounts", headers=auth_headers)
     assert response.status_code == 200
 
-# Add more tests for BankAccount, Transaction, PaymentGateway, Disbursement CRUD operations
+# Add more tests for Transaction, PaymentGateway, Disbursement CRUD operations

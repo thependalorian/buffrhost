@@ -1,0 +1,56 @@
+# The Shandi Terraform Variables Example
+# Copy this file to terraform.tfvars and fill in your values
+
+# Google Cloud Configuration
+project_id = "your-gcp-project-id"
+region     = "us-central1"
+
+# Domain Configuration
+frontend_domain = "app.theshandi.ai"
+api_domain      = "api.theshandi.ai"
+
+# Database Configuration
+create_database = true
+db_tier         = "db-f1-micro"
+db_password     = "your-secure-database-password"
+
+# Redis Configuration
+create_redis = true
+
+# Storage Configuration
+create_hospitality_storage = true
+create_image_storage = true
+
+# Backend Environment Variables
+backend_env = {
+  APP_ENV                = "production"
+  DATABASE_URL          = "postgresql://shandi_user:your-password@/the_shandi?host=/cloudsql/your-project:us-central1:the-shandi-db"
+  REDIS_URL             = "redis://your-redis-host:6379"
+  JWT_SECRET_KEY        = "your-jwt-secret-key"
+  CORS_ORIGINS          = "https://app.theshandi.ai,https://www.app.theshandi.ai"
+  ALLOWED_HOSTS         = "api.theshandi.ai"
+  SUPABASE_URL          = "https://your-project.supabase.co"
+  SUPABASE_ANON_KEY     = "your-supabase-anon-key"
+  SUPABASE_SERVICE_ROLE_KEY = "your-supabase-service-role-key"
+  OPENAI_API_KEY        = "your-openai-api-key"
+  GROQ_API_KEY          = "your-groq-api-key"
+  TWILIO_ACCOUNT_SID    = "your-twilio-account-sid"
+  TWILIO_AUTH_TOKEN     = "your-twilio-auth-token"
+  SENDGRID_API_KEY      = "your-sendgrid-api-key"
+  GOOGLE_MAPS_API_KEY   = "your-google-maps-api-key"
+  STRIPE_SECRET_KEY     = "your-stripe-secret-key"
+  STRIPE_PUBLISHABLE_KEY = "your-stripe-publishable-key"
+}
+
+# Security Keys (sensitive)
+jwt_secret_key              = "your-jwt-secret-key"
+supabase_anon_key          = "your-supabase-anon-key"
+supabase_service_role_key  = "your-supabase-service-role-key"
+openai_api_key             = "your-openai-api-key"
+groq_api_key               = "your-groq-api-key"
+twilio_account_sid         = "your-twilio-account-sid"
+twilio_auth_token          = "your-twilio-auth-token"
+sendgrid_api_key           = "your-sendgrid-api-key"
+google_maps_api_key         = "your-google-maps-api-key"
+stripe_secret_key           = "your-stripe-secret-key"
+stripe_publishable_key      = "your-stripe-publishable-key"

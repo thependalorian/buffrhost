@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { XMarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { X, CheckCircle } from 'lucide-react';
 
-interface DemoRequestModalProps {
+interface WaitlistModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalProps) {
+export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -38,7 +38,7 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/demo-requests`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/waitlist/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,16 +47,16 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit demo request');
+        throw new Error('Failed to join waitlist');
       }
 
       const result = await response.json();
-      console.log('Demo request submitted successfully:', result);
+      console.log('Waitlist signup successful:', result);
       
       setIsSubmitted(true);
     } catch (error) {
-      console.error('Error submitting demo request:', error);
-      setError('Failed to submit demo request. Please try again.');
+      console.error('Error joining waitlist:', error);
+      setError('Failed to join waitlist. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -94,13 +94,13 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {isSubmitted ? 'Demo Request Submitted!' : 'Request a Demo'}
+              {isSubmitted ? 'Welcome to the Waitlist!' : 'Join the Waitlist'}
             </h2>
             <button
               onClick={handleClose}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
-              <XMarkIcon className="w-6 h-6" />
+              <X className="w-6 h-6" />
             </button>
           </div>
 
@@ -108,20 +108,20 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
           <div className="p-6">
             {isSubmitted ? (
               <div className="text-center py-8">
-                <CheckCircleIcon className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Thank you for your interest!
+                  You&apos;re on the waitlist!
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  We've received your demo request and will contact you within 24 hours to schedule your personalized demonstration.
+                  Thank you for joining our waitlist! You&apos;ll be among the first to experience Buffr Host when we launch. We&apos;ll send you exclusive updates and early access opportunities.
                 </p>
                 <div className="bg-sand-50 dark:bg-sand-900/20 rounded-lg p-4 mb-6">
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-2">What happens next?</h4>
                   <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                    <li>• Our team will review your requirements</li>
-                    <li>• We'll prepare a customized demo for your business</li>
-                    <li>• You'll receive a calendar invite with demo details</li>
-                    <li>• During the demo, we'll show you exactly how Buffr Host can help</li>
+                    <li>• You&apos;ll receive exclusive updates about our launch</li>
+                    <li>• Get early access to new features and beta testing</li>
+                    <li>• Priority support when we go live</li>
+                    <li>• Special launch pricing and offers</li>
                   </ul>
                 </div>
                 <button
@@ -132,7 +132,12 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  Join our exclusive waitlist to be among the first to experience Buffr Host. 
+                  Get early access, exclusive updates, and priority support when we launch.
+                </p>
+                <form onSubmit={handleSubmit} className="space-y-6">
                 {error && (
                   <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                     <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
@@ -297,10 +302,10 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                     {isSubmitting ? (
                       <>
                         <span className="loading loading-spinner loading-sm"></span>
-                        Submitting...
+                        Joining Waitlist...
                       </>
                     ) : (
-                      'Request Demo'
+                      'Join the Waitlist'
                     )}
                   </button>
                   <button
@@ -312,6 +317,7 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                   </button>
                 </div>
               </form>
+              </div>
             )}
           </div>
         </div>

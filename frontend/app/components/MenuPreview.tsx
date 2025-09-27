@@ -8,6 +8,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { QrCode, Smartphone, Monitor, Tablet, Eye, Share2, Download } from 'lucide-react';
 
 interface MenuItem {
@@ -151,9 +152,11 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
       
       {item.image && (
         <div className="mt-3">
-          <img
+          <Image
             src={item.image}
             alt={item.name}
+            width={300}
+            height={128}
             className="w-full h-32 object-cover rounded-lg"
           />
         </div>
@@ -166,9 +169,11 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
       {/* Header */}
       <div className={`${theme.accent} text-white p-6 text-center`}>
         {menuData.logo && (
-          <img
+          <Image
             src={menuData.logo}
             alt={menuData.restaurantName}
+            width={64}
+            height={64}
             className="w-16 h-16 mx-auto mb-4 rounded-full bg-white p-2"
           />
         )}
@@ -228,9 +233,11 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
         <h3 className="text-lg font-semibold mb-4 text-center">Digital Menu QR Code</h3>
         <div className="text-center">
           {qrCodeUrl ? (
-            <img
+            <Image
               src={qrCodeUrl}
               alt="Menu QR Code"
+              width={192}
+              height={192}
               className="w-48 h-48 mx-auto mb-4"
             />
           ) : (

@@ -1,5 +1,5 @@
 """
-Customer management routes for The Shandi platform.
+Profile management routes for The Shandi platform.
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,8 +9,7 @@ from uuid import UUID
 from datetime import datetime
 
 from database import get_db
-from models.customer import Customer
-from models.user import BuffrHostUser
+from models.user import User, Profile
 from models.order import Order, OrderItem
 from models.menu import Menu
 from schemas.customer import (
@@ -26,7 +25,7 @@ router = APIRouter()
 async def get_customer_analytics(
     restaurant_id: int,
     customer_id: UUID,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get customer analytics and insights."""
@@ -36,13 +35,13 @@ async def get_customer_analytics(
             detail="Access denied to this restaurant"
         )
     
-    customer_result = await db.execute(select(Customer).where(Customer.customer_id == customer_id))
+    customer_result = await db.execute(select(Profile).where(Profile.customer_id == customer_id))
     customer = customer_result.scalar_one_or_none()
     
     if not customer:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Customer not found"
+            detail="Profile not found"
         )
 
     orders_result = await db.execute(

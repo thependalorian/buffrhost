@@ -12,7 +12,7 @@ from schemas.hr_payroll import (
     BenefitEnrollmentCreate, BenefitEnrollmentUpdate, BenefitEnrollmentResponse
 )
 from auth.dependencies import get_current_admin_user # Assuming only admins can manage HR/Payroll
-from models.user import BuffrHostUser
+from models.user import User
 
 router = APIRouter()
 
@@ -25,7 +25,7 @@ async def get_hr_payroll_service(db: AsyncSession = Depends(get_db)) -> HRPayrol
 async def create_employee(
     employee_data: EmployeeCreate,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new employee record."""
     return await hr_payroll_service.create_employee(employee_data)
@@ -35,7 +35,7 @@ async def get_employees(
     skip: int = 0,
     limit: int = 100,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a list of employee records."""
     return await hr_payroll_service.get_employees(skip=skip, limit=limit)
@@ -44,7 +44,7 @@ async def get_employees(
 async def get_employee(
     employee_id: UUID,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single employee record by ID."""
     employee = await hr_payroll_service.get_employee(employee_id)
@@ -57,7 +57,7 @@ async def update_employee(
     employee_id: UUID,
     employee_data: EmployeeUpdate,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing employee record."""
     employee = await hr_payroll_service.update_employee(employee_id, employee_data)
@@ -69,7 +69,7 @@ async def update_employee(
 async def delete_employee(
     employee_id: UUID,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete an employee record."""
     success = await hr_payroll_service.delete_employee(employee_id)
@@ -82,7 +82,7 @@ async def delete_employee(
 async def create_payroll_record(
     payroll_data: PayrollRecordCreate,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new payroll record."""
     return await hr_payroll_service.create_payroll_record(payroll_data)
@@ -93,7 +93,7 @@ async def get_payroll_records_by_employee(
     skip: int = 0,
     limit: int = 100,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve payroll records for a specific employee."""
     return await hr_payroll_service.get_payroll_records_by_employee(employee_id, skip=skip, limit=limit)
@@ -102,7 +102,7 @@ async def get_payroll_records_by_employee(
 async def get_payroll_record(
     record_id: UUID,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single payroll record by ID."""
     record = await hr_payroll_service.get_payroll_record(record_id)
@@ -115,7 +115,7 @@ async def update_payroll_record(
     record_id: UUID,
     payroll_data: PayrollRecordUpdate,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing payroll record."""
     record = await hr_payroll_service.update_payroll_record(record_id, payroll_data)
@@ -127,7 +127,7 @@ async def update_payroll_record(
 async def delete_payroll_record(
     record_id: UUID,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete a payroll record."""
     success = await hr_payroll_service.delete_payroll_record(record_id)
@@ -140,7 +140,7 @@ async def delete_payroll_record(
 async def create_tax_detail(
     tax_data: TaxDetailCreate,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new tax detail record."""
     return await hr_payroll_service.create_tax_detail(tax_data)
@@ -151,7 +151,7 @@ async def get_tax_details_by_employee(
     skip: int = 0,
     limit: int = 100,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve tax details for a specific employee."""
     return await hr_payroll_service.get_tax_details_by_employee(employee_id, skip=skip, limit=limit)
@@ -160,7 +160,7 @@ async def get_tax_details_by_employee(
 async def get_tax_detail(
     tax_id: UUID,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single tax detail record by ID."""
     detail = await hr_payroll_service.get_tax_detail(tax_id)
@@ -173,7 +173,7 @@ async def update_tax_detail(
     tax_id: UUID,
     tax_data: TaxDetailUpdate,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing tax detail record."""
     detail = await hr_payroll_service.update_tax_detail(tax_id, tax_data)
@@ -185,7 +185,7 @@ async def update_tax_detail(
 async def delete_tax_detail(
     tax_id: UUID,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete a tax detail record."""
     success = await hr_payroll_service.delete_tax_detail(tax_id)
@@ -198,7 +198,7 @@ async def delete_tax_detail(
 async def create_benefit_enrollment(
     benefit_data: BenefitEnrollmentCreate,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Create a new benefit enrollment record."""
     return await hr_payroll_service.create_benefit_enrollment(benefit_data)
@@ -209,7 +209,7 @@ async def get_benefit_enrollments_by_employee(
     skip: int = 0,
     limit: int = 100,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve benefit enrollments for a specific employee."""
     return await hr_payroll_service.get_benefit_enrollments_by_employee(employee_id, skip=skip, limit=limit)
@@ -218,7 +218,7 @@ async def get_benefit_enrollments_by_employee(
 async def get_benefit_enrollment(
     benefit_id: UUID,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Retrieve a single benefit enrollment record by ID."""
     enrollment = await hr_payroll_service.get_benefit_enrollment(benefit_id)
@@ -231,7 +231,7 @@ async def update_benefit_enrollment(
     benefit_id: UUID,
     benefit_data: BenefitEnrollmentUpdate,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Update an existing benefit enrollment record."""
     enrollment = await hr_payroll_service.update_benefit_enrollment(benefit_id, benefit_data)
@@ -243,7 +243,7 @@ async def update_benefit_enrollment(
 async def delete_benefit_enrollment(
     benefit_id: UUID,
     hr_payroll_service: HRPayrollService = Depends(get_hr_payroll_service),
-    current_user: BuffrHostUser = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user)
 ):
     """Delete a benefit enrollment record."""
     success = await hr_payroll_service.delete_benefit_enrollment(benefit_id)

@@ -6,7 +6,7 @@ Provides business logic for cross-business loyalty operations.
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_, func
-from models.customer import Customer
+from models.user import User, Profile
 from models.hospitality_property import HospitalityProperty
 from models.order import Order
 from models.loyalty import LoyaltyTransaction, LoyaltyCampaign
@@ -154,10 +154,10 @@ class LoyaltyService:
         return result.scalars().all()
 
     # Helper Methods
-    def _get_customer(self, customer_id: uuid.UUID) -> Optional[Customer]:
+    def _get_customer(self, customer_id: uuid.UUID) -> Optional[Profile]:
         """Get customer by ID"""
         result = self.db.execute(
-            select(Customer).where(Customer.customer_id == customer_id)
+            select(Profile).where(Profile.customer_id == customer_id)
         )
         return result.scalar_one_or_none()
     

@@ -8,6 +8,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { 
   MapPin, 
   Star, 
@@ -164,9 +165,11 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
         {propertyData.rooms.map((room, index) => (
           <div key={index} className={`${theme.card} rounded-lg overflow-hidden`}>
             {room.image && (
-              <img
+              <Image
                 src={room.image}
                 alt={room.name}
+                width={300}
+                height={192}
                 className="w-full h-48 object-cover"
               />
             )}
@@ -198,18 +201,22 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
       {/* Hero Section */}
       <div className="relative h-96">
         {propertyData.heroImage ? (
-          <img
+          <Image
             src={propertyData.heroImage}
             alt={propertyData.name}
+            width={800}
+            height={400}
             className="w-full h-full object-cover"
           />
         ) : (
           <div className={`w-full h-full ${theme.primary} flex items-center justify-center`}>
             <div className="text-white text-center">
               {propertyData.logo && (
-                <img
+                <Image
                   src={propertyData.logo}
                   alt={propertyData.name}
+                  width={80}
+                  height={80}
                   className="w-20 h-20 mx-auto mb-4 rounded-full bg-white p-2"
                 />
               )}
@@ -274,10 +281,12 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Gallery</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {propertyData.gallery.map((image, index) => (
-                <img
+                <Image
                   key={index}
                   src={image}
                   alt={`Gallery ${index + 1}`}
+                  width={300}
+                  height={128}
                   className="w-full h-32 object-cover rounded-lg"
                 />
               ))}

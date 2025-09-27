@@ -21,7 +21,7 @@ const NavLink = ({ href, children }) => (
 const CTAButton = ({ children, primary = false, className = '', onClick }) => (
   <button 
     onClick={onClick}
-    className={`btn btn-lg rounded-full shadow-lg transition-transform duration-300 hover:scale-105 ${primary ? 'btn-primary text-white' : 'bg-white/20 text-white backdrop-blur-md border-white/30 hover:bg-white/30'} ${className}`}
+    className={`btn btn-lg rounded-full shadow-lg transition-transform duration-300 hover:scale-105 ${primary ? 'btn-primary text-white' : 'bg-white/90 text-gray-900 backdrop-blur-md border-white/30 hover:bg-white'} ${className}`}
   >
     {children}
   </button>
@@ -308,7 +308,7 @@ export default function PricingPage() {
 
             <div className="max-w-4xl mx-auto space-y-8">
               <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6">
-                <h3 className="text-xl font-bold mb-3">What's included in the free trial?</h3>
+                <h3 className="text-xl font-bold mb-3">What&apos;s included in the free trial?</h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   The 14-day free trial includes full access to all features of your chosen plan. No credit card required, and you can cancel anytime.
                 </p>
@@ -317,7 +317,7 @@ export default function PricingPage() {
               <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6">
                 <h3 className="text-xl font-bold mb-3">Can I change plans later?</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate any billing differences.
+                  Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we&apos;ll prorate any billing differences.
                 </p>
               </div>
 

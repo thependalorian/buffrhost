@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 from services.qr_loyalty_service import QRLoyaltyService
 from services.loyalty_service import LoyaltyService
-from models.customer import Customer
+from models.user import User, Profile
 from models.hospitality_property import HospitalityProperty
 
 class TestQRLoyaltyIntegration:
@@ -23,7 +23,7 @@ class TestQRLoyaltyIntegration:
     @pytest.fixture
     def sample_customer(self):
         """Sample customer for testing"""
-        customer = Mock(spec=Customer)
+        customer = Mock(spec=Profile)
         customer.customer_id = uuid.uuid4()
         customer.loyalty_points = 1000
         customer.first_name = "John"

@@ -67,8 +67,7 @@ class TransportationServiceClass:
     async def create_transportation_booking(
         self, 
         property_id: int,
-        booking_data: TransportationBookingCreate,
-    ) -> ServiceBooking:
+        booking_data: TransportationBookingCreate) -> ServiceBooking:
         """Create a new transportation booking."""
         service_query = select(TransportationService).where(
             and_(

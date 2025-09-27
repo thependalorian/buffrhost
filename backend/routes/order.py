@@ -10,9 +10,8 @@ from datetime import datetime
 
 from database import get_db
 from models.order import Order, OrderItem, OrderItemOption
-from models.customer import Customer
+from models.user import User, Profile
 from models.menu import Menu, MenuOptionValue
-from models.user import BuffrHostUser
 from schemas.order import (
     OrderCreate, OrderUpdate, OrderResponse, OrderSummary,
     OrderStatusUpdate, OrderSearch
@@ -22,22 +21,23 @@ from routes.auth import get_current_user
 router = APIRouter()
 
 
-@router.post("/restaurants/{restaurant_id}/orders", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/properties/{property_id}/orders", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
 async def create_order(
-    restaurant_id: int,
+    property_id: int,
     order_data: OrderCreate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new order."""
-    if current_user.property_id != restaurant_id:
+    # Check if user has access to this property
+    if hasattr(current_user, 'profile') and current_user.profile.property_id != property_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied to this restaurant"
+            detail="Access denied to this property"
         )
     
     if order_data.customer_id:
-        customer_result = await db.execute(select(Customer).where(Customer.customer_id == order_data.customer_id))
+        customer_result = await db.execute(select(Profile).where(Profile.id == order_data.customer_id))
         if not customer_result.scalar_one_or_none():
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -46,7 +46,7 @@ async def create_order(
     
     order = Order(
         customer_id=order_data.customer_id,
-        restaurant_id=restaurant_id,
+        property_id=property_id,
         payment_method=order_data.payment_method,
         special_instructions=order_data.special_instructions
     )

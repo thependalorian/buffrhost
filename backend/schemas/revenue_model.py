@@ -62,35 +62,6 @@ class ServiceFeeResponse(ServiceFeeBase):
     class Config:
         from_attributes = True
 
-class CommissionStructureBase(BaseModel):
-    name: str
-    description: Optional[str] = None
-    commission_type: Optional[str] = None
-    value: float
-    applies_to_role: Optional[str] = None
-    is_active: Optional[bool] = True
-    metadata_: Optional[dict] = None
-
-class CommissionStructureCreate(CommissionStructureBase):
-    pass
-
-class CommissionStructureUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    commission_type: Optional[str] = None
-    value: Optional[float] = None
-    applies_to_role: Optional[str] = None
-    is_active: Optional[bool] = None
-    metadata_: Optional[dict] = None
-
-class CommissionStructureResponse(CommissionStructureBase):
-    id: UUID
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
 class InvoiceBase(BaseModel):
     user_id: UUID
     invoice_number: str

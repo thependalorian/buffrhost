@@ -17,7 +17,7 @@ from database import get_db
 from models.ai_knowledge import KnowledgeBase
 from ai.conversational_ai import ConversationalAI, KnowledgeBaseQuery, KnowledgeBaseResult
 from auth.dependencies import get_current_user
-from models.user import BuffrHostUser
+from models.user import User
 from auth.permissions import HospitalityPermissions, require_permission
 from rag.document_processor import DocumentProcessor
 
@@ -49,7 +49,7 @@ async def upload_document(
     category: str = Form(default="general"),
     background_tasks: BackgroundTasks = BackgroundTasks(),
     db: AsyncSession = Depends(get_db),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     ai: ConversationalAI = Depends(get_ai_instance)
 ):
     """
@@ -104,7 +104,7 @@ async def crawl_website(
     urls: List[str],
     category: str = "web_content",
     background_tasks: BackgroundTasks = BackgroundTasks(),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     ai: ConversationalAI = Depends(get_ai_instance)
 ):
     """
@@ -149,7 +149,7 @@ async def crawl_sitemap(
     sitemap_url: str,
     category: str = "web_content",
     background_tasks: BackgroundTasks = BackgroundTasks(),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     ai: ConversationalAI = Depends(get_ai_instance)
 ):
     """
@@ -188,7 +188,7 @@ async def search_knowledge(
     property_id: int,
     query: str,
     top_k: int = 5,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     ai: ConversationalAI = Depends(get_ai_instance)
 ):
     """
@@ -226,7 +226,7 @@ async def search_knowledge(
 @router.get("/properties/{property_id}/knowledge/stats")
 async def get_knowledge_stats(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     ai: ConversationalAI = Depends(get_ai_instance)
 ):
     """
@@ -250,7 +250,7 @@ async def get_knowledge_stats(
 @router.post("/properties/{property_id}/knowledge/reload")
 async def reload_knowledge_base(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     ai: ConversationalAI = Depends(get_ai_instance)
 ):
     """
@@ -281,7 +281,7 @@ async def list_knowledge_documents(
     category: Optional[str] = None,
     limit: int = 50,
     offset: int = 0,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -338,7 +338,7 @@ async def list_knowledge_documents(
 async def delete_knowledge_document(
     property_id: int,
     document_id: str,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -389,7 +389,7 @@ async def process_document_enhanced(
     file: UploadFile = File(...),
     category: str = Form(default="general"),
     background_tasks: BackgroundTasks = BackgroundTasks(),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     ai: ConversationalAI = Depends(get_ai_instance)
 ):
     """
@@ -444,7 +444,7 @@ async def process_document_enhanced(
 @router.get("/properties/{property_id}/knowledge/processing-status")
 async def get_processing_status(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """

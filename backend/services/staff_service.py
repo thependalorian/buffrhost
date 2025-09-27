@@ -12,7 +12,7 @@ from models.staff import (
     StaffAttendance, StaffTask, StaffPerformance, StaffCommunication, StaffLeaveRequest
 )
 from models.hospitality_property import HospitalityProperty
-from models.user import BuffrHostUser
+from models.user import User
 from schemas.staff import (
     StaffDepartmentCreate, StaffDepartmentUpdate,
     StaffPositionCreate, StaffPositionUpdate,

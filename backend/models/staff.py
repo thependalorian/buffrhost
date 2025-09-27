@@ -22,7 +22,7 @@ class StaffDepartment(Base):
     
     # Relationships
     property = relationship("HospitalityProperty", back_populates="staff_departments")
-    manager = relationship("BuffrHostUser", foreign_keys=[manager_id])
+    manager = relationship("User", foreign_keys=[manager_id])
     positions = relationship("StaffPosition", back_populates="department", cascade="all, delete-orphan")
     staff_profiles = relationship("StaffProfile", back_populates="department")
 
@@ -77,7 +77,7 @@ class StaffProfile(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
-    user = relationship("BuffrHostUser", foreign_keys=[staff_id])
+    user = relationship("User", foreign_keys=[staff_id])
     property = relationship("HospitalityProperty", back_populates="staff_profiles")
     department = relationship("StaffDepartment", back_populates="staff_profiles")
     position = relationship("StaffPosition", back_populates="staff_profiles")
@@ -109,7 +109,7 @@ class StaffSchedule(Base):
     # Relationships
     staff = relationship("StaffProfile", back_populates="schedules")
     property = relationship("HospitalityProperty", back_populates="staff_schedules")
-    creator = relationship("BuffrHostUser", foreign_keys=[created_by])
+    creator = relationship("User", foreign_keys=[created_by])
     attendance_records = relationship("StaffAttendance", back_populates="schedule", cascade="all, delete-orphan")
 
 
@@ -137,7 +137,7 @@ class StaffAttendance(Base):
     staff = relationship("StaffProfile", back_populates="attendance")
     property = relationship("HospitalityProperty", back_populates="staff_attendance")
     schedule = relationship("StaffSchedule", back_populates="attendance_records")
-    approver = relationship("BuffrHostUser", foreign_keys=[approved_by])
+    approver = relationship("User", foreign_keys=[approved_by])
 
 
 class StaffTask(Base):
@@ -163,7 +163,7 @@ class StaffTask(Base):
     # Relationships
     property = relationship("HospitalityProperty", back_populates="staff_tasks")
     staff = relationship("StaffProfile", back_populates="tasks")
-    assigner = relationship("BuffrHostUser", foreign_keys=[assigned_by])
+    assigner = relationship("User", foreign_keys=[assigned_by])
 
 
 class StaffPerformance(Base):
@@ -191,7 +191,7 @@ class StaffPerformance(Base):
     # Relationships
     staff = relationship("StaffProfile", back_populates="performance_reviews")
     property = relationship("HospitalityProperty", back_populates="staff_performance")
-    reviewer = relationship("BuffrHostUser", foreign_keys=[reviewed_by])
+    reviewer = relationship("User", foreign_keys=[reviewed_by])
 
 
 class StaffCommunication(Base):
@@ -211,7 +211,7 @@ class StaffCommunication(Base):
     
     # Relationships
     property = relationship("HospitalityProperty", back_populates="staff_communications")
-    sender = relationship("BuffrHostUser", foreign_keys=[sender_id])
+    sender = relationship("User", foreign_keys=[sender_id])
     staff = relationship("StaffProfile", back_populates="communications")
 
 
@@ -235,4 +235,4 @@ class StaffLeaveRequest(Base):
     # Relationships
     staff = relationship("StaffProfile", back_populates="leave_requests")
     property = relationship("HospitalityProperty", back_populates="staff_leave_requests")
-    reviewer = relationship("BuffrHostUser", foreign_keys=[reviewed_by])
+    reviewer = relationship("User", foreign_keys=[reviewed_by])

@@ -10,8 +10,8 @@ from datetime import datetime, timedelta
 from database import get_db
 from models.order import Order, OrderItem
 from models.menu import Menu
-from models.customer import Customer
-from models.user import BuffrHostUser
+from models.user import User, Profile
+from models.user import User
 from models.inventory import InventoryItem
 from routes.auth import get_current_user
 
@@ -21,7 +21,7 @@ router = APIRouter()
 @router.get("/restaurants/{restaurant_id}/analytics/inventory")
 async def get_inventory_analytics(
     restaurant_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get inventory analytics for a restaurant."""

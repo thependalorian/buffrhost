@@ -4,7 +4,7 @@ Test database models for Buffr Host Hospitality Platform
 import pytest
 from sqlalchemy.orm import Session
 from models.hospitality_property import HospitalityProperty
-from models.customer import Customer
+from models.user import User, Profile
 from models.room import RoomType, Room, RoomAmenity, RoomReservation, RoomRate, RoomServiceOrder
 from models.menu import MenuCategory, Menu
 from models.order import Order, OrderItem

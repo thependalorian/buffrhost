@@ -8,13 +8,15 @@ from sqlalchemy import select
 from datetime import datetime, timedelta
 from typing import Optional
 import bcrypt
-import jwt
+import uuid
+from jose import JWTError, jwt
 
 from database import get_db
-from models.user import BuffrHostUser
+from models.user import User, Profile
 from schemas.user import (
     UserCreate, UserResponse, UserLogin, UserLoginResponse,
-    PasswordChange, PasswordReset, PasswordResetConfirm
+    PasswordChange, PasswordReset, PasswordResetConfirm,
+    ProfileCreate, ProfileResponse, ProfileUpdate
 )
 from auth.rbac import rbac_manager, Permission, Role
 from config import settings
@@ -53,23 +55,22 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db)
-) -> BuffrHostUser:
+) -> User:
     """Get the current authenticated user."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+        headers={"WWW-Authenticate": "Bearer"})
     
     try:
         payload = jwt.decode(credentials.credentials, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
-    except jwt.PyJWTError:
+    except JWTError:
         raise credentials_exception
     
-    result = await db.execute(select(BuffrHostUser).where(BuffrHostUser.owner_id == user_id))
+    result = await db.execute(select(User).where(User.owner_id == user_id))
     user = result.scalar_one_or_none()
     
     if user is None:
@@ -84,7 +85,7 @@ async def register_user(
     db: AsyncSession = Depends(get_db)
 ):
     """Register a new user."""
-    result = await db.execute(select(BuffrHostUser).where(BuffrHostUser.email == user_data.email))
+    result = await db.execute(select(User).where(User.email == user_data.email))
     if result.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -93,12 +94,14 @@ async def register_user(
     
     hashed_password = hash_password(user_data.password)
     
-    user = BuffrHostUser(
+    user = User(
         email=user_data.email,
-        name=user_data.name,
-        property_id=user_data.property_id,
+        name=getattr(user_data, 'name', None),
+        property_id=getattr(user_data, 'property_id', None),
         role=user_data.role,
-        password=hashed_password
+        password=hashed_password,
+        owner_id=str(uuid.uuid4()),  # Generate unique owner_id
+        is_active=True
     )
     
     db.add(user)
@@ -114,19 +117,18 @@ async def login_user(
     db: AsyncSession = Depends(get_db)
 ):
     """Authenticate user and return access token."""
-    result = await db.execute(select(BuffrHostUser).where(BuffrHostUser.email == login_data.email))
+    result = await db.execute(select(User).where(User.email == login_data.email))
     user = result.scalar_one_or_none()
     
     if not user or not verify_password(login_data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+            headers={"WWW-Authenticate": "Bearer"})
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.owner_id, "property_id": user.property_id, "role": user.role},
+        data={"sub": user.owner_id, "property_id": user.property_id, "role": user.role.value},
         expires_delta=access_token_expires
     )
     
@@ -144,7 +146,7 @@ async def forgot_password(
     db: AsyncSession = Depends(get_db)
 ):
     """Request password reset."""
-    result = await db.execute(select(BuffrHostUser).where(BuffrHostUser.email == reset_data.email))
+    result = await db.execute(select(User).where(User.email == reset_data.email))
     user = result.scalar_one_or_none()
     
     if user:
@@ -152,11 +154,12 @@ async def forgot_password(
             data={"sub": user.owner_id, "scope": "password_reset"},
             expires_delta=timedelta(minutes=getattr(settings, 'PASSWORD_RESET_TOKEN_EXPIRE_MINUTES', 15))
         )
-        email_service.send_email(
-            to=user.email,
-            subject="Password Reset Request",
-            body=f"Click the link to reset your password: {settings.CLIENT_URL}/reset-password?token={password_reset_token}"
-        )
+        if settings.SMTP_HOST and settings.SMTP_PASSWORD:
+            email_service.send_email(
+                to=user.email,
+                subject="Password Reset Request",
+                body=f"Click the link to reset your password: {getattr(settings, 'CLIENT_URL', 'http://localhost:3000')}/reset-password?token={password_reset_token}"
+            )
     
     return {"message": "If a user with that email exists, a password reset link has been sent."}
 
@@ -176,10 +179,10 @@ async def reset_password(
         if user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
             
-    except jwt.PyJWTError:
+    except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
-    result = await db.execute(select(BuffrHostUser).where(BuffrHostUser.owner_id == user_id))
+    result = await db.execute(select(User).where(User.owner_id == user_id))
     user = result.scalar_one_or_none()
 
     if not user:
@@ -192,7 +195,7 @@ async def reset_password(
     return {"message": "Password has been reset successfully."}
 
 
-async def require_permission(permission: Permission, user: BuffrHostUser = Depends(get_current_user)):
+async def require_permission(permission: Permission, user: User = Depends(get_current_user)):
     """Require a specific permission for the current user."""
     if not rbac_manager.has_permission(user, permission):
         raise HTTPException(
@@ -202,7 +205,7 @@ async def require_permission(permission: Permission, user: BuffrHostUser = Depen
     return user
 
 
-async def require_property_access(property_id: int, user: BuffrHostUser = Depends(get_current_user)):
+async def require_property_access(property_id: int, user: User = Depends(get_current_user)):
     """Require access to a specific property."""
     # This is a simplified check - in a real implementation, you'd check if the user
     # has access to the specific property through ownership, roles, or permissions

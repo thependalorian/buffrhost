@@ -20,7 +20,7 @@ from schemas.payment import (
 from services.adumo_payment_service import AdumoPaymentService
 from services.payment_status_service import PaymentStatusService
 from routes.auth import get_current_user
-from models.user import BuffrHostUser
+from models.user import User
 from config import settings
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ def get_adumo_service() -> AdumoPaymentService:
 async def initialize_adumo_payment(
     order_id: UUID,
     payment_request: AdumoPaymentRequest,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Initialize Adumo payment for an order."""
@@ -315,7 +315,7 @@ async def adumo_payment_webhook(
 @router.get("/payments/{transaction_id}", response_model=PaymentTransactionResponse)
 async def get_payment_status(
     transaction_id: UUID,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get payment transaction status."""
@@ -364,7 +364,7 @@ async def get_payment_status(
 async def get_payment_analytics(
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get payment analytics for the user's property."""

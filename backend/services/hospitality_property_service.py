@@ -7,9 +7,9 @@ from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_, func
 from models.hospitality_property import HospitalityProperty
-from models.user import BuffrHostUser
+from models.user import User, Profile
 from models.order import Order
-from models.customer import Customer
+# Customer models are now part of the unified User/Profile schema
 from models.menu import Menu
 from models.inventory import InventoryItem
 from datetime import datetime

@@ -8,10 +8,10 @@ from datetime import datetime, timedelta
 import uuid
 
 from models.hospitality_property import HospitalityProperty
-from models.customer import Customer
+from models.user import User, Profile
 from models.menu import MenuCategory, Menu
 from models.order import Order, OrderItem
-from models.user import BuffrHostUser
+from models.user import User
 from models.staff import StaffProfile, StaffDepartment, StaffPosition
 from models.inventory import InventoryItem
 
@@ -123,11 +123,11 @@ class OrderItemFactory(factory.alchemy.SQLAlchemyModelFactory):
     price_at_order = FuzzyFloat(5.0, 50.0)
     special_instructions = factory.Faker('text', max_nb_chars=100)
 
-class BuffrHostUserFactory(factory.alchemy.SQLAlchemyModelFactory):
-    """Factory for creating BuffrHostUser test data."""
+class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
+    """Factory for creating User test data."""
     
     class Meta:
-        model = BuffrHostUser
+        model = User
         sqlalchemy_session_persistence = "commit"
     
     owner_id = factory.Sequence(lambda n: f"user_{n}")
@@ -239,5 +239,5 @@ def create_test_customer_with_orders():
 def create_test_user_with_property():
     """Create a test user with associated property."""
     property = HospitalityPropertyFactory()
-    user = BuffrHostUserFactory(property_id=property.property_id)
+    user = UserFactory(property_id=property.property_id)
     return user, property

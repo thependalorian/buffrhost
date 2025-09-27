@@ -6,7 +6,7 @@ import uuid
 
 from database import Base
 
-class BankAccount(Base):
+class (Base):
     __tablename__ = "bank_accounts"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

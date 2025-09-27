@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from database import get_db
 from models.menu import MenuCategory, Menu, MenuMedia
-from models.user import BuffrHostUser
+from models.user import User, Profile
 from schemas.menu import (
     MenuCategoryCreate, MenuCategoryUpdate, MenuCategoryResponse,
     MenuItemCreate, MenuItemUpdate, MenuItemResponse, MenuItemSummary,
@@ -23,7 +23,7 @@ router = APIRouter()
 @router.get("/restaurants/{restaurant_id}/menu-categories", response_model=List[MenuCategoryResponse])
 async def get_menu_categories(
     restaurant_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get all menu categories for a restaurant."""
@@ -48,7 +48,7 @@ async def get_menu_categories(
 async def create_menu_category(
     restaurant_id: int,
     category_data: MenuCategoryCreate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new menu category."""
@@ -76,7 +76,7 @@ async def update_menu_category(
     restaurant_id: int,
     category_id: int,
     category_update: MenuCategoryUpdate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Update a menu category."""
@@ -119,7 +119,7 @@ async def update_menu_category(
 async def delete_menu_category(
     restaurant_id: int,
     category_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Delete a menu category."""
@@ -160,7 +160,7 @@ async def get_menu_items(
     is_available: Optional[bool] = Query(None),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get menu items for a restaurant with optional filtering."""
@@ -194,7 +194,7 @@ async def get_menu_items(
 async def create_menu_item(
     restaurant_id: int,
     menu_data: MenuItemCreate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new menu item."""
@@ -236,7 +236,7 @@ async def create_menu_item(
 async def get_menu_item(
     restaurant_id: int,
     menu_item_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get a specific menu item."""
@@ -271,7 +271,7 @@ async def update_menu_item(
     restaurant_id: int,
     menu_item_id: int,
     menu_update: MenuItemUpdate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Update a menu item."""
@@ -314,7 +314,7 @@ async def update_menu_item(
 async def delete_menu_item(
     restaurant_id: int,
     menu_item_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Delete a menu item."""

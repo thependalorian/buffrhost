@@ -1,81 +1,125 @@
 """
-Pydantic schemas for hospitality property-related API operations.
+Pydantic schemas for hospitality property API operations.
+Uses standardized types from the unified database schema.
 """
-from pydantic import BaseModel, Field, EmailStr
-from typing import Optional, List
-from datetime import datetime, time
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
+from uuid import UUID
+
+from pydantic import BaseModel, Field
 
 
-class HospitalityPropertyBase(BaseModel):
-    """Base hospitality property schema with common fields."""
-    property_name: str = Field(..., min_length=1, max_length=255)
-    property_type: str = Field(..., min_length=1, max_length=50)
-    logo_url: Optional[str] = Field(None, max_length=500)
-    address: str = Field(..., min_length=1)
-    phone: Optional[str] = Field(None, max_length=20)
-    email: Optional[EmailStr] = None
-    website: Optional[str] = Field(None, max_length=500)
-    is_active: bool = Field(default=True)
-    timezone: str = Field(default="UTC", max_length=50)
-    
-    # Hotel-specific fields
-    check_in_time: Optional[time] = None
-    check_out_time: Optional[time] = None
-    total_rooms: Optional[int] = Field(None, ge=0)
-    
-    # Restaurant-specific fields
-    cuisine_type: Optional[str] = Field(None, max_length=100)
-    
-    # Spa-specific fields
-    spa_type: Optional[str] = Field(None, max_length=100)
-    
-    # Conference-specific fields
-    max_capacity: Optional[int] = Field(None, ge=0)
-    
-    # Multi-service properties
-    services_offered: Optional[List[str]] = None
-    amenities: Optional[List[str]] = None
+# Enums matching the database schema
+class PropertyStatusEnum(str, Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    MAINTENANCE = "maintenance"
+    SUSPENDED = "suspended"
+    PENDING_APPROVAL = "pending_approval"
 
 
-class HospitalityPropertyCreate(HospitalityPropertyBase):
-    """Schema for creating a new hospitality property."""
-    pass
+class PropertyBase(BaseModel):
+    """Base hospitality property schema."""
+
+    name: str = Field(..., max_length=255)
+    description: Optional[str] = None
+    tagline: Optional[str] = Field(None, max_length=255)
+    property_type: str = Field(..., max_length=100)
+    status: PropertyStatusEnum = PropertyStatusEnum.ACTIVE
+
+    # Contact Information
+    phone: Optional[str] = Field(None, max_length=50)
+    email: Optional[str] = Field(None, max_length=255)
+    website: Optional[str] = None
+    fax: Optional[str] = Field(None, max_length=50)
+
+    # Address Information
+    address: Dict[str, Any] = Field(..., description="Address information as JSON")
+
+    # Business Information
+    established_year: Optional[int] = None
+    capacity: Optional[int] = None
+    employee_count: Optional[int] = None
+    certifications: List[str] = []
+    awards: List[str] = []
+    vision_statement: Optional[str] = None
+
+    # Media
+    hero_image: Optional[str] = None
+    logo: Optional[str] = None
+    gallery: List[str] = []
+
+    # Policies
+    check_in_time: Optional[str] = None  # Time as string
+    check_out_time: Optional[str] = None  # Time as string
+    cancellation_policy: Optional[str] = None
+    pet_policy: bool = False
+    smoking_policy: bool = False
+
+    # Operating Hours
+    operating_hours: Optional[Dict[str, Any]] = None
+
+    # Metadata
+    property_metadata: Dict[str, Any] = {}
 
 
-class HospitalityPropertyUpdate(BaseModel):
+class PropertyCreate(PropertyBase):
+    """Schema for creating a hospitality property."""
+
+    owner_id: UUID
+
+
+class PropertyUpdate(BaseModel):
     """Schema for updating hospitality property information."""
-    property_name: Optional[str] = Field(None, min_length=1, max_length=255)
-    property_type: Optional[str] = Field(None, min_length=1, max_length=50)
-    logo_url: Optional[str] = Field(None, max_length=500)
-    address: Optional[str] = Field(None, min_length=1)
-    phone: Optional[str] = Field(None, max_length=20)
-    email: Optional[EmailStr] = None
-    website: Optional[str] = Field(None, max_length=500)
-    is_active: Optional[bool] = None
-    timezone: Optional[str] = Field(None, max_length=50)
-    
-    # Hotel-specific fields
-    check_in_time: Optional[time] = None
-    check_out_time: Optional[time] = None
-    total_rooms: Optional[int] = Field(None, ge=0)
-    
-    # Restaurant-specific fields
-    cuisine_type: Optional[str] = Field(None, max_length=100)
-    
-    # Spa-specific fields
-    spa_type: Optional[str] = Field(None, max_length=100)
-    
-    # Conference-specific fields
-    max_capacity: Optional[int] = Field(None, ge=0)
-    
-    # Multi-service properties
-    services_offered: Optional[List[str]] = None
-    amenities: Optional[List[str]] = None
+
+    name: Optional[str] = Field(None, max_length=255)
+    description: Optional[str] = None
+    tagline: Optional[str] = Field(None, max_length=255)
+    property_type: Optional[str] = Field(None, max_length=100)
+    status: Optional[PropertyStatusEnum] = None
+
+    # Contact Information
+    phone: Optional[str] = Field(None, max_length=50)
+    email: Optional[str] = Field(None, max_length=255)
+    website: Optional[str] = None
+    fax: Optional[str] = Field(None, max_length=50)
+
+    # Address Information
+    address: Optional[Dict[str, Any]] = None
+
+    # Business Information
+    established_year: Optional[int] = None
+    capacity: Optional[int] = None
+    employee_count: Optional[int] = None
+    certifications: Optional[List[str]] = None
+    awards: Optional[List[str]] = None
+    vision_statement: Optional[str] = None
+
+    # Media
+    hero_image: Optional[str] = None
+    logo: Optional[str] = None
+    gallery: Optional[List[str]] = None
+
+    # Policies
+    check_in_time: Optional[str] = None
+    check_out_time: Optional[str] = None
+    cancellation_policy: Optional[str] = None
+    pet_policy: Optional[bool] = None
+    smoking_policy: Optional[bool] = None
+
+    # Operating Hours
+    operating_hours: Optional[Dict[str, Any]] = None
+
+    # Metadata
+    property_metadata: Optional[Dict[str, Any]] = None
 
 
-class HospitalityPropertyResponse(HospitalityPropertyBase):
-    """Schema for hospitality property response."""
+class PropertyResponse(PropertyBase):
+    """Schema for hospitality property API responses."""
+
     property_id: int
+    owner_id: UUID
     created_at: datetime
     updated_at: Optional[datetime] = None
 
@@ -83,30 +127,29 @@ class HospitalityPropertyResponse(HospitalityPropertyBase):
         from_attributes = True
 
 
-class HospitalityPropertySummary(BaseModel):
-    """Schema for hospitality property summary (list view)."""
+class PropertySummary(BaseModel):
+    """Simplified property schema for lists."""
+
     property_id: int
-    property_name: str
+    name: str
     property_type: str
-    is_active: bool
-    services_offered: Optional[List[str]] = None
+    status: PropertyStatusEnum
+    location: Optional[str] = None  # Extracted from address
     created_at: datetime
 
     class Config:
         from_attributes = True
 
 
-class HospitalityPropertyStats(BaseModel):
-    """Schema for hospitality property statistics."""
-    property_id: int
-    property_name: str
-    total_orders: int = 0
-    total_revenue: float = 0.0
-    active_customers: int = 0
-    total_rooms: Optional[int] = None
-    occupancy_rate: Optional[float] = None
-    average_rating: Optional[float] = None
-    last_updated: datetime
+class PropertySearch(BaseModel):
+    """Schema for property search parameters."""
 
-    class Config:
-        from_attributes = True
+    property_type: Optional[str] = None
+    status: Optional[PropertyStatusEnum] = None
+    location: Optional[str] = None
+    amenities: Optional[List[str]] = None
+    min_capacity: Optional[int] = None
+    max_capacity: Optional[int] = None
+    established_after: Optional[int] = None
+    has_spa: Optional[bool] = None
+    pet_friendly: Optional[bool] = None

@@ -35,20 +35,6 @@ class ServiceFee(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-class CommissionStructure(Base):
-    __tablename__ = "commission_structures"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String, nullable=False)
-    description = Column(String)
-    commission_type = Column(String) # e.g., fixed, percentage, tiered
-    value = Column(Float, nullable=False)
-    applies_to_role = Column(String) # e.g., staff, manager
-    is_active = Column(Boolean, default=True)
-    metadata_ = Column(JSONB)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
 class Invoice(Base):
     __tablename__ = "invoices"
 

@@ -11,7 +11,7 @@ from sqlalchemy import select, and_
 
 from models.order import Order
 from models.payment import PaymentTransaction, PaymentWebhook
-from models.customer import Customer
+from models.user import User, Profile
 from services.notification_service import NotificationService
 
 logger = logging.getLogger(__name__)
@@ -139,7 +139,7 @@ class PaymentStatusService:
                 return
             
             customer_result = await db.execute(
-                select(Customer).where(Customer.customer_id == order.customer_id)
+                select(Profile).where(Customer.customer_id == order.customer_id)
             )
             customer = customer_result.scalar_one_or_none()
             

@@ -87,7 +87,7 @@ export default function VideoModal({ isOpen, onClose, videoUrl }: VideoModalProp
             <div className="mt-6 space-y-4">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">What you'll see:</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">What you&apos;ll see:</h4>
                   <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                     <li>• QR Code ordering system</li>
                     <li>• Real-time inventory management</li>

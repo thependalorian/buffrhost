@@ -83,8 +83,7 @@ class SpaServiceClass:
     async def create_spa_appointment(
         self, 
         property_id: int,
-        appointment_data: SpaAppointmentCreate,
-    ) -> ServiceBooking:
+        appointment_data: SpaAppointmentCreate) -> ServiceBooking:
         """Create a new spa appointment."""
         service_query = select(SpaService).where(
             and_(

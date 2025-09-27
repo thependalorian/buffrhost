@@ -13,7 +13,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from database import Base
 from models.room import Room, RoomReservation, RoomType
 from models.services import SpaService, ConferenceRoom, TransportationService, RecreationService, SpecializedService, ServiceBooking
-from models.customer import Customer
+from models.user import User, Profile
 from models.hospitality_property import HospitalityProperty
 
 class CalendarService:

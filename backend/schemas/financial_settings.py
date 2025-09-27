@@ -86,7 +86,7 @@ class PropertyFinancialSettingsResponse(BaseModel):
     payment_terms_days: int
     buffr_commission_rate: Decimal
     
-    # Invoice/Quotation Settings
+    # /Settings
     invoice_prefix: str
     quotation_prefix: str
     receipt_prefix: str
@@ -242,7 +242,7 @@ class ServiceRateResponse(BaseModel):
         from_attributes = True
 
 
-class QuotationCreate(BaseModel):
+class Create(BaseModel):
     """Schema for creating quotations."""
     corporate_booking_id: UUID
     quotation_date: date
@@ -259,7 +259,7 @@ class QuotationCreate(BaseModel):
     items: List[Dict[str, Any]] = Field(..., min_items=1)
 
 
-class QuotationUpdate(BaseModel):
+class Update(BaseModel):
     """Schema for updating quotations."""
     quotation_date: Optional[date] = None
     valid_until: Optional[date] = None
@@ -273,7 +273,7 @@ class QuotationUpdate(BaseModel):
     sent_to_email: Optional[str] = Field(None, max_length=255)
 
 
-class QuotationResponse(BaseModel):
+class Response(BaseModel):
     """Schema for quotation response."""
     quotation_id: UUID
     corporate_booking_id: UUID
@@ -300,7 +300,7 @@ class QuotationResponse(BaseModel):
         from_attributes = True
 
 
-class InvoiceCreate(BaseModel):
+class Create(BaseModel):
     """Schema for creating invoices."""
     corporate_booking_id: UUID
     quotation_id: Optional[UUID] = None
@@ -316,7 +316,7 @@ class InvoiceCreate(BaseModel):
     items: List[Dict[str, Any]] = Field(..., min_items=1)
 
 
-class InvoiceUpdate(BaseModel):
+class Update(BaseModel):
     """Schema for updating invoices."""
     invoice_date: Optional[date] = None
     due_date: Optional[date] = None
@@ -330,7 +330,7 @@ class InvoiceUpdate(BaseModel):
     notes: Optional[str] = None
 
 
-class InvoiceResponse(BaseModel):
+class Response(BaseModel):
     """Schema for invoice response."""
     invoice_id: UUID
     corporate_booking_id: UUID

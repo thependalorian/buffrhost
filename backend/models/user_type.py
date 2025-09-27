@@ -22,5 +22,5 @@ class UserType(Base):
     can_manage_bookings = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    users = relationship("BuffrHostUser", back_populates="user_type")
+    users = relationship("User", back_populates="user_type")
     customers = relationship("Customer", back_populates="user_type")

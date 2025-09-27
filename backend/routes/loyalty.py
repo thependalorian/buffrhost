@@ -11,7 +11,7 @@ from decimal import Decimal
 import uuid
 
 from database import get_db
-from models.user import BuffrHostUser
+from models.user import User
 from routes.auth import get_current_user, require_property_access, require_permission
 from auth.rbac import Permission
 from services.loyalty_service import LoyaltyService
@@ -25,7 +25,7 @@ async def get_loyalty_members(
     tier: Optional[str] = None,
     limit: int = 50,
     offset: int = 0,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get loyalty program members for a property"""
@@ -37,7 +37,7 @@ async def get_loyalty_members(
 async def get_loyalty_member_details(
     property_id: int,
     customer_id: uuid.UUID,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get detailed loyalty information for a specific member"""
@@ -54,7 +54,7 @@ async def earn_loyalty_points(
     amount: Decimal,
     service_type: str,
     order_id: Optional[uuid.UUID] = None,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Earn loyalty points for a customer"""
@@ -77,7 +77,7 @@ async def redeem_loyalty_points(
     points: int,
     service_type: str,
     order_id: Optional[uuid.UUID] = None,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Redeem loyalty points for a customer"""
@@ -96,7 +96,7 @@ async def redeem_loyalty_points(
 @router.get("/{property_id}/loyalty/campaigns", response_model=List[LoyaltyCampaign])
 async def get_loyalty_campaigns(
     property_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get active loyalty campaigns for a property"""
@@ -107,7 +107,7 @@ async def get_loyalty_campaigns(
 async def create_loyalty_campaign(
     property_id: int,
     campaign_data: LoyaltyCampaignCreate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new loyalty campaign"""

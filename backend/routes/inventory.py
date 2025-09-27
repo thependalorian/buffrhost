@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from database import get_db
 from models.inventory import UnitOfMeasurement, InventoryItem
-from models.user import BuffrHostUser
+from models.user import User
 from schemas.inventory import (
     UnitCreate, UnitResponse,
     InventoryItemCreate, InventoryItemUpdate, InventoryItemResponse, InventoryItemSummary,
@@ -23,7 +23,7 @@ router = APIRouter()
 @router.get("/restaurants/{restaurant_id}/units", response_model=List[UnitResponse])
 async def get_units(
     restaurant_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get all units of measurement for a restaurant."""
@@ -48,7 +48,7 @@ async def get_units(
 async def create_unit(
     restaurant_id: int,
     unit_data: UnitCreate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new unit of measurement."""
@@ -79,7 +79,7 @@ async def get_inventory_items(
     search: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get inventory items for a restaurant with optional filtering."""
@@ -113,7 +113,7 @@ async def get_inventory_items(
 async def create_inventory_item(
     restaurant_id: int,
     inventory_data: InventoryItemCreate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new inventory item."""
@@ -155,7 +155,7 @@ async def create_inventory_item(
 async def get_inventory_item(
     restaurant_id: int,
     inventory_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get a specific inventory item."""
@@ -190,7 +190,7 @@ async def update_inventory_item(
     restaurant_id: int,
     inventory_id: int,
     inventory_update: InventoryItemUpdate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Update an inventory item."""
@@ -234,7 +234,7 @@ async def update_inventory_stock(
     restaurant_id: int,
     inventory_id: int,
     stock_update: StockUpdate,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Update inventory stock levels."""
@@ -277,7 +277,7 @@ async def update_inventory_stock(
 @router.get("/restaurants/{restaurant_id}/inventory/low-stock", response_model=List[LowStockAlert])
 async def get_low_stock_alerts(
     restaurant_id: int,
-    current_user: BuffrHostUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get low stock alerts for a restaurant."""

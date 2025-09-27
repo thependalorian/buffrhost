@@ -3,12 +3,11 @@ from sqlalchemy import select, update, delete
 from typing import List, Optional
 from uuid import UUID
 
-from models.revenue_model import Subscription, ServiceFee, CommissionStructure, Invoice
-from schemas.revenue_model import (
+from models.revenue_model import Subscription, ServiceFee, CommissionStructure, from schemas.revenue_model import (
     SubscriptionCreate, SubscriptionUpdate, 
     ServiceFeeCreate, ServiceFeeUpdate, 
     CommissionStructureCreate, CommissionStructureUpdate, 
-    InvoiceCreate, InvoiceUpdate
+    Create, Update
 )
 
 class RevenueModelService:
@@ -117,23 +116,23 @@ class RevenueModelService:
             return True
         return False
 
-    # Invoice Operations
-    async def create_invoice(self, invoice_data: InvoiceCreate) -> Invoice:
-        invoice = Invoice(**invoice_data.model_dump())
+    # Operations
+    async def create_invoice(self, invoice_data: Create) -> :
+        invoice = (**invoice_data.model_dump())
         self.db.add(invoice)
         await self.db.commit()
         await self.db.refresh(invoice)
         return invoice
 
-    async def get_invoice(self, invoice_id: UUID) -> Optional[Invoice]:
-        result = await self.db.execute(select(Invoice).where(Invoice.id == invoice_id))
+    async def get_invoice(self, invoice_id: UUID) -> Optional[]:
+        result = await self.db.execute(select().where(.id == invoice_id))
         return result.scalar_one_or_none()
 
-    async def get_invoices(self, skip: int = 0, limit: int = 100) -> List[Invoice]:
-        result = await self.db.execute(select(Invoice).offset(skip).limit(limit))
+    async def get_invoices(self, skip: int = 0, limit: int = 100) -> List[]:
+        result = await self.db.execute(select().offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_invoice(self, invoice_id: UUID, invoice_data: InvoiceUpdate) -> Optional[Invoice]:
+    async def update_invoice(self, invoice_id: UUID, invoice_data: Update) -> Optional[]:
         invoice = await self.get_invoice(invoice_id)
         if invoice:
             update_data = invoice_data.model_dump(exclude_unset=True)

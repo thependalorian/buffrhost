@@ -3,7 +3,7 @@ Database models for Buffr Host comprehensive hospitality ecosystem platform.
 """
 
 from .hospitality_property import HospitalityProperty
-from .user import BuffrHostUser
+from .user import User, Profile, UserPreferences
 from .user_type import UserType
 from .menu import MenuCategory, Menu, MenuMedia
 from .modifiers import Modifiers, OptionValue, MenuModifiers
@@ -11,7 +11,7 @@ from .inventory import (
     UnitOfMeasurement, InventoryItem, MenuItemRawMaterial,
     Ingredient, OptionValueIngredient, OptionValueIngredientMultiplier
 )
-from .customer import Customer
+# Customer models are now part of the unified User/Profile schema
 from .order import Order, OrderItem, OrderItemOption
 from .room import (
     RoomType, Room, RoomAmenity, RoomTypeAmenity,
@@ -28,7 +28,7 @@ from .services import (
 from .loyalty import CrossBusinessLoyalty, LoyaltyTransaction
 from .corporate import (
     CorporateCustomer, CorporateBooking, CorporateBookingItem,
-    Quotation, QuotationItem, Invoice, InvoiceItem
+    Item, Item
 )
 from .compliance import KYCKYBDocument
 from .ai_knowledge import (
@@ -47,7 +47,7 @@ from .document_processing import SitePage, DocumentProcessingLog, WebCrawlLog, K
 __all__ = [
     # Property & User
     "HospitalityProperty",
-    "BuffrHostUser",
+    "User", "Profile", "UserPreferences",
     "UserType",
 
     # Menu & Inventory
@@ -56,8 +56,7 @@ __all__ = [
     "UnitOfMeasurement", "InventoryItem", "MenuItemRawMaterial",
     "Ingredient", "OptionValueIngredient", "OptionValueIngredientMultiplier",
 
-    # Customer & Order
-    "Customer",
+    # Customer & Order (Customer is now part of unified User/Profile schema)
     "Order", "OrderItem", "OrderItemOption",
 
     # Room Management
@@ -77,7 +76,7 @@ __all__ = [
 
     # Corporate & Financial
     "CorporateCustomer", "CorporateBooking", "CorporateBookingItem",
-    "Quotation", "QuotationItem", "Invoice", "InvoiceItem",
+    "", "Item", "", "Item",
 
     # Compliance
     "KYCKYBDocument",
