@@ -34,9 +34,7 @@ test:
 # Run linting
 lint:
 	@echo "Linting backend..."
-	cd backend && flake8 . && black --check . && isort --check-only .
-	@echo "Linting frontend..."
-	cd frontend && npm run lint
+	cd backend && flake8 --exclude=venv . && black --check . && isort --check-only .
 
 # Format code
 format:

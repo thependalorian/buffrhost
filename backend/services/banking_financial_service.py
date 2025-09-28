@@ -1,37 +1,45 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete
 from typing import List, Optional
 from uuid import UUID
 
-from models.banking_financial import Transaction, PaymentGateway, Disbursement
-from schemas.banking_financial import (
-    Create, Update, 
-    TransactionCreate, TransactionUpdate, 
-    PaymentGatewayCreate, PaymentGatewayUpdate, 
-    DisbursementCreate, DisbursementUpdate
-)
+from sqlalchemy import delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.banking_financial import (BankAccount, Disbursement,
+                                      PaymentGateway, Transaction)
+from schemas.banking_financial import (Create, DisbursementCreate,
+                                       DisbursementUpdate,
+                                       PaymentGatewayCreate,
+                                       PaymentGatewayUpdate, TransactionCreate,
+                                       TransactionUpdate, Update)
+
 
 class BankingFinancialService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
     # Operations
-    async def create_bank_account(self, account_data: Create) -> :
-        account = (**account_data.model_dump())
+    async def create_bank_account(self, account_data: Create) -> BankAccount:
+        account = BankAccount(**account_data.model_dump())
         self.db.add(account)
         await self.db.commit()
         await self.db.refresh(account)
         return account
 
-    async def get_bank_account(self, account_id: UUID) -> Optional[]:
-        result = await self.db.execute(select().where(.id == account_id))
+    async def get_bank_account(self, account_id: UUID) -> Optional[BankAccount]:
+        result = await self.db.execute(
+            select(BankAccount).where(BankAccount.id == account_id)
+        )
         return result.scalar_one_or_none()
 
-    async def get_bank_accounts(self, skip: int = 0, limit: int = 100) -> List[]:
-        result = await self.db.execute(select().offset(skip).limit(limit))
+    async def get_bank_accounts(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[BankAccount]:
+        result = await self.db.execute(select(BankAccount).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_bank_account(self, account_id: UUID, account_data: Update) -> Optional[]:
+    async def update_bank_account(
+        self, account_id: UUID, account_data: Update
+    ) -> Optional[BankAccount]:
         account = await self.get_bank_account(account_id)
         if account:
             update_data = account_data.model_dump(exclude_unset=True)
@@ -50,7 +58,9 @@ class BankingFinancialService:
         return False
 
     # Transaction Operations
-    async def create_transaction(self, transaction_data: TransactionCreate) -> Transaction:
+    async def create_transaction(
+        self, transaction_data: TransactionCreate
+    ) -> Transaction:
         transaction = Transaction(**transaction_data.model_dump())
         self.db.add(transaction)
         await self.db.commit()
@@ -58,14 +68,20 @@ class BankingFinancialService:
         return transaction
 
     async def get_transaction(self, transaction_id: UUID) -> Optional[Transaction]:
-        result = await self.db.execute(select(Transaction).where(Transaction.id == transaction_id))
+        result = await self.db.execute(
+            select(Transaction).where(Transaction.id == transaction_id)
+        )
         return result.scalar_one_or_none()
 
-    async def get_transactions(self, skip: int = 0, limit: int = 100) -> List[Transaction]:
+    async def get_transactions(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[Transaction]:
         result = await self.db.execute(select(Transaction).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_transaction(self, transaction_id: UUID, transaction_data: TransactionUpdate) -> Optional[Transaction]:
+    async def update_transaction(
+        self, transaction_id: UUID, transaction_data: TransactionUpdate
+    ) -> Optional[Transaction]:
         transaction = await self.get_transaction(transaction_id)
         if transaction:
             update_data = transaction_data.model_dump(exclude_unset=True)
@@ -84,7 +100,9 @@ class BankingFinancialService:
         return False
 
     # PaymentGateway Operations
-    async def create_payment_gateway(self, gateway_data: PaymentGatewayCreate) -> PaymentGateway:
+    async def create_payment_gateway(
+        self, gateway_data: PaymentGatewayCreate
+    ) -> PaymentGateway:
         gateway = PaymentGateway(**gateway_data.model_dump())
         self.db.add(gateway)
         await self.db.commit()
@@ -92,14 +110,20 @@ class BankingFinancialService:
         return gateway
 
     async def get_payment_gateway(self, gateway_id: UUID) -> Optional[PaymentGateway]:
-        result = await self.db.execute(select(PaymentGateway).where(PaymentGateway.id == gateway_id))
+        result = await self.db.execute(
+            select(PaymentGateway).where(PaymentGateway.id == gateway_id)
+        )
         return result.scalar_one_or_none()
 
-    async def get_payment_gateways(self, skip: int = 0, limit: int = 100) -> List[PaymentGateway]:
+    async def get_payment_gateways(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[PaymentGateway]:
         result = await self.db.execute(select(PaymentGateway).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_payment_gateway(self, gateway_id: UUID, gateway_data: PaymentGatewayUpdate) -> Optional[PaymentGateway]:
+    async def update_payment_gateway(
+        self, gateway_id: UUID, gateway_data: PaymentGatewayUpdate
+    ) -> Optional[PaymentGateway]:
         gateway = await self.get_payment_gateway(gateway_id)
         if gateway:
             update_data = gateway_data.model_dump(exclude_unset=True)
@@ -118,7 +142,9 @@ class BankingFinancialService:
         return False
 
     # Disbursement Operations
-    async def create_disbursement(self, disbursement_data: DisbursementCreate) -> Disbursement:
+    async def create_disbursement(
+        self, disbursement_data: DisbursementCreate
+    ) -> Disbursement:
         disbursement = Disbursement(**disbursement_data.model_dump())
         self.db.add(disbursement)
         await self.db.commit()
@@ -126,14 +152,20 @@ class BankingFinancialService:
         return disbursement
 
     async def get_disbursement(self, disbursement_id: UUID) -> Optional[Disbursement]:
-        result = await self.db.execute(select(Disbursement).where(Disbursement.id == disbursement_id))
+        result = await self.db.execute(
+            select(Disbursement).where(Disbursement.id == disbursement_id)
+        )
         return result.scalar_one_or_none()
 
-    async def get_disbursements(self, skip: int = 0, limit: int = 100) -> List[Disbursement]:
+    async def get_disbursements(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[Disbursement]:
         result = await self.db.execute(select(Disbursement).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_disbursement(self, disbursement_id: UUID, disbursement_data: DisbursementUpdate) -> Optional[Disbursement]:
+    async def update_disbursement(
+        self, disbursement_id: UUID, disbursement_data: DisbursementUpdate
+    ) -> Optional[Disbursement]:
         disbursement = await self.get_disbursement(disbursement_id)
         if disbursement:
             update_data = disbursement_data.model_dump(exclude_unset=True)

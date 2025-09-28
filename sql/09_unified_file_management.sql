@@ -28,7 +28,7 @@ CREATE TABLE documents (
 -- File Storage Providers Table
 CREATE TABLE file_storage_providers (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL, -- e.g., 'supabase_storage', 'google_drive', 's3'
+    name VARCHAR(100) UNIQUE NOT NULL, -- e.g., 'supabase_storage', 'google_drive'
     config JSONB
 );
 

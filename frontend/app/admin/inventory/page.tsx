@@ -1,52 +1,72 @@
-import { Metadata } from 'next';
+import { Metadata } from "next";
+import { StatCard, PageHeader } from "@/src/components/ui";
+import { Package, AlertTriangle, XCircle, DollarSign } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: 'Inventory Management - Buffr Host',
-  description: 'Manage inventory, stock levels, and supplies',
+  title: "Inventory Management - Buffr Host",
+  description: "Manage inventory, stock levels, and supplies",
 };
 
 export default function InventoryManagementPage() {
   return (
     <div className="container mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-base-content">Inventory Management</h1>
-        <p className="text-base-content/70 mt-2">
-          Manage inventory, stock levels, and supplies across all departments
-        </p>
-      </div>
+      <PageHeader
+        title="Inventory Management"
+        description="Manage inventory, stock levels, and supplies across all departments"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="stats shadow">
-          <div className="stat">
-            <div className="stat-title">Total Items</div>
-            <div className="stat-value text-primary">156</div>
-            <div className="stat-desc">Inventory items</div>
-          </div>
-        </div>
+        <StatCard
+          title="Total Items"
+          value="156"
+          description="Inventory items"
+          icon={<Package className="h-4 w-4" />}
+          trend={{
+            value: 5,
+            label: "from last month",
+            direction: "up"
+          }}
+          variant="default"
+        />
 
-        <div className="stats shadow">
-          <div className="stat">
-            <div className="stat-title">Low Stock</div>
-            <div className="stat-value text-warning">12</div>
-            <div className="stat-desc">Items need restocking</div>
-          </div>
-        </div>
+        <StatCard
+          title="Low Stock"
+          value="12"
+          description="Items need restocking"
+          icon={<AlertTriangle className="h-4 w-4" />}
+          trend={{
+            value: 2,
+            label: "from last month",
+            direction: "down"
+          }}
+          variant="warning"
+        />
 
-        <div className="stats shadow">
-          <div className="stat">
-            <div className="stat-title">Out of Stock</div>
-            <div className="stat-value text-error">3</div>
-            <div className="stat-desc">Items unavailable</div>
-          </div>
-        </div>
+        <StatCard
+          title="Out of Stock"
+          value="3"
+          description="Items unavailable"
+          icon={<XCircle className="h-4 w-4" />}
+          trend={{
+            value: 1,
+            label: "from last month",
+            direction: "down"
+          }}
+          variant="error"
+        />
 
-        <div className="stats shadow">
-          <div className="stat">
-            <div className="stat-title">Total Value</div>
-            <div className="stat-value text-success">N$ 45,678</div>
-            <div className="stat-desc">Inventory value</div>
-          </div>
-        </div>
+        <StatCard
+          title="Total Value"
+          value="N$ 45,678"
+          description="Inventory value"
+          icon={<DollarSign className="h-4 w-4" />}
+          trend={{
+            value: 8,
+            label: "from last month",
+            direction: "up"
+          }}
+          variant="success"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -66,14 +86,25 @@ export default function InventoryManagementPage() {
                     <option>Office Supplies</option>
                   </select>
                   <button className="btn btn-primary btn-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
                     </svg>
                     Add Item
                   </button>
                 </div>
               </div>
-              
+
               <div className="overflow-x-auto">
                 <table className="table table-zebra w-full">
                   <thead>
@@ -99,7 +130,9 @@ export default function InventoryManagementPage() {
                         <div className="font-bold">15 kg</div>
                       </td>
                       <td>10 kg</td>
-                      <td><span className="badge badge-success">In Stock</span></td>
+                      <td>
+                        <span className="badge badge-success">In Stock</span>
+                      </td>
                       <td>
                         <button className="btn btn-ghost btn-xs">Edit</button>
                       </td>
@@ -108,7 +141,9 @@ export default function InventoryManagementPage() {
                       <td>
                         <div>
                           <div className="font-bold">Bath Towels</div>
-                          <div className="text-sm opacity-50">White, 100% cotton</div>
+                          <div className="text-sm opacity-50">
+                            White, 100% cotton
+                          </div>
                         </div>
                       </td>
                       <td>Linen & Towels</td>
@@ -116,7 +151,9 @@ export default function InventoryManagementPage() {
                         <div className="font-bold">45 pieces</div>
                       </td>
                       <td>50 pieces</td>
-                      <td><span className="badge badge-warning">Low Stock</span></td>
+                      <td>
+                        <span className="badge badge-warning">Low Stock</span>
+                      </td>
                       <td>
                         <button className="btn btn-ghost btn-xs">Edit</button>
                       </td>
@@ -133,7 +170,9 @@ export default function InventoryManagementPage() {
                         <div className="font-bold">0 bottles</div>
                       </td>
                       <td>5 bottles</td>
-                      <td><span className="badge badge-error">Out of Stock</span></td>
+                      <td>
+                        <span className="badge badge-error">Out of Stock</span>
+                      </td>
                       <td>
                         <button className="btn btn-ghost btn-xs">Edit</button>
                       </td>
@@ -142,7 +181,9 @@ export default function InventoryManagementPage() {
                       <td>
                         <div>
                           <div className="font-bold">Light Bulbs</div>
-                          <div className="text-sm opacity-50">LED, 60W equivalent</div>
+                          <div className="text-sm opacity-50">
+                            LED, 60W equivalent
+                          </div>
                         </div>
                       </td>
                       <td>Maintenance</td>
@@ -150,7 +191,9 @@ export default function InventoryManagementPage() {
                         <div className="font-bold">8 pieces</div>
                       </td>
                       <td>10 pieces</td>
-                      <td><span className="badge badge-warning">Low Stock</span></td>
+                      <td>
+                        <span className="badge badge-warning">Low Stock</span>
+                      </td>
                       <td>
                         <button className="btn btn-ghost btn-xs">Edit</button>
                       </td>
@@ -159,7 +202,9 @@ export default function InventoryManagementPage() {
                       <td>
                         <div>
                           <div className="font-bold">Essential Oils</div>
-                          <div className="text-sm opacity-50">Lavender, 50ml</div>
+                          <div className="text-sm opacity-50">
+                            Lavender, 50ml
+                          </div>
                         </div>
                       </td>
                       <td>Spa Products</td>
@@ -167,7 +212,9 @@ export default function InventoryManagementPage() {
                         <div className="font-bold">12 bottles</div>
                       </td>
                       <td>8 bottles</td>
-                      <td><span className="badge badge-success">In Stock</span></td>
+                      <td>
+                        <span className="badge badge-success">In Stock</span>
+                      </td>
                       <td>
                         <button className="btn btn-ghost btn-xs">Edit</button>
                       </td>
@@ -185,26 +232,70 @@ export default function InventoryManagementPage() {
               <h2 className="card-title">Quick Actions</h2>
               <div className="space-y-3">
                 <button className="btn btn-outline w-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
                   </svg>
                   Add New Item
                 </button>
                 <button className="btn btn-outline w-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                    />
                   </svg>
                   Stock Adjustment
                 </button>
                 <button className="btn btn-outline w-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
                   </svg>
                   Purchase Orders
                 </button>
                 <button className="btn btn-outline w-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                   </svg>
                   Export Report
                 </button>
@@ -249,8 +340,18 @@ export default function InventoryManagementPage() {
               <h2 className="card-title">Stock Alerts</h2>
               <div className="space-y-3">
                 <div className="alert alert-error">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="stroke-current shrink-0 h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <div>
                     <h3 className="font-bold">Out of Stock</h3>
@@ -258,8 +359,18 @@ export default function InventoryManagementPage() {
                   </div>
                 </div>
                 <div className="alert alert-warning">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="stroke-current shrink-0 h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
                   </svg>
                   <div>
                     <h3 className="font-bold">Low Stock</h3>
@@ -267,8 +378,18 @@ export default function InventoryManagementPage() {
                   </div>
                 </div>
                 <div className="alert alert-info">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="stroke-current shrink-0 h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <div>
                     <h3 className="font-bold">Reorder Suggested</h3>
@@ -290,7 +411,9 @@ export default function InventoryManagementPage() {
                 </div>
                 <div className="text-sm">
                   <p className="font-medium text-warning">Low Stock Alert</p>
-                  <p className="text-base-content/70">Bath Towels below minimum</p>
+                  <p className="text-base-content/70">
+                    Bath Towels below minimum
+                  </p>
                   <p className="text-xs text-base-content/50">4 hours ago</p>
                 </div>
                 <div className="text-sm">

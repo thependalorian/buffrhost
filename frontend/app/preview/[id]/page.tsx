@@ -1,26 +1,19 @@
-/**
- * Preview Page for Buffr Host
- * 
- * Public page that displays preview content for visitors to see how
- * menus, property information, and other content will appear.
- */
-
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import ContentPreview from '../../components/ContentPreview';
-import MenuPreview from '../../components/MenuPreview';
-import PropertyPreview from '../../components/PropertyPreview';
+import { useParams } from "next/navigation";
+import ContentPreview from "../../components/ContentPreview";
+import React, { useState, useEffect } from "react";
+import MenuPreview from "../../components/MenuPreview";
+import PropertyPreview from "../../components/PropertyPreview";
 
 interface PreviewData {
   id: string;
   user_id: number;
   property_id: number;
-  content_type: 'menu' | 'property' | 'cms' | 'image';
+  content_type: "menu" | "property" | "cms" | "image";
   content_data: any;
   preview_type: string;
-  status: 'draft' | 'published' | 'expired' | 'archived';
+  status: "draft" | "published" | "expired" | "archived";
   created_at: string;
   expires_at: string;
   metadata: any;
@@ -29,7 +22,7 @@ interface PreviewData {
 const PreviewPage: React.FC = () => {
   const params = useParams();
   const previewId = params?.id as string;
-  
+
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,23 +32,23 @@ const PreviewPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await fetch(`/api/preview/${previewId}`);
-        
+
         if (!response.ok) {
           if (response.status === 404) {
-            setError('Preview not found or expired');
+            setError("Preview not found or expired");
           } else if (response.status === 410) {
-            setError('This preview has expired');
+            setError("This preview has expired");
           } else {
-            setError('Failed to load preview');
+            setError("Failed to load preview");
           }
           return;
         }
-        
+
         const data = await response.json();
         setPreviewData(data.preview_data);
       } catch (err) {
-        console.error('Error fetching preview:', err);
-        setError('Failed to load preview');
+        console.error("Error fetching preview:", err);
+        setError("Failed to load preview");
       } finally {
         setLoading(false);
       }
@@ -86,7 +79,8 @@ const PreviewPage: React.FC = () => {
             <p>{error}</p>
           </div>
           <p className="text-gray-600 text-sm">
-            This preview may have expired or been removed. Please contact the property owner for assistance.
+            This preview may have expired or been removed. Please contact the
+            property owner for assistance.
           </p>
         </div>
       </div>
@@ -106,7 +100,7 @@ const PreviewPage: React.FC = () => {
   // Render appropriate preview component based on content type
   const renderPreview = () => {
     switch (previewData.content_type) {
-      case 'menu':
+      case "menu":
         return (
           <MenuPreview
             menuData={previewData.content_data}
@@ -115,8 +109,8 @@ const PreviewPage: React.FC = () => {
             showQRCode={false} // Don't show QR code in public preview
           />
         );
-      
-      case 'property':
+
+      case "property":
         return (
           <PropertyPreview
             propertyData={previewData.content_data}
@@ -125,15 +119,15 @@ const PreviewPage: React.FC = () => {
             showContactInfo={true}
           />
         );
-      
-      case 'cms':
-      case 'image':
+
+      case "cms":
+      case "image":
         return (
           <ContentPreview
             content={{
               type: previewData.content_type,
               data: previewData.content_data,
-              title: previewData.content_data.title || 'Content Preview'
+              title: previewData.content_data.title || "Content Preview",
             }}
             isOpen={true}
             onClose={() => {}} // No close functionality for public preview
@@ -141,13 +135,15 @@ const PreviewPage: React.FC = () => {
             showSaveButton={false} // No save functionality for public preview
           />
         );
-      
+
       default:
         return (
           <div className="min-h-screen bg-white flex items-center justify-center">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">Preview</h1>
-              <p className="text-gray-600">Content type not supported for preview</p>
+              <p className="text-gray-600">
+                Content type not supported for preview
+              </p>
             </div>
           </div>
         );
@@ -164,32 +160,39 @@ const PreviewPage: React.FC = () => {
               <span className="text-white font-bold text-sm">BH</span>
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">Buffr Host Preview</h1>
+              <h1 className="text-lg font-semibold text-gray-900">
+                Buffr Host Preview
+              </h1>
               <p className="text-sm text-gray-500">
-                {previewData.content_type.charAt(0).toUpperCase() + previewData.content_type.slice(1)} Preview
+                {previewData.content_type.charAt(0).toUpperCase() +
+                  previewData.content_type.slice(1)}{" "}
+                Preview
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <span>Preview ID: {previewId.slice(0, 8)}...</span>
             <span>•</span>
-            <span>Expires: {new Date(previewData.expires_at).toLocaleDateString()}</span>
+            <span>
+              Expires: {new Date(previewData.expires_at).toLocaleDateString()}
+            </span>
           </div>
         </div>
       </div>
 
       {/* Preview Content */}
-      <div className="relative">
-        {renderPreview()}
-      </div>
+      <div className="relative">{renderPreview()}</div>
 
       {/* Preview Footer */}
       <div className="bg-white border-t border-gray-200 px-4 py-3">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-sm text-gray-500">
-            This is a preview of content from Buffr Host. 
-            <span className="text-blue-600 font-medium"> Powered by Buffr Host</span>
+            This is a preview of content from Buffr Host.
+            <span className="text-blue-600 font-medium">
+              {" "}
+              Powered by Buffr Host
+            </span>
           </p>
         </div>
       </div>

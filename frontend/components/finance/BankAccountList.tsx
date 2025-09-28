@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React from "react";
+import { useState, useEffect } from "react";
 
 interface BankAccount {
   id: string;
@@ -22,12 +22,24 @@ const BankAccountList: React.FC = () => {
         // In a real application, this would fetch from your FastAPI backend
         // For now, using mock data
         const mockAccounts: BankAccount[] = [
-          { id: 'ba1', account_name: 'Main Checking', bank_name: 'First National Bank', account_number: '123456789', currency: 'NAD' },
-          { id: 'ba2', account_name: 'Savings', bank_name: 'Standard Bank', account_number: '987654321', currency: 'NAD' },
+          {
+            id: "ba1",
+            account_name: "Main Checking",
+            bank_name: "First National Bank",
+            account_number: "123456789",
+            currency: "NAD",
+          },
+          {
+            id: "ba2",
+            account_name: "Savings",
+            bank_name: "Standard Bank",
+            account_number: "987654321",
+            currency: "NAD",
+          },
         ];
         setAccounts(mockAccounts);
       } catch (err) {
-        setError('Failed to fetch bank accounts');
+        setError("Failed to fetch bank accounts");
       } finally {
         setLoading(false);
       }
@@ -42,9 +54,10 @@ const BankAccountList: React.FC = () => {
     <div className="bank-account-list">
       <h2>Bank Accounts</h2>
       <ul>
-        {accounts.map(account => (
+        {accounts.map((account) => (
           <li key={account.id}>
-            {account.account_name} ({account.bank_name}) - {account.account_number} ({account.currency})
+            {account.account_name} ({account.bank_name}) -{" "}
+            {account.account_number} ({account.currency})
           </li>
         ))}
       </ul>

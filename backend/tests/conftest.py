@@ -1,8 +1,9 @@
 """
 Test configuration and fixtures for Buffr Host Hospitality Platform
 """
-import pytest
 import asyncio
+
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -13,6 +14,7 @@ try:
     from database import Base
     # Import all models to ensure they're registered with Base
     from models import *
+
     app = None  # We'll create a minimal app for testing
 except ImportError as e:
     print(f"Warning: Could not import backend modules: {e}")
@@ -22,15 +24,17 @@ except ImportError as e:
 
 # Test database URL (use PostgreSQL for testing to support ARRAY types)
 import os
-SQLALCHEMY_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "postgresql://buffrhost:password@localhost:5432/buffrhost_test")
+
+SQLALCHEMY_DATABASE_URL = os.getenv(
+    "TEST_DATABASE_URL", "postgresql://buffrhost:password@localhost:5432/buffrhost_test"
+)
 
 # Create test engine
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    poolclass=StaticPool)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, poolclass=StaticPool)
 
 # Create test session
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -39,15 +43,16 @@ def event_loop():
     yield loop
     loop.close()
 
+
 @pytest.fixture(scope="function")
 def db_session():
     """Create a fresh database session for each test."""
     # Create tables
     Base.metadata.create_all(bind=engine)
-    
+
     # Create session
     session = TestingSessionLocal()
-    
+
     try:
         yield session
     finally:
@@ -55,21 +60,24 @@ def db_session():
         # Drop tables after test
         Base.metadata.drop_all(bind=engine)
 
+
 @pytest.fixture(scope="function")
 def client(db_session):
     """Create a test client with database dependency override."""
+
     def override_get_db():
         try:
             yield db_session
         finally:
             pass
-    
+
     app.dependency_overrides[get_db] = override_get_db
-    
+
     with TestClient(app) as test_client:
         yield test_client
-    
+
     app.dependency_overrides.clear()
+
 
 @pytest.fixture
 def sample_hospitality_property(db_session):
@@ -86,12 +94,13 @@ def sample_hospitality_property(db_session):
         email="test@hotel.com",
         website="https://testhotel.com",
         property_type="hotel",
-        status="active"
+        status="active",
     )
     db_session.add(property)
     db_session.commit()
     db_session.refresh(property)
     return property
+
 
 @pytest.fixture
 def sample_customer(db_session):
@@ -102,12 +111,13 @@ def sample_customer(db_session):
         email="john.doe@example.com",
         phone="+1234567890",
         date_of_birth="1990-01-01",
-        status="active"
+        status="active",
     )
     db_session.add(customer)
     db_session.commit()
     db_session.refresh(customer)
     return customer
+
 
 @pytest.fixture
 def sample_room_type(db_session, sample_hospitality_property):
@@ -120,12 +130,13 @@ def sample_room_type(db_session, sample_hospitality_property):
         max_occupancy=2,
         bed_type="queen",
         room_size=25.0,
-        status="active"
+        status="active",
     )
     db_session.add(room_type)
     db_session.commit()
     db_session.refresh(room_type)
     return room_type
+
 
 @pytest.fixture
 def sample_room(db_session, sample_hospitality_property, sample_room_type):
@@ -135,12 +146,13 @@ def sample_room(db_session, sample_hospitality_property, sample_room_type):
         room_type_id=sample_room_type.id,
         room_number="101",
         floor=1,
-        status="available"
+        status="available",
     )
     db_session.add(room)
     db_session.commit()
     db_session.refresh(room)
     return room
+
 
 @pytest.fixture
 def sample_menu_category(db_session, sample_hospitality_property):
@@ -150,12 +162,13 @@ def sample_menu_category(db_session, sample_hospitality_property):
         name="Appetizers",
         description="Start your meal with our delicious appetizers",
         display_order=1,
-        status="active"
+        status="active",
     )
     db_session.add(category)
     db_session.commit()
     db_session.refresh(category)
     return category
+
 
 @pytest.fixture
 def sample_menu_item(db_session, sample_hospitality_property, sample_menu_category):
@@ -167,7 +180,7 @@ def sample_menu_item(db_session, sample_hospitality_property, sample_menu_catego
         description="Fresh romaine lettuce with caesar dressing",
         price=12.99,
         preparation_time=10,
-        status="active"
+        status="active",
     )
     db_session.add(item)
     db_session.commit()

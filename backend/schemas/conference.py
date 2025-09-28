@@ -1,9 +1,11 @@
 """
 Pydantic schemas for Conference services.
 """
-from pydantic import BaseModel, Field
+from datetime import date, datetime, time
 from typing import List, Optional
-from datetime import datetime, date, time
+
+from pydantic import BaseModel, Field
+
 
 class ConferenceRoomBase(BaseModel):
     room_name: str
@@ -12,8 +14,10 @@ class ConferenceRoomBase(BaseModel):
     amenities: Optional[str] = None
     is_available: bool = True
 
+
 class ConferenceRoomCreate(ConferenceRoomBase):
     pass
+
 
 class ConferenceRoom(ConferenceRoomBase):
     room_id: int
@@ -21,6 +25,7 @@ class ConferenceRoom(ConferenceRoomBase):
 
     class Config:
         orm_mode = True
+
 
 class ConferenceBookingBase(BaseModel):
     room_id: int
@@ -30,8 +35,10 @@ class ConferenceBookingBase(BaseModel):
     end_time: datetime
     attendees: int
 
+
 class ConferenceBookingCreate(ConferenceBookingBase):
     pass
+
 
 class ConferenceBooking(ConferenceBookingBase):
     booking_id: int
@@ -42,6 +49,7 @@ class ConferenceBooking(ConferenceBookingBase):
     class Config:
         orm_mode = True
 
+
 class ConferenceAmenity(BaseModel):
     amenity_id: int
     name: str
@@ -49,6 +57,7 @@ class ConferenceAmenity(BaseModel):
     category: str
     hourly_rate: float
     is_available: bool
+
 
 class ConferencePackage(BaseModel):
     package_id: int

@@ -1,7 +1,9 @@
-from pydantic import BaseModel
-from typing import Optional, List
 from datetime import datetime
+from typing import List, Optional
 from uuid import UUID
+
+from pydantic import BaseModel
+
 
 class Base(BaseModel):
     user_id: UUID
@@ -12,8 +14,10 @@ class Base(BaseModel):
     currency: Optional[str] = "NAD"
     is_primary: Optional[bool] = False
 
+
 class Create(Base):
     pass
+
 
 class Update(BaseModel):
     account_name: Optional[str] = None
@@ -23,6 +27,7 @@ class Update(BaseModel):
     currency: Optional[str] = None
     is_primary: Optional[bool] = None
 
+
 class Response(Base):
     id: UUID
     created_at: datetime
@@ -30,6 +35,7 @@ class Response(Base):
 
     class Config:
         from_attributes = True
+
 
 class TransactionBase(BaseModel):
     account_id: UUID
@@ -41,8 +47,10 @@ class TransactionBase(BaseModel):
     transaction_date: Optional[datetime] = None
     metadata_: Optional[dict] = None
 
+
 class TransactionCreate(TransactionBase):
     pass
+
 
 class TransactionUpdate(BaseModel):
     type: Optional[str] = None
@@ -53,6 +61,7 @@ class TransactionUpdate(BaseModel):
     transaction_date: Optional[datetime] = None
     metadata_: Optional[dict] = None
 
+
 class TransactionResponse(TransactionBase):
     id: UUID
     created_at: datetime
@@ -61,6 +70,7 @@ class TransactionResponse(TransactionBase):
     class Config:
         from_attributes = True
 
+
 class PaymentGatewayBase(BaseModel):
     name: str
     api_key: Optional[str] = None
@@ -68,8 +78,10 @@ class PaymentGatewayBase(BaseModel):
     is_active: Optional[bool] = True
     config: Optional[dict] = None
 
+
 class PaymentGatewayCreate(PaymentGatewayBase):
     pass
+
 
 class PaymentGatewayUpdate(BaseModel):
     name: Optional[str] = None
@@ -78,6 +90,7 @@ class PaymentGatewayUpdate(BaseModel):
     is_active: Optional[bool] = None
     config: Optional[dict] = None
 
+
 class PaymentGatewayResponse(PaymentGatewayBase):
     id: UUID
     created_at: datetime
@@ -85,6 +98,7 @@ class PaymentGatewayResponse(PaymentGatewayBase):
 
     class Config:
         from_attributes = True
+
 
 class DisbursementBase(BaseModel):
     transaction_id: Optional[UUID] = None
@@ -96,8 +110,10 @@ class DisbursementBase(BaseModel):
     disbursement_date: Optional[datetime] = None
     notes: Optional[str] = None
 
+
 class DisbursementCreate(DisbursementBase):
     pass
+
 
 class DisbursementUpdate(BaseModel):
     transaction_id: Optional[UUID] = None
@@ -108,6 +124,7 @@ class DisbursementUpdate(BaseModel):
     status: Optional[str] = None
     disbursement_date: Optional[datetime] = None
     notes: Optional[str] = None
+
 
 class DisbursementResponse(DisbursementBase):
     id: UUID

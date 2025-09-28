@@ -1,26 +1,42 @@
 /**
  * Auth Flow Component for The Shandi Frontend
- * 
+ *
  * Component that handles the complete authentication flow.
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { LoginForm } from './LoginForm';
-import { SignUpForm } from './SignUpForm';
-import { ForgotPasswordForm } from './ForgotPasswordForm';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React, { useState } from "react";
+import { LoginForm } from "./LoginForm";
+import { SignUpForm } from "./SignUpForm";
+import { ForgotPasswordForm } from "./ForgotPasswordForm";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/src/components/ui/tabs";
 
 interface AuthFlowProps {
   onSuccess?: () => void;
   onError?: (error: string) => void;
-  defaultTab?: 'login' | 'signup' | 'forgot-password';
+  defaultTab?: "login" | "signup" | "forgot-password";
   className?: string;
 }
 
-export function AuthFlow({ onSuccess, onError, defaultTab = 'login', className }: AuthFlowProps) {
+export function AuthFlow({
+  onSuccess,
+  onError,
+  defaultTab = "login",
+  className,
+}: AuthFlowProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
 
   const handleLoginSuccess = () => {
@@ -40,7 +56,7 @@ export function AuthFlow({ onSuccess, onError, defaultTab = 'login', className }
   };
 
   const handleBackToLogin = () => {
-    setActiveTab('login');
+    setActiveTab("login");
   };
 
   return (
@@ -53,36 +69,41 @@ export function AuthFlow({ onSuccess, onError, defaultTab = 'login', className }
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {activeTab === 'forgot-password' ? (
+          {activeTab === "forgot-password" ? (
             <ForgotPasswordForm
               onSuccess={handleForgotPasswordSuccess}
               onError={handleError}
               onBackToLogin={handleBackToLogin}
             />
           ) : (
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'signup')}>
+            <Tabs
+              value={activeTab}
+              onValueChange={(value) =>
+                setActiveTab(value as "login" | "signup")
+              }
+            >
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="login">
-              <LoginForm
-                onSuccess={handleLoginSuccess}
-                onError={handleError}
-                showSocialAuth={true}
-              />
+                <LoginForm
+                  onSuccess={handleLoginSuccess}
+                  onError={handleError}
+                  showSocialAuth={true}
+                />
                 <div className="text-center mt-4">
                   <button
                     type="button"
-                    onClick={() => setActiveTab('forgot-password')}
+                    onClick={() => setActiveTab("forgot-password")}
                     className="text-sm text-blue-600 hover:underline"
                   >
                     Forgot your password?
                   </button>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="signup">
                 <SignUpForm
                   onSuccess={handleSignUpSuccess}

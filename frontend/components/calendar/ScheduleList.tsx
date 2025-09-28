@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React from "react";
+import { useState, useEffect } from "react";
 
 interface Schedule {
   id: string;
@@ -23,12 +23,26 @@ const ScheduleList: React.FC = () => {
         // In a real application, this would fetch from your FastAPI backend
         // For now, using mock data
         const mockSchedules: Schedule[] = [
-          { id: 's1', employee_id: 'emp1', shift_date: '2025-10-26', start_time: '2025-10-26T09:00', end_time: '2025-10-26T17:00', role: 'Waiter' },
-          { id: 's2', employee_id: 'emp2', shift_date: '2025-10-26', start_time: '2025-10-26T10:00', end_time: '2025-10-26T18:00', role: 'Chef' },
+          {
+            id: "s1",
+            employee_id: "emp1",
+            shift_date: "2025-10-26",
+            start_time: "2025-10-26T09:00",
+            end_time: "2025-10-26T17:00",
+            role: "Waiter",
+          },
+          {
+            id: "s2",
+            employee_id: "emp2",
+            shift_date: "2025-10-26",
+            start_time: "2025-10-26T10:00",
+            end_time: "2025-10-26T18:00",
+            role: "Chef",
+          },
         ];
         setSchedules(mockSchedules);
       } catch (err) {
-        setError('Failed to fetch schedules');
+        setError("Failed to fetch schedules");
       } finally {
         setLoading(false);
       }
@@ -43,9 +57,10 @@ const ScheduleList: React.FC = () => {
     <div className="schedule-list">
       <h2>Schedule List</h2>
       <ul>
-        {schedules.map(schedule => (
+        {schedules.map((schedule) => (
           <li key={schedule.id}>
-            {schedule.shift_date} - {schedule.start_time} to {schedule.end_time} ({schedule.role})
+            {schedule.shift_date} - {schedule.start_time} to {schedule.end_time}{" "}
+            ({schedule.role})
           </li>
         ))}
       </ul>

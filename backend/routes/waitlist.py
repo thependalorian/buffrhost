@@ -5,18 +5,20 @@ This module provides API endpoints for managing the waitlist signup,
 including SendGrid email integration for automated responses.
 """
 
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel, EmailStr
-from typing import Optional, Dict, Any
 import logging
 import os
 from datetime import datetime
+from typing import Any, Dict, Optional
+
 import sendgrid
-from sendgrid.helpers.mail import Mail, Email, To, Content
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, EmailStr
+from sendgrid.helpers.mail import Content, Email, Mail, To
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
 
 class WaitlistRequest(BaseModel):
     firstName: str
@@ -29,53 +31,54 @@ class WaitlistRequest(BaseModel):
     currentSystem: Optional[str] = None
     message: Optional[str] = None
 
+
 class WaitlistResponse(BaseModel):
     success: bool
     message: str
     waitlist_position: Optional[int] = None
 
+
 class WaitlistService:
     """Service for managing waitlist signups and SendGrid integration"""
-    
+
     def __init__(self):
         self.sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
         self.from_email = os.getenv("FROM_EMAIL", "noreply@mail.buffr.ai")
         self.waitlist_count = 0  # In production, this would be from database
-        
+
     async def add_to_waitlist(self, request: WaitlistRequest) -> WaitlistResponse:
         """Add user to waitlist and send confirmation email"""
         try:
             # In production, save to database
             self.waitlist_count += 1
-            
+
             # Send confirmation email via SendGrid
             await self._send_waitlist_confirmation(request)
-            
+
             return WaitlistResponse(
                 success=True,
                 message="Successfully added to waitlist! Check your email for confirmation.",
-                waitlist_position=self.waitlist_count
+                waitlist_position=self.waitlist_count,
             )
-            
+
         except Exception as e:
             logger.error(f"Error adding to waitlist: {e}")
             raise HTTPException(
-                status_code=500,
-                detail="Failed to add to waitlist. Please try again."
+                status_code=500, detail="Failed to add to waitlist. Please try again."
             )
-    
+
     async def _send_waitlist_confirmation(self, request: WaitlistRequest):
         """Send waitlist confirmation email via SendGrid"""
         if not self.sendgrid_api_key:
             logger.warning("SendGrid API key not configured, skipping email")
             return
-            
+
         try:
             sg = sendgrid.SendGridAPIClient(api_key=self.sendgrid_api_key)
-            
+
             # Create email content
             subject = "Welcome to the Buffr Host Waitlist! 🎉"
-            
+
             html_content = f"""
             <!DOCTYPE html>
             <html>
@@ -125,7 +128,7 @@ class WaitlistService:
             </body>
             </html>
             """
-            
+
             text_content = f"""
             Welcome to the Buffr Host Waitlist!
             
@@ -147,35 +150,39 @@ class WaitlistService:
             
             Explore our live demo: https://host.buffr.ai/guest/etuna
             
-            Questions? Reply to this email or contact us at support@host.buffr.ai
+            Questions? Reply to this email or contact us at support@mail.buffr.ai
             Follow us for updates: @buffrhost
             """
-            
+
             # Create email
             from_email = Email(self.from_email)
             to_email = To(request.email)
             subject = subject
             html_content = Content("text/html", html_content)
             text_content = Content("text/plain", text_content)
-            
+
             mail = Mail(
                 from_email=from_email,
                 to_emails=to_email,
                 subject=subject,
                 plain_text_content=text_content,
-                html_content=html_content
+                html_content=html_content,
             )
-            
+
             # Send email
             response = sg.send(mail)
-            logger.info(f"Waitlist confirmation email sent to {request.email}, status: {response.status_code}")
-            
+            logger.info(
+                f"Waitlist confirmation email sent to {request.email}, status: {response.status_code}"
+            )
+
         except Exception as e:
             logger.error(f"Failed to send waitlist confirmation email: {e}")
             # Don't raise exception - waitlist signup should still succeed
 
+
 # Initialize service
 waitlist_service = WaitlistService()
+
 
 @router.post("/", response_model=WaitlistResponse)
 async def join_waitlist(request: WaitlistRequest):
@@ -183,13 +190,13 @@ async def join_waitlist(request: WaitlistRequest):
     try:
         response = await waitlist_service.add_to_waitlist(request)
         return response
-        
+
     except Exception as e:
         logger.error(f"Error in waitlist signup: {e}")
         raise HTTPException(
-            status_code=500,
-            detail="Failed to join waitlist. Please try again."
+            status_code=500, detail="Failed to join waitlist. Please try again."
         )
+
 
 @router.get("/stats")
 async def get_waitlist_stats():
@@ -197,5 +204,5 @@ async def get_waitlist_stats():
     return {
         "total_signups": waitlist_service.waitlist_count,
         "status": "active",
-        "launch_timeline": "Q2 2024"
+        "launch_timeline": "Q2 2024",
     }

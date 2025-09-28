@@ -1,22 +1,22 @@
 """
 Profile management routes for The Shandi platform.
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func, desc
+from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
-from datetime import datetime
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import and_, desc, func, or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from models.user import User, Profile
-from models.order import Order, OrderItem
 from models.menu import Menu
-from schemas.customer import (
-    CustomerCreate, CustomerUpdate, CustomerResponse, CustomerSummary,
-    LoyaltyPointsUpdate, LoyaltyPointsResponse, CustomerSearch
-)
+from models.order import Order, OrderItem
+from models.user import Profile, User
 from routes.auth import get_current_user
+from schemas.customer import (CustomerCreate, CustomerResponse, CustomerSearch,
+                              CustomerSummary, CustomerUpdate,
+                              LoyaltyPointsResponse, LoyaltyPointsUpdate)
 
 router = APIRouter()
 
@@ -26,26 +26,29 @@ async def get_customer_analytics(
     restaurant_id: int,
     customer_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get customer analytics and insights."""
     if current_user.restaurant_id != restaurant_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied to this restaurant"
+            detail="Access denied to this restaurant",
         )
-    
-    customer_result = await db.execute(select(Profile).where(Profile.customer_id == customer_id))
+
+    customer_result = await db.execute(
+        select(Profile).where(Profile.customer_id == customer_id)
+    )
     customer = customer_result.scalar_one_or_none()
-    
+
     if not customer:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Profile not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
         )
 
     orders_result = await db.execute(
-        select(Order).where(Order.customer_id == customer_id).order_by(desc(Order.order_date))
+        select(Order)
+        .where(Order.customer_id == customer_id)
+        .order_by(desc(Order.order_date))
     )
     orders = orders_result.scalars().all()
 
@@ -79,5 +82,5 @@ async def get_customer_analytics(
         "last_order_date": last_order_date,
         "favorite_items": favorite_items,
         "order_frequency_days": order_frequency_days,
-        "loyalty_tier": customer.loyalty_tier
+        "loyalty_tier": customer.loyalty_tier,
     }

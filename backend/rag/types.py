@@ -3,8 +3,10 @@ Types and enums for the RAG system.
 """
 from enum import Enum
 
+
 class DocumentType(str, Enum):
     """Types of documents that can be added to the knowledge base."""
+
     COMPANY_INFO = "company_info"
     POLICIES = "policies"
     PROCEDURES = "procedures"
@@ -23,8 +25,10 @@ class DocumentType(str, Enum):
     LOYALTY_PROGRAM = "loyalty_program"
     OTHER = "other"
 
+
 class DocumentStatus(str, Enum):
     """Status of documents in the knowledge base."""
+
     UPLOADED = "uploaded"
     PROCESSING = "processing"
     INDEXED = "indexed"

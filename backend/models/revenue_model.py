@@ -1,10 +1,13 @@
-from sqlalchemy import Column, String, Float, DateTime, ForeignKey, Boolean, Integer
-from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID, JSONB
-from datetime import datetime
 import uuid
+from datetime import datetime
+
+from sqlalchemy import (Boolean, Column, DateTime, Float, ForeignKey, Integer,
+                        String)
+from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.orm import relationship
 
 from database import Base
+
 
 class Subscription(Base):
     __tablename__ = "subscriptions"
@@ -14,13 +17,14 @@ class Subscription(Base):
     plan_name = Column(String, nullable=False)
     start_date = Column(DateTime, default=datetime.utcnow)
     end_date = Column(DateTime)
-    status = Column(String, default="active") # e.g., active, cancelled, expired
+    status = Column(String, default="active")  # e.g., active, cancelled, expired
     price = Column(Float, nullable=False)
     currency = Column(String, default="NAD")
-    billing_period = Column(String) # e.g., monthly, annually
-    metadata_ = Column(JSONB) # Additional subscription details
+    billing_period = Column(String)  # e.g., monthly, annually
+    metadata_ = Column(JSONB)  # Additional subscription details
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
 class ServiceFee(Base):
     __tablename__ = "service_fees"
@@ -28,12 +32,13 @@ class ServiceFee(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     description = Column(String)
-    fee_type = Column(String) # e.g., fixed, percentage
-    value = Column(Float, nullable=False) # e.g., 10.00 or 0.05
-    applies_to = Column(String) # e.g., booking, payment, transaction
+    fee_type = Column(String)  # e.g., fixed, percentage
+    value = Column(Float, nullable=False)  # e.g., 10.00 or 0.05
+    applies_to = Column(String)  # e.g., booking, payment, transaction
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
 class Invoice(Base):
     __tablename__ = "invoices"
@@ -45,8 +50,12 @@ class Invoice(Base):
     due_date = Column(DateTime)
     total_amount = Column(Float, nullable=False)
     currency = Column(String, default="NAD")
-    status = Column(String, default="pending") # e.g., pending, paid, overdue, cancelled
-    items = Column(JSONB) # e.g., [{"description": "Room booking", "quantity": 1, "unit_price": 500.00}]
+    status = Column(
+        String, default="pending"
+    )  # e.g., pending, paid, overdue, cancelled
+    items = Column(
+        JSONB
+    )  # e.g., [{"description": "Room booking", "quantity": 1, "unit_price": 500.00}]
     payment_details = Column(JSONB)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

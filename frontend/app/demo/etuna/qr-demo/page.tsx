@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
+import { PageHeader, StatCard, ActionButton, ModalForm, FormField, FormSelect, Alert } from '@/src/components/ui';
+import { useState } from 'react';
 import { 
   QrCode, 
   Smartphone, 
@@ -22,6 +23,7 @@ import {
   Shield,
   Zap
 } from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'QR Code System Demo - Buffr Host Platform',
@@ -54,7 +56,7 @@ export default function QRCodeDemoPage() {
                 <Camera className="w-5 h-5 mr-2" />
                 Scan Demo QR Code
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link href="/demo/etuna/management-demo" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -398,7 +400,7 @@ export default function QRCodeDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link href="/demo/etuna/management-demo" className="btn btn-primary">
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>

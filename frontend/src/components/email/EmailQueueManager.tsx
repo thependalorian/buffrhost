@@ -1,36 +1,36 @@
 /**
  * Email Queue Manager Component
- * 
+ *
  * Manages the email queue and processing
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Mail, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle, 
-  Play, 
-  Pause, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Mail,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Play,
+  Pause,
   RefreshCw,
   Trash2,
   Eye,
   Send,
   Filter,
-  Search
-} from 'lucide-react';
+  Search,
+} from "lucide-react";
 
 interface EmailQueueItem {
   id: string;
   recipient: string;
   subject: string;
-  status: 'pending' | 'processing' | 'sent' | 'failed' | 'retry';
-  priority: 'low' | 'normal' | 'high';
+  status: "pending" | "processing" | "sent" | "failed" | "retry";
+  priority: "low" | "normal" | "high";
   scheduledTime: string;
   attempts: number;
   maxAttempts: number;
@@ -47,78 +47,80 @@ interface EmailQueueManagerProps {
   onPauseQueue?: () => void;
 }
 
-export default function EmailQueueManager({ 
-  queueItems, 
-  onRetry, 
-  onCancel, 
-  onView, 
-  onProcessQueue, 
-  onPauseQueue 
+export default function EmailQueueManager({
+  queueItems,
+  onRetry,
+  onCancel,
+  onView,
+  onProcessQueue,
+  onPauseQueue,
 }: EmailQueueManagerProps) {
-  const [queueStatus, setQueueStatus] = useState<'running' | 'paused' | 'stopped'>('running');
+  const [queueStatus, setQueueStatus] = useState<
+    "running" | "paused" | "stopped"
+  >("running");
 
   const mockQueueItems: EmailQueueItem[] = [
     {
-      id: '1',
-      recipient: 'john.smith@email.com',
-      subject: 'Booking Confirmation - Room E-201',
-      status: 'pending',
-      priority: 'high',
-      scheduledTime: '2024-01-15 10:30:00',
+      id: "1",
+      recipient: "john.smith@email.com",
+      subject: "Booking Confirmation - Room E-201",
+      status: "pending",
+      priority: "high",
+      scheduledTime: "2024-01-15 10:30:00",
       attempts: 0,
       maxAttempts: 3,
-      template: 'booking_confirmation'
+      template: "booking_confirmation",
     },
     {
-      id: '2',
-      recipient: 'maria.garcia@company.com',
-      subject: 'Payment Receipt - Transaction #12345',
-      status: 'processing',
-      priority: 'normal',
-      scheduledTime: '2024-01-15 10:25:00',
+      id: "2",
+      recipient: "maria.garcia@company.com",
+      subject: "Payment Receipt - Transaction #12345",
+      status: "processing",
+      priority: "normal",
+      scheduledTime: "2024-01-15 10:25:00",
       attempts: 1,
       maxAttempts: 3,
-      template: 'payment_receipt'
+      template: "payment_receipt",
     },
     {
-      id: '3',
-      recipient: 'failed@email.com',
-      subject: 'Welcome to Etuna Guesthouse',
-      status: 'failed',
-      priority: 'low',
-      scheduledTime: '2024-01-15 10:20:00',
+      id: "3",
+      recipient: "failed@email.com",
+      subject: "Welcome to Etuna Guesthouse",
+      status: "failed",
+      priority: "low",
+      scheduledTime: "2024-01-15 10:20:00",
       attempts: 3,
       maxAttempts: 3,
-      errorMessage: 'Invalid email address',
-      template: 'welcome_email'
+      errorMessage: "Invalid email address",
+      template: "welcome_email",
     },
     {
-      id: '4',
-      recipient: 'retry@email.com',
-      subject: 'System Maintenance Notice',
-      status: 'retry',
-      priority: 'normal',
-      scheduledTime: '2024-01-15 10:15:00',
+      id: "4",
+      recipient: "retry@email.com",
+      subject: "System Maintenance Notice",
+      status: "retry",
+      priority: "normal",
+      scheduledTime: "2024-01-15 10:15:00",
       attempts: 2,
       maxAttempts: 3,
-      errorMessage: 'Connection timeout',
-      template: 'maintenance_notice'
-    }
+      errorMessage: "Connection timeout",
+      template: "maintenance_notice",
+    },
   ];
 
   const displayQueueItems = queueItems || mockQueueItems;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'pending':
+      case "pending":
         return <Clock className="w-4 h-4 text-blue-500" />;
-      case 'processing':
+      case "processing":
         return <RefreshCw className="w-4 h-4 text-yellow-500 animate-spin" />;
-      case 'sent':
+      case "sent":
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'failed':
+      case "failed":
         return <AlertCircle className="w-4 h-4 text-red-500" />;
-      case 'retry':
+      case "retry":
         return <RefreshCw className="w-4 h-4 text-orange-500" />;
       default:
         return <Mail className="w-4 h-4 text-gray-500" />;
@@ -127,54 +129,56 @@ export default function EmailQueueManager({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'bg-blue-100 text-blue-800';
-      case 'processing':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'sent':
-        return 'bg-green-100 text-green-800';
-      case 'failed':
-        return 'bg-red-100 text-red-800';
-      case 'retry':
-        return 'bg-orange-100 text-orange-800';
+      case "pending":
+        return "bg-blue-100 text-blue-800";
+      case "processing":
+        return "bg-yellow-100 text-yellow-800";
+      case "sent":
+        return "bg-green-100 text-green-800";
+      case "failed":
+        return "bg-red-100 text-red-800";
+      case "retry":
+        return "bg-orange-100 text-orange-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high':
-        return 'bg-red-100 text-red-800';
-      case 'normal':
-        return 'bg-green-100 text-green-800';
-      case 'low':
-        return 'bg-gray-100 text-gray-800';
+      case "high":
+        return "bg-red-100 text-red-800";
+      case "normal":
+        return "bg-green-100 text-green-800";
+      case "low":
+        return "bg-gray-100 text-gray-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const queueStats = {
     total: displayQueueItems.length,
-    pending: displayQueueItems.filter(item => item.status === 'pending').length,
-    processing: displayQueueItems.filter(item => item.status === 'processing').length,
-    failed: displayQueueItems.filter(item => item.status === 'failed').length,
-    sent: displayQueueItems.filter(item => item.status === 'sent').length
+    pending: displayQueueItems.filter((item) => item.status === "pending")
+      .length,
+    processing: displayQueueItems.filter((item) => item.status === "processing")
+      .length,
+    failed: displayQueueItems.filter((item) => item.status === "failed").length,
+    sent: displayQueueItems.filter((item) => item.status === "sent").length,
   };
 
   const handleQueueControl = (action: string) => {
     switch (action) {
-      case 'start':
-        setQueueStatus('running');
+      case "start":
+        setQueueStatus("running");
         onProcessQueue?.();
         break;
-      case 'pause':
-        setQueueStatus('paused');
+      case "pause":
+        setQueueStatus("paused");
         onPauseQueue?.();
         break;
-      case 'stop':
-        setQueueStatus('stopped');
+      case "stop":
+        setQueueStatus("stopped");
         break;
     }
   };
@@ -185,7 +189,9 @@ export default function EmailQueueManager({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Email Queue Manager</h1>
-          <p className="text-gray-600">Monitor and manage email queue processing</p>
+          <p className="text-gray-600">
+            Monitor and manage email queue processing
+          </p>
         </div>
         <div className="flex items-center space-x-2">
           <Button variant="outline">
@@ -244,38 +250,42 @@ export default function EmailQueueManager({
           <div className="flex items-center justify-between pt-4 border-t">
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">Queue Status:</span>
-              <Badge className={
-                queueStatus === 'running' ? 'bg-green-100 text-green-800' :
-                queueStatus === 'paused' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-red-100 text-red-800'
-              }>
+              <Badge
+                className={
+                  queueStatus === "running"
+                    ? "bg-green-100 text-green-800"
+                    : queueStatus === "paused"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-red-100 text-red-800"
+                }
+              >
                 {queueStatus}
               </Badge>
             </div>
             <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
-                onClick={() => handleQueueControl('start')}
-                disabled={queueStatus === 'running'}
+                onClick={() => handleQueueControl("start")}
+                disabled={queueStatus === "running"}
               >
                 <Play className="w-4 h-4 mr-2" />
                 Start
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
-                onClick={() => handleQueueControl('pause')}
-                disabled={queueStatus === 'paused'}
+                onClick={() => handleQueueControl("pause")}
+                disabled={queueStatus === "paused"}
               >
                 <Pause className="w-4 h-4 mr-2" />
                 Pause
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
-                onClick={() => handleQueueControl('stop')}
-                disabled={queueStatus === 'stopped'}
+                onClick={() => handleQueueControl("stop")}
+                disabled={queueStatus === "stopped"}
               >
                 <AlertCircle className="w-4 h-4 mr-2" />
                 Stop
@@ -293,7 +303,10 @@ export default function EmailQueueManager({
         <CardContent>
           <div className="space-y-3">
             {displayQueueItems.map((item) => (
-              <div key={item.id} className="border rounded-lg p-4 hover:bg-gray-50">
+              <div
+                key={item.id}
+                className="border rounded-lg p-4 hover:bg-gray-50"
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3 flex-1">
                     {getStatusIcon(item.status)}
@@ -310,20 +323,25 @@ export default function EmailQueueManager({
                         </Badge>
                       </div>
                       <div className="text-sm text-gray-600 mb-1">
-                        <span className="font-medium">To:</span> {item.recipient}
+                        <span className="font-medium">To:</span>{" "}
+                        {item.recipient}
                       </div>
                       <div className="text-sm text-gray-600 mb-1">
-                        <span className="font-medium">Template:</span> {item.template}
+                        <span className="font-medium">Template:</span>{" "}
+                        {item.template}
                       </div>
                       <div className="text-sm text-gray-600 mb-1">
-                        <span className="font-medium">Attempts:</span> {item.attempts}/{item.maxAttempts}
+                        <span className="font-medium">Attempts:</span>{" "}
+                        {item.attempts}/{item.maxAttempts}
                       </div>
                       <div className="text-sm text-gray-600 mb-1">
-                        <span className="font-medium">Scheduled:</span> {item.scheduledTime}
+                        <span className="font-medium">Scheduled:</span>{" "}
+                        {item.scheduledTime}
                       </div>
                       {item.errorMessage && (
                         <div className="text-sm text-red-600 mb-1">
-                          <span className="font-medium">Error:</span> {item.errorMessage}
+                          <span className="font-medium">Error:</span>{" "}
+                          {item.errorMessage}
                         </div>
                       )}
                     </div>
@@ -336,7 +354,7 @@ export default function EmailQueueManager({
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
-                    {item.status === 'failed' && (
+                    {item.status === "failed" && (
                       <Button
                         variant="outline"
                         size="sm"

@@ -1,33 +1,33 @@
 /**
  * Admin Email Controls Dashboard Component
- * 
+ *
  * Administrative dashboard for email system management
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Mail, 
-  Settings, 
-  Users, 
-  BarChart3, 
-  Shield, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Mail,
+  Settings,
+  Users,
+  BarChart3,
+  Shield,
   AlertTriangle,
   CheckCircle,
   Clock,
   Send,
   Pause,
   Play,
-  RefreshCw
-} from 'lucide-react';
-import EmailAnalyticsChart from './EmailAnalyticsChart';
+  RefreshCw,
+} from "lucide-react";
+import EmailAnalyticsChart from "./EmailAnalyticsChart";
 
 interface EmailSystemStatus {
-  status: 'active' | 'paused' | 'maintenance';
+  status: "active" | "paused" | "maintenance";
   queueSize: number;
   processingRate: number;
   lastProcessed: string;
@@ -38,41 +38,41 @@ interface AdminEmailControlsDashboardProps {
   systemStatus?: EmailSystemStatus;
 }
 
-export default function AdminEmailControlsDashboard({ 
-  systemStatus 
+export default function AdminEmailControlsDashboard({
+  systemStatus,
 }: AdminEmailControlsDashboardProps) {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
 
   const mockSystemStatus: EmailSystemStatus = {
-    status: 'active',
+    status: "active",
     queueSize: 1247,
     processingRate: 150,
-    lastProcessed: '2024-01-15 10:30:00',
-    errors: 3
+    lastProcessed: "2024-01-15 10:30:00",
+    errors: 3,
   };
 
   const currentStatus = systemStatus || mockSystemStatus;
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'text-green-600 bg-green-100';
-      case 'paused':
-        return 'text-yellow-600 bg-yellow-100';
-      case 'maintenance':
-        return 'text-red-600 bg-red-100';
+      case "active":
+        return "text-green-600 bg-green-100";
+      case "paused":
+        return "text-yellow-600 bg-yellow-100";
+      case "maintenance":
+        return "text-red-600 bg-red-100";
       default:
-        return 'text-gray-600 bg-gray-100';
+        return "text-gray-600 bg-gray-100";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <Play className="w-4 h-4" />;
-      case 'paused':
+      case "paused":
         return <Pause className="w-4 h-4" />;
-      case 'maintenance':
+      case "maintenance":
         return <AlertTriangle className="w-4 h-4" />;
       default:
         return <Clock className="w-4 h-4" />;
@@ -89,7 +89,9 @@ export default function AdminEmailControlsDashboard({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Email System Controls</h1>
-          <p className="text-gray-600">Administrative controls for email system management</p>
+          <p className="text-gray-600">
+            Administrative controls for email system management
+          </p>
         </div>
         <div className="flex items-center space-x-2">
           <Button variant="outline">
@@ -114,9 +116,15 @@ export default function AdminEmailControlsDashboard({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full ${getStatusColor(currentStatus.status)}`}>
+              <div
+                className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full ${getStatusColor(
+                  currentStatus.status,
+                )}`}
+              >
                 {getStatusIcon(currentStatus.status)}
-                <span className="font-medium capitalize">{currentStatus.status}</span>
+                <span className="font-medium capitalize">
+                  {currentStatus.status}
+                </span>
               </div>
               <p className="text-sm text-gray-600 mt-1">System Status</p>
             </div>
@@ -150,26 +158,26 @@ export default function AdminEmailControlsDashboard({
                 <p className="font-medium">{currentStatus.lastProcessed}</p>
               </div>
               <div className="flex items-center space-x-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
-                  onClick={() => handleSystemControl('pause')}
+                  onClick={() => handleSystemControl("pause")}
                 >
                   <Pause className="w-4 h-4 mr-2" />
                   Pause
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
-                  onClick={() => handleSystemControl('resume')}
+                  onClick={() => handleSystemControl("resume")}
                 >
                   <Play className="w-4 h-4 mr-2" />
                   Resume
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
-                  onClick={() => handleSystemControl('maintenance')}
+                  onClick={() => handleSystemControl("maintenance")}
                 >
                   <AlertTriangle className="w-4 h-4 mr-2" />
                   Maintenance
@@ -215,7 +223,9 @@ export default function AdminEmailControlsDashboard({
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-semibold">Pending Emails</h3>
-                    <p className="text-sm text-gray-600">1,247 emails waiting to be sent</p>
+                    <p className="text-sm text-gray-600">
+                      1,247 emails waiting to be sent
+                    </p>
                   </div>
                   <Button variant="outline">
                     <Send className="w-4 h-4 mr-2" />
@@ -227,7 +237,9 @@ export default function AdminEmailControlsDashboard({
                   <Card>
                     <CardContent className="p-4">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600">892</div>
+                        <div className="text-2xl font-bold text-blue-600">
+                          892
+                        </div>
                         <p className="text-sm text-gray-600">High Priority</p>
                       </div>
                     </CardContent>
@@ -235,7 +247,9 @@ export default function AdminEmailControlsDashboard({
                   <Card>
                     <CardContent className="p-4">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-green-600">312</div>
+                        <div className="text-2xl font-bold text-green-600">
+                          312
+                        </div>
                         <p className="text-sm text-gray-600">Normal Priority</p>
                       </div>
                     </CardContent>
@@ -243,7 +257,9 @@ export default function AdminEmailControlsDashboard({
                   <Card>
                     <CardContent className="p-4">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-gray-600">43</div>
+                        <div className="text-2xl font-bold text-gray-600">
+                          43
+                        </div>
                         <p className="text-sm text-gray-600">Low Priority</p>
                       </div>
                     </CardContent>

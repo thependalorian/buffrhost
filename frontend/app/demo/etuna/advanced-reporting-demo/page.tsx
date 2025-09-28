@@ -1,21 +1,29 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  FileText, 
-  BarChart3, 
-  PieChart, 
-  LineChart, 
-  TrendingUp, 
-  Download, 
-  Share, 
-  Edit, 
-  Settings, 
-  CheckCircle, 
-  AlertCircle, 
-  Clock, 
-  Users, 
-  Target, 
+import { Metadata } from "next";
+import Image from "next/image";
+import {
+  PageHeader,
+  StatCard,
+  ActionButton,
+  ModalForm,
+  FormField,
+  FormSelect,
+  Alert,
+} from "@/src/components/ui";
+import {
+  FileText,
+  BarChart3,
+  PieChart,
+  LineChart,
+  TrendingUp,
+  Download,
+  Share,
+  Edit,
+  Settings,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  Users,
+  Target,
   Star,
   MapPin,
   Phone,
@@ -191,7 +199,6 @@ import {
   Lock as LockIcon3,
   Key as KeyIcon,
   Eye as EyeIcon4,
-  EyeOff as EyeOffIcon,
   AlertTriangle,
   CheckCircle as CheckCircleIcon,
   Server as ServerIcon,
@@ -231,13 +238,11 @@ import {
   AlertCircle as AlertCircleIcon2,
   TrendingUp as TrendingUpIcon3,
   TrendingDown as TrendingDownIcon2,
-  Activity,
   Smartphone as SmartphoneIcon2,
   Download as DownloadIcon5,
   QrCode as QrCodeIcon2,
   Camera,
   Bell as BellIcon2,
-  MapPin as MapPinIcon,
   Star as StarIcon2,
   Heart as HeartIcon2,
   Share as ShareIcon,
@@ -259,12 +264,14 @@ import {
   Download as DownloadIcon6,
   Share as ShareIcon3,
   Edit as EditIcon4,
-  Settings as SettingsIcon5
-} from 'lucide-react';
+  Settings as SettingsIcon5,
+} from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Advanced Reporting Demo - Buffr Host Platform',
-  description: 'Experience our advanced reporting system with custom report builder, templates, and automated delivery.',
+  title: "Advanced Reporting Demo - Buffr Host Platform",
+  description:
+    "Experience our advanced reporting system with custom report builder, templates, and automated delivery.",
 };
 
 export default function AdvancedReportingDemoPage() {
@@ -274,7 +281,8 @@ export default function AdvancedReportingDemoPage() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm">
-            🎯 <strong>Advanced Reporting Demo</strong> - Custom report builder and automated delivery
+            🎯 <strong>Advanced Reporting Demo</strong> - Custom report builder
+            and automated delivery
           </p>
         </div>
       </div>
@@ -286,14 +294,21 @@ export default function AdvancedReportingDemoPage() {
             <div className="mb-8">
               <FileText className="w-24 h-24 mx-auto mb-4 opacity-90" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Reporting Excellence</h1>
-            <p className="text-xl md:text-2xl mb-6">Advanced analytics and custom report generation</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              Reporting Excellence
+            </h1>
+            <p className="text-xl md:text-2xl mb-6">
+              Advanced analytics and custom report generation
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="btn btn-accent btn-lg">
                 <BarChart3 className="w-5 h-5 mr-2" />
                 Build Reports
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link
+                href="/demo/etuna/management-demo"
+                className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900"
+              >
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -308,13 +323,16 @@ export default function AdvancedReportingDemoPage() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Advanced Reporting System</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Advanced Reporting System
+              </h2>
               <p className="text-lg text-base-content/80 mb-6">
-                See how our advanced reporting platform provides comprehensive analytics, 
-                custom report builder, automated delivery, and interactive dashboards 
-                across all Etuna operations and business metrics.
+                See how our advanced reporting platform provides comprehensive
+                analytics, custom report builder, automated delivery, and
+                interactive dashboards across all Etuna operations and business
+                metrics.
               </p>
-              
+
               {/* Demo Reporting Dashboard */}
               <div className="bg-white dark:bg-base-200 p-6 rounded-lg shadow-xl mb-6">
                 <h3 className="text-lg font-bold mb-4">Report Templates</h3>
@@ -327,7 +345,9 @@ export default function AdvancedReportingDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Financial Summary</p>
-                        <p className="text-sm text-gray-500">Monthly revenue report</p>
+                        <p className="text-sm text-gray-500">
+                          Monthly revenue report
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -335,7 +355,7 @@ export default function AdvancedReportingDemoPage() {
                       <p className="text-xs text-gray-500">Auto-generated</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -343,7 +363,9 @@ export default function AdvancedReportingDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Guest Analytics</p>
-                        <p className="text-sm text-gray-500">Customer insights</p>
+                        <p className="text-sm text-gray-500">
+                          Customer insights
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -351,7 +373,7 @@ export default function AdvancedReportingDemoPage() {
                       <p className="text-xs text-gray-500">Interactive</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
@@ -359,7 +381,9 @@ export default function AdvancedReportingDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Operational Metrics</p>
-                        <p className="text-sm text-gray-500">Performance dashboard</p>
+                        <p className="text-sm text-gray-500">
+                          Performance dashboard
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -389,7 +413,7 @@ export default function AdvancedReportingDemoPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2070&auto=format&fit=crop"
@@ -413,7 +437,9 @@ export default function AdvancedReportingDemoPage() {
 
         {/* Reporting Benefits */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Why Our Advanced Reporting Excels</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Why Our Advanced Reporting Excels
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Custom Report Builder */}
             <div className="nude-card hover:shadow-nude transition-shadow">
@@ -421,63 +447,92 @@ export default function AdvancedReportingDemoPage() {
                 <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Edit className="w-8 h-8 text-rose-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Custom Report Builder</h3>
-                <p className="text-sm text-nude-700">Drag-and-drop interface for creating custom reports and dashboards.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Custom Report Builder
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Drag-and-drop interface for creating custom reports and
+                  dashboards.
+                </p>
               </div>
             </div>
-            
+
             {/* Automated Delivery */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Clock className="w-8 h-8 text-blue-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Automated Delivery</h3>
-                <p className="text-sm text-nude-700">Scheduled report generation and delivery via email, dashboard, or API.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Automated Delivery
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Scheduled report generation and delivery via email, dashboard,
+                  or API.
+                </p>
               </div>
             </div>
-            
+
             {/* Interactive Dashboards */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="w-8 h-8 text-green-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Interactive Dashboards</h3>
-                <p className="text-sm text-nude-700">Real-time dashboards with drill-down capabilities and filtering.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Interactive Dashboards
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Real-time dashboards with drill-down capabilities and
+                  filtering.
+                </p>
               </div>
             </div>
-            
+
             {/* Data Visualization */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <PieChart className="w-8 h-8 text-purple-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Data Visualization</h3>
-                <p className="text-sm text-nude-700">Advanced charts, graphs, and visualizations for better insights.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Data Visualization
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Advanced charts, graphs, and visualizations for better
+                  insights.
+                </p>
               </div>
             </div>
-            
+
             {/* Export Options */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Download className="w-8 h-8 text-orange-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Export Options</h3>
-                <p className="text-sm text-nude-700">Export reports in multiple formats: PDF, Excel, CSV, and more.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Export Options
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Export reports in multiple formats: PDF, Excel, CSV, and more.
+                </p>
               </div>
             </div>
-            
+
             {/* Sharing & Collaboration */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Share className="w-8 h-8 text-teal-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Sharing & Collaboration</h3>
-                <p className="text-sm text-nude-700">Share reports with team members and stakeholders with access controls.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Sharing & Collaboration
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Share reports with team members and stakeholders with access
+                  controls.
+                </p>
               </div>
             </div>
           </div>
@@ -485,7 +540,9 @@ export default function AdvancedReportingDemoPage() {
 
         {/* Report Categories */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Report Categories & Templates</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Report Categories & Templates
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Financial Reports */}
             <div className="nude-card">
@@ -496,7 +553,9 @@ export default function AdvancedReportingDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Financial Reports</h3>
-                    <p className="text-sm text-nude-700">Revenue and cost analysis</p>
+                    <p className="text-sm text-nude-700">
+                      Revenue and cost analysis
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -529,7 +588,9 @@ export default function AdvancedReportingDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Operational Reports</h3>
-                    <p className="text-sm text-nude-700">Performance and efficiency</p>
+                    <p className="text-sm text-nude-700">
+                      Performance and efficiency
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -562,7 +623,9 @@ export default function AdvancedReportingDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Customer Reports</h3>
-                    <p className="text-sm text-nude-700">Guest insights and behavior</p>
+                    <p className="text-sm text-nude-700">
+                      Guest insights and behavior
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -590,15 +653,22 @@ export default function AdvancedReportingDemoPage() {
 
         {/* Advanced Features */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Advanced Reporting Features</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Advanced Reporting Features
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* AI-Powered Insights */}
             <div className="text-center">
               <div className="w-20 h-20 bg-primary text-primary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <Brain className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">AI-Powered Insights</h3>
-              <p className="text-nude-700">Machine learning provides intelligent insights and recommendations.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                AI-Powered Insights
+              </h3>
+              <p className="text-nude-700">
+                Machine learning provides intelligent insights and
+                recommendations.
+              </p>
             </div>
 
             {/* Real-time Data */}
@@ -607,7 +677,10 @@ export default function AdvancedReportingDemoPage() {
                 <Activity className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Real-time Data</h3>
-              <p className="text-nude-700">Live data integration with instant report updates and notifications.</p>
+              <p className="text-nude-700">
+                Live data integration with instant report updates and
+                notifications.
+              </p>
             </div>
 
             {/* Custom Branding */}
@@ -616,7 +689,10 @@ export default function AdvancedReportingDemoPage() {
                 <Palette className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Custom Branding</h3>
-              <p className="text-nude-700">White-label reports with your branding, logos, and color schemes.</p>
+              <p className="text-nude-700">
+                White-label reports with your branding, logos, and color
+                schemes.
+              </p>
             </div>
           </div>
         </div>
@@ -624,7 +700,9 @@ export default function AdvancedReportingDemoPage() {
         {/* Demo Actions */}
         <div className="py-16">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Experience Advanced Reporting</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Experience Advanced Reporting
+            </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Report Builder */}
               <div className="card bg-gradient-to-br from-rose-500 to-pink-500 text-white shadow-xl">
@@ -637,14 +715,15 @@ export default function AdvancedReportingDemoPage() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold">Report Builder</h3>
-                      <p className="text-white/80">See how advanced reporting works</p>
+                      <p className="text-white/80">
+                        See how advanced reporting works
+                      </p>
                     </div>
                   </div>
                   <p className="text-white/90 mb-6">
-                    Experience our advanced reporting platform. 
-                    Build custom reports, configure dashboards, 
-                    schedule deliveries, and see how comprehensive 
-                    analytics drive business success.
+                    Experience our advanced reporting platform. Build custom
+                    reports, configure dashboards, schedule deliveries, and see
+                    how comprehensive analytics drive business success.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -683,14 +762,17 @@ export default function AdvancedReportingDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">Reporting Management</h3>
-                      <p className="text-nude-700">See how reporting drives platform success</p>
+                      <h3 className="text-2xl font-bold">
+                        Reporting Management
+                      </h3>
+                      <p className="text-nude-700">
+                        See how reporting drives platform success
+                      </p>
                     </div>
                   </div>
                   <p className="text-base-content/80 mb-6">
-                    Explore our reporting management dashboard. 
-                    Configure report templates, schedule 
-                    deliveries, manage permissions, and 
+                    Explore our reporting management dashboard. Configure report
+                    templates, schedule deliveries, manage permissions, and
                     optimize reporting workflows.
                   </p>
                   <div className="space-y-3">
@@ -712,7 +794,10 @@ export default function AdvancedReportingDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link
+                      href="/demo/etuna/management-demo"
+                      className="btn btn-primary"
+                    >
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>
@@ -730,17 +815,23 @@ export default function AdvancedReportingDemoPage() {
               <div className="text-center">
                 <Phone className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Ready to Report?</h3>
-                <p className="text-primary-content/80">Contact us to implement advanced reporting.</p>
+                <p className="text-primary-content/80">
+                  Contact us to implement advanced reporting.
+                </p>
               </div>
               <div className="text-center">
                 <Mail className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Schedule a Demo</h3>
-                <p className="text-primary-content/80">Book a personalized demonstration of our reporting system.</p>
+                <p className="text-primary-content/80">
+                  Book a personalized demonstration of our reporting system.
+                </p>
               </div>
               <div className="text-center">
                 <Globe className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Learn More</h3>
-                <p className="text-primary-content/80">Visit our main website for more information about Buffr Host.</p>
+                <p className="text-primary-content/80">
+                  Visit our main website for more information about Buffr Host.
+                </p>
               </div>
             </div>
           </div>

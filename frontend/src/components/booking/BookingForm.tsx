@@ -1,17 +1,23 @@
 /**
  * Booking Form Component for The Shandi Frontend
- * 
+ *
  * Form component for creating and managing bookings.
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useBooking, BookingData } from '@/hooks/useBooking';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useBooking, BookingData } from "@/hooks/useBooking";
 
 interface BookingFormProps {
   propertyId: string;
@@ -20,47 +26,54 @@ interface BookingFormProps {
   className?: string;
 }
 
-export function BookingForm({ propertyId, onSuccess, onError, className }: BookingFormProps) {
+export function BookingForm({
+  propertyId,
+  onSuccess,
+  onError,
+  className,
+}: BookingFormProps) {
   const [formData, setFormData] = useState<BookingData>({
     property_id: propertyId,
-    check_in: '',
-    check_out: '',
+    check_in: "",
+    check_out: "",
     guests: 1,
-    special_requests: '',
+    special_requests: "",
   });
 
   const { createBooking, loading, error } = useBooking();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: name === 'guests' ? parseInt(value) || 1 : value,
+      [name]: name === "guests" ? parseInt(value) || 1 : value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const booking = await createBooking(formData);
-    
+
     if (booking) {
       onSuccess?.(booking);
       // Reset form
       setFormData({
         property_id: propertyId,
-        check_in: '',
-        check_out: '',
+        check_in: "",
+        check_out: "",
         guests: 1,
-        special_requests: '',
+        special_requests: "",
       });
     } else {
-      onError?.(error || 'Failed to create booking');
+      onError?.(error || "Failed to create booking");
     }
   };
 
   return (
-    <Card className={cn('w-full max-w-md mx-auto', className)}>
+    <Card className={cn("w-full max-w-md mx-auto", className)}>
       <CardHeader>
         <CardTitle>Create Booking</CardTitle>
         <CardDescription>
@@ -93,7 +106,7 @@ export function BookingForm({ propertyId, onSuccess, onError, className }: Booki
               />
             </div>
           </div>
-          
+
           <div>
             <Label htmlFor="guests">Number of Guests</Label>
             <Input
@@ -106,9 +119,11 @@ export function BookingForm({ propertyId, onSuccess, onError, className }: Booki
               required
             />
           </div>
-          
+
           <div>
-            <Label htmlFor="special_requests">Special Requests (Optional)</Label>
+            <Label htmlFor="special_requests">
+              Special Requests (Optional)
+            </Label>
             <textarea
               id="special_requests"
               name="special_requests"
@@ -118,15 +133,13 @@ export function BookingForm({ propertyId, onSuccess, onError, className }: Booki
               rows={3}
             />
           </div>
-          
+
           {error && (
-            <div className="text-red-600 text-xs sm:text-sm">
-              {error}
-            </div>
+            <div className="text-red-600 text-xs sm:text-sm">{error}</div>
           )}
-          
+
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? 'Creating Booking...' : 'Create Booking'}
+            {loading ? "Creating Booking..." : "Create Booking"}
           </Button>
         </form>
       </CardContent>

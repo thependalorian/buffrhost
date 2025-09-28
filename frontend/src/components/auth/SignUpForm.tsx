@@ -1,22 +1,38 @@
 /**
  * Sign Up Form Component for BuffrHost
- * 
+ *
  * This component provides a comprehensive sign up form with support for
  * email/password registration and Google OAuth.
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/lib/contexts/auth-context';
-import { SignUpCredentials } from '@/lib/auth/types';
-import { validateSignUpCredentials } from '@/lib/auth/utils';
-import { Loader2, Eye, EyeOff, Mail, Lock, User, Building, Phone } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { Separator } from "@/src/components/ui/separator";
+import { useAuth } from "@/src/lib/contexts/auth-context";
+import { SignUpCredentials } from "@/src/lib/auth/types";
+import { validateSignUpCredentials } from "@/src/lib/auth/utils";
+import {
+  Loader2,
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  Building,
+  Phone,
+} from "lucide-react";
 
 interface SignUpFormProps {
   onSuccess?: () => void;
@@ -25,27 +41,27 @@ interface SignUpFormProps {
   className?: string;
 }
 
-export function SignUpForm({ 
-  onSuccess, 
-  onError, 
+export function SignUpForm({
+  onSuccess,
+  onError,
   showSocialAuth = true,
-  className = ""
+  className = "",
 }: SignUpFormProps) {
   const { signUp, signInWithGoogle, loading } = useAuth();
   const [formData, setFormData] = useState<SignUpCredentials>({
-    email: '',
-    password: '',
-    first_name: '',
-    last_name: '',
-    company_name: '',
-    phone: ''
+    email: "",
+    password: "",
+    first_name: "",
+    last_name: "",
+    company_name: "",
+    phone: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (field: keyof SignUpCredentials, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear errors when user starts typing
     if (errors.length > 0) {
       setErrors([]);
@@ -61,24 +77,26 @@ export function SignUpForm({
       // Validate form data
       const validationErrors = validateSignUpCredentials(formData);
       if (validationErrors.length > 0) {
-        const errorMessages = validationErrors.map(error => error.message);
+        const errorMessages = validationErrors.map((error) => error.message);
         setErrors(errorMessages);
-        onError?.(errorMessages.join(', '));
+        onError?.(errorMessages.join(", "));
         return;
       }
 
       // Attempt sign up
       const result = await signUp(formData);
-      
+
       if (result.error) {
-        const errorMessage = typeof result.error === 'string' ? result.error : 'Sign up failed';
+        const errorMessage =
+          typeof result.error === "string" ? result.error : "Sign up failed";
         setErrors([errorMessage]);
         onError?.(errorMessage);
       } else {
         onSuccess?.();
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
       setErrors([errorMessage]);
       onError?.(errorMessage);
     } finally {
@@ -90,14 +108,18 @@ export function SignUpForm({
     try {
       setIsSubmitting(true);
       const result = await signInWithGoogle();
-      
+
       if (result.error) {
-        const errorMessage = typeof result.error === 'string' ? result.error : 'Google sign up failed';
+        const errorMessage =
+          typeof result.error === "string"
+            ? result.error
+            : "Google sign up failed";
         setErrors([errorMessage]);
         onError?.(errorMessage);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Google sign up failed';
+      const errorMessage =
+        error instanceof Error ? error.message : "Google sign up failed";
       setErrors([errorMessage]);
       onError?.(errorMessage);
     } finally {
@@ -108,12 +130,14 @@ export function SignUpForm({
   return (
     <Card className={`w-full max-w-md mx-auto ${className}`}>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Join BuffrHost</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">
+          Join BuffrHost
+        </CardTitle>
         <CardDescription className="text-center">
           Create your BuffrHost account to manage your hotel
         </CardDescription>
       </CardHeader>
-      
+
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {/* Error Display */}
@@ -138,14 +162,16 @@ export function SignUpForm({
                   type="text"
                   placeholder="John"
                   value={formData.first_name}
-                  onChange={(e) => handleInputChange('first_name', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("first_name", e.target.value)
+                  }
                   className="pl-10"
                   required
                   disabled={isSubmitting}
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="last_name">Last Name</Label>
               <div className="relative">
@@ -155,7 +181,9 @@ export function SignUpForm({
                   type="text"
                   placeholder="Doe"
                   value={formData.last_name}
-                  onChange={(e) => handleInputChange('last_name', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("last_name", e.target.value)
+                  }
                   className="pl-10"
                   required
                   disabled={isSubmitting}
@@ -174,7 +202,7 @@ export function SignUpForm({
                 type="email"
                 placeholder="john@example.com"
                 value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 className="pl-10"
                 required
                 disabled={isSubmitting}
@@ -192,7 +220,9 @@ export function SignUpForm({
                 type="text"
                 placeholder="Your Hotel Name"
                 value={formData.company_name}
-                onChange={(e) => handleInputChange('company_name', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("company_name", e.target.value)
+                }
                 className="pl-10"
                 disabled={isSubmitting}
               />
@@ -209,7 +239,7 @@ export function SignUpForm({
                 type="tel"
                 placeholder="+264 81 123 4567"
                 value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
                 className="pl-10"
                 disabled={isSubmitting}
               />
@@ -223,10 +253,10 @@ export function SignUpForm({
               <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Create a strong password"
                 value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
+                onChange={(e) => handleInputChange("password", e.target.value)}
                 className="pl-10 pr-10"
                 required
                 disabled={isSubmitting}
@@ -247,16 +277,17 @@ export function SignUpForm({
               </Button>
             </div>
             <p className="text-xs text-muted-foreground">
-              Password must be at least 8 characters with uppercase, lowercase, number, and special character
+              Password must be at least 8 characters with uppercase, lowercase,
+              number, and special character
             </p>
           </div>
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-4">
           {/* Sign Up Button */}
-          <Button 
-            type="submit" 
-            className="w-full" 
+          <Button
+            type="submit"
+            className="w-full"
             disabled={isSubmitting || loading}
           >
             {isSubmitting || loading ? (
@@ -265,7 +296,7 @@ export function SignUpForm({
                 Creating account...
               </>
             ) : (
-              'Create Account'
+              "Create Account"
             )}
           </Button>
 

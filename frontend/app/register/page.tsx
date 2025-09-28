@@ -1,16 +1,10 @@
-/**
- * Register Page for The Shandi Frontend
- * 
- * Registration page with signup form and social authentication options.
- */
-
 'use client';
 
-import React from 'react';
-import { SignUpForm } from '@/components/auth/SignUpForm';
-import { useAuth } from '@/lib/contexts/auth-context';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { SignUpForm } from "@/src/components/auth/SignUpForm";
+import { useAuth } from "@/src/lib/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { PageHeader, LoadingSpinner } from "@/src/components/ui";
 
 export default function RegisterPage() {
   const { user, loading } = useAuth();
@@ -18,14 +12,14 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (user && !loading) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [user, loading, router]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
@@ -35,22 +29,21 @@ export default function RegisterPage() {
   }
 
   const handleSignUpSuccess = () => {
-    router.push('/dashboard');
+    router.push("/dashboard");
   };
 
   const handleSignUpError = (error: string) => {
-    console.error('Sign up error:', error);
+    console.error("Sign up error:", error);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Join BuffrHost</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Create your account to start managing your hospitality business
-          </p>
-        </div>
+        <PageHeader
+          title="Join BuffrHost"
+          description="Create your account to start managing your hospitality business"
+          className="text-center"
+        />
 
         <SignUpForm
           onSuccess={handleSignUpSuccess}
@@ -60,7 +53,7 @@ export default function RegisterPage() {
 
         <div className="text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <a
               href="/login"
               className="font-medium text-primary hover:text-primary/80"
@@ -73,3 +66,11 @@ export default function RegisterPage() {
     </div>
   );
 }
+/**
+ * Register Page for The Shandi Frontend
+ *
+ * Registration page with signup form and social authentication options.
+ */
+
+
+import React from "react";

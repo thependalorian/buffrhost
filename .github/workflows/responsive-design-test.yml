@@ -26,7 +26,7 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: 'frontend/package-lock.json'
+        cache-dependency-path: 'the-shandi/frontend/package-lock.json'
         
     - name: Install dependencies
       run: |
@@ -35,38 +35,38 @@ jobs:
         
     - name: Run responsive design tests
       run: |
-        cd frontend
+        cd the-shandi/frontend
         npm test -- --testPathPattern="responsive|layout" --verbose
         
     - name: Test responsive utilities
       run: |
-        cd frontend
+        cd the-shandi/frontend
         npm test -- --testPathPattern="responsive" --coverage --coverageReporters=text
         
     - name: Test component responsiveness
       run: |
-        cd frontend
+        cd the-shandi/frontend
         npm test -- --testPathPattern="components.*responsive" --verbose
         
     - name: Test mobile-first components
       run: |
-        cd frontend
+        cd the-shandi/frontend
         npm test -- --testPathPattern="mobile|touch" --verbose
         
     - name: Test cross-device compatibility
       run: |
-        cd frontend
+        cd the-shandi/frontend
         npm test -- --testPathPattern="cross-device|breakpoint" --verbose
         
     - name: Generate responsive test report
       run: |
-        cd frontend
+        cd the-shandi/frontend
         npm test -- --coverage --coverageReporters=html --testPathPattern="responsive"
         
     - name: Upload responsive test coverage
       uses: codecov/codecov-action@v3
       with:
-        file: frontend/coverage/lcov.info
+        file: the-shandi/frontend/coverage/lcov.info
         flags: responsive-design
         name: responsive-design-coverage
         

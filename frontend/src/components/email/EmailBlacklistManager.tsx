@@ -1,38 +1,38 @@
 /**
  * Email Blacklist Manager Component
- * 
+ *
  * Manages email blacklist and spam prevention
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Shield, 
-  Plus, 
-  Trash2, 
-  Search, 
-  Filter, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Shield,
+  Plus,
+  Trash2,
+  Search,
+  Filter,
   AlertTriangle,
   CheckCircle,
   Clock,
   Mail,
   User,
-  Globe
-} from 'lucide-react';
+  Globe,
+} from "lucide-react";
 
 interface BlacklistItem {
   id: string;
   email: string;
   domain?: string;
-  reason: 'spam' | 'bounce' | 'complaint' | 'manual';
+  reason: "spam" | "bounce" | "complaint" | "manual";
   addedDate: string;
   addedBy: string;
-  status: 'active' | 'disabled';
+  status: "active" | "disabled";
   description?: string;
 }
 
@@ -43,102 +43,104 @@ interface EmailBlacklistManagerProps {
   onToggle?: (id: string) => void;
 }
 
-export default function EmailBlacklistManager({ 
-  blacklistItems, 
-  onAdd, 
-  onRemove, 
-  onToggle 
+export default function EmailBlacklistManager({
+  blacklistItems,
+  onAdd,
+  onRemove,
+  onToggle,
 }: EmailBlacklistManagerProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterReason, setFilterReason] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterReason, setFilterReason] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newEmail, setNewEmail] = useState('');
-  const [newReason, setNewReason] = useState('manual');
-  const [newDescription, setNewDescription] = useState('');
+  const [newEmail, setNewEmail] = useState("");
+  const [newReason, setNewReason] = useState("manual");
+  const [newDescription, setNewDescription] = useState("");
 
   const mockBlacklistItems: BlacklistItem[] = [
     {
-      id: '1',
-      email: 'spam@example.com',
-      reason: 'spam',
-      addedDate: '2024-01-15 10:30',
-      addedBy: 'admin@buffrhost.com',
-      status: 'active',
-      description: 'Multiple spam complaints'
+      id: "1",
+      email: "spam@example.com",
+      reason: "spam",
+      addedDate: "2024-01-15 10:30",
+      addedBy: "admin@buffrhost.com",
+      status: "active",
+      description: "Multiple spam complaints",
     },
     {
-      id: '2',
-      email: 'bounce@invalid.com',
-      reason: 'bounce',
-      addedDate: '2024-01-14 16:45',
-      addedBy: 'system@buffrhost.com',
-      status: 'active',
-      description: 'Hard bounce - invalid domain'
+      id: "2",
+      email: "bounce@invalid.com",
+      reason: "bounce",
+      addedDate: "2024-01-14 16:45",
+      addedBy: "system@buffrhost.com",
+      status: "active",
+      description: "Hard bounce - invalid domain",
     },
     {
-      id: '3',
-      domain: 'spamdomain.com',
-      reason: 'spam',
-      addedDate: '2024-01-13 14:20',
-      addedBy: 'admin@buffrhost.com',
-      status: 'active',
-      description: 'Known spam domain'
+      id: "3",
+      domain: "spamdomain.com",
+      reason: "spam",
+      addedDate: "2024-01-13 14:20",
+      addedBy: "admin@buffrhost.com",
+      status: "active",
+      description: "Known spam domain",
     },
     {
-      id: '4',
-      email: 'complaint@example.com',
-      reason: 'complaint',
-      addedDate: '2024-01-12 09:15',
-      addedBy: 'system@buffrhost.com',
-      status: 'disabled',
-      description: 'Unsubscribe complaint'
-    }
+      id: "4",
+      email: "complaint@example.com",
+      reason: "complaint",
+      addedDate: "2024-01-12 09:15",
+      addedBy: "system@buffrhost.com",
+      status: "disabled",
+      description: "Unsubscribe complaint",
+    },
   ];
 
   const displayItems = blacklistItems || mockBlacklistItems;
 
-  const filteredItems = displayItems.filter(item => {
-    const matchesSearch = item.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.domain?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterReason === 'all' || item.reason === filterReason;
+  const filteredItems = displayItems.filter((item) => {
+    const matchesSearch =
+      item.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.domain?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter =
+      filterReason === "all" || item.reason === filterReason;
     return matchesSearch && matchesFilter;
   });
 
   const getReasonColor = (reason: string) => {
     switch (reason) {
-      case 'spam':
-        return 'bg-red-100 text-red-800';
-      case 'bounce':
-        return 'bg-orange-100 text-orange-800';
-      case 'complaint':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'manual':
-        return 'bg-blue-100 text-blue-800';
+      case "spam":
+        return "bg-red-100 text-red-800";
+      case "bounce":
+        return "bg-orange-100 text-orange-800";
+      case "complaint":
+        return "bg-yellow-100 text-yellow-800";
+      case "manual":
+        return "bg-blue-100 text-blue-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'disabled':
-        return 'bg-gray-100 text-gray-800';
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "disabled":
+        return "bg-gray-100 text-gray-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getReasonIcon = (reason: string) => {
     switch (reason) {
-      case 'spam':
+      case "spam":
         return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      case 'bounce':
+      case "bounce":
         return <Mail className="w-4 h-4 text-orange-500" />;
-      case 'complaint':
+      case "complaint":
         return <User className="w-4 h-4 text-yellow-500" />;
-      case 'manual':
+      case "manual":
         return <Shield className="w-4 h-4 text-blue-500" />;
       default:
         return <Shield className="w-4 h-4 text-gray-500" />;
@@ -148,20 +150,21 @@ export default function EmailBlacklistManager({
   const handleAdd = () => {
     if (newEmail.trim()) {
       onAdd?.(newEmail.trim(), newReason, newDescription.trim());
-      setNewEmail('');
-      setNewDescription('');
+      setNewEmail("");
+      setNewDescription("");
       setShowAddForm(false);
     }
   };
 
   const blacklistStats = {
     total: displayItems.length,
-    active: displayItems.filter(item => item.status === 'active').length,
-    disabled: displayItems.filter(item => item.status === 'disabled').length,
-    spam: displayItems.filter(item => item.reason === 'spam').length,
-    bounce: displayItems.filter(item => item.reason === 'bounce').length,
-    complaint: displayItems.filter(item => item.reason === 'complaint').length,
-    manual: displayItems.filter(item => item.reason === 'manual').length
+    active: displayItems.filter((item) => item.status === "active").length,
+    disabled: displayItems.filter((item) => item.status === "disabled").length,
+    spam: displayItems.filter((item) => item.reason === "spam").length,
+    bounce: displayItems.filter((item) => item.reason === "bounce").length,
+    complaint: displayItems.filter((item) => item.reason === "complaint")
+      .length,
+    manual: displayItems.filter((item) => item.reason === "manual").length,
   };
 
   return (
@@ -170,7 +173,9 @@ export default function EmailBlacklistManager({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Email Blacklist Manager</h1>
-          <p className="text-gray-600">Manage email blacklist and spam prevention</p>
+          <p className="text-gray-600">
+            Manage email blacklist and spam prevention
+          </p>
         </div>
         <Button onClick={() => setShowAddForm(!showAddForm)}>
           <Plus className="w-4 h-4 mr-2" />
@@ -269,7 +274,9 @@ export default function EmailBlacklistManager({
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Description (Optional)</label>
+              <label className="text-sm font-medium">
+                Description (Optional)
+              </label>
               <Input
                 placeholder="Reason for blacklisting..."
                 value={newDescription}
@@ -344,10 +351,13 @@ export default function EmailBlacklistManager({
                       </Badge>
                     </div>
                     {item.description && (
-                      <p className="text-sm text-gray-600 mb-1">{item.description}</p>
+                      <p className="text-sm text-gray-600 mb-1">
+                        {item.description}
+                      </p>
                     )}
                     <div className="text-sm text-gray-600 mb-1">
-                      <span className="font-medium">Added by:</span> {item.addedBy}
+                      <span className="font-medium">Added by:</span>{" "}
+                      {item.addedBy}
                     </div>
                     <div className="flex items-center space-x-2 text-xs text-gray-500">
                       <Clock className="w-3 h-3" />
@@ -361,7 +371,7 @@ export default function EmailBlacklistManager({
                     size="sm"
                     onClick={() => onToggle?.(item.id)}
                   >
-                    {item.status === 'active' ? (
+                    {item.status === "active" ? (
                       <CheckCircle className="w-4 h-4" />
                     ) : (
                       <AlertTriangle className="w-4 h-4" />
@@ -389,10 +399,9 @@ export default function EmailBlacklistManager({
               No blacklist items found
             </h3>
             <p className="text-gray-500">
-              {searchTerm || filterReason !== 'all' 
-                ? 'No items match your search criteria.'
-                : 'No emails or domains are currently blacklisted.'
-              }
+              {searchTerm || filterReason !== "all"
+                ? "No items match your search criteria."
+                : "No emails or domains are currently blacklisted."}
             </p>
           </CardContent>
         </Card>

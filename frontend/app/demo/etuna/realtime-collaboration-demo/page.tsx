@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
+import { PageHeader, StatCard, ActionButton, ModalForm, FormField, FormSelect, Alert } from '@/src/components/ui';
+import { useState } from 'react';
 import { 
   Users, 
   MessageCircle, 
@@ -190,7 +191,6 @@ import {
   Lock as LockIcon3,
   Key as KeyIcon,
   Eye as EyeIcon4,
-  EyeOff as EyeOffIcon,
   AlertTriangle,
   CheckCircle as CheckCircleIcon,
   Server as ServerIcon,
@@ -230,13 +230,11 @@ import {
   AlertCircle as AlertCircleIcon2,
   TrendingUp as TrendingUpIcon2,
   TrendingDown as TrendingDownIcon2,
-  Activity,
   Smartphone as SmartphoneIcon2,
   Download as DownloadIcon5,
   QrCode as QrCodeIcon2,
   Camera,
   Bell as BellIcon2,
-  MapPin as MapPinIcon,
   Star as StarIcon2,
   Heart as HeartIcon2,
   Share as ShareIcon,
@@ -251,6 +249,7 @@ import {
   Share as ShareIcon2,
   Edit as EditIcon3
 } from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Real-time Collaboration Demo - Buffr Host Platform',
@@ -283,7 +282,7 @@ export default function RealtimeCollaborationDemoPage() {
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Start Collaborating
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link href="/demo/etuna/management-demo" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -702,7 +701,7 @@ export default function RealtimeCollaborationDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link href="/demo/etuna/management-demo" className="btn btn-primary">
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>

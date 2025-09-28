@@ -5,26 +5,27 @@ This module provides a public showcase of Buffr Host capabilities
 without requiring authentication. It's a demonstration-only system.
 """
 
-from fastapi import APIRouter, HTTPException, status, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func, desc
+import logging
+from datetime import date, datetime
 from typing import List, Optional
 from uuid import UUID
-from datetime import datetime, date
-import logging
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import and_, desc, func, or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models.hospitality_property import HospitalityProperty
 from models.menu import Menu, MenuCategory
 from models.order import Order, OrderItem
 from models.room import RoomType
+from models.services import RecreationService, SpecializedService
 from models.transportation import TransportationService
-from models.recreation import RecreationService
-from models.specialized import SpecializedService
 from schemas.hospitality_property import PropertyResponse
-from schemas.menu import MenuItemResponse, MenuCategoryResponse
-from schemas.order import OrderResponse, OrderCreate
-from schemas.room import RoomTypeResponse, RoomReservationResponse, RoomReservationCreate
+from schemas.menu import MenuCategoryResponse, MenuItemResponse
+from schemas.order import OrderCreate, OrderResponse
+from schemas.room import (RoomReservationCreate, RoomReservationResponse,
+                          RoomTypeResponse)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -36,35 +37,34 @@ ETUNA_PROPERTY_ID = 1
 # PUBLIC DEMO ENDPOINTS (NO AUTHENTICATION REQUIRED)
 # ============================================================================
 
+
 @router.get("/property", response_model=PropertyResponse)
-async def get_etuna_property(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_etuna_property(db: AsyncSession = Depends(get_db)):
     """Get Etuna Guesthouse property information for public demo display."""
     try:
         result = await db.execute(
-            select(HospitalityProperty).where(HospitalityProperty.property_id == ETUNA_PROPERTY_ID)
+            select(HospitalityProperty).where(
+                HospitalityProperty.property_id == ETUNA_PROPERTY_ID
+            )
         )
         property = result.scalar_one_or_none()
-        
+
         if not property:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Etuna property not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Etuna property not found"
             )
-        
+
         return PropertyResponse.from_orm(property)
     except Exception as e:
         logger.error(f"Error fetching Etuna property: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch property information"
+            detail="Failed to fetch property information",
         )
 
+
 @router.get("/rooms", response_model=List[RoomTypeResponse])
-async def get_etuna_rooms(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_etuna_rooms(db: AsyncSession = Depends(get_db)):
     """Get all available room types at Etuna Guesthouse for demo."""
     try:
         result = await db.execute(
@@ -74,44 +74,44 @@ async def get_etuna_rooms(
             .order_by(RoomType.base_price_per_night)
         )
         room_types = result.scalars().all()
-        
+
         return [RoomTypeResponse.from_orm(room_type) for room_type in room_types]
     except Exception as e:
         logger.error(f"Error fetching Etuna rooms: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch room information"
+            detail="Failed to fetch room information",
         )
+
 
 @router.get("/menu", response_model=List[MenuItemResponse])
 async def get_etuna_menu(
     category_id: Optional[int] = Query(None, description="Filter by menu category"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get Etuna restaurant menu items for demo."""
     try:
         query = select(Menu).where(Menu.property_id == ETUNA_PROPERTY_ID)
-        
+
         if category_id:
             query = query.where(Menu.category_id == category_id)
-        
+
         query = query.where(Menu.is_available == True).order_by(Menu.name)
-        
+
         result = await db.execute(query)
         menu_items = result.scalars().all()
-        
+
         return [MenuItemResponse.from_orm(item) for item in menu_items]
     except Exception as e:
         logger.error(f"Error fetching Etuna menu: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch menu information"
+            detail="Failed to fetch menu information",
         )
 
+
 @router.get("/menu/categories", response_model=List[MenuCategoryResponse])
-async def get_etuna_menu_categories(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_etuna_menu_categories(db: AsyncSession = Depends(get_db)):
     """Get Etuna restaurant menu categories for demo."""
     try:
         result = await db.execute(
@@ -120,19 +120,18 @@ async def get_etuna_menu_categories(
             .order_by(MenuCategory.display_order)
         )
         categories = result.scalars().all()
-        
+
         return [MenuCategoryResponse.from_orm(category) for category in categories]
     except Exception as e:
         logger.error(f"Error fetching Etuna menu categories: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch menu categories"
+            detail="Failed to fetch menu categories",
         )
 
+
 @router.get("/services/transportation")
-async def get_etuna_transportation_services(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_etuna_transportation_services(db: AsyncSession = Depends(get_db)):
     """Get Etuna transportation services (tours, shuttles, etc.) for demo."""
     try:
         result = await db.execute(
@@ -142,7 +141,7 @@ async def get_etuna_transportation_services(
             .order_by(TransportationService.service_name)
         )
         services = result.scalars().all()
-        
+
         return [
             {
                 "service_id": service.service_id,
@@ -152,7 +151,7 @@ async def get_etuna_transportation_services(
                 "base_price": float(service.base_price),
                 "duration_minutes": service.duration_minutes,
                 "capacity": service.capacity,
-                "requires_booking": service.requires_booking
+                "requires_booking": service.requires_booking,
             }
             for service in services
         ]
@@ -160,13 +159,12 @@ async def get_etuna_transportation_services(
         logger.error(f"Error fetching Etuna transportation services: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch transportation services"
+            detail="Failed to fetch transportation services",
         )
 
+
 @router.get("/services/recreation")
-async def get_etuna_recreation_services(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_etuna_recreation_services(db: AsyncSession = Depends(get_db)):
     """Get Etuna recreation services (activities, tours, etc.) for demo."""
     try:
         result = await db.execute(
@@ -176,7 +174,7 @@ async def get_etuna_recreation_services(
             .order_by(RecreationService.service_name)
         )
         services = result.scalars().all()
-        
+
         return [
             {
                 "recreation_id": service.recreation_id,
@@ -187,7 +185,7 @@ async def get_etuna_recreation_services(
                 "duration_minutes": service.duration_minutes,
                 "capacity": service.capacity,
                 "equipment_included": service.equipment_included,
-                "requires_booking": service.requires_booking
+                "requires_booking": service.requires_booking,
             }
             for service in services
         ]
@@ -195,13 +193,12 @@ async def get_etuna_recreation_services(
         logger.error(f"Error fetching Etuna recreation services: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch recreation services"
+            detail="Failed to fetch recreation services",
         )
 
+
 @router.get("/services/specialized")
-async def get_etuna_specialized_services(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_etuna_specialized_services(db: AsyncSession = Depends(get_db)):
     """Get Etuna specialized services (concierge, laundry, etc.) for demo."""
     try:
         result = await db.execute(
@@ -211,7 +208,7 @@ async def get_etuna_specialized_services(
             .order_by(SpecializedService.service_name)
         )
         services = result.scalars().all()
-        
+
         return [
             {
                 "service_id": service.service_id,
@@ -220,7 +217,7 @@ async def get_etuna_specialized_services(
                 "description": service.description,
                 "base_price": float(service.base_price),
                 "duration_minutes": service.duration_minutes,
-                "requires_booking": service.requires_booking
+                "requires_booking": service.requires_booking,
             }
             for service in services
         ]
@@ -228,13 +225,15 @@ async def get_etuna_specialized_services(
         logger.error(f"Error fetching Etuna specialized services: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch specialized services"
+            detail="Failed to fetch specialized services",
         )
 
-@router.post("/demo/reservation", response_model=dict, status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "/demo/reservation", response_model=dict, status_code=status.HTTP_201_CREATED
+)
 async def create_demo_reservation(
-    reservation_data: RoomReservationCreate,
-    db: AsyncSession = Depends(get_db)
+    reservation_data: RoomReservationCreate, db: AsyncSession = Depends(get_db)
 ):
     """Create a demo reservation (simulation only - no real booking)."""
     try:
@@ -244,18 +243,18 @@ async def create_demo_reservation(
                 and_(
                     RoomType.room_type_id == reservation_data.room_type_id,
                     RoomType.property_id == ETUNA_PROPERTY_ID,
-                    RoomType.is_active == True
+                    RoomType.is_active == True,
                 )
             )
         )
         room_type = room_type_result.scalar_one_or_none()
-        
+
         if not room_type:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Room type not found or not available"
+                detail="Room type not found or not available",
             )
-        
+
         # Return demo response (no actual database insert)
         demo_reservation = {
             "reservation_id": f"DEMO-{datetime.now().strftime('%Y%m%d%H%M%S')}",
@@ -272,24 +271,24 @@ async def create_demo_reservation(
             "total_amount": reservation_data.total_amount,
             "status": "demo_confirmed",
             "created_at": datetime.utcnow().isoformat(),
-            "demo_note": "This is a demo reservation. No actual booking was created."
+            "demo_note": "This is a demo reservation. No actual booking was created.",
         }
-        
+
         return demo_reservation
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error creating demo reservation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create demo reservation"
+            detail="Failed to create demo reservation",
         )
+
 
 @router.post("/demo/order", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_demo_order(
-    order_data: OrderCreate,
-    db: AsyncSession = Depends(get_db)
+    order_data: OrderCreate, db: AsyncSession = Depends(get_db)
 ):
     """Create a demo order (simulation only - no real order)."""
     try:
@@ -305,26 +304,26 @@ async def create_demo_order(
             "notes": order_data.notes,
             "order_date": datetime.utcnow().isoformat(),
             "items": order_data.items,
-            "demo_note": "This is a demo order. No actual order was created."
+            "demo_note": "This is a demo order. No actual order was created.",
         }
-        
+
         return demo_order
-        
+
     except Exception as e:
         logger.error(f"Error creating demo order: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create demo order"
+            detail="Failed to create demo order",
         )
+
 
 # ============================================================================
 # DEMO MANAGEMENT ENDPOINTS (PUBLIC ACCESS - SIMULATION ONLY)
 # ============================================================================
 
+
 @router.get("/demo/dashboard")
-async def get_demo_dashboard(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_demo_dashboard(db: AsyncSession = Depends(get_db)):
     """Get demo dashboard data (simulation only)."""
     try:
         # Return simulated dashboard data
@@ -341,7 +340,7 @@ async def get_demo_dashboard(
                     "check_in": "2024-01-15",
                     "check_out": "2024-01-17",
                     "status": "confirmed",
-                    "amount": 2000.00
+                    "amount": 2000.00,
                 },
                 {
                     "id": "DEMO-RES-002",
@@ -350,8 +349,8 @@ async def get_demo_dashboard(
                     "check_in": "2024-01-16",
                     "check_out": "2024-01-19",
                     "status": "pending",
-                    "amount": 4500.00
-                }
+                    "amount": 4500.00,
+                },
             ],
             "recent_orders": [
                 {
@@ -359,32 +358,35 @@ async def get_demo_dashboard(
                     "customer_name": "Guest",
                     "total_amount": 285.00,
                     "status": "delivered",
-                    "order_date": "2024-01-15T19:30:00Z"
+                    "order_date": "2024-01-15T19:30:00Z",
                 },
                 {
                     "id": "DEMO-ORD-002",
                     "customer_name": "Guest",
                     "total_amount": 150.00,
                     "status": "ready",
-                    "order_date": "2024-01-15T20:15:00Z"
-                }
+                    "order_date": "2024-01-15T20:15:00Z",
+                },
             ],
-            "demo_note": "This is demo data for showcase purposes only."
+            "demo_note": "This is demo data for showcase purposes only.",
         }
-        
+
         return demo_dashboard
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo dashboard: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo dashboard"
+            detail="Failed to fetch demo dashboard",
         )
+
 
 @router.get("/demo/reservations")
 async def get_demo_reservations(
-    status_filter: Optional[str] = Query(None, description="Filter by reservation status"),
-    db: AsyncSession = Depends(get_db)
+    status_filter: Optional[str] = Query(
+        None, description="Filter by reservation status"
+    ),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo reservations (simulation only)."""
     try:
@@ -404,7 +406,7 @@ async def get_demo_reservations(
                 "special_requests": "Late check-in requested",
                 "total_amount": 2000.00,
                 "status": "confirmed",
-                "created_at": "2024-01-10T00:00:00Z"
+                "created_at": "2024-01-10T00:00:00Z",
             },
             {
                 "reservation_id": 2,
@@ -420,27 +422,30 @@ async def get_demo_reservations(
                 "special_requests": "High chair needed for toddler",
                 "total_amount": 4500.00,
                 "status": "pending",
-                "created_at": "2024-01-11T00:00:00Z"
-            }
+                "created_at": "2024-01-11T00:00:00Z",
+            },
         ]
-        
+
         # Filter by status if provided
         if status_filter:
-            demo_reservations = [r for r in demo_reservations if r["status"] == status_filter]
-        
+            demo_reservations = [
+                r for r in demo_reservations if r["status"] == status_filter
+            ]
+
         return demo_reservations
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo reservations: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo reservations"
+            detail="Failed to fetch demo reservations",
         )
+
 
 @router.get("/demo/orders")
 async def get_demo_orders(
     status_filter: Optional[str] = Query(None, description="Filter by order status"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo orders (simulation only)."""
     try:
@@ -455,7 +460,7 @@ async def get_demo_orders(
                 "status": "delivered",
                 "total_amount": 285.00,
                 "notes": "Table T-05",
-                "order_date": "2024-01-15T19:30:00Z"
+                "order_date": "2024-01-15T19:30:00Z",
             },
             {
                 "order_id": 2,
@@ -466,31 +471,31 @@ async def get_demo_orders(
                 "status": "ready",
                 "total_amount": 150.00,
                 "notes": "Table T-12",
-                "order_date": "2024-01-15T20:15:00Z"
-            }
+                "order_date": "2024-01-15T20:15:00Z",
+            },
         ]
-        
+
         # Filter by status if provided
         if status_filter:
             demo_orders = [o for o in demo_orders if o["status"] == status_filter]
-        
+
         return demo_orders
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo orders: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo orders"
+            detail="Failed to fetch demo orders",
         )
+
 
 # ============================================================================
 # PHASE 1 DEMO ENDPOINTS (QR CODES, LOYALTY, INVENTORY, STAFF, PAYMENTS)
 # ============================================================================
 
+
 @router.get("/demo/qr-codes")
-async def get_demo_qr_codes(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_demo_qr_codes(db: AsyncSession = Depends(get_db)):
     """Get demo QR codes for showcase purposes."""
     try:
         # Return simulated QR code data
@@ -503,17 +508,17 @@ async def get_demo_qr_codes(
                 "scans_today": 23,
                 "scans_total": 1247,
                 "status": "active",
-                "created_at": "2024-01-01T00:00:00Z"
+                "created_at": "2024-01-01T00:00:00Z",
             },
             {
-                "qr_id": "QR-002", 
+                "qr_id": "QR-002",
                 "qr_type": "menu",
                 "location": "Main Entrance",
                 "qr_url": "https://demo.etuna.com/menu",
                 "scans_today": 45,
                 "scans_total": 3421,
                 "status": "active",
-                "created_at": "2024-01-01T00:00:00Z"
+                "created_at": "2024-01-01T00:00:00Z",
             },
             {
                 "qr_id": "QR-003",
@@ -523,23 +528,24 @@ async def get_demo_qr_codes(
                 "scans_today": 12,
                 "scans_total": 567,
                 "status": "active",
-                "created_at": "2024-01-01T00:00:00Z"
-            }
+                "created_at": "2024-01-01T00:00:00Z",
+            },
         ]
-        
+
         return demo_qr_codes
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo QR codes: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo QR codes"
+            detail="Failed to fetch demo QR codes",
         )
+
 
 @router.get("/demo/loyalty/members")
 async def get_demo_loyalty_members(
     tier_filter: Optional[str] = Query(None, description="Filter by loyalty tier"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo loyalty members for showcase purposes."""
     try:
@@ -556,12 +562,12 @@ async def get_demo_loyalty_members(
                 "total_spent": 12500.00,
                 "join_date": "2024-01-15",
                 "last_visit": "2024-01-20",
-                "status": "active"
+                "status": "active",
             },
             {
                 "member_id": "LOY-002",
                 "name": "Maria Garcia",
-                "email": "maria.garcia@email.com", 
+                "email": "maria.garcia@email.com",
                 "phone": "+264 81 345 6789",
                 "tier": "Silver",
                 "points_balance": 1200,
@@ -569,7 +575,7 @@ async def get_demo_loyalty_members(
                 "total_spent": 6800.00,
                 "join_date": "2024-01-10",
                 "last_visit": "2024-01-18",
-                "status": "active"
+                "status": "active",
             },
             {
                 "member_id": "LOY-003",
@@ -582,27 +588,32 @@ async def get_demo_loyalty_members(
                 "total_spent": 25000.00,
                 "join_date": "2023-12-01",
                 "last_visit": "2024-01-22",
-                "status": "active"
-            }
+                "status": "active",
+            },
         ]
-        
+
         # Filter by tier if provided
         if tier_filter:
-            demo_members = [m for m in demo_members if m["tier"].lower() == tier_filter.lower()]
-        
+            demo_members = [
+                m for m in demo_members if m["tier"].lower() == tier_filter.lower()
+            ]
+
         return demo_members
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo loyalty members: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo loyalty members"
+            detail="Failed to fetch demo loyalty members",
         )
+
 
 @router.get("/demo/inventory")
 async def get_demo_inventory(
-    category_filter: Optional[str] = Query(None, description="Filter by inventory category"),
-    db: AsyncSession = Depends(get_db)
+    category_filter: Optional[str] = Query(
+        None, description="Filter by inventory category"
+    ),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo inventory data for showcase purposes."""
     try:
@@ -619,7 +630,7 @@ async def get_demo_inventory(
                 "total_value": 1147.50,
                 "last_restocked": "2024-01-18",
                 "status": "in_stock",
-                "supplier": "Fresh Foods Ltd"
+                "supplier": "Fresh Foods Ltd",
             },
             {
                 "item_id": "INV-002",
@@ -632,7 +643,7 @@ async def get_demo_inventory(
                 "total_value": 360.00,
                 "last_restocked": "2024-01-15",
                 "status": "low_stock",
-                "supplier": "Grain Suppliers"
+                "supplier": "Grain Suppliers",
             },
             {
                 "item_id": "INV-003",
@@ -645,7 +656,7 @@ async def get_demo_inventory(
                 "total_value": 0.00,
                 "last_restocked": "2024-01-12",
                 "status": "out_of_stock",
-                "supplier": "Fresh Produce Co"
+                "supplier": "Fresh Produce Co",
             },
             {
                 "item_id": "INV-004",
@@ -658,27 +669,32 @@ async def get_demo_inventory(
                 "total_value": 1800.00,
                 "last_restocked": "2024-01-20",
                 "status": "in_stock",
-                "supplier": "Hotel Supplies Inc"
-            }
+                "supplier": "Hotel Supplies Inc",
+            },
         ]
-        
+
         # Filter by category if provided
         if category_filter:
-            demo_inventory = [i for i in demo_inventory if i["category"].lower() == category_filter.lower()]
-        
+            demo_inventory = [
+                i
+                for i in demo_inventory
+                if i["category"].lower() == category_filter.lower()
+            ]
+
         return demo_inventory
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo inventory: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo inventory"
+            detail="Failed to fetch demo inventory",
         )
+
 
 @router.get("/demo/staff")
 async def get_demo_staff(
     department_filter: Optional[str] = Query(None, description="Filter by department"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo staff data for showcase purposes."""
     try:
@@ -695,7 +711,7 @@ async def get_demo_staff(
                 "status": "active",
                 "shift_today": "8:00 AM - 6:00 PM",
                 "hours_this_week": 40,
-                "performance_rating": 4.8
+                "performance_rating": 4.8,
             },
             {
                 "staff_id": "STAFF-002",
@@ -708,7 +724,7 @@ async def get_demo_staff(
                 "status": "active",
                 "shift_today": "2:00 PM - 10:00 PM",
                 "hours_this_week": 32,
-                "performance_rating": 4.5
+                "performance_rating": 4.5,
             },
             {
                 "staff_id": "STAFF-003",
@@ -721,7 +737,7 @@ async def get_demo_staff(
                 "status": "active",
                 "shift_today": "7:00 AM - 3:00 PM",
                 "hours_this_week": 35,
-                "performance_rating": 4.9
+                "performance_rating": 4.9,
             },
             {
                 "staff_id": "STAFF-004",
@@ -734,27 +750,32 @@ async def get_demo_staff(
                 "status": "active",
                 "shift_today": "9:00 AM - 5:00 PM",
                 "hours_this_week": 38,
-                "performance_rating": 4.7
-            }
+                "performance_rating": 4.7,
+            },
         ]
-        
+
         # Filter by department if provided
         if department_filter:
-            demo_staff = [s for s in demo_staff if s["department"].lower() == department_filter.lower()]
-        
+            demo_staff = [
+                s
+                for s in demo_staff
+                if s["department"].lower() == department_filter.lower()
+            ]
+
         return demo_staff
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo staff: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo staff"
+            detail="Failed to fetch demo staff",
         )
+
 
 @router.get("/demo/payments")
 async def get_demo_payments(
     method_filter: Optional[str] = Query(None, description="Filter by payment method"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo payment data for showcase purposes."""
     try:
@@ -771,7 +792,7 @@ async def get_demo_payments(
                 "customer_name": "John Smith",
                 "order_id": "ORD-001",
                 "processed_at": "2024-01-20T14:30:00Z",
-                "processing_fee": 8.55
+                "processing_fee": 8.55,
             },
             {
                 "payment_id": "PAY-002",
@@ -784,7 +805,7 @@ async def get_demo_payments(
                 "customer_name": "Maria Garcia",
                 "order_id": "ORD-002",
                 "processed_at": "2024-01-20T15:45:00Z",
-                "processing_fee": 4.50
+                "processing_fee": 4.50,
             },
             {
                 "payment_id": "PAY-003",
@@ -797,7 +818,7 @@ async def get_demo_payments(
                 "customer_name": "David Johnson",
                 "order_id": "RES-001",
                 "processed_at": "2024-01-20T16:20:00Z",
-                "processing_fee": 60.00
+                "processing_fee": 60.00,
             },
             {
                 "payment_id": "PAY-004",
@@ -810,31 +831,37 @@ async def get_demo_payments(
                 "customer_name": "Sarah Wilson",
                 "order_id": "ORD-003",
                 "processed_at": "2024-01-20T17:10:00Z",
-                "processing_fee": 0.00
-            }
+                "processing_fee": 0.00,
+            },
         ]
-        
+
         # Filter by payment method if provided
         if method_filter:
-            demo_payments = [p for p in demo_payments if p["payment_method"].lower() == method_filter.lower()]
-        
+            demo_payments = [
+                p
+                for p in demo_payments
+                if p["payment_method"].lower() == method_filter.lower()
+            ]
+
         return demo_payments
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo payments: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo payments"
+            detail="Failed to fetch demo payments",
         )
+
 
 # ============================================================================
 # PHASE 2 DEMO ENDPOINTS (MARKETING, CMS, FINANCIAL, VOICE AI, DOCUMENTS, PREDICTIVE)
 # ============================================================================
 
+
 @router.get("/demo/marketing/campaigns")
 async def get_demo_marketing_campaigns(
     status_filter: Optional[str] = Query(None, description="Filter by campaign status"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo marketing campaigns for showcase purposes."""
     try:
@@ -850,7 +877,7 @@ async def get_demo_marketing_campaigns(
                 "click_rate": 42.1,
                 "conversion_rate": 28.3,
                 "created_at": "2024-01-15T00:00:00Z",
-                "last_sent": "2024-01-20T10:30:00Z"
+                "last_sent": "2024-01-20T10:30:00Z",
             },
             {
                 "campaign_id": "CAMP-002",
@@ -862,7 +889,7 @@ async def get_demo_marketing_campaigns(
                 "click_rate": 67.4,
                 "conversion_rate": 89.2,
                 "created_at": "2024-01-10T00:00:00Z",
-                "last_sent": "2024-01-22T09:15:00Z"
+                "last_sent": "2024-01-22T09:15:00Z",
             },
             {
                 "campaign_id": "CAMP-003",
@@ -874,27 +901,32 @@ async def get_demo_marketing_campaigns(
                 "click_rate": 34.2,
                 "conversion_rate": 23.1,
                 "created_at": "2024-01-05T00:00:00Z",
-                "last_sent": "2024-01-21T14:45:00Z"
-            }
+                "last_sent": "2024-01-21T14:45:00Z",
+            },
         ]
-        
+
         # Filter by status if provided
         if status_filter:
-            demo_campaigns = [c for c in demo_campaigns if c["status"].lower() == status_filter.lower()]
-        
+            demo_campaigns = [
+                c
+                for c in demo_campaigns
+                if c["status"].lower() == status_filter.lower()
+            ]
+
         return demo_campaigns
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo marketing campaigns: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo marketing campaigns"
+            detail="Failed to fetch demo marketing campaigns",
         )
+
 
 @router.get("/demo/cms/content")
 async def get_demo_cms_content(
     type_filter: Optional[str] = Query(None, description="Filter by content type"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo CMS content for showcase purposes."""
     try:
@@ -908,7 +940,7 @@ async def get_demo_cms_content(
                 "author": "Anna Smith",
                 "last_modified": "2024-01-20T15:30:00Z",
                 "views": 1247,
-                "category": "restaurant"
+                "category": "restaurant",
             },
             {
                 "content_id": "CONT-002",
@@ -918,7 +950,7 @@ async def get_demo_cms_content(
                 "author": "John Doe",
                 "last_modified": "2024-01-19T11:20:00Z",
                 "views": 3421,
-                "category": "hotel"
+                "category": "hotel",
             },
             {
                 "content_id": "CONT-003",
@@ -928,27 +960,30 @@ async def get_demo_cms_content(
                 "author": "Maria Garcia",
                 "last_modified": "2024-01-18T16:45:00Z",
                 "views": 0,
-                "category": "marketing"
-            }
+                "category": "marketing",
+            },
         ]
-        
+
         # Filter by type if provided
         if type_filter:
-            demo_content = [c for c in demo_content if c["type"].lower() == type_filter.lower()]
-        
+            demo_content = [
+                c for c in demo_content if c["type"].lower() == type_filter.lower()
+            ]
+
         return demo_content
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo CMS content: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo CMS content"
+            detail="Failed to fetch demo CMS content",
         )
+
 
 @router.get("/demo/financial/metrics")
 async def get_demo_financial_metrics(
     period: Optional[str] = Query("monthly", description="Time period for metrics"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo financial metrics for showcase purposes."""
     try:
@@ -959,40 +994,35 @@ async def get_demo_financial_metrics(
                 "total": 125000.00,
                 "daily_average": 4032.26,
                 "growth_rate": 12.5,
-                "forecast_next_month": 140625.00
+                "forecast_next_month": 140625.00,
             },
             "costs": {
                 "total": 79800.00,
                 "daily_average": 2574.19,
                 "growth_rate": 8.2,
-                "forecast_next_month": 86346.00
+                "forecast_next_month": 86346.00,
             },
             "profit": {
                 "total": 45200.00,
                 "daily_average": 1458.06,
                 "margin_percentage": 36.2,
-                "forecast_next_month": 54279.00
+                "forecast_next_month": 54279.00,
             },
-            "roi": {
-                "monthly": 18.5,
-                "annual": 222.0,
-                "trend": "+5.2%"
-            }
+            "roi": {"monthly": 18.5, "annual": 222.0, "trend": "+5.2%"},
         }
-        
+
         return demo_metrics
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo financial metrics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo financial metrics"
+            detail="Failed to fetch demo financial metrics",
         )
 
+
 @router.get("/demo/voice-ai/conversations")
-async def get_demo_voice_conversations(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_demo_voice_conversations(db: AsyncSession = Depends(get_db)):
     """Get demo voice AI conversations for showcase purposes."""
     try:
         # Return simulated voice AI conversation data
@@ -1005,7 +1035,7 @@ async def get_demo_voice_conversations(
                 "confidence": 0.95,
                 "processing_time": 2.3,
                 "timestamp": "2024-01-20T14:30:00Z",
-                "status": "completed"
+                "status": "completed",
             },
             {
                 "conversation_id": "VOICE-002",
@@ -1015,7 +1045,7 @@ async def get_demo_voice_conversations(
                 "confidence": 0.92,
                 "processing_time": 1.8,
                 "timestamp": "2024-01-20T15:45:00Z",
-                "status": "completed"
+                "status": "completed",
             },
             {
                 "conversation_id": "VOICE-003",
@@ -1025,23 +1055,26 @@ async def get_demo_voice_conversations(
                 "confidence": 0.88,
                 "processing_time": 3.1,
                 "timestamp": "2024-01-20T16:20:00Z",
-                "status": "completed"
-            }
+                "status": "completed",
+            },
         ]
-        
+
         return demo_conversations
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo voice conversations: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo voice conversations"
+            detail="Failed to fetch demo voice conversations",
         )
+
 
 @router.get("/demo/documents/processing")
 async def get_demo_document_processing(
-    status_filter: Optional[str] = Query(None, description="Filter by processing status"),
-    db: AsyncSession = Depends(get_db)
+    status_filter: Optional[str] = Query(
+        None, description="Filter by processing status"
+    ),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo document processing data for showcase purposes."""
     try:
@@ -1058,9 +1091,9 @@ async def get_demo_document_processing(
                     "amount": 2850.00,
                     "vendor": "Fresh Foods Ltd",
                     "date": "2024-01-15",
-                    "items": 12
+                    "items": 12,
                 },
-                "uploaded_at": "2024-01-20T14:30:00Z"
+                "uploaded_at": "2024-01-20T14:30:00Z",
             },
             {
                 "document_id": "DOC-002",
@@ -1070,7 +1103,7 @@ async def get_demo_document_processing(
                 "confidence_score": 0.45,
                 "processing_time": 0.0,
                 "extracted_data": None,
-                "uploaded_at": "2024-01-20T15:45:00Z"
+                "uploaded_at": "2024-01-20T15:45:00Z",
             },
             {
                 "document_id": "DOC-003",
@@ -1083,29 +1116,34 @@ async def get_demo_document_processing(
                     "amount": 150.00,
                     "vendor": "Unknown",
                     "date": "2024-01-20",
-                    "items": 3
+                    "items": 3,
                 },
-                "uploaded_at": "2024-01-20T16:20:00Z"
-            }
+                "uploaded_at": "2024-01-20T16:20:00Z",
+            },
         ]
-        
+
         # Filter by status if provided
         if status_filter:
-            demo_documents = [d for d in demo_documents if d["status"].lower() == status_filter.lower()]
-        
+            demo_documents = [
+                d
+                for d in demo_documents
+                if d["status"].lower() == status_filter.lower()
+            ]
+
         return demo_documents
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo document processing: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo document processing"
+            detail="Failed to fetch demo document processing",
         )
+
 
 @router.get("/demo/predictive/forecasts")
 async def get_demo_predictive_forecasts(
     forecast_type: Optional[str] = Query(None, description="Type of forecast"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo predictive forecasts for showcase purposes."""
     try:
@@ -1119,7 +1157,7 @@ async def get_demo_predictive_forecasts(
                 "confidence_level": 0.95,
                 "growth_rate": 15.0,
                 "factors": ["seasonal_trends", "booking_patterns", "market_conditions"],
-                "created_at": "2024-01-20T00:00:00Z"
+                "created_at": "2024-01-20T00:00:00Z",
             },
             {
                 "forecast_id": "FCST-002",
@@ -1129,7 +1167,7 @@ async def get_demo_predictive_forecasts(
                 "confidence_level": 0.92,
                 "growth_rate": 5.2,
                 "factors": ["historical_data", "seasonal_patterns", "events"],
-                "created_at": "2024-01-20T00:00:00Z"
+                "created_at": "2024-01-20T00:00:00Z",
             },
             {
                 "forecast_id": "FCST-003",
@@ -1139,31 +1177,35 @@ async def get_demo_predictive_forecasts(
                 "confidence_level": 0.88,
                 "growth_rate": 12.5,
                 "factors": ["time_patterns", "service_types", "customer_behavior"],
-                "created_at": "2024-01-20T00:00:00Z"
-            }
+                "created_at": "2024-01-20T00:00:00Z",
+            },
         ]
-        
+
         # Filter by type if provided
         if forecast_type:
-            demo_forecasts = [f for f in demo_forecasts if f["type"].lower() == forecast_type.lower()]
-        
+            demo_forecasts = [
+                f for f in demo_forecasts if f["type"].lower() == forecast_type.lower()
+            ]
+
         return demo_forecasts
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo predictive forecasts: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo predictive forecasts"
+            detail="Failed to fetch demo predictive forecasts",
         )
+
 
 # ============================================================================
 # PHASE 3 DEMO ENDPOINTS (MULTI-TENANT, WHITE-LABEL, SECURITY, API, BI, INTEGRATIONS)
 # ============================================================================
 
+
 @router.get("/demo/multi-tenant/tenants")
 async def get_demo_multi_tenant_tenants(
     status_filter: Optional[str] = Query(None, description="Filter by tenant status"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo multi-tenant data for showcase purposes."""
     try:
@@ -1178,7 +1220,7 @@ async def get_demo_multi_tenant_tenants(
                 "users_count": 45,
                 "storage_used": "85GB",
                 "created_at": "2024-01-15T00:00:00Z",
-                "last_activity": "2024-01-20T14:30:00Z"
+                "last_activity": "2024-01-20T14:30:00Z",
             },
             {
                 "tenant_id": "TENANT-002",
@@ -1189,7 +1231,7 @@ async def get_demo_multi_tenant_tenants(
                 "users_count": 156,
                 "storage_used": "420GB",
                 "created_at": "2024-01-10T00:00:00Z",
-                "last_activity": "2024-01-20T15:45:00Z"
+                "last_activity": "2024-01-20T15:45:00Z",
             },
             {
                 "tenant_id": "TENANT-003",
@@ -1200,27 +1242,28 @@ async def get_demo_multi_tenant_tenants(
                 "users_count": 450,
                 "storage_used": "1.2TB",
                 "created_at": "2024-01-05T00:00:00Z",
-                "last_activity": "2024-01-20T16:20:00Z"
-            }
+                "last_activity": "2024-01-20T16:20:00Z",
+            },
         ]
-        
+
         # Filter by status if provided
         if status_filter:
-            demo_tenants = [t for t in demo_tenants if t["status"].lower() == status_filter.lower()]
-        
+            demo_tenants = [
+                t for t in demo_tenants if t["status"].lower() == status_filter.lower()
+            ]
+
         return demo_tenants
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo multi-tenant data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo multi-tenant data"
+            detail="Failed to fetch demo multi-tenant data",
         )
 
+
 @router.get("/demo/white-label/brands")
-async def get_demo_white_label_brands(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_demo_white_label_brands(db: AsyncSession = Depends(get_db)):
     """Get demo white-label brand data for showcase purposes."""
     try:
         # Return simulated white-label brand data
@@ -1234,7 +1277,7 @@ async def get_demo_white_label_brands(
                 "theme": "default",
                 "logo_url": "/images/etuna-logo.png",
                 "primary_color": "#3B82F6",
-                "created_at": "2024-01-15T00:00:00Z"
+                "created_at": "2024-01-15T00:00:00Z",
             },
             {
                 "brand_id": "BRAND-002",
@@ -1245,7 +1288,7 @@ async def get_demo_white_label_brands(
                 "theme": "safari",
                 "logo_url": "/images/safari-logo.png",
                 "primary_color": "#059669",
-                "created_at": "2024-01-10T00:00:00Z"
+                "created_at": "2024-01-10T00:00:00Z",
             },
             {
                 "brand_id": "BRAND-003",
@@ -1256,23 +1299,22 @@ async def get_demo_white_label_brands(
                 "theme": "luxury",
                 "logo_url": "/images/resort-logo.png",
                 "primary_color": "#7C3AED",
-                "created_at": "2024-01-05T00:00:00Z"
-            }
+                "created_at": "2024-01-05T00:00:00Z",
+            },
         ]
-        
+
         return demo_brands
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo white-label data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo white-label data"
+            detail="Failed to fetch demo white-label data",
         )
 
+
 @router.get("/demo/enterprise-security/status")
-async def get_demo_enterprise_security_status(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_demo_enterprise_security_status(db: AsyncSession = Depends(get_db)):
     """Get demo enterprise security status for showcase purposes."""
     try:
         # Return simulated enterprise security data
@@ -1282,41 +1324,42 @@ async def get_demo_enterprise_security_status(
                 "status": "active",
                 "algorithm": "AES-256",
                 "coverage": "100%",
-                "last_updated": "2024-01-20T00:00:00Z"
+                "last_updated": "2024-01-20T00:00:00Z",
             },
             "threat_detection": {
                 "status": "active",
                 "monitoring": "24/7",
                 "threats_blocked": 1247,
-                "last_threat": "2024-01-20T14:30:00Z"
+                "last_threat": "2024-01-20T14:30:00Z",
             },
             "access_control": {
                 "status": "active",
                 "mfa_enabled": True,
                 "rbac_enabled": True,
-                "active_sessions": 89
+                "active_sessions": 89,
             },
             "compliance": {
                 "soc2": "certified",
                 "gdpr": "compliant",
                 "pci_dss": "certified",
-                "iso27001": "certified"
-            }
+                "iso27001": "certified",
+            },
         }
-        
+
         return demo_security
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo enterprise security data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo enterprise security data"
+            detail="Failed to fetch demo enterprise security data",
         )
+
 
 @router.get("/demo/api-management/endpoints")
 async def get_demo_api_management_endpoints(
     category_filter: Optional[str] = Query(None, description="Filter by API category"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo API management endpoints for showcase purposes."""
     try:
@@ -1331,7 +1374,7 @@ async def get_demo_api_management_endpoints(
                 "uptime": 99.9,
                 "avg_response_time": 1.2,
                 "requests_today": 15420,
-                "last_updated": "2024-01-20T00:00:00Z"
+                "last_updated": "2024-01-20T00:00:00Z",
             },
             {
                 "endpoint_id": "API-002",
@@ -1342,7 +1385,7 @@ async def get_demo_api_management_endpoints(
                 "uptime": 99.8,
                 "avg_response_time": 0.8,
                 "requests_today": 8930,
-                "last_updated": "2024-01-20T00:00:00Z"
+                "last_updated": "2024-01-20T00:00:00Z",
             },
             {
                 "endpoint_id": "API-003",
@@ -1353,27 +1396,30 @@ async def get_demo_api_management_endpoints(
                 "uptime": 99.95,
                 "avg_response_time": 0.6,
                 "requests_today": 6780,
-                "last_updated": "2024-01-20T00:00:00Z"
-            }
+                "last_updated": "2024-01-20T00:00:00Z",
+            },
         ]
-        
+
         # Filter by category if provided
         if category_filter:
-            demo_endpoints = [e for e in demo_endpoints if e["category"].lower() == category_filter.lower()]
-        
+            demo_endpoints = [
+                e
+                for e in demo_endpoints
+                if e["category"].lower() == category_filter.lower()
+            ]
+
         return demo_endpoints
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo API management data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo API management data"
+            detail="Failed to fetch demo API management data",
         )
 
+
 @router.get("/demo/business-intelligence/kpis")
-async def get_demo_business_intelligence_kpis(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_demo_business_intelligence_kpis(db: AsyncSession = Depends(get_db)):
     """Get demo business intelligence KPIs for showcase purposes."""
     try:
         # Return simulated business intelligence data
@@ -1382,41 +1428,42 @@ async def get_demo_business_intelligence_kpis(
                 "current": 15.2,
                 "previous": 12.8,
                 "trend": "up",
-                "target": 20.0
+                "target": 20.0,
             },
             "customer_satisfaction": {
                 "current": 4.8,
                 "previous": 4.5,
                 "trend": "up",
-                "target": 5.0
+                "target": 5.0,
             },
             "operational_efficiency": {
                 "current": 92.0,
                 "previous": 87.0,
                 "trend": "up",
-                "target": 95.0
+                "target": 95.0,
             },
             "cost_optimization": {
                 "current": 8.5,
                 "previous": 6.2,
                 "trend": "up",
-                "target": 10.0
-            }
+                "target": 10.0,
+            },
         }
-        
+
         return demo_kpis
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo business intelligence data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo business intelligence data"
+            detail="Failed to fetch demo business intelligence data",
         )
+
 
 @router.get("/demo/advanced-integrations/connectors")
 async def get_demo_advanced_integrations_connectors(
     type_filter: Optional[str] = Query(None, description="Filter by integration type"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo advanced integrations connectors for showcase purposes."""
     try:
@@ -1430,7 +1477,7 @@ async def get_demo_advanced_integrations_connectors(
                 "status": "connected",
                 "uptime": 99.9,
                 "last_sync": "2024-01-20T14:30:00Z",
-                "data_synced": 1247
+                "data_synced": 1247,
             },
             {
                 "connector_id": "CONN-002",
@@ -1440,7 +1487,7 @@ async def get_demo_advanced_integrations_connectors(
                 "status": "connected",
                 "uptime": 99.8,
                 "last_sync": "2024-01-20T15:45:00Z",
-                "data_synced": 893
+                "data_synced": 893,
             },
             {
                 "connector_id": "CONN-003",
@@ -1450,31 +1497,33 @@ async def get_demo_advanced_integrations_connectors(
                 "status": "connected",
                 "uptime": 99.95,
                 "last_sync": "2024-01-20T16:20:00Z",
-                "data_synced": 567
-            }
+                "data_synced": 567,
+            },
         ]
-        
+
         # Filter by type if provided
         if type_filter:
-            demo_connectors = [c for c in demo_connectors if c["type"].lower() == type_filter.lower()]
-        
+            demo_connectors = [
+                c for c in demo_connectors if c["type"].lower() == type_filter.lower()
+            ]
+
         return demo_connectors
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo advanced integrations data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo advanced integrations data"
+            detail="Failed to fetch demo advanced integrations data",
         )
+
 
 # ============================================================================
 # FINAL OPTIMIZATION DEMO ENDPOINTS (PERFORMANCE, MOBILE, WORKFLOWS, COLLABORATION, REPORTING, MARKETPLACE)
 # ============================================================================
 
+
 @router.get("/demo/performance-optimization/metrics")
-async def get_demo_performance_optimization_metrics(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_demo_performance_optimization_metrics(db: AsyncSession = Depends(get_db)):
     """Get demo performance optimization metrics for showcase purposes."""
     try:
         # Return simulated performance optimization data
@@ -1483,41 +1532,42 @@ async def get_demo_performance_optimization_metrics(
                 "current": 0.8,
                 "baseline": 2.0,
                 "improvement": 60.0,
-                "target": 0.5
+                "target": 0.5,
             },
             "cache_hit_rate": {
                 "current": 98.5,
                 "baseline": 83.5,
                 "improvement": 15.0,
-                "target": 99.0
+                "target": 99.0,
             },
             "database_performance": {
                 "current": 99.9,
                 "baseline": 95.2,
                 "improvement": 4.7,
-                "target": 99.95
+                "target": 99.95,
             },
             "cdn_performance": {
                 "current": 99.8,
                 "baseline": 92.1,
                 "improvement": 7.7,
-                "target": 99.9
-            }
+                "target": 99.9,
+            },
         }
-        
+
         return demo_performance
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo performance optimization data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo performance optimization data"
+            detail="Failed to fetch demo performance optimization data",
         )
+
 
 @router.get("/demo/mobile-app/features")
 async def get_demo_mobile_app_features(
     platform_filter: Optional[str] = Query(None, description="Filter by platform"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo mobile app features for showcase purposes."""
     try:
@@ -1529,7 +1579,7 @@ async def get_demo_mobile_app_features(
                 "platform": "both",
                 "status": "available",
                 "description": "Full functionality without internet",
-                "coverage": "core_features"
+                "coverage": "core_features",
             },
             {
                 "feature_id": "MOBILE-002",
@@ -1537,7 +1587,7 @@ async def get_demo_mobile_app_features(
                 "platform": "both",
                 "status": "active",
                 "description": "Real-time updates and alerts",
-                "coverage": "all_features"
+                "coverage": "all_features",
             },
             {
                 "feature_id": "MOBILE-003",
@@ -1545,7 +1595,7 @@ async def get_demo_mobile_app_features(
                 "platform": "both",
                 "status": "ready",
                 "description": "Built-in camera integration",
-                "coverage": "native_camera"
+                "coverage": "native_camera",
             },
             {
                 "feature_id": "MOBILE-004",
@@ -1553,27 +1603,32 @@ async def get_demo_mobile_app_features(
                 "platform": "both",
                 "status": "available",
                 "description": "Fingerprint and face recognition",
-                "coverage": "security_features"
-            }
+                "coverage": "security_features",
+            },
         ]
-        
+
         # Filter by platform if provided
         if platform_filter:
-            demo_features = [f for f in demo_features if f["platform"].lower() == platform_filter.lower()]
-        
+            demo_features = [
+                f
+                for f in demo_features
+                if f["platform"].lower() == platform_filter.lower()
+            ]
+
         return demo_features
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo mobile app data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo mobile app data"
+            detail="Failed to fetch demo mobile app data",
         )
+
 
 @router.get("/demo/advanced-workflows/processes")
 async def get_demo_advanced_workflows_processes(
     status_filter: Optional[str] = Query(None, description="Filter by workflow status"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo advanced workflows processes for showcase purposes."""
     try:
@@ -1586,7 +1641,7 @@ async def get_demo_advanced_workflows_processes(
                 "status": "active",
                 "efficiency": 95.0,
                 "steps": 8,
-                "last_run": "2024-01-20T14:30:00Z"
+                "last_run": "2024-01-20T14:30:00Z",
             },
             {
                 "workflow_id": "WF-002",
@@ -1595,7 +1650,7 @@ async def get_demo_advanced_workflows_processes(
                 "status": "active",
                 "efficiency": 98.0,
                 "steps": 12,
-                "last_run": "2024-01-20T15:45:00Z"
+                "last_run": "2024-01-20T15:45:00Z",
             },
             {
                 "workflow_id": "WF-003",
@@ -1604,27 +1659,30 @@ async def get_demo_advanced_workflows_processes(
                 "status": "active",
                 "efficiency": 92.0,
                 "steps": 15,
-                "last_run": "2024-01-20T16:20:00Z"
-            }
+                "last_run": "2024-01-20T16:20:00Z",
+            },
         ]
-        
+
         # Filter by status if provided
         if status_filter:
-            demo_workflows = [w for w in demo_workflows if w["status"].lower() == status_filter.lower()]
-        
+            demo_workflows = [
+                w
+                for w in demo_workflows
+                if w["status"].lower() == status_filter.lower()
+            ]
+
         return demo_workflows
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo advanced workflows data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo advanced workflows data"
+            detail="Failed to fetch demo advanced workflows data",
         )
 
+
 @router.get("/demo/realtime-collaboration/sessions")
-async def get_demo_realtime_collaboration_sessions(
-    db: AsyncSession = Depends(get_db)
-):
+async def get_demo_realtime_collaboration_sessions(db: AsyncSession = Depends(get_db)):
     """Get demo real-time collaboration sessions for showcase purposes."""
     try:
         # Return simulated real-time collaboration data
@@ -1636,7 +1694,7 @@ async def get_demo_realtime_collaboration_sessions(
                 "status": "active",
                 "members_online": 5,
                 "messages_count": 12,
-                "last_activity": "2024-01-20T14:30:00Z"
+                "last_activity": "2024-01-20T14:30:00Z",
             },
             {
                 "session_id": "COLLAB-002",
@@ -1645,7 +1703,7 @@ async def get_demo_realtime_collaboration_sessions(
                 "status": "live",
                 "members_online": 3,
                 "messages_count": 0,
-                "last_activity": "2024-01-20T15:45:00Z"
+                "last_activity": "2024-01-20T15:45:00Z",
             },
             {
                 "session_id": "COLLAB-003",
@@ -1654,23 +1712,26 @@ async def get_demo_realtime_collaboration_sessions(
                 "status": "shared",
                 "members_online": 4,
                 "messages_count": 8,
-                "last_activity": "2024-01-20T16:20:00Z"
-            }
+                "last_activity": "2024-01-20T16:20:00Z",
+            },
         ]
-        
+
         return demo_sessions
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo real-time collaboration data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo real-time collaboration data"
+            detail="Failed to fetch demo real-time collaboration data",
         )
+
 
 @router.get("/demo/advanced-reporting/templates")
 async def get_demo_advanced_reporting_templates(
-    category_filter: Optional[str] = Query(None, description="Filter by report category"),
-    db: AsyncSession = Depends(get_db)
+    category_filter: Optional[str] = Query(
+        None, description="Filter by report category"
+    ),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo advanced reporting templates for showcase purposes."""
     try:
@@ -1683,7 +1744,7 @@ async def get_demo_advanced_reporting_templates(
                 "type": "scheduled",
                 "frequency": "monthly",
                 "last_generated": "2024-01-20T00:00:00Z",
-                "status": "active"
+                "status": "active",
             },
             {
                 "template_id": "REPORT-002",
@@ -1692,7 +1753,7 @@ async def get_demo_advanced_reporting_templates(
                 "type": "custom",
                 "frequency": "on_demand",
                 "last_generated": "2024-01-20T14:30:00Z",
-                "status": "active"
+                "status": "active",
             },
             {
                 "template_id": "REPORT-003",
@@ -1701,27 +1762,32 @@ async def get_demo_advanced_reporting_templates(
                 "type": "real_time",
                 "frequency": "continuous",
                 "last_generated": "2024-01-20T16:20:00Z",
-                "status": "active"
-            }
+                "status": "active",
+            },
         ]
-        
+
         # Filter by category if provided
         if category_filter:
-            demo_templates = [t for t in demo_templates if t["category"].lower() == category_filter.lower()]
-        
+            demo_templates = [
+                t
+                for t in demo_templates
+                if t["category"].lower() == category_filter.lower()
+            ]
+
         return demo_templates
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo advanced reporting data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo advanced reporting data"
+            detail="Failed to fetch demo advanced reporting data",
         )
+
 
 @router.get("/demo/marketplace-integration/apps")
 async def get_demo_marketplace_integration_apps(
     category_filter: Optional[str] = Query(None, description="Filter by app category"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo marketplace integration apps for showcase purposes."""
     try:
@@ -1736,7 +1802,7 @@ async def get_demo_marketplace_integration_apps(
                 "currency": "USD",
                 "period": "monthly",
                 "status": "featured",
-                "downloads": 15420
+                "downloads": 15420,
             },
             {
                 "app_id": "APP-002",
@@ -1747,7 +1813,7 @@ async def get_demo_marketplace_integration_apps(
                 "currency": "USD",
                 "period": "monthly",
                 "status": "popular",
-                "downloads": 8930
+                "downloads": 8930,
             },
             {
                 "app_id": "APP-003",
@@ -1758,32 +1824,36 @@ async def get_demo_marketplace_integration_apps(
                 "currency": "USD",
                 "period": "monthly",
                 "status": "new",
-                "downloads": 6780
-            }
+                "downloads": 6780,
+            },
         ]
-        
+
         # Filter by category if provided
         if category_filter:
-            demo_apps = [a for a in demo_apps if a["category"].lower() == category_filter.lower()]
-        
+            demo_apps = [
+                a for a in demo_apps if a["category"].lower() == category_filter.lower()
+            ]
+
         return demo_apps
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo marketplace integration data: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo marketplace integration data"
+            detail="Failed to fetch demo marketplace integration data",
         )
+
 
 # ============================================================================
 # DEMO ANALYTICS ENDPOINTS (PUBLIC ACCESS - SIMULATION ONLY)
 # ============================================================================
 
+
 @router.get("/demo/analytics/revenue")
 async def get_demo_revenue_analytics(
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo revenue analytics (simulation only)."""
     try:
@@ -1791,32 +1861,33 @@ async def get_demo_revenue_analytics(
         demo_analytics = {
             "period": {
                 "start_date": start_date.isoformat() if start_date else "2024-01-01",
-                "end_date": end_date.isoformat() if end_date else "2024-01-31"
+                "end_date": end_date.isoformat() if end_date else "2024-01-31",
             },
             "revenue": {
                 "total": 125000.00,
                 "reservations": 95000.00,
-                "orders": 30000.00
+                "orders": 30000.00,
             },
             "reservations_count": 45,
             "orders_count": 120,
-            "demo_note": "This is demo analytics data for showcase purposes only."
+            "demo_note": "This is demo analytics data for showcase purposes only.",
         }
-        
+
         return demo_analytics
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo revenue analytics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo revenue analytics"
+            detail="Failed to fetch demo revenue analytics",
         )
+
 
 @router.get("/demo/analytics/occupancy")
 async def get_demo_occupancy_analytics(
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get demo occupancy analytics (simulation only)."""
     try:
@@ -1824,7 +1895,7 @@ async def get_demo_occupancy_analytics(
         demo_occupancy = {
             "period": {
                 "start_date": start_date.isoformat() if start_date else "2024-01-01",
-                "end_date": end_date.isoformat() if end_date else "2024-01-31"
+                "end_date": end_date.isoformat() if end_date else "2024-01-31",
             },
             "total_rooms": 35,
             "daily_occupancy": {
@@ -1832,17 +1903,17 @@ async def get_demo_occupancy_analytics(
                 "2024-01-02": {"occupancy_count": 28, "occupancy_rate": 80.0},
                 "2024-01-03": {"occupancy_count": 30, "occupancy_rate": 85.7},
                 "2024-01-04": {"occupancy_count": 27, "occupancy_rate": 77.1},
-                "2024-01-05": {"occupancy_count": 32, "occupancy_rate": 91.4}
+                "2024-01-05": {"occupancy_count": 32, "occupancy_rate": 91.4},
             },
             "average_occupancy": 81.1,
-            "demo_note": "This is demo occupancy data for showcase purposes only."
+            "demo_note": "This is demo occupancy data for showcase purposes only.",
         }
-        
+
         return demo_occupancy
-        
+
     except Exception as e:
         logger.error(f"Error fetching demo occupancy analytics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch demo occupancy analytics"
+            detail="Failed to fetch demo occupancy analytics",
         )

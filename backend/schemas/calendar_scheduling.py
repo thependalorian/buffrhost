@@ -1,7 +1,9 @@
-from pydantic import BaseModel
-from typing import Optional, List
 from datetime import date, datetime
+from typing import List, Optional
 from uuid import UUID
+
+from pydantic import BaseModel
+
 
 class BookingBase(BaseModel):
     user_id: UUID
@@ -12,8 +14,10 @@ class BookingBase(BaseModel):
     status: Optional[str] = "pending"
     notes: Optional[str] = None
 
+
 class BookingCreate(BookingBase):
     pass
+
 
 class BookingUpdate(BaseModel):
     resource_id: Optional[UUID] = None
@@ -23,6 +27,7 @@ class BookingUpdate(BaseModel):
     status: Optional[str] = None
     notes: Optional[str] = None
 
+
 class BookingResponse(BookingBase):
     id: UUID
     created_at: datetime
@@ -30,6 +35,7 @@ class BookingResponse(BookingBase):
 
     class Config:
         from_attributes = True
+
 
 class ScheduleBase(BaseModel):
     employee_id: UUID
@@ -39,8 +45,10 @@ class ScheduleBase(BaseModel):
     role: Optional[str] = None
     notes: Optional[str] = None
 
+
 class ScheduleCreate(ScheduleBase):
     pass
+
 
 class ScheduleUpdate(BaseModel):
     employee_id: Optional[UUID] = None
@@ -50,6 +58,7 @@ class ScheduleUpdate(BaseModel):
     role: Optional[str] = None
     notes: Optional[str] = None
 
+
 class ScheduleResponse(ScheduleBase):
     id: UUID
     created_at: datetime
@@ -57,6 +66,7 @@ class ScheduleResponse(ScheduleBase):
 
     class Config:
         from_attributes = True
+
 
 class ResourceBase(BaseModel):
     name: str
@@ -66,8 +76,10 @@ class ResourceBase(BaseModel):
     location: Optional[str] = None
     properties: Optional[dict] = None
 
+
 class ResourceCreate(ResourceBase):
     pass
+
 
 class ResourceUpdate(BaseModel):
     name: Optional[str] = None
@@ -77,6 +89,7 @@ class ResourceUpdate(BaseModel):
     location: Optional[str] = None
     properties: Optional[dict] = None
 
+
 class ResourceResponse(ResourceBase):
     id: UUID
     created_at: datetime
@@ -84,6 +97,7 @@ class ResourceResponse(ResourceBase):
 
     class Config:
         from_attributes = True
+
 
 class EventBase(BaseModel):
     title: str
@@ -94,8 +108,10 @@ class EventBase(BaseModel):
     event_type: Optional[str] = None
     created_by: Optional[UUID] = None
 
+
 class EventCreate(EventBase):
     pass
+
 
 class EventUpdate(BaseModel):
     title: Optional[str] = None
@@ -104,6 +120,7 @@ class EventUpdate(BaseModel):
     end_time: Optional[datetime] = None
     location: Optional[str] = None
     event_type: Optional[str] = None
+
 
 class EventResponse(EventBase):
     id: UUID

@@ -1,26 +1,26 @@
 /**
  * Email Preferences Form Component
- * 
+ *
  * Form for managing email notification preferences
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { 
-  Mail, 
-  Bell, 
-  Settings, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Mail,
+  Bell,
+  Settings,
   Save,
   RefreshCw,
   CheckCircle,
-  AlertCircle
-} from 'lucide-react';
+  AlertCircle,
+} from "lucide-react";
 
 interface EmailPreferences {
   emailNotifications: boolean;
@@ -32,7 +32,7 @@ interface EmailPreferences {
   systemAlerts: boolean;
   weeklyReports: boolean;
   monthlyReports: boolean;
-  emailFrequency: 'immediate' | 'daily' | 'weekly';
+  emailFrequency: "immediate" | "daily" | "weekly";
   preferredLanguage: string;
   timezone: string;
 }
@@ -43,10 +43,10 @@ interface EmailPreferencesFormProps {
   onReset?: () => void;
 }
 
-export default function EmailPreferencesForm({ 
-  preferences, 
-  onSave, 
-  onReset 
+export default function EmailPreferencesForm({
+  preferences,
+  onSave,
+  onReset,
 }: EmailPreferencesFormProps) {
   const [formData, setFormData] = useState<EmailPreferences>(
     preferences || {
@@ -59,21 +59,24 @@ export default function EmailPreferencesForm({
       systemAlerts: true,
       weeklyReports: true,
       monthlyReports: false,
-      emailFrequency: 'immediate',
-      preferredLanguage: 'en',
-      timezone: 'UTC'
-    }
+      emailFrequency: "immediate",
+      preferredLanguage: "en",
+      timezone: "UTC",
+    },
   );
 
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
-  const handleCheckboxChange = (field: keyof EmailPreferences, checked: boolean) => {
-    setFormData(prev => ({ ...prev, [field]: checked }));
+  const handleCheckboxChange = (
+    field: keyof EmailPreferences,
+    checked: boolean,
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: checked }));
   };
 
   const handleInputChange = (field: keyof EmailPreferences, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
@@ -83,27 +86,29 @@ export default function EmailPreferencesForm({
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
     } catch (error) {
-      console.error('Error saving preferences:', error);
+      console.error("Error saving preferences:", error);
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleReset = () => {
-    setFormData(preferences || {
-      emailNotifications: true,
-      smsNotifications: false,
-      pushNotifications: true,
-      bookingConfirmations: true,
-      paymentReceipts: true,
-      marketingEmails: false,
-      systemAlerts: true,
-      weeklyReports: true,
-      monthlyReports: false,
-      emailFrequency: 'immediate',
-      preferredLanguage: 'en',
-      timezone: 'UTC'
-    });
+    setFormData(
+      preferences || {
+        emailNotifications: true,
+        smsNotifications: false,
+        pushNotifications: true,
+        bookingConfirmations: true,
+        paymentReceipts: true,
+        marketingEmails: false,
+        systemAlerts: true,
+        weeklyReports: true,
+        monthlyReports: false,
+        emailFrequency: "immediate",
+        preferredLanguage: "en",
+        timezone: "UTC",
+      },
+    );
     onReset?.();
   };
 
@@ -113,7 +118,9 @@ export default function EmailPreferencesForm({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Email Preferences</h1>
-          <p className="text-gray-600">Manage your email notification settings</p>
+          <p className="text-gray-600">
+            Manage your email notification settings
+          </p>
         </div>
         <div className="flex items-center space-x-2">
           <Button variant="outline" onClick={handleReset}>
@@ -126,7 +133,7 @@ export default function EmailPreferencesForm({
             ) : (
               <Save className="w-4 h-4 mr-2" />
             )}
-            {isSaving ? 'Saving...' : 'Save Preferences'}
+            {isSaving ? "Saving..." : "Save Preferences"}
           </Button>
         </div>
       </div>
@@ -157,7 +164,9 @@ export default function EmailPreferencesForm({
             <Checkbox
               id="emailNotifications"
               checked={formData.emailNotifications}
-              onCheckedChange={(checked) => handleCheckboxChange('emailNotifications', checked as boolean)}
+              onCheckedChange={(checked) =>
+                handleCheckboxChange("emailNotifications", checked as boolean)
+              }
             />
             <Label htmlFor="emailNotifications">Email Notifications</Label>
           </div>
@@ -166,7 +175,9 @@ export default function EmailPreferencesForm({
             <Checkbox
               id="smsNotifications"
               checked={formData.smsNotifications}
-              onCheckedChange={(checked) => handleCheckboxChange('smsNotifications', checked as boolean)}
+              onCheckedChange={(checked) =>
+                handleCheckboxChange("smsNotifications", checked as boolean)
+              }
             />
             <Label htmlFor="smsNotifications">SMS Notifications</Label>
           </div>
@@ -175,7 +186,9 @@ export default function EmailPreferencesForm({
             <Checkbox
               id="pushNotifications"
               checked={formData.pushNotifications}
-              onCheckedChange={(checked) => handleCheckboxChange('pushNotifications', checked as boolean)}
+              onCheckedChange={(checked) =>
+                handleCheckboxChange("pushNotifications", checked as boolean)
+              }
             />
             <Label htmlFor="pushNotifications">Push Notifications</Label>
           </div>
@@ -195,7 +208,9 @@ export default function EmailPreferencesForm({
             <Checkbox
               id="bookingConfirmations"
               checked={formData.bookingConfirmations}
-              onCheckedChange={(checked) => handleCheckboxChange('bookingConfirmations', checked as boolean)}
+              onCheckedChange={(checked) =>
+                handleCheckboxChange("bookingConfirmations", checked as boolean)
+              }
             />
             <Label htmlFor="bookingConfirmations">Booking Confirmations</Label>
           </div>
@@ -204,7 +219,9 @@ export default function EmailPreferencesForm({
             <Checkbox
               id="paymentReceipts"
               checked={formData.paymentReceipts}
-              onCheckedChange={(checked) => handleCheckboxChange('paymentReceipts', checked as boolean)}
+              onCheckedChange={(checked) =>
+                handleCheckboxChange("paymentReceipts", checked as boolean)
+              }
             />
             <Label htmlFor="paymentReceipts">Payment Receipts</Label>
           </div>
@@ -213,7 +230,9 @@ export default function EmailPreferencesForm({
             <Checkbox
               id="marketingEmails"
               checked={formData.marketingEmails}
-              onCheckedChange={(checked) => handleCheckboxChange('marketingEmails', checked as boolean)}
+              onCheckedChange={(checked) =>
+                handleCheckboxChange("marketingEmails", checked as boolean)
+              }
             />
             <Label htmlFor="marketingEmails">Marketing Emails</Label>
           </div>
@@ -222,7 +241,9 @@ export default function EmailPreferencesForm({
             <Checkbox
               id="systemAlerts"
               checked={formData.systemAlerts}
-              onCheckedChange={(checked) => handleCheckboxChange('systemAlerts', checked as boolean)}
+              onCheckedChange={(checked) =>
+                handleCheckboxChange("systemAlerts", checked as boolean)
+              }
             />
             <Label htmlFor="systemAlerts">System Alerts</Label>
           </div>
@@ -231,7 +252,9 @@ export default function EmailPreferencesForm({
             <Checkbox
               id="weeklyReports"
               checked={formData.weeklyReports}
-              onCheckedChange={(checked) => handleCheckboxChange('weeklyReports', checked as boolean)}
+              onCheckedChange={(checked) =>
+                handleCheckboxChange("weeklyReports", checked as boolean)
+              }
             />
             <Label htmlFor="weeklyReports">Weekly Reports</Label>
           </div>
@@ -240,7 +263,9 @@ export default function EmailPreferencesForm({
             <Checkbox
               id="monthlyReports"
               checked={formData.monthlyReports}
-              onCheckedChange={(checked) => handleCheckboxChange('monthlyReports', checked as boolean)}
+              onCheckedChange={(checked) =>
+                handleCheckboxChange("monthlyReports", checked as boolean)
+              }
             />
             <Label htmlFor="monthlyReports">Monthly Reports</Label>
           </div>
@@ -261,7 +286,9 @@ export default function EmailPreferencesForm({
             <select
               id="emailFrequency"
               value={formData.emailFrequency}
-              onChange={(e) => handleInputChange('emailFrequency', e.target.value)}
+              onChange={(e) =>
+                handleInputChange("emailFrequency", e.target.value)
+              }
               className="w-full p-2 border border-gray-300 rounded-md"
             >
               <option value="immediate">Immediate</option>
@@ -275,7 +302,9 @@ export default function EmailPreferencesForm({
             <select
               id="preferredLanguage"
               value={formData.preferredLanguage}
-              onChange={(e) => handleInputChange('preferredLanguage', e.target.value)}
+              onChange={(e) =>
+                handleInputChange("preferredLanguage", e.target.value)
+              }
               className="w-full p-2 border border-gray-300 rounded-md"
             >
               <option value="en">English</option>
@@ -290,7 +319,7 @@ export default function EmailPreferencesForm({
             <Input
               id="timezone"
               value={formData.timezone}
-              onChange={(e) => handleInputChange('timezone', e.target.value)}
+              onChange={(e) => handleInputChange("timezone", e.target.value)}
               placeholder="UTC"
             />
           </div>

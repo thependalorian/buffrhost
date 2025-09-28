@@ -1,30 +1,32 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['localhost', 'theshandi.com', 'cdn.theshandi.com'],
+    domains: ["localhost", "theshandi.com", "cdn.theshandi.com"],
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**',
+        protocol: "https",
+        hostname: "**",
       },
       {
-        protocol: 'http',
-        hostname: 'localhost',
+        protocol: "http",
+        hostname: "localhost",
       },
     ],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/v1',
+    NEXT_PUBLIC_API_URL:
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/v1",
   },
   async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/v1';
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/v1";
     // Ensure apiUrl is properly formatted
-    if (!apiUrl || apiUrl === 'undefined') {
+    if (!apiUrl || apiUrl === "undefined") {
       return [];
     }
     return [
       {
-        source: '/api/:path*',
+        source: "/api/:path*",
         destination: `${apiUrl}/:path*`,
       },
     ];
@@ -32,23 +34,23 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: "/(.*)",
         headers: [
           {
-            key: 'X-Frame-Options',
-            value: 'DENY',
+            key: "X-Frame-Options",
+            value: "DENY",
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
+            key: "X-Content-Type-Options",
+            value: "nosniff",
           },
           {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
+            key: "Referrer-Policy",
+            value: "origin-when-cross-origin",
           },
           {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
+            key: "X-DNS-Prefetch-Control",
+            value: "on",
           },
         ],
       },
@@ -56,11 +58,11 @@ const nextConfig = {
   },
   // Enable experimental features for better performance
   experimental: {
-    optimizePackageImports: ['@heroicons/react', 'lucide-react'],
+    optimizePackageImports: ["@heroicons/react", "lucide-react"],
   },
   // Compiler optimizations
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === "production",
   },
   // Output configuration for Vercel
   // output: 'standalone', // Commented out for Vercel compatibility

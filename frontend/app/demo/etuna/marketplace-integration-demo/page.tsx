@@ -1,17 +1,25 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  Store, 
-  Package, 
-  Download, 
-  Star, 
-  Users, 
-  Settings, 
-  CheckCircle, 
-  AlertCircle, 
-  Clock, 
-  Target, 
+import { Metadata } from "next";
+import Image from "next/image";
+import {
+  PageHeader,
+  StatCard,
+  ActionButton,
+  ModalForm,
+  FormField,
+  FormSelect,
+  Alert,
+} from "@/src/components/ui";
+import {
+  Store,
+  Package,
+  Download,
+  Star,
+  Users,
+  Settings,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  Target,
   MapPin,
   Phone,
   Mail,
@@ -192,7 +200,6 @@ import {
   Lock as LockIcon3,
   Key as KeyIcon,
   Eye as EyeIcon4,
-  EyeOff as EyeOffIcon,
   AlertTriangle,
   CheckCircle as CheckCircleIcon,
   Server as ServerIcon,
@@ -232,16 +239,13 @@ import {
   AlertCircle as AlertCircleIcon2,
   TrendingUp as TrendingUpIcon2,
   TrendingDown as TrendingDownIcon2,
-  Activity,
   Smartphone as SmartphoneIcon2,
   Download as DownloadIcon5,
   QrCode as QrCodeIcon2,
   Camera,
   Bell as BellIcon2,
-  MapPin as MapPinIcon,
   Star as StarIcon2,
   Heart as HeartIcon2,
-  Share,
   MessageCircle as MessageCircleIcon3,
   Workflow,
   Settings as SettingsIcon4,
@@ -266,12 +270,14 @@ import {
   Download as DownloadIcon7,
   Star as StarIcon3,
   Users as UsersIcon6,
-  Settings as SettingsIcon6
-} from 'lucide-react';
+  Settings as SettingsIcon6,
+} from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Marketplace Integration Demo - Buffr Host Platform',
-  description: 'Experience our third-party app marketplace with integrations, extensions, and custom solutions.',
+  title: "Marketplace Integration Demo - Buffr Host Platform",
+  description:
+    "Experience our third-party app marketplace with integrations, extensions, and custom solutions.",
 };
 
 export default function MarketplaceIntegrationDemoPage() {
@@ -281,7 +287,8 @@ export default function MarketplaceIntegrationDemoPage() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm">
-            🎯 <strong>Marketplace Integration Demo</strong> - Third-party app marketplace and extensions
+            🎯 <strong>Marketplace Integration Demo</strong> - Third-party app
+            marketplace and extensions
           </p>
         </div>
       </div>
@@ -293,14 +300,21 @@ export default function MarketplaceIntegrationDemoPage() {
             <div className="mb-8">
               <Store className="w-24 h-24 mx-auto mb-4 opacity-90" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Marketplace Excellence</h1>
-            <p className="text-xl md:text-2xl mb-6">Third-party app marketplace and integrations</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              Marketplace Excellence
+            </h1>
+            <p className="text-xl md:text-2xl mb-6">
+              Third-party app marketplace and integrations
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="btn btn-accent btn-lg">
                 <Package className="w-5 h-5 mr-2" />
                 Browse Marketplace
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link
+                href="/demo/etuna/management-demo"
+                className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900"
+              >
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -315,13 +329,16 @@ export default function MarketplaceIntegrationDemoPage() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Third-Party App Marketplace</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Third-Party App Marketplace
+              </h2>
               <p className="text-lg text-base-content/80 mb-6">
-                See how our marketplace platform provides access to third-party applications, 
-                extensions, and custom solutions that extend Buffr Host capabilities 
-                across all Etuna operations and business needs.
+                See how our marketplace platform provides access to third-party
+                applications, extensions, and custom solutions that extend Buffr
+                Host capabilities across all Etuna operations and business
+                needs.
               </p>
-              
+
               {/* Demo Marketplace Dashboard */}
               <div className="bg-white dark:bg-base-200 p-6 rounded-lg shadow-xl mb-6">
                 <h3 className="text-lg font-bold mb-4">Featured Apps</h3>
@@ -334,7 +351,9 @@ export default function MarketplaceIntegrationDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Advanced Analytics Pro</p>
-                        <p className="text-sm text-gray-500">Business intelligence</p>
+                        <p className="text-sm text-gray-500">
+                          Business intelligence
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -342,7 +361,7 @@ export default function MarketplaceIntegrationDemoPage() {
                       <p className="text-xs text-gray-500">$29/month</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -350,7 +369,9 @@ export default function MarketplaceIntegrationDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Social Media Manager</p>
-                        <p className="text-sm text-gray-500">Marketing automation</p>
+                        <p className="text-sm text-gray-500">
+                          Marketing automation
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -358,7 +379,7 @@ export default function MarketplaceIntegrationDemoPage() {
                       <p className="text-xs text-gray-500">$19/month</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
@@ -366,7 +387,9 @@ export default function MarketplaceIntegrationDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Inventory Optimizer</p>
-                        <p className="text-sm text-gray-500">Supply chain management</p>
+                        <p className="text-sm text-gray-500">
+                          Supply chain management
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -396,7 +419,7 @@ export default function MarketplaceIntegrationDemoPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2070&auto=format&fit=crop"
@@ -420,7 +443,9 @@ export default function MarketplaceIntegrationDemoPage() {
 
         {/* Marketplace Benefits */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Why Our Marketplace Integration Excels</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Why Our Marketplace Integration Excels
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* App Discovery */}
             <div className="nude-card hover:shadow-nude transition-shadow">
@@ -428,63 +453,92 @@ export default function MarketplaceIntegrationDemoPage() {
                 <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Search className="w-8 h-8 text-amber-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">App Discovery</h3>
-                <p className="text-sm text-nude-700">Discover and browse hundreds of third-party applications and extensions.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  App Discovery
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Discover and browse hundreds of third-party applications and
+                  extensions.
+                </p>
               </div>
             </div>
-            
+
             {/* Seamless Integration */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Zap className="w-8 h-8 text-blue-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Seamless Integration</h3>
-                <p className="text-sm text-nude-700">One-click installation and automatic integration with platform features.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Seamless Integration
+                </h3>
+                <p className="text-sm text-nude-700">
+                  One-click installation and automatic integration with platform
+                  features.
+                </p>
               </div>
             </div>
-            
+
             {/* Developer Tools */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Code className="w-8 h-8 text-green-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Developer Tools</h3>
-                <p className="text-sm text-nude-700">Comprehensive SDK and tools for building custom applications.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Developer Tools
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Comprehensive SDK and tools for building custom applications.
+                </p>
               </div>
             </div>
-            
+
             {/* App Management */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Settings className="w-8 h-8 text-purple-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">App Management</h3>
-                <p className="text-sm text-nude-700">Centralized management of installed apps with updates and permissions.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  App Management
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Centralized management of installed apps with updates and
+                  permissions.
+                </p>
               </div>
             </div>
-            
+
             {/* Security & Compliance */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Shield className="w-8 h-8 text-orange-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Security & Compliance</h3>
-                <p className="text-sm text-nude-700">Vetted applications with security reviews and compliance certifications.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Security & Compliance
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Vetted applications with security reviews and compliance
+                  certifications.
+                </p>
               </div>
             </div>
-            
+
             {/* Custom Solutions */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Package className="w-8 h-8 text-teal-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Custom Solutions</h3>
-                <p className="text-sm text-nude-700">Custom app development and integration services for unique requirements.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Custom Solutions
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Custom app development and integration services for unique
+                  requirements.
+                </p>
               </div>
             </div>
           </div>
@@ -492,7 +546,9 @@ export default function MarketplaceIntegrationDemoPage() {
 
         {/* App Categories */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">App Categories & Solutions</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            App Categories & Solutions
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Business Intelligence */}
             <div className="nude-card">
@@ -503,7 +559,9 @@ export default function MarketplaceIntegrationDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Business Intelligence</h3>
-                    <p className="text-sm text-nude-700">Analytics and reporting</p>
+                    <p className="text-sm text-nude-700">
+                      Analytics and reporting
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -569,7 +627,9 @@ export default function MarketplaceIntegrationDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Operations</h3>
-                    <p className="text-sm text-nude-700">Operational efficiency</p>
+                    <p className="text-sm text-nude-700">
+                      Operational efficiency
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -597,15 +657,22 @@ export default function MarketplaceIntegrationDemoPage() {
 
         {/* Advanced Features */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Advanced Marketplace Features</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Advanced Marketplace Features
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* AI-Powered Recommendations */}
             <div className="text-center">
               <div className="w-20 h-20 bg-primary text-primary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <Brain className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">AI-Powered Recommendations</h3>
-              <p className="text-nude-700">Machine learning suggests relevant apps based on your business needs.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                AI-Powered Recommendations
+              </h3>
+              <p className="text-nude-700">
+                Machine learning suggests relevant apps based on your business
+                needs.
+              </p>
             </div>
 
             {/* Developer Ecosystem */}
@@ -613,8 +680,12 @@ export default function MarketplaceIntegrationDemoPage() {
               <div className="w-20 h-20 bg-secondary text-secondary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Developer Ecosystem</h3>
-              <p className="text-nude-700">Thriving community of developers creating innovative solutions.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                Developer Ecosystem
+              </h3>
+              <p className="text-nude-700">
+                Thriving community of developers creating innovative solutions.
+              </p>
             </div>
 
             {/* Enterprise Support */}
@@ -623,7 +694,10 @@ export default function MarketplaceIntegrationDemoPage() {
                 <Shield className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Enterprise Support</h3>
-              <p className="text-nude-700">Dedicated support and SLA guarantees for enterprise applications.</p>
+              <p className="text-nude-700">
+                Dedicated support and SLA guarantees for enterprise
+                applications.
+              </p>
             </div>
           </div>
         </div>
@@ -631,7 +705,9 @@ export default function MarketplaceIntegrationDemoPage() {
         {/* Demo Actions */}
         <div className="py-16">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Experience Marketplace Integration</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Experience Marketplace Integration
+            </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Marketplace Browser */}
               <div className="card bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-xl">
@@ -643,15 +719,18 @@ export default function MarketplaceIntegrationDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">Marketplace Browser</h3>
-                      <p className="text-white/80">See how marketplace integration works</p>
+                      <h3 className="text-2xl font-bold">
+                        Marketplace Browser
+                      </h3>
+                      <p className="text-white/80">
+                        See how marketplace integration works
+                      </p>
                     </div>
                   </div>
                   <p className="text-white/90 mb-6">
-                    Experience our marketplace platform. 
-                    Browse apps, install extensions, 
-                    configure integrations, and see how 
-                    third-party solutions extend capabilities.
+                    Experience our marketplace platform. Browse apps, install
+                    extensions, configure integrations, and see how third-party
+                    solutions extend capabilities.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -690,15 +769,18 @@ export default function MarketplaceIntegrationDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">Marketplace Management</h3>
-                      <p className="text-nude-700">See how marketplace drives platform success</p>
+                      <h3 className="text-2xl font-bold">
+                        Marketplace Management
+                      </h3>
+                      <p className="text-nude-700">
+                        See how marketplace drives platform success
+                      </p>
                     </div>
                   </div>
                   <p className="text-base-content/80 mb-6">
-                    Explore our marketplace management dashboard. 
-                    Manage installed apps, configure permissions, 
-                    monitor usage analytics, and optimize 
-                    marketplace performance.
+                    Explore our marketplace management dashboard. Manage
+                    installed apps, configure permissions, monitor usage
+                    analytics, and optimize marketplace performance.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -719,7 +801,10 @@ export default function MarketplaceIntegrationDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link
+                      href="/demo/etuna/management-demo"
+                      className="btn btn-primary"
+                    >
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>
@@ -737,17 +822,23 @@ export default function MarketplaceIntegrationDemoPage() {
               <div className="text-center">
                 <Phone className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Ready to Integrate?</h3>
-                <p className="text-primary-content/80">Contact us to implement marketplace integration.</p>
+                <p className="text-primary-content/80">
+                  Contact us to implement marketplace integration.
+                </p>
               </div>
               <div className="text-center">
                 <Mail className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Schedule a Demo</h3>
-                <p className="text-primary-content/80">Book a personalized demonstration of our marketplace system.</p>
+                <p className="text-primary-content/80">
+                  Book a personalized demonstration of our marketplace system.
+                </p>
               </div>
               <div className="text-center">
                 <Globe className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Learn More</h3>
-                <p className="text-primary-content/80">Visit our main website for more information about Buffr Host.</p>
+                <p className="text-primary-content/80">
+                  Visit our main website for more information about Buffr Host.
+                </p>
               </div>
             </div>
           </div>

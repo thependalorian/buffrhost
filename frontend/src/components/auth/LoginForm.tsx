@@ -1,23 +1,30 @@
 /**
  * Login Form Component for BuffrHost
- * 
+ *
  * This component provides a comprehensive login form with support for
  * email/password, Google OAuth, and WhatsApp authentication.
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/lib/contexts/auth-context';
-import { LoginCredentials } from '@/lib/auth/types';
-import { validateLoginCredentials } from '@/lib/auth/utils';
-import { Loader2, Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { Checkbox } from "@/src/components/ui/checkbox";
+import { Separator } from "@/src/components/ui/separator";
+import { useAuth } from "@/src/lib/contexts/auth-context";
+import { LoginCredentials } from "@/src/lib/auth/types";
+import { validateLoginCredentials } from "@/src/lib/auth/utils";
+import { Loader2, Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -26,24 +33,27 @@ interface LoginFormProps {
   className?: string;
 }
 
-export function LoginForm({ 
-  onSuccess, 
-  onError, 
+export function LoginForm({
+  onSuccess,
+  onError,
   showSocialAuth = true,
-  className = ""
+  className = "",
 }: LoginFormProps) {
   const { signIn, signInWithGoogle, loading } = useAuth();
   const [formData, setFormData] = useState<LoginCredentials>({
-    email: '',
-    password: '',
-    remember_me: false
+    email: "",
+    password: "",
+    remember_me: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (field: keyof LoginCredentials, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof LoginCredentials,
+    value: string | boolean,
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear errors when user starts typing
     if (errors.length > 0) {
       setErrors([]);
@@ -59,24 +69,26 @@ export function LoginForm({
       // Validate form data
       const validationErrors = validateLoginCredentials(formData);
       if (validationErrors.length > 0) {
-        const errorMessages = validationErrors.map(error => error.message);
+        const errorMessages = validationErrors.map((error) => error.message);
         setErrors(errorMessages);
-        onError?.(errorMessages.join(', '));
+        onError?.(errorMessages.join(", "));
         return;
       }
 
       // Attempt login
       const result = await signIn(formData);
-      
+
       if (result.error) {
-        const errorMessage = typeof result.error === 'string' ? result.error : 'Login failed';
+        const errorMessage =
+          typeof result.error === "string" ? result.error : "Login failed";
         setErrors([errorMessage]);
         onError?.(errorMessage);
       } else {
         onSuccess?.();
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
       setErrors([errorMessage]);
       onError?.(errorMessage);
     } finally {
@@ -88,14 +100,18 @@ export function LoginForm({
     try {
       setIsSubmitting(true);
       const result = await signInWithGoogle();
-      
+
       if (result.error) {
-        const errorMessage = typeof result.error === 'string' ? result.error : 'Google sign in failed';
+        const errorMessage =
+          typeof result.error === "string"
+            ? result.error
+            : "Google sign in failed";
         setErrors([errorMessage]);
         onError?.(errorMessage);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Google sign in failed';
+      const errorMessage =
+        error instanceof Error ? error.message : "Google sign in failed";
       setErrors([errorMessage]);
       onError?.(errorMessage);
     } finally {
@@ -103,16 +119,17 @@ export function LoginForm({
     }
   };
 
-
   return (
     <Card className={`w-full max-w-sm mx-auto sm:max-w-md ${className}`}>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-xl font-bold text-center sm:text-2xl">Welcome to BuffrHost</CardTitle>
+        <CardTitle className="text-xl font-bold text-center sm:text-2xl">
+          Welcome to BuffrHost
+        </CardTitle>
         <CardDescription className="text-center text-sm sm:text-base">
           Sign in to your BuffrHost account
         </CardDescription>
       </CardHeader>
-      
+
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {/* Error Display */}
@@ -136,7 +153,7 @@ export function LoginForm({
                 type="email"
                 placeholder="Enter your email"
                 value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 className="pl-10"
                 required
                 disabled={isSubmitting}
@@ -151,10 +168,10 @@ export function LoginForm({
               <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
+                onChange={(e) => handleInputChange("password", e.target.value)}
                 className="pl-10 pr-10"
                 required
                 disabled={isSubmitting}
@@ -181,7 +198,9 @@ export function LoginForm({
             <Checkbox
               id="remember_me"
               checked={formData.remember_me}
-              onCheckedChange={(checked) => handleInputChange('remember_me', checked as boolean)}
+              onCheckedChange={(checked) =>
+                handleInputChange("remember_me", checked as boolean)
+              }
               disabled={isSubmitting}
             />
             <Label htmlFor="remember_me" className="text-sm font-normal">
@@ -192,9 +211,9 @@ export function LoginForm({
 
         <CardFooter className="flex flex-col space-y-4">
           {/* Sign In Button */}
-          <Button 
-            type="submit" 
-            className="w-full" 
+          <Button
+            type="submit"
+            className="w-full"
             disabled={isSubmitting || loading}
           >
             {isSubmitting || loading ? (
@@ -203,7 +222,7 @@ export function LoginForm({
                 Signing in...
               </>
             ) : (
-              'Sign In'
+              "Sign In"
             )}
           </Button>
 
@@ -248,7 +267,6 @@ export function LoginForm({
                 )}
                 Continue with Google
               </Button>
-
             </>
           )}
         </CardFooter>

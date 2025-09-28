@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React from "react";
+import { useState, useEffect } from "react";
 
 interface Transaction {
   id: string;
@@ -29,12 +29,30 @@ const TransactionList: React.FC<TransactionListProps> = ({ accountId }) => {
         // In a real application, this would fetch from your FastAPI backend
         // For now, using mock data
         const mockTransactions: Transaction[] = [
-          { id: 't1', account_id: accountId, type: 'payment', amount: 150.00, currency: 'NAD', description: 'Hotel Stay', status: 'completed', transaction_date: '2025-10-20T10:00:00Z' },
-          { id: 't2', account_id: accountId, type: 'deposit', amount: 500.00, currency: 'NAD', description: 'Refund', status: 'pending', transaction_date: '2025-10-21T15:30:00Z' },
+          {
+            id: "t1",
+            account_id: accountId,
+            type: "payment",
+            amount: 150.0,
+            currency: "NAD",
+            description: "Hotel Stay",
+            status: "completed",
+            transaction_date: "2025-10-20T10:00:00Z",
+          },
+          {
+            id: "t2",
+            account_id: accountId,
+            type: "deposit",
+            amount: 500.0,
+            currency: "NAD",
+            description: "Refund",
+            status: "pending",
+            transaction_date: "2025-10-21T15:30:00Z",
+          },
         ];
         setTransactions(mockTransactions);
       } catch (err) {
-        setError('Failed to fetch transactions');
+        setError("Failed to fetch transactions");
       } finally {
         setLoading(false);
       }
@@ -49,9 +67,10 @@ const TransactionList: React.FC<TransactionListProps> = ({ accountId }) => {
     <div className="transaction-list">
       <h2>Transactions for Account {accountId}</h2>
       <ul>
-        {transactions.map(transaction => (
+        {transactions.map((transaction) => (
           <li key={transaction.id}>
-            {transaction.transaction_date} - {transaction.type} {transaction.amount} {transaction.currency} ({transaction.status})
+            {transaction.transaction_date} - {transaction.type}{" "}
+            {transaction.amount} {transaction.currency} ({transaction.status})
             {transaction.description && ` - ${transaction.description}`}
           </li>
         ))}

@@ -1,22 +1,22 @@
 /**
  * Service Fee List Component
- * 
+ *
  * Manages service fees in serverless microservices architecture
  * Integrates with Revenue Service microservice
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  DollarSign, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  DollarSign,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
   Search,
   Filter,
   Percent,
@@ -24,20 +24,20 @@ import {
   CheckCircle,
   AlertCircle,
   Clock,
-  Settings
-} from 'lucide-react';
+  Settings,
+} from "lucide-react";
 
 interface ServiceFee {
   id: string;
   name: string;
   description: string;
-  type: 'percentage' | 'fixed' | 'tiered';
+  type: "percentage" | "fixed" | "tiered";
   value: number;
   currency: string;
   minAmount?: number;
   maxAmount?: number;
   applicableServices: string[];
-  status: 'active' | 'inactive' | 'draft';
+  status: "active" | "inactive" | "draft";
   effectiveDate: string;
   expiryDate?: string;
   createdAt: string;
@@ -58,128 +58,130 @@ interface ServiceFeeListProps {
   apiKey?: string;
 }
 
-export default function ServiceFeeList({ 
-  serviceFees, 
-  onEdit, 
-  onDelete, 
-  onView, 
+export default function ServiceFeeList({
+  serviceFees,
+  onEdit,
+  onDelete,
+  onView,
   onCreate,
-  revenueServiceUrl = process.env.NEXT_PUBLIC_REVENUE_SERVICE_URL || 'https://revenue-service.buffrhost.com',
-  apiKey
+  revenueServiceUrl = process.env.NEXT_PUBLIC_REVENUE_SERVICE_URL ||
+    "https://revenue-service.buffrhost.com",
+  apiKey,
 }: ServiceFeeListProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const mockServiceFees: ServiceFee[] = [
     {
-      id: '1',
-      name: 'Payment Processing Fee',
-      description: 'Standard payment processing fee for all transactions',
-      type: 'percentage',
+      id: "1",
+      name: "Payment Processing Fee",
+      description: "Standard payment processing fee for all transactions",
+      type: "percentage",
       value: 2.9,
-      currency: 'NAD',
-      minAmount: 0.50,
-      applicableServices: ['payment', 'booking', 'subscription'],
-      status: 'active',
-      effectiveDate: '2024-01-01',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-15',
-      serviceId: 'payment-service',
-      version: '1.0.0'
+      currency: "NAD",
+      minAmount: 0.5,
+      applicableServices: ["payment", "booking", "subscription"],
+      status: "active",
+      effectiveDate: "2024-01-01",
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-15",
+      serviceId: "payment-service",
+      version: "1.0.0",
     },
     {
-      id: '2',
-      name: 'Booking Service Fee',
-      description: 'Fee for booking management services',
-      type: 'fixed',
-      value: 5.00,
-      currency: 'NAD',
-      applicableServices: ['booking'],
-      status: 'active',
-      effectiveDate: '2024-01-01',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-15',
-      serviceId: 'booking-service',
-      version: '1.0.0'
+      id: "2",
+      name: "Booking Service Fee",
+      description: "Fee for booking management services",
+      type: "fixed",
+      value: 5.0,
+      currency: "NAD",
+      applicableServices: ["booking"],
+      status: "active",
+      effectiveDate: "2024-01-01",
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-15",
+      serviceId: "booking-service",
+      version: "1.0.0",
     },
     {
-      id: '3',
-      name: 'Subscription Management Fee',
-      description: 'Monthly fee for subscription management',
-      type: 'tiered',
+      id: "3",
+      name: "Subscription Management Fee",
+      description: "Monthly fee for subscription management",
+      type: "tiered",
       value: 0,
-      currency: 'NAD',
+      currency: "NAD",
       minAmount: 0,
       maxAmount: 1000,
-      applicableServices: ['subscription'],
-      status: 'active',
-      effectiveDate: '2024-01-01',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-15',
-      serviceId: 'subscription-service',
-      version: '1.0.0'
+      applicableServices: ["subscription"],
+      status: "active",
+      effectiveDate: "2024-01-01",
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-15",
+      serviceId: "subscription-service",
+      version: "1.0.0",
     },
     {
-      id: '4',
-      name: 'Premium Support Fee',
-      description: 'Additional fee for premium support services',
-      type: 'percentage',
+      id: "4",
+      name: "Premium Support Fee",
+      description: "Additional fee for premium support services",
+      type: "percentage",
       value: 1.5,
-      currency: 'NAD',
-      applicableServices: ['support', 'consulting'],
-      status: 'draft',
-      effectiveDate: '2024-02-01',
-      createdAt: '2024-01-10',
-      updatedAt: '2024-01-10',
-      serviceId: 'support-service',
-      version: '1.0.0'
-    }
+      currency: "NAD",
+      applicableServices: ["support", "consulting"],
+      status: "draft",
+      effectiveDate: "2024-02-01",
+      createdAt: "2024-01-10",
+      updatedAt: "2024-01-10",
+      serviceId: "support-service",
+      version: "1.0.0",
+    },
   ];
 
   const displayServiceFees = serviceFees || mockServiceFees;
 
-  const filteredServiceFees = displayServiceFees.filter(fee => {
-    const matchesSearch = fee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         fee.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = filterType === 'all' || fee.type === filterType;
-    const matchesStatus = filterStatus === 'all' || fee.status === filterStatus;
+  const filteredServiceFees = displayServiceFees.filter((fee) => {
+    const matchesSearch =
+      fee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      fee.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === "all" || fee.type === filterType;
+    const matchesStatus = filterStatus === "all" || fee.status === filterStatus;
     return matchesSearch && matchesType && matchesStatus;
   });
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'percentage':
-        return 'bg-blue-100 text-blue-800';
-      case 'fixed':
-        return 'bg-green-100 text-green-800';
-      case 'tiered':
-        return 'bg-purple-100 text-purple-800';
+      case "percentage":
+        return "bg-blue-100 text-blue-800";
+      case "fixed":
+        return "bg-green-100 text-green-800";
+      case "tiered":
+        return "bg-purple-100 text-purple-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'inactive':
-        return 'bg-red-100 text-red-800';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800';
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "inactive":
+        return "bg-red-100 text-red-800";
+      case "draft":
+        return "bg-yellow-100 text-yellow-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'inactive':
+      case "inactive":
         return <AlertCircle className="w-4 h-4 text-red-500" />;
-      case 'draft':
+      case "draft":
         return <Clock className="w-4 h-4 text-yellow-500" />;
       default:
         return <Clock className="w-4 h-4 text-gray-500" />;
@@ -188,32 +190,34 @@ export default function ServiceFeeList({
 
   const formatFeeValue = (fee: ServiceFee) => {
     switch (fee.type) {
-      case 'percentage':
+      case "percentage":
         return `${fee.value}%`;
-      case 'fixed':
-        return new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: fee.currency
+      case "fixed":
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: fee.currency,
         }).format(fee.value);
-      case 'tiered':
-        return 'Tiered';
+      case "tiered":
+        return "Tiered";
       default:
         return `${fee.value}`;
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
-  const totalActiveFees = displayServiceFees.filter(fee => fee.status === 'active').length;
+  const totalActiveFees = displayServiceFees.filter(
+    (fee) => fee.status === "active",
+  ).length;
   const totalRevenue = displayServiceFees.reduce((sum, fee) => {
     // This would be calculated from actual usage data in a real implementation
-    return sum + (fee.value * 100); // Mock calculation
+    return sum + fee.value * 100; // Mock calculation
   }, 0);
 
   return (
@@ -222,7 +226,9 @@ export default function ServiceFeeList({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Service Fees</h1>
-          <p className="text-gray-600">Manage service fees across microservices</p>
+          <p className="text-gray-600">
+            Manage service fees across microservices
+          </p>
         </div>
         <Button onClick={onCreate}>
           <Plus className="w-4 h-4 mr-2" />
@@ -238,7 +244,9 @@ export default function ServiceFeeList({
               <DollarSign className="w-5 h-5 text-blue-500" />
               <div>
                 <p className="text-sm text-gray-600">Total Fees</p>
-                <p className="text-2xl font-bold">{displayServiceFees.length}</p>
+                <p className="text-2xl font-bold">
+                  {displayServiceFees.length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -263,7 +271,10 @@ export default function ServiceFeeList({
               <div>
                 <p className="text-sm text-gray-600">Percentage Fees</p>
                 <p className="text-2xl font-bold">
-                  {displayServiceFees.filter(f => f.type === 'percentage').length}
+                  {
+                    displayServiceFees.filter((f) => f.type === "percentage")
+                      .length
+                  }
                 </p>
               </div>
             </div>
@@ -277,7 +288,7 @@ export default function ServiceFeeList({
               <div>
                 <p className="text-sm text-gray-600">Fixed Fees</p>
                 <p className="text-2xl font-bold">
-                  {displayServiceFees.filter(f => f.type === 'fixed').length}
+                  {displayServiceFees.filter((f) => f.type === "fixed").length}
                 </p>
               </div>
             </div>
@@ -354,8 +365,12 @@ export default function ServiceFeeList({
                     <td className="p-3">
                       <div>
                         <div className="font-medium">{fee.name}</div>
-                        <div className="text-sm text-gray-600">{fee.description}</div>
-                        <div className="text-xs text-gray-500">Service: {fee.serviceId}</div>
+                        <div className="text-sm text-gray-600">
+                          {fee.description}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Service: {fee.serviceId}
+                        </div>
                       </div>
                     </td>
                     <td className="p-3">
@@ -364,14 +379,13 @@ export default function ServiceFeeList({
                       </Badge>
                     </td>
                     <td className="p-3">
-                      <div className="font-medium">
-                        {formatFeeValue(fee)}
-                      </div>
+                      <div className="font-medium">{formatFeeValue(fee)}</div>
                       {fee.minAmount !== undefined && (
                         <div className="text-xs text-gray-500">
-                          Min: {new Intl.NumberFormat('en-US', {
-                            style: 'currency',
-                            currency: fee.currency
+                          Min:{" "}
+                          {new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: fee.currency,
                           }).format(fee.minAmount)}
                         </div>
                       )}
@@ -379,7 +393,11 @@ export default function ServiceFeeList({
                     <td className="p-3">
                       <div className="flex flex-wrap gap-1">
                         {fee.applicableServices.map((service, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
+                          <Badge
+                            key={index}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             {service}
                           </Badge>
                         ))}
@@ -441,10 +459,9 @@ export default function ServiceFeeList({
                 No service fees found
               </h3>
               <p className="text-gray-500">
-                {searchTerm || filterType !== 'all' || filterStatus !== 'all'
-                  ? 'No service fees match your search criteria.'
-                  : 'Create your first service fee to get started.'
-                }
+                {searchTerm || filterType !== "all" || filterStatus !== "all"
+                  ? "No service fees match your search criteria."
+                  : "Create your first service fee to get started."}
               </p>
             </div>
           )}
@@ -457,10 +474,15 @@ export default function ServiceFeeList({
           <div className="flex items-center space-x-2">
             <Settings className="w-5 h-5 text-blue-600" />
             <div>
-              <h3 className="font-semibold text-blue-800">Microservice Integration</h3>
+              <h3 className="font-semibold text-blue-800">
+                Microservice Integration
+              </h3>
               <p className="text-sm text-blue-700">
-                Service fees are managed through the Revenue Service microservice at{' '}
-                <code className="bg-blue-100 px-1 rounded">{revenueServiceUrl}</code>
+                Service fees are managed through the Revenue Service
+                microservice at{" "}
+                <code className="bg-blue-100 px-1 rounded">
+                  {revenueServiceUrl}
+                </code>
               </p>
             </div>
           </div>

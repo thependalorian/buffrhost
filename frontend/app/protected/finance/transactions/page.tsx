@@ -1,8 +1,8 @@
-import React from 'react';
-import TransactionList from '@/components/finance/TransactionList';
+import React from "react";
+import TransactionList from "@/components/finance/TransactionList";
 
 const TransactionsPage: React.FC = () => {
-  const accountId = 'mock-account-id'; // This should come from context or route params
+  const accountId = "mock-account-id"; // This should come from context or route params
 
   return (
     <div className="transactions-page">

@@ -8,23 +8,26 @@ agents can use to provide accurate and contextual responses to customers.
 
 import asyncio
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime
 import uuid
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, update, delete, func
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
+from sqlalchemy import and_, delete, func, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.knowledge import KnowledgeDocument as KnowledgeDocumentModel
+
 from .document_processor import DocumentProcessor
+from .types import DocumentStatus, DocumentType
 from .vector_store import VectorStoreManager
-from .types import DocumentType, DocumentStatus
 
 logger = logging.getLogger(__name__)
 
 
 class KnowledgeDocument(BaseModel):
     """Model for knowledge base documents."""
+
     document_id: str
     property_id: int
     title: str
@@ -48,12 +51,12 @@ class KnowledgeBaseManager:
     """
     Manages the knowledge base for hospitality properties.
     """
-    
+
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
         self.document_processor = DocumentProcessor()
         self.vector_store = VectorStoreManager(db_session)
-        
+
     async def add_document(
         self,
         property_id: int,
@@ -65,7 +68,7 @@ class KnowledgeBaseManager:
         tags: Optional[List[str]] = None,
         file_path: Optional[str] = None,
         file_type: Optional[str] = None,
-        file_size: Optional[int] = None
+        file_size: Optional[int] = None,
     ) -> KnowledgeDocument:
         """
         Add a new document to the knowledge base.
@@ -83,13 +86,15 @@ class KnowledgeBaseManager:
             file_path=file_path,
             file_type=file_type,
             file_size=file_size,
-            status=DocumentStatus.UPLOADED.value
+            status=DocumentStatus.UPLOADED.value,
         )
-        
+
         await self._store_document_in_db(document)
         await self._process_and_index_document(KnowledgeDocument.from_orm(document))
-        
-        logger.info(f"Document {document_id} added to knowledge base for property {property_id}")
+
+        logger.info(
+            f"Document {document_id} added to knowledge base for property {property_id}"
+        )
         return KnowledgeDocument.from_orm(document)
 
     async def get_document(self, document_id: str) -> Optional[KnowledgeDocument]:
@@ -97,7 +102,9 @@ class KnowledgeBaseManager:
         Get a document by ID.
         """
         result = await self.db_session.execute(
-            select(KnowledgeDocumentModel).where(KnowledgeDocumentModel.document_id == document_id)
+            select(KnowledgeDocumentModel).where(
+                KnowledgeDocumentModel.document_id == document_id
+            )
         )
         document = result.scalar_one_or_none()
         return KnowledgeDocument.from_orm(document) if document else None
@@ -108,12 +115,17 @@ class KnowledgeBaseManager:
         """
         async with self.db_session.begin():
             total_docs_result = await self.db_session.execute(
-                select(func.count(KnowledgeDocumentModel.document_id)).where(KnowledgeDocumentModel.property_id == property_id)
+                select(func.count(KnowledgeDocumentModel.document_id)).where(
+                    KnowledgeDocumentModel.property_id == property_id
+                )
             )
             total_documents = total_docs_result.scalar_one_or_none() or 0
 
             doc_types_result = await self.db_session.execute(
-                select(KnowledgeDocumentModel.document_type, func.count(KnowledgeDocumentModel.document_id))
+                select(
+                    KnowledgeDocumentModel.document_type,
+                    func.count(KnowledgeDocumentModel.document_id),
+                )
                 .where(KnowledgeDocumentModel.property_id == property_id)
                 .group_by(KnowledgeDocumentModel.document_type)
             )
@@ -124,7 +136,7 @@ class KnowledgeBaseManager:
             "total_documents": total_documents,
             "document_types": document_types,
             "last_updated": datetime.utcnow().isoformat(),
-            "status": "active"
+            "status": "active",
         }
 
     async def _store_document_in_db(self, document: KnowledgeDocumentModel) -> None:
@@ -145,7 +157,9 @@ class KnowledgeBaseManager:
     async def _delete_document_from_db(self, document_id: str) -> None:
         """Delete document from database."""
         await self.db_session.execute(
-            delete(KnowledgeDocumentModel).where(KnowledgeDocumentModel.document_id == document_id)
+            delete(KnowledgeDocumentModel).where(
+                KnowledgeDocumentModel.document_id == document_id
+            )
         )
         await self.db_session.commit()
 
@@ -154,13 +168,13 @@ class KnowledgeBaseManager:
         try:
             document.status = DocumentStatus.PROCESSING
             await self._update_document_in_db(document)
-            
+
             processed_content = await self.document_processor.process_document(
                 content=document.content,
                 document_type=document.document_type,
-                metadata=document.metadata
+                metadata=document.metadata,
             )
-            
+
             await self.vector_store.add_document(
                 property_id=document.property_id,
                 document_id=document.document_id,
@@ -170,15 +184,17 @@ class KnowledgeBaseManager:
                     "document_type": document.document_type.value,
                     "tags": document.tags,
                     "created_at": document.created_at.isoformat(),
-                    "updated_at": document.updated_at.isoformat()
-                }
+                    "updated_at": document.updated_at.isoformat(),
+                },
             )
-            
+
             document.status = DocumentStatus.INDEXED
             await self._update_document_in_db(document)
-            
-            logger.info(f"Document {document.document_id} processed and indexed successfully")
-            
+
+            logger.info(
+                f"Document {document.document_id} processed and indexed successfully"
+            )
+
         except Exception as e:
             logger.error(f"Error processing document {document.document_id}: {e}")
             document.status = DocumentStatus.ERROR

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useState } from 'react';
+import React from "react";
+import { useState } from "react";
 
 interface ResourceFormData {
   name: string;
@@ -18,16 +18,20 @@ interface ResourceFormProps {
 
 const ResourceForm: React.FC<ResourceFormProps> = ({ onSubmit }) => {
   const [formData, setFormData] = useState<ResourceFormData>({
-    name: '',
-    resource_type: '',
+    name: "",
+    resource_type: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const target = e.target as HTMLInputElement;
     const { name, value, type, checked } = target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -41,23 +45,55 @@ const ResourceForm: React.FC<ResourceFormProps> = ({ onSubmit }) => {
       <h2>Create New Resource</h2>
       <div>
         <label htmlFor="name">Name:</label>
-        <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required />
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
       </div>
       <div>
         <label htmlFor="resource_type">Resource Type:</label>
-        <input type="text" id="resource_type" name="resource_type" value={formData.resource_type} onChange={handleChange} required />
+        <input
+          type="text"
+          id="resource_type"
+          name="resource_type"
+          value={formData.resource_type}
+          onChange={handleChange}
+          required
+        />
       </div>
       <div>
         <label htmlFor="capacity">Capacity:</label>
-        <input type="number" id="capacity" name="capacity" value={formData.capacity || ''} onChange={handleChange} />
+        <input
+          type="number"
+          id="capacity"
+          name="capacity"
+          value={formData.capacity || ""}
+          onChange={handleChange}
+        />
       </div>
       <div>
         <label htmlFor="is_available">Is Available:</label>
-        <input type="checkbox" id="is_available" name="is_available" checked={formData.is_available} onChange={handleChange} />
+        <input
+          type="checkbox"
+          id="is_available"
+          name="is_available"
+          checked={formData.is_available}
+          onChange={handleChange}
+        />
       </div>
       <div>
         <label htmlFor="location">Location:</label>
-        <input type="text" id="location" name="location" value={formData.location || ''} onChange={handleChange} />
+        <input
+          type="text"
+          id="location"
+          name="location"
+          value={formData.location || ""}
+          onChange={handleChange}
+        />
       </div>
       <button type="submit">Create Resource</button>
     </form>

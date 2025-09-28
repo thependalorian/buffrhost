@@ -1,13 +1,15 @@
 """
 Pydantic schemas for document processing models.
 """
-from pydantic import BaseModel, Field
-from typing import Optional, Dict, Any, List
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class SitePageBase(BaseModel):
     """Base schema for site page."""
+
     url: str
     chunk_number: int
     title: str
@@ -18,11 +20,13 @@ class SitePageBase(BaseModel):
 
 class SitePageCreate(SitePageBase):
     """Schema for creating a site page."""
+
     pass
 
 
 class SitePageResponse(SitePageBase):
     """Schema for site page response."""
+
     id: int
     created_at: datetime
 
@@ -32,11 +36,16 @@ class SitePageResponse(SitePageBase):
 
 class DocumentProcessingLogBase(BaseModel):
     """Base schema for document processing log."""
+
     filename: str
     file_type: str = Field(..., max_length=50)
     file_size: Optional[int] = None
-    processing_method: str = Field(..., max_length=50)  # 'llama_parse', 'standard', 'enhanced'
-    status: str = Field(default='processing', max_length=20)  # 'processing', 'completed', 'failed'
+    processing_method: str = Field(
+        ..., max_length=50
+    )  # 'llama_parse', 'standard', 'enhanced'
+    status: str = Field(
+        default="processing", max_length=20
+    )  # 'processing', 'completed', 'failed'
     chunks_created: int = Field(default=0)
     processing_time_ms: Optional[int] = None
     error_message: Optional[str] = None
@@ -45,11 +54,13 @@ class DocumentProcessingLogBase(BaseModel):
 
 class DocumentProcessingLogCreate(DocumentProcessingLogBase):
     """Schema for creating a document processing log."""
+
     pass
 
 
 class DocumentProcessingLogUpdate(BaseModel):
     """Schema for updating a document processing log."""
+
     status: Optional[str] = Field(None, max_length=20)
     chunks_created: Optional[int] = None
     processing_time_ms: Optional[int] = None
@@ -59,6 +70,7 @@ class DocumentProcessingLogUpdate(BaseModel):
 
 class DocumentProcessingLogResponse(DocumentProcessingLogBase):
     """Schema for document processing log response."""
+
     id: int
     property_id: int
     created_at: datetime
@@ -70,10 +82,13 @@ class DocumentProcessingLogResponse(DocumentProcessingLogBase):
 
 class WebCrawlLogBase(BaseModel):
     """Base schema for web crawl log."""
+
     crawl_type: str = Field(..., max_length=50)  # 'website', 'sitemap'
     urls: List[str]
     sitemap_url: Optional[str] = None
-    status: str = Field(default='processing', max_length=20)  # 'processing', 'completed', 'failed'
+    status: str = Field(
+        default="processing", max_length=20
+    )  # 'processing', 'completed', 'failed'
     pages_crawled: int = Field(default=0)
     chunks_created: int = Field(default=0)
     processing_time_ms: Optional[int] = None
@@ -83,11 +98,13 @@ class WebCrawlLogBase(BaseModel):
 
 class WebCrawlLogCreate(WebCrawlLogBase):
     """Schema for creating a web crawl log."""
+
     pass
 
 
 class WebCrawlLogUpdate(BaseModel):
     """Schema for updating a web crawl log."""
+
     status: Optional[str] = Field(None, max_length=20)
     pages_crawled: Optional[int] = None
     chunks_created: Optional[int] = None
@@ -98,6 +115,7 @@ class WebCrawlLogUpdate(BaseModel):
 
 class WebCrawlLogResponse(WebCrawlLogBase):
     """Schema for web crawl log response."""
+
     id: int
     property_id: int
     created_at: datetime
@@ -109,6 +127,7 @@ class WebCrawlLogResponse(WebCrawlLogBase):
 
 class KnowledgeVectorBase(BaseModel):
     """Base schema for knowledge vector."""
+
     knowledge_id: Optional[str] = Field(None, max_length=255)
     chunk_id: str
     content: str
@@ -117,11 +136,13 @@ class KnowledgeVectorBase(BaseModel):
 
 class KnowledgeVectorCreate(KnowledgeVectorBase):
     """Schema for creating a knowledge vector."""
+
     pass
 
 
 class KnowledgeVectorResponse(KnowledgeVectorBase):
     """Schema for knowledge vector response."""
+
     id: int
     property_id: int
     created_at: datetime
@@ -132,6 +153,7 @@ class KnowledgeVectorResponse(KnowledgeVectorBase):
 
 class DocumentProcessingStats(BaseModel):
     """Schema for document processing statistics."""
+
     total_documents: int
     completed_documents: int
     failed_documents: int
@@ -142,6 +164,7 @@ class DocumentProcessingStats(BaseModel):
 
 class WebCrawlStats(BaseModel):
     """Schema for web crawl statistics."""
+
     total_crawls: int
     completed_crawls: int
     failed_crawls: int

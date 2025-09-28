@@ -1,10 +1,11 @@
 """
 Staff management schemas for Buffr Host platform.
 """
-from pydantic import BaseModel, Field, validator
-from typing import Optional, List, Dict, Any
-from datetime import datetime, date, time
+from datetime import date, datetime, time
 from decimal import Decimal
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, validator
 
 
 # Base schemas
@@ -81,8 +82,12 @@ class StaffProfileBase(BaseModel):
     department_id: Optional[int] = None
     position_id: Optional[int] = None
     hire_date: date
-    employment_type: str = Field(default="full_time", pattern="^(full_time|part_time|contract|temporary)$")
-    employment_status: str = Field(default="active", pattern="^(active|inactive|terminated|on_leave)$")
+    employment_type: str = Field(
+        default="full_time", pattern="^(full_time|part_time|contract|temporary)$"
+    )
+    employment_status: str = Field(
+        default="active", pattern="^(active|inactive|terminated|on_leave)$"
+    )
     phone: Optional[str] = Field(None, max_length=20)
     emergency_contact_name: Optional[str] = Field(None, max_length=255)
     emergency_contact_phone: Optional[str] = Field(None, max_length=20)
@@ -106,8 +111,12 @@ class StaffProfileUpdate(BaseModel):
     employee_id: Optional[str] = Field(None, max_length=50)
     department_id: Optional[int] = None
     position_id: Optional[int] = None
-    employment_type: Optional[str] = Field(None, pattern="^(full_time|part_time|contract|temporary)$")
-    employment_status: Optional[str] = Field(None, pattern="^(active|inactive|terminated|on_leave)$")
+    employment_type: Optional[str] = Field(
+        None, pattern="^(full_time|part_time|contract|temporary)$"
+    )
+    employment_status: Optional[str] = Field(
+        None, pattern="^(active|inactive|terminated|on_leave)$"
+    )
     phone: Optional[str] = Field(None, max_length=20)
     emergency_contact_name: Optional[str] = Field(None, max_length=255)
     emergency_contact_phone: Optional[str] = Field(None, max_length=20)
@@ -138,8 +147,13 @@ class StaffScheduleBase(BaseModel):
     start_time: time
     end_time: time
     break_duration: int = Field(default=30, ge=0, le=480)  # 0-8 hours in minutes
-    shift_type: str = Field(default="regular", pattern="^(regular|overtime|holiday|on_call)$")
-    status: str = Field(default="scheduled", pattern="^(scheduled|confirmed|completed|cancelled|no_show)$")
+    shift_type: str = Field(
+        default="regular", pattern="^(regular|overtime|holiday|on_call)$"
+    )
+    status: str = Field(
+        default="scheduled",
+        pattern="^(scheduled|confirmed|completed|cancelled|no_show)$",
+    )
     notes: Optional[str] = None
 
 
@@ -154,8 +168,12 @@ class StaffScheduleUpdate(BaseModel):
     start_time: Optional[time] = None
     end_time: Optional[time] = None
     break_duration: Optional[int] = Field(None, ge=0, le=480)
-    shift_type: Optional[str] = Field(None, pattern="^(regular|overtime|holiday|on_call)$")
-    status: Optional[str] = Field(None, pattern="^(scheduled|confirmed|completed|cancelled|no_show)$")
+    shift_type: Optional[str] = Field(
+        None, pattern="^(regular|overtime|holiday|on_call)$"
+    )
+    status: Optional[str] = Field(
+        None, pattern="^(scheduled|confirmed|completed|cancelled|no_show)$"
+    )
     notes: Optional[str] = None
 
 
@@ -179,7 +197,10 @@ class StaffAttendanceBase(BaseModel):
     break_end_time: Optional[datetime] = None
     total_hours_worked: Optional[Decimal] = None
     overtime_hours: Decimal = Field(default=0, ge=0)
-    status: str = Field(default="present", pattern="^(present|absent|late|early_departure|sick_leave|vacation)$")
+    status: str = Field(
+        default="present",
+        pattern="^(present|absent|late|early_departure|sick_leave|vacation)$",
+    )
     notes: Optional[str] = None
 
 
@@ -197,7 +218,9 @@ class StaffAttendanceUpdate(BaseModel):
     break_end_time: Optional[datetime] = None
     total_hours_worked: Optional[Decimal] = None
     overtime_hours: Optional[Decimal] = Field(None, ge=0)
-    status: Optional[str] = Field(None, pattern="^(present|absent|late|early_departure|sick_leave|vacation)$")
+    status: Optional[str] = Field(
+        None, pattern="^(present|absent|late|early_departure|sick_leave|vacation)$"
+    )
     notes: Optional[str] = None
     approved_by: Optional[str] = None
 
@@ -220,9 +243,15 @@ class StaffAttendance(StaffAttendanceBase):
 class StaffTaskBase(BaseModel):
     task_title: str = Field(..., max_length=255)
     task_description: Optional[str] = None
-    task_type: str = Field(default="general", pattern="^(cleaning|maintenance|guest_service|kitchen|front_desk|general)$")
+    task_type: str = Field(
+        default="general",
+        pattern="^(cleaning|maintenance|guest_service|kitchen|front_desk|general)$",
+    )
     priority: str = Field(default="medium", pattern="^(low|medium|high|urgent)$")
-    status: str = Field(default="assigned", pattern="^(assigned|in_progress|completed|cancelled|overdue)$")
+    status: str = Field(
+        default="assigned",
+        pattern="^(assigned|in_progress|completed|cancelled|overdue)$",
+    )
     due_date: Optional[datetime] = None
     estimated_duration: Optional[int] = Field(None, ge=1)  # minutes
     actual_duration: Optional[int] = Field(None, ge=0)  # minutes
@@ -238,9 +267,14 @@ class StaffTaskCreate(StaffTaskBase):
 class StaffTaskUpdate(BaseModel):
     task_title: Optional[str] = Field(None, max_length=255)
     task_description: Optional[str] = None
-    task_type: Optional[str] = Field(None, pattern="^(cleaning|maintenance|guest_service|kitchen|front_desk|general)$")
+    task_type: Optional[str] = Field(
+        None,
+        pattern="^(cleaning|maintenance|guest_service|kitchen|front_desk|general)$",
+    )
     priority: Optional[str] = Field(None, pattern="^(low|medium|high|urgent)$")
-    status: Optional[str] = Field(None, pattern="^(assigned|in_progress|completed|cancelled|overdue)$")
+    status: Optional[str] = Field(
+        None, pattern="^(assigned|in_progress|completed|cancelled|overdue)$"
+    )
     due_date: Optional[datetime] = None
     estimated_duration: Optional[int] = Field(None, ge=1)
     actual_duration: Optional[int] = Field(None, ge=0)
@@ -314,7 +348,9 @@ class StaffCommunicationBase(BaseModel):
     recipient_id: str = Field(..., max_length=255)
     subject: str = Field(..., max_length=255)
     message: str
-    communication_type: str = Field(default="message", pattern="^(message|announcement|alert|reminder)$")
+    communication_type: str = Field(
+        default="message", pattern="^(message|announcement|alert|reminder)$"
+    )
     priority: str = Field(default="normal", pattern="^(low|normal|high|urgent)$")
 
 
@@ -326,7 +362,9 @@ class StaffCommunicationCreate(StaffCommunicationBase):
 class StaffCommunicationUpdate(BaseModel):
     subject: Optional[str] = Field(None, max_length=255)
     message: Optional[str] = None
-    communication_type: Optional[str] = Field(None, pattern="^(message|announcement|alert|reminder)$")
+    communication_type: Optional[str] = Field(
+        None, pattern="^(message|announcement|alert|reminder)$"
+    )
     priority: Optional[str] = Field(None, pattern="^(low|normal|high|urgent)$")
     is_read: Optional[bool] = None
 
@@ -345,7 +383,9 @@ class StaffCommunication(StaffCommunicationBase):
 
 # Staff Leave Request schemas
 class StaffLeaveRequestBase(BaseModel):
-    leave_type: str = Field(..., pattern="^(vacation|sick_leave|personal|emergency|maternity|paternity)$")
+    leave_type: str = Field(
+        ..., pattern="^(vacation|sick_leave|personal|emergency|maternity|paternity)$"
+    )
     start_date: date
     end_date: date
     total_days: int = Field(..., ge=1)
@@ -356,20 +396,24 @@ class StaffLeaveRequestCreate(StaffLeaveRequestBase):
     staff_id: str = Field(..., max_length=255)
     property_id: int
 
-    @validator('end_date')
+    @validator("end_date")
     def end_date_must_be_after_start_date(cls, v, values):
-        if 'start_date' in values and v <= values['start_date']:
-            raise ValueError('End date must be after start date')
+        if "start_date" in values and v <= values["start_date"]:
+            raise ValueError("End date must be after start date")
         return v
 
 
 class StaffLeaveRequestUpdate(BaseModel):
-    leave_type: Optional[str] = Field(None, pattern="^(vacation|sick_leave|personal|emergency|maternity|paternity)$")
+    leave_type: Optional[str] = Field(
+        None, pattern="^(vacation|sick_leave|personal|emergency|maternity|paternity)$"
+    )
     start_date: Optional[date] = None
     end_date: Optional[date] = None
     total_days: Optional[int] = Field(None, ge=1)
     reason: Optional[str] = None
-    status: Optional[str] = Field(None, pattern="^(pending|approved|rejected|cancelled)$")
+    status: Optional[str] = Field(
+        None, pattern="^(pending|approved|rejected|cancelled)$"
+    )
     review_notes: Optional[str] = None
 
 

@@ -2,18 +2,20 @@
 Buffr Host Email Service
 
 Email service for The Shandi (Buffr Host) hotel management system
-Founder: George Nekwaya (george@buffr.ai +12065308433)
+Founder: George Nekwaya (george@mail.buffr.ai +12065308433)
 """
 
 import os
-import httpx
 from datetime import datetime
 from typing import Optional
+
+import httpx
 from pydantic import BaseModel
 
 
 class EmailResponse(BaseModel):
     """Email response model"""
+
     message_id: Optional[str] = None
     status: str
     provider: str = "SendGrid"
@@ -23,7 +25,7 @@ class EmailResponse(BaseModel):
 
 class BuffrHostEmailService:
     """Email service for Buffr Host hotel management system"""
-    
+
     def __init__(self):
         self.api_key = os.getenv("SENDGRID_API_KEY")
         if not self.api_key:
@@ -32,12 +34,12 @@ class BuffrHostEmailService:
         self.from_email = "noreply@mail.buffr.ai"
         self.from_name = "Buffr Host"
         self.app_url = "https://host.buffr.ai"
-        self.support_email = "support@host.buffr.ai"
+        self.support_email = "support@mail.buffr.ai"
         self.support_phone = "+12065308433"
         self.owner_name = "George Nekwaya"
-        self.owner_email = "george@buffr.ai"
+        self.owner_email = "george@mail.buffr.ai"
         self.owner_phone = "+12065308433"
-    
+
     async def send_booking_confirmation(
         self,
         guest_email: str,
@@ -48,12 +50,12 @@ class BuffrHostEmailService:
         room_type: str,
         total_amount: float,
         currency: str = "NAD",
-        hotel_name: str = "Buffr Host"
+        hotel_name: str = "Buffr Host",
     ) -> EmailResponse:
         """Send booking confirmation email"""
-        
+
         subject = f"Booking Confirmed - {hotel_name} - {booking_id}"
-        
+
         html = f"""
         <!DOCTYPE html>
         <html>
@@ -135,7 +137,7 @@ class BuffrHostEmailService:
         </body>
         </html>
         """
-        
+
         text = f"""
         BOOKING CONFIRMATION
         ====================
@@ -180,70 +182,46 @@ class BuffrHostEmailService:
         Powered by Buffr Host - host.buffr.ai
         This email was sent from noreply@mail.buffr.ai
         """
-        
+
         return await self._send_email(
-            to=guest_email,
-            subject=subject,
-            html=html,
-            text=text
+            to=guest_email, subject=subject, html=html, text=text
         )
-    
+
     async def _send_email(
-        self,
-        to: str,
-        subject: str,
-        html: str,
-        text: str
+        self, to: str, subject: str, html: str, text: str
     ) -> EmailResponse:
         """Send email via SendGrid API"""
-        
+
         email_data = {
-            "personalizations": [
-                {
-                    "to": [{"email": to}],
-                    "subject": subject
-                }
-            ],
-            "from": {
-                "email": self.from_email,
-                "name": self.from_name
-            },
-            "reply_to": {
-                "email": self.support_email,
-                "name": "Buffr Host Support"
-            },
+            "personalizations": [{"to": [{"email": to}], "subject": subject}],
+            "from": {"email": self.from_email, "name": self.from_name},
+            "reply_to": {"email": self.support_email, "name": "Buffr Host Support"},
             "content": [
-                {
-                    "type": "text/plain",
-                    "value": text
-                },
-                {
-                    "type": "text/html",
-                    "value": html
-                }
-            ]
+                {"type": "text/plain", "value": text},
+                {"type": "text/html", "value": html},
+            ],
         }
-        
+
         headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
-        
+
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     f"{self.base_url}/mail/send",
                     headers=headers,
                     json=email_data,
-                    timeout=30.0
+                    timeout=30.0,
                 )
-                
+
                 if response.status_code == 202:
                     return EmailResponse(
                         message_id=response.headers.get("X-Message-Id"),
                         status="sent",
                         provider="SendGrid",
-                        timestamp=datetime.now().isoformat()
+                        timestamp=datetime.now().isoformat(),
                     )
                 else:
                     error_msg = response.text or "Unknown error"
@@ -251,15 +229,15 @@ class BuffrHostEmailService:
                         status="failed",
                         provider="SendGrid",
                         timestamp=datetime.now().isoformat(),
-                        error=error_msg
+                        error=error_msg,
                     )
-                    
+
         except Exception as e:
             return EmailResponse(
                 status="failed",
                 provider="SendGrid",
                 timestamp=datetime.now().isoformat(),
-                error=str(e)
+                error=str(e),
             )
 
 

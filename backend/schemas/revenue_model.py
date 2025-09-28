@@ -1,7 +1,9 @@
-from pydantic import BaseModel
-from typing import Optional, List
 from datetime import datetime
+from typing import List, Optional
 from uuid import UUID
+
+from pydantic import BaseModel
+
 
 class SubscriptionBase(BaseModel):
     user_id: UUID
@@ -14,8 +16,10 @@ class SubscriptionBase(BaseModel):
     billing_period: Optional[str] = None
     metadata_: Optional[dict] = None
 
+
 class SubscriptionCreate(SubscriptionBase):
     pass
+
 
 class SubscriptionUpdate(BaseModel):
     plan_name: Optional[str] = None
@@ -27,6 +31,7 @@ class SubscriptionUpdate(BaseModel):
     billing_period: Optional[str] = None
     metadata_: Optional[dict] = None
 
+
 class SubscriptionResponse(SubscriptionBase):
     id: UUID
     created_at: datetime
@@ -34,6 +39,7 @@ class SubscriptionResponse(SubscriptionBase):
 
     class Config:
         from_attributes = True
+
 
 class ServiceFeeBase(BaseModel):
     name: str
@@ -43,8 +49,10 @@ class ServiceFeeBase(BaseModel):
     applies_to: Optional[str] = None
     is_active: Optional[bool] = True
 
+
 class ServiceFeeCreate(ServiceFeeBase):
     pass
+
 
 class ServiceFeeUpdate(BaseModel):
     name: Optional[str] = None
@@ -54,6 +62,7 @@ class ServiceFeeUpdate(BaseModel):
     applies_to: Optional[str] = None
     is_active: Optional[bool] = None
 
+
 class ServiceFeeResponse(ServiceFeeBase):
     id: UUID
     created_at: datetime
@@ -61,6 +70,7 @@ class ServiceFeeResponse(ServiceFeeBase):
 
     class Config:
         from_attributes = True
+
 
 class InvoiceBase(BaseModel):
     user_id: UUID
@@ -73,8 +83,10 @@ class InvoiceBase(BaseModel):
     items: Optional[List[dict]] = None
     payment_details: Optional[dict] = None
 
+
 class InvoiceCreate(InvoiceBase):
     pass
+
 
 class InvoiceUpdate(BaseModel):
     invoice_number: Optional[str] = None
@@ -85,6 +97,7 @@ class InvoiceUpdate(BaseModel):
     status: Optional[str] = None
     items: Optional[List[dict]] = None
     payment_details: Optional[dict] = None
+
 
 class InvoiceResponse(InvoiceBase):
     id: UUID

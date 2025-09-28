@@ -2,6 +2,9 @@
 Buffr Host FastAPI Application
 Main entry point for the hospitality management platform API.
 """
+# Import development configuration first
+import dev_config
+
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -16,7 +19,7 @@ import uuid # Added for unique ID generation
 
 from config import settings
 from database import create_tables, close_db
-from routes import auth, hospitality_property, menu, inventory, customer, order, analytics, cms, knowledge_base, spa, conference, transportation, loyalty, qr_loyalty, staff, ai_knowledge, calendar, arcade, payment, demo_requests, buffr_agent, preview, financial, etuna_demo_ai, etuna_demo, waitlist
+from routes import auth, hospitality_property, menu, inventory, customer, order, analytics, cms, knowledge_base, spa, conference, transportation, loyalty, qr_loyalty, staff, ai_knowledge, calendar, arcade, payment, demo_requests, buffr_agent, preview, financial, etuna_demo_ai, etuna_demo, waitlist, restaurant
 from routes import email_send_route, email_analytics_route, email_preferences_route, email_templates_route, email_queue_route, email_blacklist_route, email_booking_confirmation_route, email_check_in_reminder_route, email_check_out_reminder_route, email_property_update_route, email_booking_cancellation_route, email_host_summary_route, email_webhook_sendgrid_route, email_webhook_resend_route, email_webhook_ses_route
 
 
@@ -87,6 +90,7 @@ if settings.ENVIRONMENT == "production":
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["authentication"])
 app.include_router(hospitality_property.router, prefix="/api/v1/properties", tags=["properties"])
+app.include_router(restaurant.router, prefix="/api/v1/restaurants", tags=["restaurants"])
 app.include_router(menu.router, prefix="/api/v1", tags=["menu"])
 app.include_router(inventory.router, prefix="/api/v1", tags=["inventory"])
 app.include_router(customer.router, prefix="/api/v1", tags=["customers"])

@@ -2,21 +2,23 @@
 Buffr Host Email Routes
 
 API routes for email functionality in The Shandi (Buffr Host)
-Founder: George Nekwaya (george@buffr.ai +12065308433)
+Founder: George Nekwaya (george@mail.buffr.ai +12065308433)
 """
 
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel, EmailStr
-from typing import Optional
 from datetime import datetime
+from typing import Optional
 
-from ..services.email_service import email_service, EmailResponse
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, EmailStr
+
+from ..services.email_service import EmailResponse, email_service
 
 router = APIRouter(prefix="/api/email", tags=["email"])
 
 
 class BookingConfirmationRequest(BaseModel):
     """Request model for booking confirmation email"""
+
     guest_email: EmailStr
     guest_name: str
     booking_id: str
@@ -30,6 +32,7 @@ class BookingConfirmationRequest(BaseModel):
 
 class PaymentConfirmationRequest(BaseModel):
     """Request model for payment confirmation email"""
+
     guest_email: EmailStr
     guest_name: str
     booking_id: str
@@ -40,6 +43,7 @@ class PaymentConfirmationRequest(BaseModel):
 
 class LoyaltyRewardRequest(BaseModel):
     """Request model for loyalty reward email"""
+
     guest_email: EmailStr
     guest_name: str
     reward_type: str
@@ -61,7 +65,7 @@ async def send_booking_confirmation(request: BookingConfirmationRequest):
             room_type=request.room_type,
             total_amount=request.total_amount,
             currency=request.currency,
-            hotel_name=request.hotel_name
+            hotel_name=request.hotel_name,
         )
         return response
     except Exception as e:
@@ -78,7 +82,7 @@ async def send_payment_confirmation(request: PaymentConfirmationRequest):
             booking_id=request.booking_id,
             amount=request.amount,
             currency=request.currency,
-            payment_method=request.payment_method
+            payment_method=request.payment_method,
         )
         return response
     except Exception as e:
@@ -95,7 +99,7 @@ async def send_loyalty_reward(request: LoyaltyRewardRequest):
             reward_type=request.reward_type,
             reward_value=request.reward_value,
             points_earned=request.points_earned,
-            total_points=request.total_points
+            total_points=request.total_points,
         )
         return response
     except Exception as e:
@@ -111,5 +115,5 @@ async def get_email_status():
         "provider": "SendGrid",
         "from_email": email_service.from_email,
         "app_url": email_service.app_url,
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }

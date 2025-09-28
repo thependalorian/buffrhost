@@ -1,22 +1,29 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  Code, 
-  Terminal, 
-  Key, 
-  Settings, 
-  BarChart3, 
-  Users, 
-  Shield, 
-  Zap, 
-  Globe, 
-  Download, 
-  Upload, 
-  RefreshCw, 
-  CheckCircle, 
-  AlertCircle, 
-  Clock, 
+import { Metadata } from "next";
+import Image from "next/image";
+import {
+  PageHeader,
+  StatCard,
+  ActionButton,
+  ModalForm,
+  FormField,
+  FormSelect,
+  Alert,
+} from "@/src/components/ui";
+import {
+  Code,
+  Terminal,
+  Settings,
+  BarChart3,
+  Users,
+  Shield,
+  Zap,
+  Globe,
+  Download,
+  Upload,
+  RefreshCw,
+  CheckCircle,
+  AlertCircle,
+  Clock,
   Star,
   MapPin,
   Phone,
@@ -191,9 +198,7 @@ import {
   RefreshCw as RefreshCwIcon2,
   Shield as ShieldIcon3,
   Lock as LockIcon3,
-  Key as KeyIcon,
   Eye as EyeIcon4,
-  EyeOff as EyeOffIcon,
   AlertTriangle,
   CheckCircle as CheckCircleIcon,
   Server as ServerIcon,
@@ -211,12 +216,14 @@ import {
   Globe as GlobeIcon3,
   Download as DownloadIcon4,
   Upload as UploadIcon5,
-  RefreshCw as RefreshCwIcon3
-} from 'lucide-react';
+  RefreshCw as RefreshCwIcon3,
+} from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'API Management Demo - Buffr Host Platform',
-  description: 'Experience our comprehensive API management platform with developer tools, documentation, and analytics.',
+  title: "API Management Demo - Buffr Host Platform",
+  description:
+    "Experience our comprehensive API management platform with developer tools, documentation, and analytics.",
 };
 
 export default function APIManagementDemoPage() {
@@ -226,7 +233,8 @@ export default function APIManagementDemoPage() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm">
-            🎯 <strong>API Management Demo</strong> - Developer tools and comprehensive API platform
+            🎯 <strong>API Management Demo</strong> - Developer tools and
+            comprehensive API platform
           </p>
         </div>
       </div>
@@ -238,14 +246,21 @@ export default function APIManagementDemoPage() {
             <div className="mb-8">
               <Code className="w-24 h-24 mx-auto mb-4 opacity-90" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">API Excellence</h1>
-            <p className="text-xl md:text-2xl mb-6">Comprehensive API management and developer tools</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              API Excellence
+            </h1>
+            <p className="text-xl md:text-2xl mb-6">
+              Comprehensive API management and developer tools
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="btn btn-accent btn-lg">
                 <Terminal className="w-5 h-5 mr-2" />
                 Explore APIs
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link
+                href="/demo/etuna/management-demo"
+                className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900"
+              >
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -260,12 +275,15 @@ export default function APIManagementDemoPage() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Comprehensive API Management</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Comprehensive API Management
+              </h2>
               <p className="text-lg text-base-content/80 mb-6">
-                See how our API management platform provides comprehensive tools for developers, 
-                including documentation, testing, analytics, and security features for all Etuna APIs.
+                See how our API management platform provides comprehensive tools
+                for developers, including documentation, testing, analytics, and
+                security features for all Etuna APIs.
               </p>
-              
+
               {/* Demo API Dashboard */}
               <div className="bg-white dark:bg-base-200 p-6 rounded-lg shadow-xl mb-6">
                 <h3 className="text-lg font-bold mb-4">API Status</h3>
@@ -286,7 +304,7 @@ export default function APIManagementDemoPage() {
                       <p className="text-xs text-gray-500">1.2s avg response</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -302,7 +320,7 @@ export default function APIManagementDemoPage() {
                       <p className="text-xs text-gray-500">0.8s avg response</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
@@ -340,7 +358,7 @@ export default function APIManagementDemoPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2070&auto=format&fit=crop"
@@ -364,7 +382,9 @@ export default function APIManagementDemoPage() {
 
         {/* API Management Benefits */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Why Our API Management Excels</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Why Our API Management Excels
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Developer Tools */}
             <div className="nude-card hover:shadow-nude transition-shadow">
@@ -372,63 +392,92 @@ export default function APIManagementDemoPage() {
                 <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Terminal className="w-8 h-8 text-indigo-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Developer Tools</h3>
-                <p className="text-sm text-nude-700">Comprehensive SDKs, testing tools, and interactive documentation.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Developer Tools
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Comprehensive SDKs, testing tools, and interactive
+                  documentation.
+                </p>
               </div>
             </div>
-            
+
             {/* API Documentation */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FileText className="w-8 h-8 text-blue-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">API Documentation</h3>
-                <p className="text-sm text-nude-700">Interactive documentation with live examples and code samples.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  API Documentation
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Interactive documentation with live examples and code samples.
+                </p>
               </div>
             </div>
-            
+
             {/* Analytics & Monitoring */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="w-8 h-8 text-green-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Analytics & Monitoring</h3>
-                <p className="text-sm text-nude-700">Real-time API analytics, performance monitoring, and usage insights.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Analytics & Monitoring
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Real-time API analytics, performance monitoring, and usage
+                  insights.
+                </p>
               </div>
             </div>
-            
+
             {/* Security & Access Control */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Shield className="w-8 h-8 text-purple-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Security & Access</h3>
-                <p className="text-sm text-nude-700">API key management, rate limiting, and advanced security features.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Security & Access
+                </h3>
+                <p className="text-sm text-nude-700">
+                  API key management, rate limiting, and advanced security
+                  features.
+                </p>
               </div>
             </div>
-            
+
             {/* Version Management */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Settings className="w-8 h-8 text-orange-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Version Management</h3>
-                <p className="text-sm text-nude-700">Seamless API versioning with backward compatibility and migration tools.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Version Management
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Seamless API versioning with backward compatibility and
+                  migration tools.
+                </p>
               </div>
             </div>
-            
+
             {/* Developer Portal */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Globe className="w-8 h-8 text-teal-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Developer Portal</h3>
-                <p className="text-sm text-nude-700">Self-service developer portal with registration and key management.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Developer Portal
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Self-service developer portal with registration and key
+                  management.
+                </p>
               </div>
             </div>
           </div>
@@ -436,7 +485,9 @@ export default function APIManagementDemoPage() {
 
         {/* API Categories */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">API Categories & Endpoints</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            API Categories & Endpoints
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Core APIs */}
             <div className="nude-card">
@@ -447,7 +498,9 @@ export default function APIManagementDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Core APIs</h3>
-                    <p className="text-sm text-nude-700">Essential platform APIs</p>
+                    <p className="text-sm text-nude-700">
+                      Essential platform APIs
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -480,7 +533,9 @@ export default function APIManagementDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Business APIs</h3>
-                    <p className="text-sm text-nude-700">Hospitality business logic</p>
+                    <p className="text-sm text-nude-700">
+                      Hospitality business logic
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -541,15 +596,22 @@ export default function APIManagementDemoPage() {
 
         {/* Advanced Features */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Advanced API Features</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Advanced API Features
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Interactive Documentation */}
             <div className="text-center">
               <div className="w-20 h-20 bg-primary text-primary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <FileText className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Interactive Documentation</h3>
-              <p className="text-nude-700">Live API documentation with interactive testing and code examples.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                Interactive Documentation
+              </h3>
+              <p className="text-nude-700">
+                Live API documentation with interactive testing and code
+                examples.
+              </p>
             </div>
 
             {/* SDK Generation */}
@@ -558,7 +620,9 @@ export default function APIManagementDemoPage() {
                 <Code className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">SDK Generation</h3>
-              <p className="text-nude-700">Automatically generated SDKs for multiple programming languages.</p>
+              <p className="text-nude-700">
+                Automatically generated SDKs for multiple programming languages.
+              </p>
             </div>
 
             {/* API Gateway */}
@@ -567,7 +631,9 @@ export default function APIManagementDemoPage() {
                 <Network className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">API Gateway</h3>
-              <p className="text-nude-700">High-performance API gateway with load balancing and caching.</p>
+              <p className="text-nude-700">
+                High-performance API gateway with load balancing and caching.
+              </p>
             </div>
           </div>
         </div>
@@ -575,7 +641,9 @@ export default function APIManagementDemoPage() {
         {/* Demo Actions */}
         <div className="py-16">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Experience API Management</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Experience API Management
+            </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Developer Experience */}
               <div className="card bg-gradient-to-br from-indigo-500 to-purple-500 text-white shadow-xl">
@@ -587,15 +655,18 @@ export default function APIManagementDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">Developer Experience</h3>
-                      <p className="text-white/80">See how API management works</p>
+                      <h3 className="text-2xl font-bold">
+                        Developer Experience
+                      </h3>
+                      <p className="text-white/80">
+                        See how API management works
+                      </p>
                     </div>
                   </div>
                   <p className="text-white/90 mb-6">
-                    Experience our API management platform. 
-                    Explore documentation, test endpoints, 
-                    generate SDKs, and see how easy it is 
-                    to integrate with our APIs.
+                    Experience our API management platform. Explore
+                    documentation, test endpoints, generate SDKs, and see how
+                    easy it is to integrate with our APIs.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -634,15 +705,18 @@ export default function APIManagementDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">API Management Dashboard</h3>
-                      <p className="text-nude-700">See how APIs drive platform success</p>
+                      <h3 className="text-2xl font-bold">
+                        API Management Dashboard
+                      </h3>
+                      <p className="text-nude-700">
+                        See how APIs drive platform success
+                      </p>
                     </div>
                   </div>
                   <p className="text-base-content/80 mb-6">
-                    Explore our API management dashboard. 
-                    Monitor usage, analyze performance, 
-                    manage keys, and configure policies 
-                    for optimal API operations.
+                    Explore our API management dashboard. Monitor usage, analyze
+                    performance, manage keys, and configure policies for optimal
+                    API operations.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -663,7 +737,10 @@ export default function APIManagementDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link
+                      href="/demo/etuna/management-demo"
+                      className="btn btn-primary"
+                    >
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>
@@ -681,17 +758,23 @@ export default function APIManagementDemoPage() {
               <div className="text-center">
                 <Phone className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Ready to Integrate?</h3>
-                <p className="text-primary-content/80">Contact us to implement comprehensive API management.</p>
+                <p className="text-primary-content/80">
+                  Contact us to implement comprehensive API management.
+                </p>
               </div>
               <div className="text-center">
                 <Mail className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Schedule a Demo</h3>
-                <p className="text-primary-content/80">Book a personalized demonstration of our API platform.</p>
+                <p className="text-primary-content/80">
+                  Book a personalized demonstration of our API platform.
+                </p>
               </div>
               <div className="text-center">
                 <Globe className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Learn More</h3>
-                <p className="text-primary-content/80">Visit our main website for more information about Buffr Host.</p>
+                <p className="text-primary-content/80">
+                  Visit our main website for more information about Buffr Host.
+                </p>
               </div>
             </div>
           </div>

@@ -1,12 +1,12 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import React from 'react';
-import ServiceFeeList from '@/components/revenue/ServiceFeeList';
-import ServiceFeeForm from '@/components/revenue/ServiceFeeForm';
+"use client";
+export const dynamic = "force-dynamic";
+import React from "react";
+import ServiceFeeList from "@/components/revenue/ServiceFeeList";
+import ServiceFeeForm from "@/components/revenue/ServiceFeeForm";
 
 const FeesPage: React.FC = () => {
   const handleAddServiceFee = (data: any) => {
-    console.log('Adding service fee:', data);
+    console.log("Adding service fee:", data);
     // In a real app, send data to backend
   };
 

@@ -1,12 +1,12 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import React from 'react';
-import SubscriptionList from '@/components/revenue/SubscriptionList';
-import SubscriptionForm from '@/components/revenue/SubscriptionForm';
+"use client";
+export const dynamic = "force-dynamic";
+import React from "react";
+import SubscriptionList from "@/components/revenue/SubscriptionList";
+import SubscriptionForm from "@/components/revenue/SubscriptionForm";
 
 const SubscriptionsPage: React.FC = () => {
   const handleAddSubscription = (data: any) => {
-    console.log('Adding subscription:', data);
+    console.log("Adding subscription:", data);
     // In a real app, send data to backend
   };
 

@@ -1,12 +1,12 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import React from 'react';
-import BankAccountList from '@/components/finance/BankAccountList';
-import BankAccountForm from '@/components/finance/BankAccountForm';
+"use client";
+export const dynamic = "force-dynamic";
+import React from "react";
+import BankAccountList from "@/components/finance/BankAccountList";
+import BankAccountForm from "@/components/finance/BankAccountForm";
 
 const BankAccountsPage: React.FC = () => {
   const handleAddAccount = (data: any) => {
-    console.log('Adding bank account:', data);
+    console.log("Adding bank account:", data);
     // In a real app, send data to backend
   };
 

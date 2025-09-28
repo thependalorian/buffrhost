@@ -1,12 +1,12 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import React from 'react';
-import ScheduleList from '@/components/calendar/ScheduleList';
-import ScheduleForm from '@/components/calendar/ScheduleForm';
+"use client";
+export const dynamic = "force-dynamic";
+import React from "react";
+import ScheduleList from "@/components/calendar/ScheduleList";
+import ScheduleForm from "@/components/calendar/ScheduleForm";
 
 const SchedulesPage: React.FC = () => {
   const handleAddSchedule = (data: any) => {
-    console.log('Adding schedule:', data);
+    console.log("Adding schedule:", data);
     // In a real app, send data to backend
   };
 

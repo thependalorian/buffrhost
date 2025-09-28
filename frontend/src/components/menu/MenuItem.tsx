@@ -1,16 +1,16 @@
 /**
  * Menu Item Component for The Shandi Frontend
- * 
+ *
  * Displays individual menu items with pricing, descriptions, and actions.
  */
 
-'use client';
+"use client";
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export interface MenuItem {
   id: string;
@@ -41,33 +41,36 @@ interface MenuItemProps {
   className?: string;
 }
 
-export function MenuItem({ 
-  item, 
-  onAddToCart, 
-  onViewDetails, 
+export function MenuItem({
+  item,
+  onAddToCart,
+  onViewDetails,
   showAddButton = true,
   showDetailsButton = true,
-  className 
+  className,
 }: MenuItemProps) {
   const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat('en-NA', {
-      style: 'currency',
+    return new Intl.NumberFormat("en-NA", {
+      style: "currency",
       currency: currency,
     }).format(price);
   };
 
   const getDietaryBadges = () => {
     const badges = [];
-    if (item.is_vegetarian) badges.push({ label: 'Vegetarian', variant: 'success' as const });
-    if (item.is_vegan) badges.push({ label: 'Vegan', variant: 'success' as const });
-    if (item.is_gluten_free) badges.push({ label: 'Gluten Free', variant: 'outline' as const });
+    if (item.is_vegetarian)
+      badges.push({ label: "Vegetarian", variant: "success" as const });
+    if (item.is_vegan)
+      badges.push({ label: "Vegan", variant: "success" as const });
+    if (item.is_gluten_free)
+      badges.push({ label: "Gluten Free", variant: "outline" as const });
     return badges;
   };
 
   const dietaryBadges = getDietaryBadges();
 
   return (
-    <Card className={cn('h-full flex flex-col w-full', className)}>
+    <Card className={cn("h-full flex flex-col w-full", className)}>
       {item.image_url && (
         <div className="aspect-video overflow-hidden rounded-t-lg">
           <img
@@ -77,10 +80,12 @@ export function MenuItem({
           />
         </div>
       )}
-      
+
       <CardHeader className="flex-1">
         <div className="flex flex-col space-y-2 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
-          <CardTitle className="text-base font-semibold sm:text-lg">{item.name}</CardTitle>
+          <CardTitle className="text-base font-semibold sm:text-lg">
+            {item.name}
+          </CardTitle>
           <div className="text-left sm:text-right">
             <div className="text-lg font-bold text-primary sm:text-xl">
               {formatPrice(item.price, item.currency)}
@@ -92,11 +97,11 @@ export function MenuItem({
             )}
           </div>
         </div>
-        
+
         <p className="text-xs text-muted-foreground sm:text-sm line-clamp-2">
           {item.description}
         </p>
-        
+
         {dietaryBadges.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {dietaryBadges.map((badge) => (
@@ -106,14 +111,15 @@ export function MenuItem({
             ))}
           </div>
         )}
-        
+
         {item.allergens && item.allergens.length > 0 && (
           <div className="text-xs text-muted-foreground">
-            <span className="font-medium">Allergens:</span> {item.allergens.join(', ')}
+            <span className="font-medium">Allergens:</span>{" "}
+            {item.allergens.join(", ")}
           </div>
         )}
       </CardHeader>
-      
+
       <CardContent className="pt-0">
         <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
           {showAddButton && (
@@ -122,10 +128,10 @@ export function MenuItem({
               disabled={!item.is_available}
               className="w-full sm:flex-1"
             >
-              {item.is_available ? 'Add to Cart' : 'Unavailable'}
+              {item.is_available ? "Add to Cart" : "Unavailable"}
             </Button>
           )}
-          
+
           {showDetailsButton && (
             <Button
               variant="outline"
@@ -136,7 +142,7 @@ export function MenuItem({
             </Button>
           )}
         </div>
-        
+
         {item.calories && (
           <div className="mt-2 text-xs text-muted-foreground">
             {item.calories} calories

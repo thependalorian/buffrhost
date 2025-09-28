@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
+import { PageHeader, StatCard, ActionButton, ModalForm, FormField, FormSelect, Alert } from '@/src/components/ui';
+import { useState } from 'react';
 import { 
   Zap, 
   Gauge, 
@@ -153,7 +154,6 @@ import {
   Calculator,
   PieChart as PieChartIcon,
   LineChart as LineChartIcon,
-  TrendingDown,
   DollarSign,
   Mic,
   MicOff,
@@ -194,7 +194,6 @@ import {
   Lock as LockIcon3,
   Key as KeyIcon,
   Eye as EyeIcon4,
-  EyeOff as EyeOffIcon,
   AlertTriangle,
   CheckCircle as CheckCircleIcon,
   Server as ServerIcon2,
@@ -222,7 +221,6 @@ import {
   Users as UsersIcon3,
   DollarSign as DollarSignIcon2,
   Plug,
-  Link as LinkIcon,
   Zap as ZapIcon3,
   Gauge as GaugeIcon,
   Clock as ClockIcon2,
@@ -233,9 +231,9 @@ import {
   CheckCircle as CheckCircleIcon2,
   AlertCircle as AlertCircleIcon2,
   TrendingUp as TrendingUpIcon3,
-  TrendingDown as TrendingDownIcon2,
   Activity as ActivityIcon
 } from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Performance Optimization Demo - Buffr Host Platform',
@@ -268,7 +266,7 @@ export default function PerformanceOptimizationDemoPage() {
                 <Gauge className="w-5 h-5 mr-2" />
                 View Performance
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link href="/demo/etuna/management-demo" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -687,7 +685,7 @@ export default function PerformanceOptimizationDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link href="/demo/etuna/management-demo" className="btn btn-primary">
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>

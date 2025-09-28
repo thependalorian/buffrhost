@@ -9,21 +9,24 @@ import sys
 from datetime import datetime
 
 # Add the backend directory to the Python path
-sys.path.append('/Users/georgenekwaya/ai-agent-mastery/the-shandi/backend')
+sys.path.append("/Users/georgenekwaya/ai-agent-mastery/the-shandi/backend")
 
 from services.email_service import BuffrHostEmailService
 
+
 async def send_test_email():
     """Send a test email to pendanek@gmail.com"""
-    
+
     try:
         # Initialize the email service
         email_service = BuffrHostEmailService()
-        
+
         # Test email details
         to_email = "pendanek@gmail.com"
-        subject = "Test Email from Buffr Host - " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+        subject = "Test Email from Buffr Host - " + datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
         # HTML content
         html_content = """
         <!DOCTYPE html>
@@ -65,7 +68,7 @@ async def send_test_email():
                     <p>Best regards,<br>
                     <strong>George Nekwaya</strong><br>
                     Founder, Buffr Host<br>
-                    📧 george@buffr.ai<br>
+                    📧 george@mail.buffr.ai<br>
                     📱 +1 (206) 530-8433</p>
                 </div>
                 <div class="footer">
@@ -77,9 +80,9 @@ async def send_test_email():
         </html>
         """.format(
             timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC"),
-            to_email=to_email
+            to_email=to_email,
         )
-        
+
         # Plain text content
         text_content = f"""
         Hello from Buffr Host!
@@ -99,45 +102,43 @@ async def send_test_email():
         Best regards,
         George Nekwaya
         Founder, Buffr Host
-        Email: george@buffr.ai
+        Email: george@mail.buffr.ai
         Phone: +1 (206) 530-8433
         
         This email was sent from Buffr Host Hospitality Management Platform
         © 2024 Buffr Host. All rights reserved.
         """
-        
+
         print(f"📧 Sending test email to {to_email}...")
         print(f"📝 Subject: {subject}")
-        
+
         # Send the email using the private method
         response = await email_service._send_email(
-            to=to_email,
-            subject=subject,
-            html=html_content,
-            text=text_content
+            to=to_email, subject=subject, html=html_content, text=text_content
         )
-        
+
         print(f"✅ Email sent successfully!")
         print(f"📊 Response: {response}")
-        
+
         if response.status == "success":
             print(f"🎉 Email delivered! Message ID: {response.message_id}")
         else:
             print(f"❌ Email failed: {response.error}")
-            
+
     except Exception as e:
         print(f"❌ Error sending email: {str(e)}")
         return False
-    
+
     return True
+
 
 if __name__ == "__main__":
     print("🚀 Starting Buffr Host Email Test...")
     print("=" * 50)
-    
+
     # Run the async function
     success = asyncio.run(send_test_email())
-    
+
     print("=" * 50)
     if success:
         print("✅ Email test completed successfully!")

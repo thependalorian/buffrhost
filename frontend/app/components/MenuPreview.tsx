@@ -1,15 +1,13 @@
-/**
- * MenuPreview Component for Buffr Host
- * 
- * Specialized preview component for restaurant menus with QR code integration
- * and mobile-optimized display for customer-facing views.
- */
-
-"use client";
-
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { QrCode, Smartphone, Monitor, Tablet, Eye, Share2, Download } from 'lucide-react';
+import { useState } from "react";
+import {
+  QrCode,
+  Smartphone,
+  Monitor,
+  Tablet,
+  Eye,
+  Share2,
+  Download,
+} from "lucide-react";
 
 interface MenuItem {
   id: string;
@@ -42,7 +40,7 @@ interface MenuData {
   showPrices: boolean;
   showAllergens: boolean;
   showCalories: boolean;
-  theme: 'light' | 'dark' | 'colorful';
+  theme: "light" | "dark" | "colorful";
 }
 
 interface MenuPreviewProps {
@@ -54,7 +52,7 @@ interface MenuPreviewProps {
   qrCodeUrl?: string;
 }
 
-type DeviceType = 'desktop' | 'tablet' | 'mobile';
+type DeviceType = "desktop" | "tablet" | "mobile";
 
 const MenuPreview: React.FC<MenuPreviewProps> = ({
   menuData,
@@ -62,44 +60,45 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
   onClose,
   onSave,
   showQRCode = true,
-  qrCodeUrl
+  qrCodeUrl,
 }) => {
-  const [deviceType, setDeviceType] = useState<DeviceType>('mobile');
+  const [deviceType, setDeviceType] = useState<DeviceType>("mobile");
   const [showQRModal, setShowQRModal] = useState(false);
 
   const deviceConfig = {
-    desktop: { width: '100%', maxWidth: '1200px', icon: Monitor },
-    tablet: { width: '768px', maxWidth: '768px', icon: Tablet },
-    mobile: { width: '375px', maxWidth: '375px', icon: Smartphone }
+    desktop: { width: "100%", maxWidth: "1200px", icon: Monitor },
+    tablet: { width: "768px", maxWidth: "768px", icon: Tablet },
+    mobile: { width: "375px", maxWidth: "375px", icon: Smartphone },
   };
 
   const DeviceIcon = deviceConfig[deviceType].icon;
 
   const getThemeClasses = () => {
     switch (menuData.theme) {
-      case 'dark':
+      case "dark":
         return {
-          background: 'bg-gray-900',
-          text: 'text-white',
-          card: 'bg-gray-800',
-          accent: 'bg-blue-600',
-          border: 'border-gray-700'
+          background: "bg-gray-900",
+          text: "text-white",
+          card: "bg-gray-800",
+          accent: "bg-blue-600",
+          border: "border-gray-700",
         };
-      case 'colorful':
+      case "colorful":
         return {
-          background: 'bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500',
-          text: 'text-white',
-          card: 'bg-white bg-opacity-90',
-          accent: 'bg-pink-500',
-          border: 'border-white border-opacity-30'
+          background:
+            "bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500",
+          text: "text-white",
+          card: "bg-white bg-opacity-90",
+          accent: "bg-pink-500",
+          border: "border-white border-opacity-30",
         };
       default: // light
         return {
-          background: 'bg-white',
-          text: 'text-gray-900',
-          card: 'bg-gray-50',
-          accent: 'bg-blue-600',
-          border: 'border-gray-200'
+          background: "bg-white",
+          text: "text-gray-900",
+          card: "bg-gray-50",
+          accent: "bg-blue-600",
+          border: "border-gray-200",
         };
     }
   };
@@ -107,49 +106,68 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
   const theme = getThemeClasses();
 
   const renderMenuItem = (item: MenuItem) => (
-    <div className={`p-4 ${theme.card} rounded-lg hover:shadow-md transition-all duration-200`}>
+    <div
+      className={`p-4 ${theme.card} rounded-lg hover:shadow-md transition-all duration-200`}
+    >
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className={`text-lg font-semibold ${theme.text}`}>{item.name}</h3>
+            <h3 className={`text-lg font-semibold ${theme.text}`}>
+              {item.name}
+            </h3>
             <div className="flex gap-1">
               {item.isPopular && (
-                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">Popular</span>
+                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  Popular
+                </span>
               )}
               {item.isVegetarian && (
-                <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">Veg</span>
+                <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                  Veg
+                </span>
               )}
               {item.isVegan && (
-                <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">Vegan</span>
+                <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
+                  Vegan
+                </span>
               )}
               {item.isGlutenFree && (
-                <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">GF</span>
+                <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+                  GF
+                </span>
               )}
             </div>
           </div>
-          
-          <p className={`text-sm ${theme.text} opacity-80 mb-2`}>{item.description}</p>
-          
-          {menuData.showAllergens && item.allergens && item.allergens.length > 0 && (
-            <p className="text-xs text-orange-600 mb-2">
-              Warning: Contains: {item.allergens.join(', ')}
-            </p>
-          )}
-          
+
+          <p className={`text-sm ${theme.text} opacity-80 mb-2`}>
+            {item.description}
+          </p>
+
+          {menuData.showAllergens &&
+            item.allergens &&
+            item.allergens.length > 0 && (
+              <p className="text-xs text-orange-600 mb-2">
+                Warning: Contains: {item.allergens.join(", ")}
+              </p>
+            )}
+
           {menuData.showCalories && item.calories && (
             <p className="text-xs text-gray-500">{item.calories} calories</p>
           )}
         </div>
-        
+
         {menuData.showPrices && (
           <div className="text-right ml-4">
-            <span className={`text-xl font-bold ${theme.accent} text-white px-3 py-1 rounded-lg`}>
-              {menuData.currency}{item.price.toFixed(2)}
+            <span
+              className={`text-xl font-bold ${theme.accent} text-white px-3 py-1 rounded-lg`}
+            >
+              {menuData.currency}
+              {item.price.toFixed(2)}
             </span>
           </div>
         )}
       </div>
-      
+
       {item.image && (
         <div className="mt-3">
           <Image
@@ -177,14 +195,18 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
             className="w-16 h-16 mx-auto mb-4 rounded-full bg-white p-2"
           />
         )}
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">{menuData.restaurantName}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">
+          {menuData.restaurantName}
+        </h1>
         {menuData.restaurantDescription && (
-          <p className="text-white opacity-90">{menuData.restaurantDescription}</p>
+          <p className="text-white opacity-90">
+            {menuData.restaurantDescription}
+          </p>
         )}
       </div>
 
       {/* QR Code Section */}
-      {showQRCode && deviceType === 'mobile' && (
+      {showQRCode && deviceType === "mobile" && (
         <div className="p-4 bg-white bg-opacity-10 text-center">
           <button
             onClick={() => setShowQRModal(true)}
@@ -202,17 +224,19 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
           .sort((a, b) => a.displayOrder - b.displayOrder)
           .map((category) => (
             <div key={category.id}>
-              <h2 className={`text-xl font-bold ${theme.text} mb-4 pb-2 border-b-2 ${theme.border}`}>
+              <h2
+                className={`text-xl font-bold ${theme.text} mb-4 pb-2 border-b-2 ${theme.border}`}
+              >
                 {category.name}
               </h2>
               {category.description && (
-                <p className={`text-sm ${theme.text} opacity-70 mb-4`}>{category.description}</p>
+                <p className={`text-sm ${theme.text} opacity-70 mb-4`}>
+                  {category.description}
+                </p>
               )}
               <div className="space-y-3">
                 {category.items.map((item) => (
-                  <div key={item.id}>
-                    {renderMenuItem(item)}
-                  </div>
+                  <div key={item.id}>{renderMenuItem(item)}</div>
                 ))}
               </div>
             </div>
@@ -230,7 +254,9 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
   const renderQRModal = () => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg p-6 max-w-sm mx-auto">
-        <h3 className="text-lg font-semibold mb-4 text-center">Digital Menu QR Code</h3>
+        <h3 className="text-lg font-semibold mb-4 text-center">
+          Digital Menu QR Code
+        </h3>
         <div className="text-center">
           {qrCodeUrl ? (
             <Image
@@ -256,7 +282,9 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
               Close
             </button>
             <button
-              onClick={() => {/* Download QR code */}}
+              onClick={() => {
+                /* Download QR code */
+              }}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               <Download className="w-4 h-4 inline mr-1" />
@@ -274,8 +302,11 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
     <>
       <div className="fixed inset-0 z-40 overflow-hidden">
         {/* Backdrop */}
-        <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
-        
+        <div
+          className="absolute inset-0 bg-black bg-opacity-50"
+          onClick={onClose}
+        ></div>
+
         {/* Modal */}
         <div className="relative flex flex-col h-full bg-white">
           {/* Header */}
@@ -286,7 +317,7 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
                 Menu Preview: {menuData.restaurantName}
               </h2>
             </div>
-            
+
             <div className="flex items-center gap-2">
               {/* Device Toggle */}
               <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
@@ -298,17 +329,19 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
                       onClick={() => setDeviceType(device as DeviceType)}
                       className={`p-2 rounded-md transition-colors ${
                         deviceType === device
-                          ? 'bg-white text-blue-600 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-900'
+                          ? "bg-white text-blue-600 shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
                       }`}
-                      title={`${device.charAt(0).toUpperCase() + device.slice(1)} view`}
+                      title={`${
+                        device.charAt(0).toUpperCase() + device.slice(1)
+                      } view`}
                     >
                       <Icon className="w-4 h-4" />
                     </button>
                   );
                 })}
               </div>
-              
+
               {/* QR Code Button */}
               {showQRCode && (
                 <button
@@ -319,7 +352,7 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
                   QR Code
                 </button>
               )}
-              
+
               {/* Save Button */}
               {onSave && (
                 <button
@@ -330,7 +363,7 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
                   Save Menu
                 </button>
               )}
-              
+
               <button
                 onClick={onClose}
                 className="p-2 text-gray-400 hover:text-gray-600"
@@ -342,7 +375,13 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
 
           {/* Preview Content */}
           <div className="flex-1 overflow-auto bg-gray-100 p-4">
-            <div className="mx-auto" style={{ width: deviceConfig[deviceType].width, maxWidth: deviceConfig[deviceType].maxWidth }}>
+            <div
+              className="mx-auto"
+              style={{
+                width: deviceConfig[deviceType].width,
+                maxWidth: deviceConfig[deviceType].maxWidth,
+              }}
+            >
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 {renderMenuContent()}
               </div>
@@ -354,7 +393,10 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
             <div className="flex items-center justify-between text-sm text-gray-600">
               <div className="flex items-center gap-2">
                 <DeviceIcon className="w-4 h-4" />
-                <span>{deviceType.charAt(0).toUpperCase() + deviceType.slice(1)} View</span>
+                <span>
+                  {deviceType.charAt(0).toUpperCase() + deviceType.slice(1)}{" "}
+                  View
+                </span>
               </div>
               <p>This is how your menu will appear to customers</p>
             </div>
@@ -369,3 +411,4 @@ const MenuPreview: React.FC<MenuPreviewProps> = ({
 };
 
 export default MenuPreview;
+import Image from "next/image";

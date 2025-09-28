@@ -1,5 +1,5 @@
-import React from 'react';
-import UserEmailDashboard from '@/components/email/UserEmailDashboard';
+import React from "react";
+import UserEmailDashboard from "@/components/email/UserEmailDashboard";
 
 const UserEmailDashboardPage: React.FC = () => {
   return (

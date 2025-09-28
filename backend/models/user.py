@@ -9,7 +9,7 @@ import enum
 from sqlalchemy import ARRAY, Boolean, Column, DateTime
 from sqlalchemy import Enum as SQLAlchemyEnum
 from sqlalchemy import ForeignKey, Integer, String, Text
-from sqlalchemy.dialects.postgresql import JSONB, UUID, INET
+from sqlalchemy.dialects.postgresql import INET, JSONB, UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -43,7 +43,8 @@ class User(Base):
         UUID(as_uuid=True),
         primary_key=True,
         index=True,
-        server_default=func.gen_random_uuid())
+        server_default=func.gen_random_uuid(),
+    )
     email = Column(String(255), unique=True, nullable=False, index=True)
     phone = Column(String(50), unique=True)
     role = Column(
@@ -52,7 +53,8 @@ class User(Base):
     status = Column(
         SQLAlchemyEnum(UserStatusEnum),
         nullable=False,
-        default=UserStatusEnum.PENDING_VERIFICATION)
+        default=UserStatusEnum.PENDING_VERIFICATION,
+    )
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -125,73 +127,81 @@ class UserPreferences(Base):
 class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
 
-    token_id = Column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    token_id = Column(
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    )
     user_id = Column(UUID(as_uuid=True), ForeignKey("profiles.id"), nullable=False)
     email = Column(String(255), nullable=False)
-    
+
     # Token Details
     reset_token = Column(String(255), unique=True, nullable=False)
     token_hash = Column(String(255), nullable=False)
-    
+
     # Token Status
     is_used = Column(Boolean, default=False)
     is_expired = Column(Boolean, default=False)
-    
+
     # Token Lifecycle
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     expires_at = Column(DateTime(timezone=True), nullable=False)
     used_at = Column(DateTime(timezone=True))
-    
+
     # Security Details
     ip_address = Column(INET)
     user_agent = Column(Text)
     request_source = Column(String(50), default="web")
-    
+
     # Additional Metadata
-    metadata = Column(JSONB, default={})
+    extra_data = Column(JSONB, default={})
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
 class PasswordResetAttempt(Base):
     __tablename__ = "password_reset_attempts"
 
-    attempt_id = Column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    attempt_id = Column(
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    )
     email = Column(String(255), nullable=False)
     ip_address = Column(INET, nullable=False)
-    
+
     # Attempt Details
     attempt_type = Column(String(50), nullable=False)  # 'request', 'verify', 'reset'
     success = Column(Boolean, nullable=False)
     failure_reason = Column(String(255))
-    
+
     # Security Details
     user_agent = Column(Text)
     request_source = Column(String(50), default="web")
-    
+
     # Timestamps
     attempted_at = Column(DateTime(timezone=True), server_default=func.now())
-    
+
     # Additional Metadata
-    metadata = Column(JSONB, default={})
+    extra_data = Column(JSONB, default={})
 
 
 class PasswordHistory(Base):
     __tablename__ = "password_history"
 
-    history_id = Column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    history_id = Column(
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    )
     user_id = Column(UUID(as_uuid=True), ForeignKey("profiles.id"), nullable=False)
-    
+
     # Password Details
     password_hash = Column(String(255), nullable=False)
     password_salt = Column(String(255), nullable=False)
-    
+
     # Change Details
     changed_by = Column(UUID(as_uuid=True), ForeignKey("profiles.id"))
-    change_reason = Column(String(50), default="user_request")  # 'user_request', 'admin_reset', 'password_reset'
+    change_reason = Column(
+        String(50), default="user_request"
+    )  # 'user_request', 'admin_reset', 'password_reset'
     change_source = Column(String(50), default="web")  # 'web', 'mobile', 'api'
-    
+
     # Timestamps
     changed_at = Column(DateTime(timezone=True), server_default=func.now())
-    
+
     # Additional Metadata
-    metadata = Column(JSONB, default={})
+    extra_data = Column(JSONB, default={})

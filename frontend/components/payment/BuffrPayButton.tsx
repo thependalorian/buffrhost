@@ -1,25 +1,25 @@
 /**
  * Buffr Pay Payment Button Component
- * 
+ *
  * A reusable payment button component that integrates with Buffr Payment Companion
  * Supports multiple payment methods and handles payment processing
  */
 
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  CreditCard, 
-  Smartphone, 
-  Building, 
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  CreditCard,
+  Smartphone,
+  Building,
   Wallet,
   CheckCircle,
   AlertCircle,
   Loader2,
-  X
-} from 'lucide-react';
-import { processPayment } from '@/lib/services/buffr-pay';
-import { BuffrPayTransaction } from '@/lib/types/hospitality';
+  X,
+} from "lucide-react";
+import { processPayment } from "@/lib/services/buffr-pay";
+import { BuffrPayTransaction } from "@/lib/types/hospitality";
 
 // ============================================================================
 // PAYMENT STATUS BADGE COMPONENT
@@ -31,15 +31,16 @@ interface PaymentStatusBadgeProps {
 
 const PaymentStatusBadge: React.FC<PaymentStatusBadgeProps> = ({ status }) => {
   const statusConfig = {
-    pending: { color: 'badge-warning', icon: Loader2 },
-    processing: { color: 'badge-info', icon: Loader2 },
-    completed: { color: 'badge-success', icon: CheckCircle },
-    failed: { color: 'badge-error', icon: X },
-    cancelled: { color: 'badge-neutral', icon: X },
-    refunded: { color: 'badge-secondary', icon: AlertCircle }
+    pending: { color: "badge-warning", icon: Loader2 },
+    processing: { color: "badge-info", icon: Loader2 },
+    completed: { color: "badge-success", icon: CheckCircle },
+    failed: { color: "badge-error", icon: X },
+    cancelled: { color: "badge-neutral", icon: X },
+    refunded: { color: "badge-secondary", icon: AlertCircle },
   };
 
-  const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+  const config =
+    statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
   const IconComponent = config.icon;
 
   return (
@@ -57,7 +58,14 @@ const PaymentStatusBadge: React.FC<PaymentStatusBadgeProps> = ({ status }) => {
 interface BuffrPayButtonProps {
   amount: number;
   currency?: string;
-  paymentType: 'restaurant' | 'hotel' | 'spa' | 'conference' | 'transportation' | 'recreation' | 'corporate';
+  paymentType:
+    | "restaurant"
+    | "hotel"
+    | "spa"
+    | "conference"
+    | "transportation"
+    | "recreation"
+    | "corporate";
   propertyId?: number;
   orderId?: string;
   reservationId?: string;
@@ -79,7 +87,7 @@ interface BuffrPayButtonProps {
 
 export const BuffrPayButton: React.FC<BuffrPayButtonProps> = ({
   amount,
-  currency = 'NAD',
+  currency = "NAD",
   paymentType,
   propertyId,
   orderId,
@@ -91,12 +99,14 @@ export const BuffrPayButton: React.FC<BuffrPayButtonProps> = ({
   onPaymentSuccess,
   onPaymentFailure,
   onPaymentComplete,
-  className = '',
+  className = "",
   disabled = false,
-  children = 'Pay with Buffr Pay'
+  children = "Pay with Buffr Pay",
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [transaction, setTransaction] = useState<BuffrPayTransaction | null>(null);
+  const [transaction, setTransaction] = useState<BuffrPayTransaction | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   // ============================================================================
@@ -121,25 +131,25 @@ export const BuffrPayButton: React.FC<BuffrPayButtonProps> = ({
         corporate_booking_id: corporateBookingId,
         customer_id: customerId,
         user_id: userId,
-        payment_method: 'card', // Default to card
-        status: 'pending',
+        payment_method: "card", // Default to card
+        status: "pending",
         merchant_reference: `ETUNA-${Date.now()}`,
         metadata: {
-          source: 'buffr_host',
-          property_name: 'Etuna Guesthouse & Tours'
-        }
+          source: "buffr_host",
+          property_name: "Etuna Guesthouse & Tours",
+        },
       };
 
       const result = await processPayment(transactionData);
       setTransaction(result);
 
-      if (result.status === 'completed') {
+      if (result.status === "completed") {
         onPaymentSuccess?.(result);
       }
-      
+
       onPaymentComplete?.(result);
     } catch (err: any) {
-      const errorMessage = err.message || 'Payment processing failed';
+      const errorMessage = err.message || "Payment processing failed";
       setError(errorMessage);
       onPaymentFailure?.(err);
     } finally {
@@ -152,10 +162,10 @@ export const BuffrPayButton: React.FC<BuffrPayButtonProps> = ({
   // ============================================================================
 
   const formatAmount = () => {
-    return new Intl.NumberFormat('en-NA', {
-      style: 'currency',
+    return new Intl.NumberFormat("en-NA", {
+      style: "currency",
       currency: currency,
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -173,7 +183,8 @@ export const BuffrPayButton: React.FC<BuffrPayButtonProps> = ({
         </div>
         <div className="card-body">
           <div className="text-sm text-base-content/70">
-            Payment Type: <span className="badge badge-outline">{paymentType}</span>
+            Payment Type:{" "}
+            <span className="badge badge-outline">{paymentType}</span>
           </div>
         </div>
       </div>
@@ -210,7 +221,10 @@ export const BuffrPayButton: React.FC<BuffrPayButtonProps> = ({
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-base-content/70">Reference:</span>
-                <span className="font-mono">{transaction.buffr_pay_reference || transaction.transaction_id}</span>
+                <span className="font-mono">
+                  {transaction.buffr_pay_reference ||
+                    transaction.transaction_id}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-base-content/70">Amount:</span>
@@ -223,7 +237,9 @@ export const BuffrPayButton: React.FC<BuffrPayButtonProps> = ({
               {transaction.completed_at && (
                 <div className="flex justify-between">
                   <span className="text-base-content/70">Completed:</span>
-                  <span>{new Date(transaction.completed_at).toLocaleString()}</span>
+                  <span>
+                    {new Date(transaction.completed_at).toLocaleString()}
+                  </span>
                 </div>
               )}
             </div>

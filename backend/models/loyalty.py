@@ -1,12 +1,14 @@
 """
 Loyalty-related models for Buffr Host.
 """
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Date, Boolean
+from sqlalchemy import (Boolean, Column, Date, DateTime, ForeignKey, Integer,
+                        String, Text)
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
 
 from database import Base
+
 
 class CrossBusinessLoyalty(Base):
     __tablename__ = "crossbusinessloyalty"
@@ -14,7 +16,7 @@ class CrossBusinessLoyalty(Base):
     customer_id = Column(UUID(as_uuid=True), ForeignKey("customer.customer_id"))
     property_id = Column(Integer, ForeignKey("hospitality_property.property_id"))
     total_points = Column(Integer, default=0)
-    tier_level = Column(String(50), default='bronze')
+    tier_level = Column(String(50), default="bronze")
     points_earned_restaurant = Column(Integer, default=0)
     points_earned_hotel = Column(Integer, default=0)
     points_earned_spa = Column(Integer, default=0)
@@ -27,9 +29,12 @@ class CrossBusinessLoyalty(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+
 class LoyaltyTransaction(Base):
     __tablename__ = "loyaltytransaction"
-    transaction_id = Column(UUID(as_uuid=True), primary_key=True, default=func.uuid_generate_v4())
+    transaction_id = Column(
+        UUID(as_uuid=True), primary_key=True, default=func.uuid_generate_v4()
+    )
     customer_id = Column(UUID(as_uuid=True), ForeignKey("customer.customer_id"))
     property_id = Column(Integer, ForeignKey("hospitality_property.property_id"))
     transaction_type = Column(String(50), nullable=False)
@@ -39,6 +44,7 @@ class LoyaltyTransaction(Base):
     booking_id = Column(UUID(as_uuid=True), ForeignKey("servicebooking.booking_id"))
     description = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
 
 class LoyaltyCampaign(Base):
     __tablename__ = "loyaltycampaign"

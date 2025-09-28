@@ -1,5 +1,5 @@
-import React from 'react';
-import EmailBlacklistManager from '@/components/email/EmailBlacklistManager';
+import React from "react";
+import EmailBlacklistManager from "@/components/email/EmailBlacklistManager";
 
 const AdminEmailBlacklistPage: React.FC = () => {
   return (

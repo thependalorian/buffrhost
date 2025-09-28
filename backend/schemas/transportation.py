@@ -1,9 +1,11 @@
 """
 Pydantic schemas for Transportation services.
 """
-from pydantic import BaseModel, Field
+from datetime import date, datetime, time
 from typing import List, Optional
-from datetime import datetime, date, time
+
+from pydantic import BaseModel, Field
+
 
 class TransportationServiceBase(BaseModel):
     service_name: str
@@ -14,8 +16,10 @@ class TransportationServiceBase(BaseModel):
     capacity: Optional[int] = None
     is_available: bool = True
 
+
 class TransportationServiceCreate(TransportationServiceBase):
     pass
+
 
 class TransportationService(TransportationServiceBase):
     service_id: int
@@ -24,6 +28,7 @@ class TransportationService(TransportationServiceBase):
     class Config:
         orm_mode = True
 
+
 class TransportationBookingBase(BaseModel):
     service_id: int
     pickup_location: str
@@ -31,8 +36,10 @@ class TransportationBookingBase(BaseModel):
     pickup_time: datetime
     estimated_duration: int
 
+
 class TransportationBookingCreate(TransportationBookingBase):
     pass
+
 
 class TransportationBooking(TransportationBookingBase):
     booking_id: int
@@ -42,6 +49,7 @@ class TransportationBooking(TransportationBookingBase):
 
     class Config:
         orm_mode = True
+
 
 class TransportationVehicle(BaseModel):
     vehicle_id: int
@@ -54,6 +62,7 @@ class TransportationVehicle(BaseModel):
     driver_name: str
     is_available: bool
     last_maintenance: date
+
 
 class TransportationRoute(BaseModel):
     route_id: int

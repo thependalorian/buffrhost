@@ -1,10 +1,12 @@
 """
 Pydantic schemas for Loyalty services.
 """
-from pydantic import BaseModel, Field
-from typing import List, Optional
-from datetime import datetime, date
 import uuid
+from datetime import date, datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
+
 
 class LoyaltyTransactionBase(BaseModel):
     customer_id: uuid.UUID
@@ -16,8 +18,10 @@ class LoyaltyTransactionBase(BaseModel):
     booking_id: Optional[uuid.UUID] = None
     description: Optional[str] = None
 
+
 class LoyaltyTransactionCreate(LoyaltyTransactionBase):
     pass
+
 
 class LoyaltyTransaction(LoyaltyTransactionBase):
     transaction_id: uuid.UUID
@@ -25,6 +29,7 @@ class LoyaltyTransaction(LoyaltyTransactionBase):
 
     class Config:
         orm_mode = True
+
 
 class LoyaltyCampaignBase(BaseModel):
     campaign_name: str
@@ -35,8 +40,10 @@ class LoyaltyCampaignBase(BaseModel):
     target_tiers: Optional[List[str]] = None
     is_active: bool = True
 
+
 class LoyaltyCampaignCreate(LoyaltyCampaignBase):
     pass
+
 
 class LoyaltyCampaign(LoyaltyCampaignBase):
     campaign_id: int

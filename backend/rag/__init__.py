@@ -13,14 +13,14 @@ Features:
 - Multi-property knowledge isolation
 """
 
-from .knowledge_base import KnowledgeBaseManager
 from .document_processor import DocumentProcessor
-from .vector_store import VectorStoreManager
+from .knowledge_base import KnowledgeBaseManager
 from .rag_agent import RAGAgent
+from .vector_store import VectorStoreManager
 
 __all__ = [
     "KnowledgeBaseManager",
-    "DocumentProcessor", 
+    "DocumentProcessor",
     "VectorStoreManager",
-    "RAGAgent"
+    "RAGAgent",
 ]

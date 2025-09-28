@@ -1,13 +1,13 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import React from 'react';
-import TaxDetailForm from '@/components/hr/TaxDetailForm';
+"use client";
+export const dynamic = "force-dynamic";
+import React from "react";
+import TaxDetailForm from "@/components/hr/TaxDetailForm";
 
 const TaxPage: React.FC = () => {
-  const employeeId = 'mock-employee-id'; // This should come from context or route params
+  const employeeId = "mock-employee-id"; // This should come from context or route params
 
   const handleAddTaxDetail = (data: any) => {
-    console.log('Adding tax detail:', data);
+    console.log("Adding tax detail:", data);
     // In a real app, send data to backend
   };
 

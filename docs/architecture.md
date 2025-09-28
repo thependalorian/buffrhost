@@ -159,7 +159,7 @@ Buffr Host is a cloud-based comprehensive hospitality ecosystem management platf
 **Cloud Platform:**
 - **Vercel**: Frontend hosting and deployment
 - **Supabase**: Database hosting and real-time features
-- **AWS S3**: File storage and CDN
+- **Supabase Storage**: File storage and CDN
 - **Docker**: Containerization
 
 **Monitoring & Logging:**

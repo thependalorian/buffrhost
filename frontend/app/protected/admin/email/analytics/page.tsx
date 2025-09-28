@@ -1,5 +1,5 @@
-import React from 'react';
-import EmailAnalyticsChart from '@/components/email/EmailAnalyticsChart';
+import React from "react";
+import EmailAnalyticsChart from "@/components/email/EmailAnalyticsChart";
 
 const AdminEmailAnalyticsPage: React.FC = () => {
   return (

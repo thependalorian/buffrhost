@@ -1,15 +1,15 @@
 /**
  * Responsive Navigation Component for The Shandi Frontend
- * 
+ *
  * Provides responsive navigation with mobile menu support.
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Menu, X, User, Settings, LogOut } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Menu, X, User, Settings, LogOut } from "lucide-react";
 
 interface NavigationItem {
   label: string;
@@ -29,11 +29,11 @@ interface ResponsiveNavigationProps {
   className?: string;
 }
 
-export function ResponsiveNavigation({ 
-  items, 
-  user, 
-  onLogout, 
-  className 
+export function ResponsiveNavigation({
+  items,
+  user,
+  onLogout,
+  className,
 }: ResponsiveNavigationProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -42,10 +42,7 @@ export function ResponsiveNavigation({
   };
 
   return (
-    <nav className={cn(
-      'bg-white shadow-sm border-b',
-      className
-    )}>
+    <nav className={cn("bg-white shadow-sm border-b", className)}>
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -75,15 +72,19 @@ export function ResponsiveNavigation({
             <div className="hidden md:block">
               <div className="ml-4 flex items-center md:ml-6">
                 <div className="relative">
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center space-x-2"
+                  >
                     <User className="h-4 w-4" />
                     <span className="text-sm">{user.name}</span>
                   </Button>
                 </div>
                 {onLogout && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={onLogout}
                     className="ml-2"
                   >
@@ -126,7 +127,7 @@ export function ResponsiveNavigation({
                 {item.label}
               </a>
             ))}
-            
+
             {/* Mobile User Menu */}
             {user && (
               <div className="border-t pt-4 mt-4">
@@ -148,12 +149,10 @@ export function ResponsiveNavigation({
                     <div className="text-base font-medium text-gray-800">
                       {user.name}
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {user.email}
-                    </div>
+                    <div className="text-sm text-gray-500">{user.email}</div>
                   </div>
                 </div>
-                
+
                 <div className="mt-3 space-y-1">
                   <a
                     href="/profile"
@@ -163,7 +162,7 @@ export function ResponsiveNavigation({
                     <Settings className="inline h-4 w-4 mr-2" />
                     Profile Settings
                   </a>
-                  
+
                   {onLogout && (
                     <button
                       onClick={() => {
@@ -194,15 +193,16 @@ interface ResponsiveBreadcrumbProps {
   className?: string;
 }
 
-export function ResponsiveBreadcrumb({ items, className }: ResponsiveBreadcrumbProps) {
+export function ResponsiveBreadcrumb({
+  items,
+  className,
+}: ResponsiveBreadcrumbProps) {
   return (
-    <nav className={cn('flex', className)} aria-label="Breadcrumb">
+    <nav className={cn("flex", className)} aria-label="Breadcrumb">
       <ol className="flex items-center space-x-1 sm:space-x-2">
         {items.map((item, index) => (
           <li key={index} className="flex items-center">
-            {index > 0 && (
-              <span className="text-gray-400 mx-1 sm:mx-2">/</span>
-            )}
+            {index > 0 && <span className="text-gray-400 mx-1 sm:mx-2">/</span>}
             {item.href ? (
               <a
                 href={item.href}
@@ -229,11 +229,11 @@ interface ResponsiveSidebarProps {
   className?: string;
 }
 
-export function ResponsiveSidebar({ 
-  children, 
-  isOpen, 
-  onClose, 
-  className 
+export function ResponsiveSidebar({
+  children,
+  isOpen,
+  onClose,
+  className,
 }: ResponsiveSidebarProps) {
   return (
     <>
@@ -246,11 +246,13 @@ export function ResponsiveSidebar({
       )}
 
       {/* Sidebar */}
-      <div className={cn(
-        'fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
-        isOpen ? 'translate-x-0' : '-translate-x-full',
-        className
-      )}>
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+          isOpen ? "translate-x-0" : "-translate-x-full",
+          className,
+        )}
+      >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
@@ -266,9 +268,7 @@ export function ResponsiveSidebar({
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-4">
-            {children}
-          </div>
+          <div className="flex-1 overflow-y-auto p-4">{children}</div>
         </div>
       </div>
     </>

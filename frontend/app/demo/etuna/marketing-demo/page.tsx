@@ -1,6 +1,10 @@
+'use client';
+
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { PageHeader, StatCard, ActionButton, ModalForm, FormField, FormSelect, Alert } from '@/src/components/ui';
+import { useState } from 'react';
 import { 
   Megaphone, 
   Mail, 
@@ -60,15 +64,13 @@ import {
   Percent,
   Activity,
   PieChart,
-  LineChart
+  LineChart,
+  Rocket
 } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'Marketing Automation Demo - Buffr Host Platform',
-  description: 'Experience our AI-powered marketing automation system that drives customer engagement, retention, and revenue growth.',
-};
-
 export default function MarketingAutomationDemoPage() {
+  const [showLaunchModal, setShowLaunchModal] = useState(false);
+
   return (
     <div className="min-h-screen bg-base-100">
       {/* Demo Banner */}
@@ -90,7 +92,10 @@ export default function MarketingAutomationDemoPage() {
             <h1 className="text-4xl md:text-6xl font-bold mb-4">Marketing Revolution</h1>
             <p className="text-xl md:text-2xl mb-6">AI-powered campaigns that drive results</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn btn-accent btn-lg">
+              <button 
+                onClick={() => setShowLaunchModal(true)}
+                className="btn btn-accent btn-lg"
+              >
                 <Target className="w-5 h-5 mr-2" />
                 Launch Campaign
               </button>
@@ -532,6 +537,106 @@ export default function MarketingAutomationDemoPage() {
           </div>
         </div>
       </div>
+
+      {/* Launch Campaign Modal */}
+      {showLaunchModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full p-6">
+            <h3 className="text-xl font-bold mb-4">Launch Marketing Campaign</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              alert('Campaign launched successfully! Your marketing automation is now active.');
+              setShowLaunchModal(false);
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Campaign Name</label>
+                  <input type="text" required className="input input-bordered w-full" placeholder="Enter campaign name" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Campaign Objective</label>
+                  <select className="select select-bordered w-full" required>
+                    <option value="">Select objective</option>
+                    <option value="awareness">Brand Awareness</option>
+                    <option value="engagement">Customer Engagement</option>
+                    <option value="conversion">Lead Conversion</option>
+                    <option value="retention">Customer Retention</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Target Audience</label>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input type="checkbox" className="checkbox mr-2" defaultChecked />
+                      Past Guests
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" className="checkbox mr-2" />
+                      Corporate Contacts
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" className="checkbox mr-2" />
+                      Engaged Couples
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" className="checkbox mr-2" />
+                      Families
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Campaign Channels</label>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input type="checkbox" className="checkbox mr-2" defaultChecked />
+                      Email Marketing
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" className="checkbox mr-2" />
+                      Social Media
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" className="checkbox mr-2" />
+                      SMS Marketing
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" className="checkbox mr-2" />
+                      Push Notifications
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Budget (NAD)</label>
+                  <input type="number" min="0" className="input input-bordered w-full" placeholder="Enter campaign budget" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Campaign Duration</label>
+                  <select className="select select-bordered w-full" required>
+                    <option value="">Select duration</option>
+                    <option value="1-week">1 Week</option>
+                    <option value="2-weeks">2 Weeks</option>
+                    <option value="1-month">1 Month</option>
+                    <option value="3-months">3 Months</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex gap-3 mt-6">
+                <button type="submit" className="btn btn-accent flex-1">
+                  <Rocket className="w-4 h-4 mr-2" />
+                  Launch Campaign
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowLaunchModal(false)}
+                  className="btn btn-outline"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

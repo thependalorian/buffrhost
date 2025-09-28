@@ -1,5 +1,5 @@
-import React from 'react';
-import EmailTemplateManager from '@/components/email/EmailTemplateManager';
+import React from "react";
+import EmailTemplateManager from "@/components/email/EmailTemplateManager";
 
 const AdminEmailTemplatesPage: React.FC = () => {
   return (

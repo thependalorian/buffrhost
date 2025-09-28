@@ -9,19 +9,22 @@ import sys
 from datetime import datetime
 
 # Add the backend directory to the Python path
-sys.path.append('/Users/georgenekwaya/ai-agent-mastery/the-shandi/backend')
+sys.path.append("/Users/georgenekwaya/ai-agent-mastery/the-shandi/backend")
+
 
 async def test_email_structure():
     """Test the email structure without actually sending"""
-    
+
     try:
         # Mock the email service initialization
         print("🔧 Testing email service structure...")
-        
+
         # Test email details
         to_email = "pendanek@gmail.com"
-        subject = "Test Email from Buffr Host - " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+        subject = "Test Email from Buffr Host - " + datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
         # HTML content
         html_content = """
         <!DOCTYPE html>
@@ -63,7 +66,7 @@ async def test_email_structure():
                     <p>Best regards,<br>
                     <strong>George Nekwaya</strong><br>
                     Founder, Buffr Host<br>
-                    📧 george@buffr.ai<br>
+                    📧 george@mail.buffr.ai<br>
                     📱 +1 (206) 530-8433</p>
                 </div>
                 <div class="footer">
@@ -75,9 +78,9 @@ async def test_email_structure():
         </html>
         """.format(
             timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC"),
-            to_email=to_email
+            to_email=to_email,
         )
-        
+
         # Plain text content
         text_content = f"""
         Hello from Buffr Host!
@@ -97,70 +100,59 @@ async def test_email_structure():
         Best regards,
         George Nekwaya
         Founder, Buffr Host
-        Email: george@buffr.ai
+        Email: george@mail.buffr.ai
         Phone: +1 (206) 530-8433
         
         This email was sent from Buffr Host Hospitality Management Platform
         © 2024 Buffr Host. All rights reserved.
         """
-        
+
         print(f"📧 Email would be sent to: {to_email}")
         print(f"📝 Subject: {subject}")
         print(f"📄 HTML Content Length: {len(html_content)} characters")
         print(f"📄 Text Content Length: {len(text_content)} characters")
-        
+
         # Simulate the email data structure
         email_data = {
-            "personalizations": [
-                {
-                    "to": [{"email": to_email}],
-                    "subject": subject
-                }
-            ],
-            "from": {
-                "email": "noreply@mail.buffr.ai",
-                "name": "Buffr Host"
-            },
+            "personalizations": [{"to": [{"email": to_email}], "subject": subject}],
+            "from": {"email": "noreply@mail.buffr.ai", "name": "Buffr Host"},
             "reply_to": {
-                "email": "support@host.buffr.ai",
-                "name": "Buffr Host Support"
+                "email": "support@mail.buffr.ai",
+                "name": "Buffr Host Support",
             },
             "content": [
-                {
-                    "type": "text/html",
-                    "value": html_content
-                },
-                {
-                    "type": "text/plain",
-                    "value": text_content
-                }
-            ]
+                {"type": "text/html", "value": html_content},
+                {"type": "text/plain", "value": text_content},
+            ],
         }
-        
+
         print(f"✅ Email structure is valid!")
         print(f"📊 Email data structure created successfully")
         print(f"🔗 SendGrid API endpoint: https://api.sendgrid.com/v3/mail/send")
-        
-        print("\n" + "="*50)
+
+        print("\n" + "=" * 50)
         print("📋 TO SEND ACTUAL EMAIL:")
-        print("1. Get your SendGrid API key from https://app.sendgrid.com/settings/api_keys")
+        print(
+            "1. Get your SendGrid API key from https://app.sendgrid.com/settings/api_keys"
+        )
         print("2. Update SENDGRID_API_KEY in .env.local with your actual key")
         print("3. Run: python test_email.py")
-        print("="*50)
-        
+        print("=" * 50)
+
         return True
-        
+
     except Exception as e:
         print(f"❌ Error in email structure: {str(e)}")
         return False
 
+
 if __name__ == "__main__":
     print("🚀 Starting Buffr Host Email Structure Test...")
     print("=" * 50)
-    
+
     # Run the async function
     success = asyncio.run(test_email_structure())
-    
+
     print("=" * 50)
     if success:
         print("✅ Email structure test completed successfully!")

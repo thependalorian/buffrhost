@@ -1,15 +1,16 @@
 """
 UserType model for Buffr Host.
 """
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from database import Base
 
+
 class UserType(Base):
     __tablename__ = "user_type"
-    
+
     user_type_id = Column(Integer, primary_key=True, index=True)
     type_name = Column(String(100), nullable=False, unique=True, index=True)
     description = Column(Text)

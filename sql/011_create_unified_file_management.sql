@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS public.documents (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     owner_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     file_name TEXT NOT NULL,
-    file_path TEXT NOT NULL, -- Path in cloud storage (e.g., S3 URL, Google Drive ID)
+    file_path TEXT NOT NULL, -- Path in cloud storage (e.g., Supabase Storage URL, Google Drive ID)
     file_size_bytes BIGINT,
     mime_type TEXT,
     document_type document_type_enum DEFAULT 'other'::document_type_enum,

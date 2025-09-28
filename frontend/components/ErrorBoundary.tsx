@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import React from "react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -15,14 +15,17 @@ interface ErrorBoundaryProps {
 
 /**
  * Error Boundary Component for Etuna Dashboard
- * 
+ *
  * This component catches JavaScript errors anywhere in the child component tree,
  * logs those errors, and displays a fallback UI instead of the component tree that crashed.
- * 
+ *
  * Location: /components/ErrorBoundary.tsx
  * Usage: Wrap any component that might throw errors
  */
-export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export default class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -35,10 +38,10 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log the error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+    if (process.env.NODE_ENV === "development") {
+      console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
-    
+
     // In production, you might want to send this to an error reporting service
     // Example: errorReportingService.captureException(error, { extra: errorInfo });
   }
@@ -52,7 +55,12 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
       // Custom fallback UI
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;
-        return <FallbackComponent error={this.state.error} resetError={this.resetError} />;
+        return (
+          <FallbackComponent
+            error={this.state.error}
+            resetError={this.resetError}
+          />
+        );
       }
 
       // Default fallback UI
@@ -63,16 +71,16 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
               <div className="flex justify-center mb-4">
                 <AlertTriangle className="w-16 h-16 text-error" />
               </div>
-              
+
               <h2 className="card-title justify-center text-xl mb-2">
                 Something went wrong
               </h2>
-              
+
               <p className="text-base-content/70 mb-6">
                 We encountered an unexpected error while loading the dashboard.
               </p>
-              
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+
+              {process.env.NODE_ENV === "development" && this.state.error && (
                 <div className="alert alert-error mb-4">
                   <div className="text-left">
                     <div className="font-bold">Error Details:</div>
@@ -82,18 +90,15 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
                   </div>
                 </div>
               )}
-              
+
               <div className="card-actions justify-center">
-                <button 
-                  onClick={this.resetError}
-                  className="btn btn-primary"
-                >
+                <button onClick={this.resetError} className="btn btn-primary">
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Try Again
                 </button>
-                
-                <button 
-                  onClick={() => window.location.href = '/guest/etuna'}
+
+                <button
+                  onClick={() => (window.location.href = "/guest/etuna")}
                   className="btn btn-outline"
                 >
                   Back to Etuna
@@ -111,10 +116,16 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
 
 /**
  * Custom Error Fallback Component for Dashboard
- * 
+ *
  * Provides a more specific error UI for dashboard-related errors
  */
-export function DashboardErrorFallback({ error, resetError }: { error?: Error; resetError: () => void }) {
+export function DashboardErrorFallback({
+  error,
+  resetError,
+}: {
+  error?: Error;
+  resetError: () => void;
+}) {
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
       <div className="card bg-base-100 shadow-xl max-w-lg w-full">
@@ -122,15 +133,16 @@ export function DashboardErrorFallback({ error, resetError }: { error?: Error; r
           <div className="flex justify-center mb-4">
             <AlertTriangle className="w-20 h-20 text-warning" />
           </div>
-          
+
           <h2 className="card-title justify-center text-2xl mb-4">
             Dashboard Error
           </h2>
-          
+
           <p className="text-base-content/70 mb-6">
-            We&apos;re having trouble loading your dashboard. This might be due to a temporary issue with our servers.
+            We&apos;re having trouble loading your dashboard. This might be due
+            to a temporary issue with our servers.
           </p>
-          
+
           <div className="space-y-4">
             <div className="alert alert-info">
               <div className="text-left">
@@ -142,8 +154,8 @@ export function DashboardErrorFallback({ error, resetError }: { error?: Error; r
                 </ul>
               </div>
             </div>
-            
-            {process.env.NODE_ENV === 'development' && error && (
+
+            {process.env.NODE_ENV === "development" && error && (
               <div className="alert alert-error">
                 <div className="text-left">
                   <div className="font-bold">Development Error:</div>
@@ -154,18 +166,15 @@ export function DashboardErrorFallback({ error, resetError }: { error?: Error; r
               </div>
             )}
           </div>
-          
+
           <div className="card-actions justify-center mt-6">
-            <button 
-              onClick={resetError}
-              className="btn btn-primary btn-lg"
-            >
+            <button onClick={resetError} className="btn btn-primary btn-lg">
               <RefreshCw className="w-5 h-5 mr-2" />
               Reload Dashboard
             </button>
-            
-            <button 
-              onClick={() => window.location.href = '/guest/etuna'}
+
+            <button
+              onClick={() => (window.location.href = "/guest/etuna")}
               className="btn btn-outline btn-lg"
             >
               Back to Etuna Home

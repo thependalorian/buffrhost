@@ -1,31 +1,36 @@
 """
 Pydantic schemas for menu-related API operations.
 """
-from pydantic import BaseModel, Field
-from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class MenuCategoryBase(BaseModel):
     """Base menu category schema."""
+
     name: str = Field(..., min_length=1, max_length=255)
     display_order: int = Field(..., ge=0)
 
 
 class MenuCategoryCreate(MenuCategoryBase):
     """Schema for creating a new menu category."""
+
     pass
 
 
 class MenuCategoryUpdate(BaseModel):
     """Schema for updating menu category."""
+
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     display_order: Optional[int] = Field(None, ge=0)
 
 
 class MenuCategoryResponse(MenuCategoryBase):
     """Schema for menu category API responses."""
+
     category_id: int
     restaurant_id: int
 
@@ -35,6 +40,7 @@ class MenuCategoryResponse(MenuCategoryBase):
 
 class MenuMediaBase(BaseModel):
     """Base menu media schema."""
+
     url: str = Field(..., max_length=500)
     alt_text: Optional[str] = Field(None, max_length=255)
     display_order: int = Field(default=1, ge=0)
@@ -42,11 +48,13 @@ class MenuMediaBase(BaseModel):
 
 class MenuMediaCreate(MenuMediaBase):
     """Schema for creating menu media."""
+
     pass
 
 
 class MenuMediaResponse(MenuMediaBase):
     """Schema for menu media API responses."""
+
     media_id: int
     menu_item_id: int
     created_at: datetime
@@ -57,6 +65,7 @@ class MenuMediaResponse(MenuMediaBase):
 
 class MenuItemBase(BaseModel):
     """Base menu item schema."""
+
     name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
     base_price: Decimal = Field(..., gt=0, decimal_places=2)
@@ -69,11 +78,13 @@ class MenuItemBase(BaseModel):
 
 class MenuItemCreate(MenuItemBase):
     """Schema for creating a new menu item."""
+
     category_id: int
 
 
 class MenuItemUpdate(BaseModel):
     """Schema for updating menu item."""
+
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
     base_price: Optional[Decimal] = Field(None, gt=0, decimal_places=2)
@@ -87,6 +98,7 @@ class MenuItemUpdate(BaseModel):
 
 class MenuItemResponse(MenuItemBase):
     """Schema for menu item API responses."""
+
     menu_item_id: int
     restaurant_id: int
     category_id: int
@@ -102,6 +114,7 @@ class MenuItemResponse(MenuItemBase):
 
 class MenuItemSummary(BaseModel):
     """Simplified menu item schema for lists."""
+
     menu_item_id: int
     name: str
     base_price: Decimal
@@ -114,4 +127,5 @@ class MenuItemSummary(BaseModel):
 
 class MenuItemWithModifiers(MenuItemResponse):
     """Menu item with modifier information."""
+
     modifiers: List[dict] = []  # Will be populated with modifier data

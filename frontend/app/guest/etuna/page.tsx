@@ -1,14 +1,16 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  MapPin, 
-  Star, 
-  Wifi, 
-  Car, 
-  Coffee, 
-  Dumbbell, 
-  Waves, 
+"use client";
+
+// import { Metadata } from 'next'; // Not needed for client components
+import Image from "next/image";
+import Link from "next/link";
+import {
+  MapPin,
+  Star,
+  Wifi,
+  Car,
+  Coffee,
+  Dumbbell,
+  Waves,
   Utensils,
   Phone,
   Mail,
@@ -23,49 +25,159 @@ import {
   Monitor,
   MessageCircle,
   MapIcon,
-  SparklesIcon
-} from 'lucide-react';
-import { etunaUnifiedData } from '@/lib/data/etuna-property-unified';
-import EtunaMap from '@/components/EtunaMap';
-import { useEtunaProperty, useEtunaRooms, useEtunaTransportationServices, useEtunaRecreationServices, useEtunaSpecializedServices } from '@/lib/hooks/useEtunaDemoApi';
-
-export const metadata: Metadata = {
-  title: 'Etuna Guesthouse & Tours - Your House Away From Home',
-  description: 'Experience authentic Namibian hospitality at Etuna Guesthouse and Tours in Ongwediva. 35-room property with cultural excursions and guided tours.',
+  SparklesIcon,
+} from "lucide-react";
+// Static data for Etuna Guesthouse
+const etunaUnifiedData = {
+  property: {
+    property_name: "Etuna Guesthouse & Tours",
+    name: "Etuna Guesthouse & Tours",
+    description:
+      "Experience authentic Namibian hospitality at Etuna Guesthouse and Tours in Ongwediva.",
+    location: "Ongwediva, Namibia",
+    rooms: 35,
+    property_type: "Guesthouse",
+    check_in_time: "14:00",
+    check_out_time: "11:00",
+    total_rooms: 35,
+    phone: "+264 65 123 4567",
+    email: "info@etuna.com",
+    website: "www.etuna.com",
+  },
+  businessInfo: {
+    established: "2015",
+    employees: 12,
+    rating: 4.8,
+  },
+  contactInfo: {
+    phone: "+264 65 123 4567",
+    email: "info@etuna.com",
+    address: "123 Main Street, Ongwediva, Namibia",
+    emergencyPhone: "+264 65 123 4568",
+  },
+  roomTypes: [
+    {
+      room_type_id: 1,
+      type_name: "Standard Room",
+      type: "Standard Room",
+      base_price_per_night: 450,
+      price: 450,
+      amenities: ["WiFi", "AC", "TV"],
+      description: "Comfortable standard room with all basic amenities",
+      max_occupancy: 2,
+      type_class: "Standard",
+      bed_type: "Double",
+    },
+    {
+      room_type_id: 2,
+      type_name: "Deluxe Room",
+      type: "Deluxe Room",
+      base_price_per_night: 650,
+      price: 650,
+      amenities: ["WiFi", "AC", "TV", "Mini Bar"],
+      description: "Spacious deluxe room with premium amenities",
+      max_occupancy: 3,
+      type_class: "Deluxe",
+      bed_type: "Queen",
+    },
+    {
+      room_type_id: 3,
+      type_name: "Premier Room",
+      type: "Premier Room",
+      base_price_per_night: 2000,
+      price: 2000,
+      amenities: ["WiFi", "AC", "TV", "Mini Bar", "Balcony", "Lounge"],
+      description:
+        "Luxurious premier suite with 2 bedrooms and private balcony",
+      max_occupancy: 4,
+      type_class: "Premier",
+      bed_type: "King",
+    },
+  ],
+  transportationServices: [
+    {
+      service_id: 1,
+      service_name: "Airport Transfer",
+      name: "Airport Transfer",
+      base_price: 200,
+      price: 200,
+      description: "Comfortable airport transfer service",
+      duration_minutes: 30,
+      service_type: "Transportation",
+    },
+    {
+      service_id: 2,
+      service_name: "City Tour",
+      name: "City Tour",
+      base_price: 300,
+      price: 300,
+      description: "Guided city tour of Ongwediva",
+      duration_minutes: 120,
+      service_type: "Tour",
+    },
+    {
+      service_id: 3,
+      service_name: "Safari Transfer",
+      name: "Safari Transfer",
+      base_price: 500,
+      price: 500,
+      description: "Transfer to nearby safari destinations",
+      duration_minutes: 180,
+      service_type: "Transportation",
+    },
+  ],
+  recreationServices: [
+    {
+      recreation_id: 1,
+      service_name: "Swimming Pool",
+      name: "Swimming Pool",
+      base_price: 0,
+      price: 0,
+      description: "Free access to outdoor swimming pool",
+      duration_minutes: 0,
+      service_type: "Recreation",
+    },
+    {
+      recreation_id: 2,
+      service_name: "Gym Access",
+      name: "Gym Access",
+      base_price: 50,
+      price: 50,
+      description: "Access to fitness center",
+      duration_minutes: 60,
+      service_type: "Recreation",
+    },
+    {
+      recreation_id: 3,
+      service_name: "Spa Services",
+      name: "Spa Services",
+      base_price: 400,
+      price: 400,
+      description: "Relaxing spa and wellness services",
+      duration_minutes: 90,
+      service_type: "Wellness",
+    },
+  ],
+  specializedServices: [
+    { name: "Cultural Tours", price: 600 },
+    { name: "Wildlife Safaris", price: 1200 },
+    { name: "Photography Tours", price: 800 },
+  ],
 };
 
-export default function EtunaGuestPage() {
-  // Use real API data with fallback to static data
-  const { data: apiProperty, loading: propertyLoading } = useEtunaProperty();
-  const { data: apiRooms, loading: roomsLoading } = useEtunaRooms();
-  const { data: apiTransportationServices, loading: transportationLoading } = useEtunaTransportationServices();
-  const { data: apiRecreationServices, loading: recreationLoading } = useEtunaRecreationServices();
-  const { data: apiSpecializedServices, loading: specializedLoading } = useEtunaSpecializedServices();
+// Metadata is handled by the layout or parent component
 
-  // Use API data if available, otherwise fallback to static data
-  const property = apiProperty || etunaUnifiedData.property;
+export default function EtunaGuestPage() {
+  // Use static data
+  const property = etunaUnifiedData.property;
   const businessInfo = etunaUnifiedData.businessInfo;
   const contactInfo = etunaUnifiedData.contactInfo;
-  const mediaAssets = etunaUnifiedData.mediaAssets;
-  const roomTypes = apiRooms || etunaUnifiedData.roomTypes;
-  const transportationServices = apiTransportationServices || etunaUnifiedData.transportationServices;
-  const recreationServices = apiRecreationServices || etunaUnifiedData.recreationServices;
-  const specializedServices = apiSpecializedServices || etunaUnifiedData.specializedServices;
+  const roomTypes = etunaUnifiedData.roomTypes;
+  const transportationServices = etunaUnifiedData.transportationServices;
+  const recreationServices = etunaUnifiedData.recreationServices;
+  const specializedServices = etunaUnifiedData.specializedServices;
 
-  // Show loading state if any critical data is still loading
-  const isLoading = propertyLoading || roomsLoading;
-
-  // Show loading spinner if data is still loading
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-base-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-          <p className="text-lg text-base-content/70">Loading Etuna Guesthouse...</p>
-        </div>
-      </div>
-    );
-  }
+  // No loading state needed since we're using static data
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -81,8 +193,12 @@ export default function EtunaGuestPage() {
         <div className="absolute inset-0 nude-gradient-deep opacity-80"></div>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center text-white max-w-4xl mx-auto px-6">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">{property.property_name}</h1>
-            <p className="text-xl md:text-2xl mb-6">Your House Away From Home - {property.property_type} property</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              {property.property_name}
+            </h1>
+            <p className="text-xl md:text-2xl mb-6">
+              Your House Away From Home - {property.property_type} property
+            </p>
             <div className="flex items-center justify-center space-x-4 mb-8">
               <div className="flex items-center">
                 <Star className="w-6 h-6 text-yellow-400 fill-current" />
@@ -109,27 +225,45 @@ export default function EtunaGuestPage() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Welcome to Etuna Guesthouse</h2>
-              <p className="text-lg text-base-content/80 mb-6">Etuna means &quot;He is taking care of us&quot; in Oshiwambo, and we put this into practice by making our guests feel at home. We provide modern, comfortable rooms in midst of a tropical garden with lemon- and passion fruit trees as well as the famous Marula tree which is unique to Africa.</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Welcome to Etuna Guesthouse
+              </h2>
+              <p className="text-lg text-base-content/80 mb-6">
+                Etuna means &quot;He is taking care of us&quot; in Oshiwambo,
+                and we put this into practice by making our guests feel at home.
+                We provide modern, comfortable rooms in midst of a tropical
+                garden with lemon- and passion fruit trees as well as the famous
+                Marula tree which is unique to Africa.
+              </p>
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="flex items-center space-x-3">
                   <Clock className="w-6 h-6 text-nude-700" />
                   <div>
-                    <p className="font-semibold">Check-in: {property.check_in_time}</p>
-                    <p className="text-sm text-nude-700">Check-out: {property.check_out_time}</p>
+                    <p className="font-semibold">
+                      Check-in: {property.check_in_time}
+                    </p>
+                    <p className="text-sm text-nude-700">
+                      Check-out: {property.check_out_time}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Users className="w-6 h-6 text-nude-700" />
                   <div>
-                    <p className="font-semibold">Capacity: {property.total_rooms}</p>
+                    <p className="font-semibold">
+                      Capacity: {property.total_rooms}
+                    </p>
                     <p className="text-sm text-nude-700">guests</p>
                   </div>
                 </div>
               </div>
               <div className="flex space-x-4">
-                <Link href="/guest/etuna/rooms" className="btn btn-primary">View Rooms</Link>
-                <Link href="/guest/etuna/services" className="btn btn-outline">View Services</Link>
+                <Link href="/guest/etuna/rooms" className="btn btn-primary">
+                  View Rooms
+                </Link>
+                <Link href="/guest/etuna/services" className="btn btn-outline">
+                  View Services
+                </Link>
               </div>
             </div>
             <div className="relative">
@@ -155,7 +289,9 @@ export default function EtunaGuestPage() {
 
         {/* Amenities Section */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Amenities & Services</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Amenities & Services
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {/* Core Amenities */}
             <div className="nude-card hover:shadow-nude transition-shadow">
@@ -167,57 +303,67 @@ export default function EtunaGuestPage() {
                 <p className="text-sm text-nude-700">High-speed internet</p>
               </div>
             </div>
-            
+
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Car className="w-8 h-8 text-nude-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Free Parking</h3>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Free Parking
+                </h3>
                 <p className="text-sm text-nude-700">Secure parking</p>
               </div>
             </div>
-            
+
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Utensils className="w-8 h-8 text-nude-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800 text-nude-800">Restaurant</h3>
-                <p className="text-sm text-nude-700">Traditional Namibian cuisine</p>
+                <h3 className="font-semibold mb-2 text-nude-800">Restaurant</h3>
+                <p className="text-sm text-nude-700">
+                  Traditional Namibian cuisine
+                </p>
               </div>
             </div>
-            
+
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Waves className="w-8 h-8 text-nude-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800 text-nude-800">Swimming Pool</h3>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Swimming Pool
+                </h3>
                 <p className="text-sm text-nude-700">Outdoor pool</p>
               </div>
             </div>
-            
+
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Monitor className="w-8 h-8 text-nude-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Conference Hall</h3>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Conference Hall
+                </h3>
                 <p className="text-sm text-nude-700">Meeting facilities</p>
               </div>
             </div>
-            
+
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Shield className="w-8 h-8 text-nude-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">24/7 Security</h3>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  24/7 Security
+                </h3>
                 <p className="text-sm text-nude-700">Safe & secure</p>
               </div>
             </div>
-            
+
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -227,23 +373,25 @@ export default function EtunaGuestPage() {
                 <p className="text-sm text-nude-700">Personal assistance</p>
               </div>
             </div>
-            
+
             <div className="nude-card hover:shadow-nude transition-shadow">
-                <div className="card-body text-center">
+              <div className="card-body text-center">
                 <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MapIcon className="w-8 h-8 text-nude-700" />
                 </div>
                 <h3 className="font-semibold mb-2 text-nude-800">Tour Guide</h3>
                 <p className="text-sm text-nude-700">Local expertise</p>
               </div>
-                  </div>
-            
+            </div>
+
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Car className="w-8 h-8 text-nude-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Airport Shuttle</h3>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Airport Shuttle
+                </h3>
                 <p className="text-sm text-nude-700">Complimentary service</p>
               </div>
             </div>
@@ -261,7 +409,14 @@ export default function EtunaGuestPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {roomTypes.map((room) => (
-              <div key={room.room_type_id} className={`nude-card ${room.type_name === 'Premier Room' ? 'ring-2 ring-nude-500 ring-opacity-50' : ''}`}>
+              <div
+                key={room.room_type_id}
+                className={`nude-card ${
+                  room.type_name === "Premier Room"
+                    ? "ring-2 ring-nude-500 ring-opacity-50"
+                    : ""
+                }`}
+              >
                 <figure className="relative h-48">
                   <Image
                     src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop"
@@ -271,11 +426,17 @@ export default function EtunaGuestPage() {
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-4 right-4">
-                    <span className={`badge badge-lg ${room.type_name === 'Premier Room' ? 'charlotte-pillow-talk' : 'nude-button'}`}>
+                    <span
+                      className={`badge badge-lg ${
+                        room.type_name === "Premier Room"
+                          ? "charlotte-pillow-talk"
+                          : "nude-button"
+                      }`}
+                    >
                       NAD {room.base_price_per_night}/night
                     </span>
                   </div>
-                  {room.type_name === 'Premier Room' && (
+                  {room.type_name === "Premier Room" && (
                     <div className="absolute top-4 left-4">
                       <span className="badge badge-warning badge-lg">
                         <Star className="w-4 h-4 mr-1" />
@@ -287,32 +448,57 @@ export default function EtunaGuestPage() {
                 <div className="card-body">
                   <h3 className="card-title">
                     {room.type_name}
-                    {room.type_name === 'Premier Room' && (
-                      <span className="badge badge-warning badge-sm ml-2">Luxury</span>
+                    {room.type_name === "Premier Room" && (
+                      <span className="badge badge-warning badge-sm ml-2">
+                        Luxury
+                      </span>
                     )}
                   </h3>
                   <p className="text-nude-700 mb-4">{room.description}</p>
-                  {room.type_name === 'Premier Room' && (
+                  {room.type_name === "Premier Room" && (
                     <div className="alert alert-info mb-4">
                       <Star className="w-4 h-4" />
-                      <span className="text-sm">Our most luxurious accommodation with 2 bedrooms, lounge area, and private balcony</span>
+                      <span className="text-sm">
+                        Our most luxurious accommodation with 2 bedrooms, lounge
+                        area, and private balcony
+                      </span>
                     </div>
                   )}
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center space-x-2">
                       <Users className="w-4 h-4 text-nude-700" />
-                      <span className="text-sm">Capacity: {room.max_occupancy} guests</span>
+                      <span className="text-sm">
+                        Capacity: {room.max_occupancy} guests
+                      </span>
                     </div>
                     <div className="flex flex-wrap gap-1">
-                      <span className="badge badge-outline badge-sm">{room.type_class}</span>
-                      <span className="badge badge-outline badge-sm">{room.bed_type}</span>
+                      <span className="badge badge-outline badge-sm">
+                        {room.type_class}
+                      </span>
+                      <span className="badge badge-outline badge-sm">
+                        {room.bed_type}
+                      </span>
                     </div>
                   </div>
                   <div className="card-actions">
-                    <Link href="/guest/etuna/rooms" className={`btn btn-sm flex-1 ${room.type_name === 'Premier Room' ? 'charlotte-pillow-talk' : 'nude-button'}`}>
-                      {room.type_name === 'Premier Room' ? 'Book Premium' : 'Book Now'}
+                    <Link
+                      href="/guest/etuna/rooms"
+                      className={`btn btn-sm flex-1 ${
+                        room.type_name === "Premier Room"
+                          ? "charlotte-pillow-talk"
+                          : "nude-button"
+                      }`}
+                    >
+                      {room.type_name === "Premier Room"
+                        ? "Book Premium"
+                        : "Book Now"}
                     </Link>
-                    <Link href="/guest/etuna/rooms" className="btn btn-outline btn-sm">View Details</Link>
+                    <Link
+                      href="/guest/etuna/rooms"
+                      className="btn btn-outline btn-sm"
+                    >
+                      View Details
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -332,9 +518,11 @@ export default function EtunaGuestPage() {
                     <span className="badge badge-warning badge-lg">Luxury</span>
                   </div>
                   <p className="text-lg mb-6 text-nude-700-content/90">
-                    Experience our most luxurious accommodation - the Premier Room. This spacious suite features 
-                    2 separate bedrooms, a private lounge area, 2 full bathrooms, and a private balcony with 
-                    garden views. Perfect for families or guests seeking the ultimate in comfort and space.
+                    Experience our most luxurious accommodation - the Premier
+                    Room. This spacious suite features 2 separate bedrooms, a
+                    private lounge area, 2 full bathrooms, and a private balcony
+                    with garden views. Perfect for families or guests seeking
+                    the ultimate in comfort and space.
                   </p>
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div className="flex items-center gap-2">
@@ -356,7 +544,10 @@ export default function EtunaGuestPage() {
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-3xl font-bold">NAD 2,000/night</span>
-                    <Link href="/guest/etuna/rooms" className="btn btn-accent btn-lg">
+                    <Link
+                      href="/guest/etuna/rooms"
+                      className="btn btn-accent btn-lg"
+                    >
                       Book Premier Room
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Link>
@@ -396,45 +587,76 @@ export default function EtunaGuestPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Transportation Services */}
-            {transportationServices.filter(service => service.service_name !== 'Airport Shuttle').slice(0, 2).map((service) => (
-              <div key={service.service_id} className="card bg-base-100 shadow-lg">
-                <div className="card-body">
-                  <h3 className="card-title">{service.service_name}</h3>
-                  <p className="text-nude-700 mb-4">{service.description}</p>
-                  <div className="flex justify-between items-center mb-4">
-                    <div>
-                      <span className="text-2xl font-bold text-nude-700">
-                        {service.base_price === 0 ? 'Free' : `NAD ${service.base_price}`}
+            {transportationServices
+              .filter((service) => service.service_name !== "Airport Shuttle")
+              .slice(0, 2)
+              .map((service) => (
+                <div
+                  key={service.service_id}
+                  className="card bg-base-100 shadow-lg"
+                >
+                  <div className="card-body">
+                    <h3 className="card-title">{service.service_name}</h3>
+                    <p className="text-nude-700 mb-4">{service.description}</p>
+                    <div className="flex justify-between items-center mb-4">
+                      <div>
+                        <span className="text-2xl font-bold text-nude-700">
+                          {service.base_price === 0
+                            ? "Free"
+                            : `NAD ${service.base_price}`}
+                        </span>
+                        {service.duration_minutes && (
+                          <span className="text-sm text-nude-700 ml-2">
+                            ({Math.round(service.duration_minutes / 60)} hours)
+                          </span>
+                        )}
+                      </div>
+                      <span className="badge badge-primary">
+                        {service.service_type}
                       </span>
-                      {service.duration_minutes && (
-                        <span className="text-sm text-nude-700 ml-2">({Math.round(service.duration_minutes / 60)} hours)</span>
-                      )}
                     </div>
-                    <span className="badge badge-primary">{service.service_type}</span>
+                    <Link
+                      href="/guest/etuna/services"
+                      className="btn btn-primary btn-sm w-full"
+                    >
+                      Book Service
+                    </Link>
                   </div>
-                  <Link href="/guest/etuna/services" className="btn btn-primary btn-sm w-full">Book Service</Link>
                 </div>
-              </div>
-            ))}
-            
+              ))}
+
             {/* Recreation Services */}
             {recreationServices.slice(0, 1).map((service) => (
-              <div key={service.recreation_id} className="card bg-base-100 shadow-lg">
+              <div
+                key={service.recreation_id}
+                className="card bg-base-100 shadow-lg"
+              >
                 <div className="card-body">
                   <h3 className="card-title">{service.service_name}</h3>
                   <p className="text-nude-700 mb-4">{service.description}</p>
                   <div className="flex justify-between items-center mb-4">
                     <div>
                       <span className="text-2xl font-bold text-nude-700">
-                        {service.base_price === 0 ? 'Free' : `NAD ${service.base_price}`}
+                        {service.base_price === 0
+                          ? "Free"
+                          : `NAD ${service.base_price}`}
                       </span>
                       {service.duration_minutes && (
-                        <span className="text-sm text-nude-700 ml-2">({Math.round(service.duration_minutes / 60)} hours)</span>
+                        <span className="text-sm text-nude-700 ml-2">
+                          ({Math.round(service.duration_minutes / 60)} hours)
+                        </span>
                       )}
                     </div>
-                    <span className="badge badge-secondary">{service.service_type}</span>
+                    <span className="badge badge-secondary">
+                      {service.service_type}
+                    </span>
                   </div>
-                  <Link href="/guest/etuna/services" className="btn btn-primary btn-sm w-full">Book Service</Link>
+                  <Link
+                    href="/guest/etuna/services"
+                    className="btn btn-primary btn-sm w-full"
+                  >
+                    Book Service
+                  </Link>
                 </div>
               </div>
             ))}
@@ -444,7 +666,9 @@ export default function EtunaGuestPage() {
         {/* AI Assistant & Map Section */}
         <div className="py-16">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Get Help & Find Us</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Get Help & Find Us
+            </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* AI Assistant Card */}
               <div className="card bg-gradient-to-br from-primary to-secondary text-nude-700-content shadow-xl">
@@ -457,12 +681,15 @@ export default function EtunaGuestPage() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold">AI Assistant</h3>
-                      <p className="text-nude-700-content/80">24/7 AI-powered concierge service</p>
+                      <p className="text-nude-700-content/80">
+                        24/7 AI-powered concierge service
+                      </p>
                     </div>
                   </div>
                   <p className="text-nude-700-content/90 mb-6">
-                    Get instant help with bookings, local information, restaurant recommendations, 
-                    tour bookings, and any questions about your stay. Our AI assistant is always available.
+                    Get instant help with bookings, local information,
+                    restaurant recommendations, tour bookings, and any questions
+                    about your stay. Our AI assistant is always available.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -483,7 +710,10 @@ export default function EtunaGuestPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/guest/etuna/ai-assistant-new" className="btn btn-accent">
+                    <Link
+                      href="/guest/etuna/ai-assistant-new"
+                      className="btn btn-accent"
+                    >
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Chat with AI Assistant
                     </Link>
@@ -502,12 +732,15 @@ export default function EtunaGuestPage() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold">Find Us</h3>
-                      <p className="text-nude-700">Interactive map with directions</p>
+                      <p className="text-nude-700">
+                        Interactive map with directions
+                      </p>
                     </div>
                   </div>
                   <p className="text-base-content/80 mb-6">
-                    Located in the heart of Ongwediva, we&apos;re easily accessible from the airport 
-                    and major attractions. Get turn-by-turn directions and explore the area.
+                    Located in the heart of Ongwediva, we&apos;re easily
+                    accessible from the airport and major attractions. Get
+                    turn-by-turn directions and explore the area.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -542,8 +775,22 @@ export default function EtunaGuestPage() {
         {/* Interactive Map Section */}
         <div className="py-16 bg-base-200">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Location & Directions</h2>
-            <EtunaMap showDirections={true} height="500px" />
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Location & Directions
+            </h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
+              <MapIcon className="w-16 h-16 mx-auto mb-4 text-primary" />
+              <h3 className="text-2xl font-bold mb-4">Interactive Map</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Interactive map with directions to Etuna Guesthouse will be
+                displayed here.
+              </p>
+              <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-8">
+                <p className="text-gray-500 dark:text-gray-400">
+                  Map component placeholder
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -555,7 +802,9 @@ export default function EtunaGuestPage() {
                 <Phone className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Call Us</h3>
                 <p className="text-nude-700-content/80">{property.phone}</p>
-                <p className="text-sm text-nude-700-content/70 mt-1">Emergency: {contactInfo.emergencyPhone}</p>
+                <p className="text-sm text-nude-700-content/70 mt-1">
+                  Emergency: {contactInfo.emergencyPhone}
+                </p>
               </div>
               <div className="text-center">
                 <Mail className="w-8 h-8 mx-auto mb-4" />

@@ -1,10 +1,3 @@
-/**
- * Etuna AI Assistant - Mobile Responsive
- * 
- * Professional AI concierge using DeepSeek API with advanced prompts
- * Features real-time conversation, intelligent booking assistance, and seamless integration
- */
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -68,7 +61,6 @@ import {
   RotateCcw,
   Loader2
 } from 'lucide-react';
-import Link from 'next/link';
 import { etunaUnifiedData } from '@/lib/data/etuna-property-unified';
 
 interface Message {
@@ -417,3 +409,11 @@ export default function EtunaAIAssistantPage() {
     </div>
   );
 }
+/**
+ * Etuna AI Assistant - Mobile Responsive
+ * 
+ * Professional AI concierge using DeepSeek API with advanced prompts
+ * Features real-time conversation, intelligent booking assistance, and seamless integration
+ */
+
+import Link from 'next/link';

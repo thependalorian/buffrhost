@@ -11,7 +11,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display font-semibold tracking-tight;
     text-wrap: balance;
   }
@@ -22,7 +27,7 @@
     @apply text-4xl md:text-5xl font-bold;
   }
   h3 {
-     @apply text-2xl md:text-3xl font-bold;
+    @apply text-2xl md:text-3xl font-bold;
   }
 }
 
@@ -189,10 +194,14 @@
 
   /* Nude shadow utilities */
   .shadow-nude {
-    box-shadow: 0 4px 6px -1px rgba(212, 165, 116, 0.1), 0 2px 4px -1px rgba(212, 165, 116, 0.06);
+    box-shadow:
+      0 4px 6px -1px rgba(212, 165, 116, 0.1),
+      0 2px 4px -1px rgba(212, 165, 116, 0.06);
   }
 
   .shadow-nude-lg {
-    box-shadow: 0 10px 15px -3px rgba(212, 165, 116, 0.1), 0 4px 6px -2px rgba(212, 165, 116, 0.05);
+    box-shadow:
+      0 10px 15px -3px rgba(212, 165, 116, 0.1),
+      0 4px 6px -2px rgba(212, 165, 116, 0.05);
   }
 }

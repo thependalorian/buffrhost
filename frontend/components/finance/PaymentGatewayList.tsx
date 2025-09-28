@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React from "react";
+import { useState, useEffect } from "react";
 
 interface PaymentGateway {
   id: string;
@@ -20,12 +20,12 @@ const PaymentGatewayList: React.FC = () => {
         // In a real application, this would fetch from your FastAPI backend
         // For now, using mock data
         const mockGateways: PaymentGateway[] = [
-          { id: 'pg1', name: 'Stripe', is_active: true },
-          { id: 'pg2', name: 'PayPal', is_active: false },
+          { id: "pg1", name: "Stripe", is_active: true },
+          { id: "pg2", name: "PayPal", is_active: false },
         ];
         setGateways(mockGateways);
       } catch (err) {
-        setError('Failed to fetch payment gateways');
+        setError("Failed to fetch payment gateways");
       } finally {
         setLoading(false);
       }
@@ -40,9 +40,9 @@ const PaymentGatewayList: React.FC = () => {
     <div className="payment-gateway-list">
       <h2>Payment Gateways</h2>
       <ul>
-        {gateways.map(gateway => (
+        {gateways.map((gateway) => (
           <li key={gateway.id}>
-            {gateway.name} ({gateway.is_active ? 'Active' : 'Inactive'})
+            {gateway.name} ({gateway.is_active ? "Active" : "Inactive"})
           </li>
         ))}
       </ul>

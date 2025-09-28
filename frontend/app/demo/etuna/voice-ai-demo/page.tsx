@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
+import NextImage from 'next/image';
+import { PageHeader, StatCard, ActionButton, ModalForm, FormField, FormSelect, Alert } from '@/src/components/ui';
+import { useState } from 'react';
 import { 
   Mic, 
   MicOff, 
@@ -28,6 +29,7 @@ import {
   TrendingUp,
   BarChart3,
   Settings,
+  Brain,
   Plus,
   Edit,
   Trash2,
@@ -168,6 +170,7 @@ import {
   MessageCircle as MessageCircleIcon2,
   Bot as BotIcon
 } from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Voice AI Demo - Buffr Host Platform',
@@ -200,7 +203,7 @@ export default function VoiceAIDemoPage() {
                 <Mic className="w-5 h-5 mr-2" />
                 Try Voice Assistant
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link href="/demo/etuna/management-demo" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -232,7 +235,7 @@ export default function VoiceAIDemoPage() {
                         <Mic className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <p className="font-medium">"Book a room for tonight"</p>
+                        <p className="font-medium">&quot;Book a room for tonight&quot;</p>
                         <p className="text-sm text-gray-500">Room booking request</p>
                       </div>
                     </div>
@@ -248,7 +251,7 @@ export default function VoiceAIDemoPage() {
                         <Utensils className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <p className="font-medium">"What's on the menu today?"</p>
+                        <p className="font-medium">&quot;What&apos;s on the menu today?&quot;</p>
                         <p className="text-sm text-gray-500">Menu inquiry</p>
                       </div>
                     </div>
@@ -264,7 +267,7 @@ export default function VoiceAIDemoPage() {
                         <Car className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <p className="font-medium">"Schedule a tour for tomorrow"</p>
+                        <p className="font-medium">&quot;Schedule a tour for tomorrow&quot;</p>
                         <p className="text-sm text-gray-500">Tour booking</p>
                       </div>
                     </div>
@@ -617,7 +620,7 @@ export default function VoiceAIDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link href="/demo/etuna/management-demo" className="btn btn-primary">
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>

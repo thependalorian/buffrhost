@@ -55,7 +55,8 @@ SERVICE_REGISTRY = {
     "analytics-service": {"url": "http://localhost:8011", "health": "/health"},
     "ai-service": {"url": "http://localhost:8012", "health": "/health"},
     "communication-service": {"url": "http://localhost:8013", "health": "/health"},
-    "content-service": {"url": "http://localhost:8014", "health": "/health"}
+    "content-service": {"url": "http://localhost:8014", "health": "/health"},
+    "restaurant-service": {"url": "http://localhost:8015", "health": "/health"}
 }
 
 # Route Mapping
@@ -73,7 +74,8 @@ ROUTE_MAPPING = {
     "/api/v1/analytics": "analytics-service",
     "/api/v1/ai": "ai-service",
     "/api/v1/communications": "communication-service",
-    "/api/v1/content": "content-service"
+    "/api/v1/content": "content-service",
+    "/api/v1/restaurants": "restaurant-service"
 }
 
 # Enums

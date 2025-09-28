@@ -1,10 +1,12 @@
 """
 Database configuration and connection management for Buffr Host platform.
 """
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import text
 import logging
+
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
+from sqlalchemy.orm import declarative_base
 
 from config import settings
 
@@ -17,14 +19,12 @@ engine = create_async_engine(
     pool_size=settings.DATABASE_POOL_SIZE,
     max_overflow=settings.DATABASE_MAX_OVERFLOW,
     pool_pre_ping=True,
-    pool_recycle=3600
+    pool_recycle=3600,
 )
 
 # Create async session factory
 AsyncSessionLocal = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False
+    engine, class_=AsyncSession, expire_on_commit=False
 )
 
 # Create declarative base
@@ -49,8 +49,15 @@ async def create_tables():
     try:
         async with engine.begin() as conn:
             # Import all models to ensure they are registered
-            from models import restaurant, user, menu, modifiers, inventory, customer, order
-            
+            from models import (HospitalityProperty, Ingredient, InventoryItem,
+                                Menu, MenuCategory, MenuItemRawMaterial,
+                                MenuMedia, MenuModifiers, Modifiers,
+                                OptionValue, OptionValueIngredient,
+                                OptionValueIngredientMultiplier, Order,
+                                OrderItem, OrderItemOption, Profile,
+                                Restaurant, UnitOfMeasurement, User, UserPreferences,
+                                UserType)
+
             # Create all tables
             await conn.run_sync(Base.metadata.create_all)
             logger.info("Database tables created successfully")

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
+import { PageHeader, StatCard, ActionButton, ModalForm, FormField, FormSelect, Alert } from '@/src/components/ui';
+import { useState } from 'react';
 import { 
   Building2, 
   Users, 
@@ -188,6 +189,7 @@ import {
   Network as NetworkIcon,
   Layers as LayersIcon
 } from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Multi-Tenant Architecture Demo - Buffr Host Platform',
@@ -220,7 +222,7 @@ export default function MultiTenantDemoPage() {
                 <Server className="w-5 h-5 mr-2" />
                 Explore Architecture
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link href="/demo/etuna/management-demo" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -348,7 +350,7 @@ export default function MultiTenantDemoPage() {
                   <Shield className="w-8 h-8 text-slate-700" />
                 </div>
                 <h3 className="font-semibold mb-2 text-nude-800">Complete Data Isolation</h3>
-                <p className="text-sm text-nude-700">Each tenant's data is completely isolated with enterprise-grade security.</p>
+                <p className="text-sm text-nude-700">Each tenant&apos;s data is completely isolated with enterprise-grade security.</p>
               </div>
             </div>
             
@@ -636,7 +638,7 @@ export default function MultiTenantDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link href="/demo/etuna/management-demo" className="btn btn-primary">
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>

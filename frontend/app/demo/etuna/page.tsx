@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { PageHeader, StatCard } from '@/src/components/ui';
 import { 
   MapPin, 
   Star, 
@@ -28,6 +29,10 @@ import {
   Crown,
   Package,
   CreditCard,
+  Zap,
+  Smartphone,
+  Workflow,
+  Store,
   Megaphone,
   FileText,
   DollarSign,
@@ -119,11 +124,11 @@ export default function EtunaDemoPage() {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/demo/etuna/rooms" className="nude-button btn-lg">
+              <Link href="/guest/etuna/rooms" className="nude-button btn-lg">
                 Explore Rooms
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link href="/demo/etuna/management-demo" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
                 View Management Demo
                 <Monitor className="w-5 h-5 ml-2" />
               </Link>
@@ -161,8 +166,8 @@ export default function EtunaDemoPage() {
                 </div>
               </div>
               <div className="flex space-x-4">
-                <Link href="/demo/etuna/rooms" className="btn btn-primary">Explore Rooms</Link>
-                <Link href="/demo/etuna/services" className="btn btn-outline">View Services</Link>
+                <Link href="/guest/etuna/rooms" className="btn btn-primary">Explore Rooms</Link>
+                <Link href="/guest/etuna/services" className="btn btn-outline">View Services</Link>
               </div>
             </div>
             <div className="relative">
@@ -261,7 +266,7 @@ export default function EtunaDemoPage() {
             </Link>
             
             {/* Admin Dashboard */}
-            <Link href="/demo/etuna/admin-dashboard/dashboard" className="nude-card hover:shadow-nude transition-shadow group">
+            <Link href="/demo/etuna/admin-dashboard-demo/dashboard" className="nude-card hover:shadow-nude transition-shadow group">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-teal-200 transition-colors">
                   <Monitor className="w-8 h-8 text-teal-700" />
@@ -731,7 +736,7 @@ export default function EtunaDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link href="/demo/etuna/management-demo" className="btn btn-primary">
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>

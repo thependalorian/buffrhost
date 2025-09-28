@@ -1,57 +1,57 @@
 /**
  * Subscription Form Component
- * 
+ *
  * Form for creating and editing subscription plans
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { 
-  CreditCard, 
-  Save, 
-  X, 
-  Plus, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  CreditCard,
+  Save,
+  X,
+  Plus,
   Trash2,
   CheckCircle,
-  AlertCircle
-} from 'lucide-react';
+  AlertCircle,
+} from "lucide-react";
 
 interface SubscriptionFormData {
   name: string;
   description: string;
   price: number;
   currency: string;
-  billingCycle: 'monthly' | 'yearly' | 'lifetime';
+  billingCycle: "monthly" | "yearly" | "lifetime";
   features: string[];
-  status: 'active' | 'inactive' | 'draft';
+  status: "active" | "inactive" | "draft";
 }
 
 interface SubscriptionFormProps {
   initialData?: Partial<SubscriptionFormData>;
   onSubmit?: (data: SubscriptionFormData) => void;
   onCancel?: () => void;
-  mode?: 'create' | 'edit';
+  mode?: "create" | "edit";
 }
 
-export default function SubscriptionForm({ 
-  initialData, 
-  onSubmit, 
-  onCancel, 
-  mode = 'create' 
+export default function SubscriptionForm({
+  initialData,
+  onSubmit,
+  onCancel,
+  mode = "create",
 }: SubscriptionFormProps) {
   const [formData, setFormData] = useState<SubscriptionFormData>({
-    name: initialData?.name || '',
-    description: initialData?.description || '',
+    name: initialData?.name || "",
+    description: initialData?.description || "",
     price: initialData?.price || 0,
-    currency: initialData?.currency || 'NAD',
-    billingCycle: initialData?.billingCycle || 'monthly',
-    features: initialData?.features || [''],
-    status: initialData?.status || 'draft'
+    currency: initialData?.currency || "NAD",
+    billingCycle: initialData?.billingCycle || "monthly",
+    features: initialData?.features || [""],
+    status: initialData?.status || "draft",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,57 +61,63 @@ export default function SubscriptionForm({
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Plan name is required';
+      newErrors.name = "Plan name is required";
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
+      newErrors.description = "Description is required";
     }
 
     if (formData.price < 0) {
-      newErrors.price = 'Price must be non-negative';
+      newErrors.price = "Price must be non-negative";
     }
 
-    if (formData.features.length === 0 || formData.features.every(f => !f.trim())) {
-      newErrors.features = 'At least one feature is required';
+    if (
+      formData.features.length === 0 ||
+      formData.features.every((f) => !f.trim())
+    ) {
+      newErrors.features = "At least one feature is required";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof SubscriptionFormData, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof SubscriptionFormData,
+    value: string | number,
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
   const handleFeatureChange = (index: number, value: string) => {
     const newFeatures = [...formData.features];
     newFeatures[index] = value;
-    setFormData(prev => ({ ...prev, features: newFeatures }));
-    
+    setFormData((prev) => ({ ...prev, features: newFeatures }));
+
     if (errors.features) {
-      setErrors(prev => ({ ...prev, features: '' }));
+      setErrors((prev) => ({ ...prev, features: "" }));
     }
   };
 
   const addFeature = () => {
-    setFormData(prev => ({ ...prev, features: [...prev.features, ''] }));
+    setFormData((prev) => ({ ...prev, features: [...prev.features, ""] }));
   };
 
   const removeFeature = (index: number) => {
     if (formData.features.length > 1) {
       const newFeatures = formData.features.filter((_, i) => i !== index);
-      setFormData(prev => ({ ...prev, features: newFeatures }));
+      setFormData((prev) => ({ ...prev, features: newFeatures }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -120,16 +126,16 @@ export default function SubscriptionForm({
     try {
       await onSubmit?.(formData);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
     }).format(price);
   };
 
@@ -138,7 +144,11 @@ export default function SubscriptionForm({
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <CreditCard className="w-5 h-5" />
-          <span>{mode === 'create' ? 'Create Subscription Plan' : 'Edit Subscription Plan'}</span>
+          <span>
+            {mode === "create"
+              ? "Create Subscription Plan"
+              : "Edit Subscription Plan"}
+          </span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -146,15 +156,15 @@ export default function SubscriptionForm({
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Basic Information</h3>
-            
+
             <div className="space-y-2">
               <Label htmlFor="name">Plan Name *</Label>
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
+                onChange={(e) => handleInputChange("name", e.target.value)}
                 placeholder="e.g., Basic Plan"
-                className={errors.name ? 'border-red-500' : ''}
+                className={errors.name ? "border-red-500" : ""}
               />
               {errors.name && (
                 <p className="text-sm text-red-600 flex items-center space-x-1">
@@ -169,10 +179,14 @@ export default function SubscriptionForm({
               <textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 placeholder="Describe what this plan includes..."
                 rows={3}
-                className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.description ? 'border-red-500' : ''}`}
+                className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.description ? "border-red-500" : ""
+                }`}
               />
               {errors.description && (
                 <p className="text-sm text-red-600 flex items-center space-x-1">
@@ -186,7 +200,7 @@ export default function SubscriptionForm({
           {/* Pricing */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Pricing</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="price">Price *</Label>
@@ -196,9 +210,11 @@ export default function SubscriptionForm({
                   min="0"
                   step="0.01"
                   value={formData.price}
-                  onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    handleInputChange("price", parseFloat(e.target.value) || 0)
+                  }
                   placeholder="0.00"
-                  className={errors.price ? 'border-red-500' : ''}
+                  className={errors.price ? "border-red-500" : ""}
                 />
                 {errors.price && (
                   <p className="text-sm text-red-600 flex items-center space-x-1">
@@ -213,7 +229,9 @@ export default function SubscriptionForm({
                 <select
                   id="currency"
                   value={formData.currency}
-                  onChange={(e) => handleInputChange('currency', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("currency", e.target.value)
+                  }
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="NAD">NAD</option>
@@ -228,7 +246,9 @@ export default function SubscriptionForm({
                 <select
                   id="billingCycle"
                   value={formData.billingCycle}
-                  onChange={(e) => handleInputChange('billingCycle', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("billingCycle", e.target.value)
+                  }
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="monthly">Monthly</option>
@@ -241,7 +261,9 @@ export default function SubscriptionForm({
             {formData.price > 0 && (
               <div className="p-3 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <strong>Preview:</strong> {formatPrice(formData.price, formData.currency)} per {formData.billingCycle}
+                  <strong>Preview:</strong>{" "}
+                  {formatPrice(formData.price, formData.currency)} per{" "}
+                  {formData.billingCycle}
                 </p>
               </div>
             )}
@@ -250,14 +272,16 @@ export default function SubscriptionForm({
           {/* Features */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Features *</h3>
-            
+
             <div className="space-y-3">
               {formData.features.map((feature, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <div className="flex-1">
                     <Input
                       value={feature}
-                      onChange={(e) => handleFeatureChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleFeatureChange(index, e.target.value)
+                      }
                       placeholder={`Feature ${index + 1}`}
                     />
                   </div>
@@ -273,7 +297,7 @@ export default function SubscriptionForm({
                   )}
                 </div>
               ))}
-              
+
               <Button
                 type="button"
                 variant="outline"
@@ -296,13 +320,13 @@ export default function SubscriptionForm({
           {/* Status */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Status</h3>
-            
+
             <div className="space-y-2">
               <Label htmlFor="status">Plan Status</Label>
               <select
                 id="status"
                 value={formData.status}
-                onChange={(e) => handleInputChange('status', e.target.value)}
+                onChange={(e) => handleInputChange("status", e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="draft">Draft</option>
@@ -314,24 +338,21 @@ export default function SubscriptionForm({
 
           {/* Actions */}
           <div className="flex items-center justify-end space-x-3 pt-6 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-            >
+            <Button type="button" variant="outline" onClick={onCancel}>
               <X className="w-4 h-4 mr-2" />
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <Save className="w-4 h-4 mr-2" />
               )}
-              {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Plan' : 'Update Plan'}
+              {isSubmitting
+                ? "Saving..."
+                : mode === "create"
+                  ? "Create Plan"
+                  : "Update Plan"}
             </Button>
           </div>
         </form>

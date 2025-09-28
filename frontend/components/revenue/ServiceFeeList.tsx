@@ -1,6 +1,6 @@
-'use client';
-import React from 'react';
-import { useState, useEffect } from 'react';
+"use client";
+import React from "react";
+import { useState, useEffect } from "react";
 
 interface ServiceFee {
   id: string;
@@ -21,12 +21,24 @@ const ServiceFeeList: React.FC = () => {
         // In a real application, this would fetch from your FastAPI backend
         // For now, using mock data
         const mockFees: ServiceFee[] = [
-          { id: 'sf1', name: 'Booking Fee', value: 10.00, fee_type: 'fixed', is_active: true },
-          { id: 'sf2', name: 'Payment Processing', value: 0.02, fee_type: 'percentage', is_active: true },
+          {
+            id: "sf1",
+            name: "Booking Fee",
+            value: 10.0,
+            fee_type: "fixed",
+            is_active: true,
+          },
+          {
+            id: "sf2",
+            name: "Payment Processing",
+            value: 0.02,
+            fee_type: "percentage",
+            is_active: true,
+          },
         ];
         setServiceFees(mockFees);
       } catch (err) {
-        setError('Failed to fetch service fees');
+        setError("Failed to fetch service fees");
       } finally {
         setLoading(false);
       }
@@ -41,9 +53,10 @@ const ServiceFeeList: React.FC = () => {
     <div className="service-fee-list">
       <h2>Service Fees</h2>
       <ul>
-        {serviceFees.map(fee => (
+        {serviceFees.map((fee) => (
           <li key={fee.id}>
-            {fee.name} ({fee.fee_type}) - {fee.value} ({fee.is_active ? 'Active' : 'Inactive'})
+            {fee.name} ({fee.fee_type}) - {fee.value} (
+            {fee.is_active ? "Active" : "Inactive"})
           </li>
         ))}
       </ul>

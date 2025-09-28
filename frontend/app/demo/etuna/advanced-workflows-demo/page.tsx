@@ -1,15 +1,23 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  Workflow, 
-  Settings, 
-  Zap, 
-  CheckCircle, 
-  AlertCircle, 
-  Clock, 
-  Users, 
-  Target, 
+import { Metadata } from "next";
+import Image from "next/image";
+import {
+  PageHeader,
+  StatCard,
+  ActionButton,
+  ModalForm,
+  FormField,
+  FormSelect,
+  Alert,
+} from "@/src/components/ui";
+import {
+  Workflow,
+  Settings,
+  Zap,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  Users,
+  Target,
   Star,
   MapPin,
   Phone,
@@ -191,7 +199,6 @@ import {
   Lock as LockIcon3,
   Key as KeyIcon,
   Eye as EyeIcon4,
-  EyeOff as EyeOffIcon,
   AlertTriangle,
   CheckCircle as CheckCircleIcon,
   Server as ServerIcon,
@@ -231,25 +238,24 @@ import {
   AlertCircle as AlertCircleIcon2,
   TrendingUp as TrendingUpIcon2,
   TrendingDown as TrendingDownIcon2,
-  Activity,
   Smartphone as SmartphoneIcon2,
   Download as DownloadIcon5,
   QrCode as QrCodeIcon2,
   Camera,
   Bell as BellIcon2,
-  MapPin as MapPinIcon,
   Star as StarIcon2,
   Heart as HeartIcon2,
-  Share,
   MessageCircle as MessageCircleIcon3,
   Workflow as WorkflowIcon,
   Settings as SettingsIcon4,
-  Zap as ZapIcon4
-} from 'lucide-react';
+  Zap as ZapIcon4,
+} from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Advanced Workflows Demo - Buffr Host Platform',
-  description: 'Experience our advanced business process automation with intelligent workflows and AI-powered optimization.',
+  title: "Advanced Workflows Demo - Buffr Host Platform",
+  description:
+    "Experience our advanced business process automation with intelligent workflows and AI-powered optimization.",
 };
 
 export default function AdvancedWorkflowsDemoPage() {
@@ -259,7 +265,8 @@ export default function AdvancedWorkflowsDemoPage() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm">
-            🎯 <strong>Advanced Workflows Demo</strong> - Business process automation and AI optimization
+            🎯 <strong>Advanced Workflows Demo</strong> - Business process
+            automation and AI optimization
           </p>
         </div>
       </div>
@@ -271,14 +278,21 @@ export default function AdvancedWorkflowsDemoPage() {
             <div className="mb-8">
               <Workflow className="w-24 h-24 mx-auto mb-4 opacity-90" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Workflow Excellence</h1>
-            <p className="text-xl md:text-2xl mb-6">Intelligent business process automation</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              Workflow Excellence
+            </h1>
+            <p className="text-xl md:text-2xl mb-6">
+              Intelligent business process automation
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="btn btn-accent btn-lg">
                 <Settings className="w-5 h-5 mr-2" />
                 Explore Workflows
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link
+                href="/demo/etuna/management-demo"
+                className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900"
+              >
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -293,13 +307,16 @@ export default function AdvancedWorkflowsDemoPage() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Advanced Business Process Automation</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Advanced Business Process Automation
+              </h2>
               <p className="text-lg text-base-content/80 mb-6">
-                See how our advanced workflow engine automates complex business processes, 
-                optimizes operations, and integrates AI-powered decision making across 
-                all Etuna operations and management tasks.
+                See how our advanced workflow engine automates complex business
+                processes, optimizes operations, and integrates AI-powered
+                decision making across all Etuna operations and management
+                tasks.
               </p>
-              
+
               {/* Demo Workflow Dashboard */}
               <div className="bg-white dark:bg-base-200 p-6 rounded-lg shadow-xl mb-6">
                 <h3 className="text-lg font-bold mb-4">Active Workflows</h3>
@@ -312,7 +329,9 @@ export default function AdvancedWorkflowsDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Guest Check-in</p>
-                        <p className="text-sm text-gray-500">Automated process</p>
+                        <p className="text-sm text-gray-500">
+                          Automated process
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -320,7 +339,7 @@ export default function AdvancedWorkflowsDemoPage() {
                       <p className="text-xs text-gray-500">95% efficiency</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -328,7 +347,9 @@ export default function AdvancedWorkflowsDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Inventory Reorder</p>
-                        <p className="text-sm text-gray-500">Smart automation</p>
+                        <p className="text-sm text-gray-500">
+                          Smart automation
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -336,7 +357,7 @@ export default function AdvancedWorkflowsDemoPage() {
                       <p className="text-xs text-gray-500">98% accuracy</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
@@ -374,7 +395,7 @@ export default function AdvancedWorkflowsDemoPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2070&auto=format&fit=crop"
@@ -398,7 +419,9 @@ export default function AdvancedWorkflowsDemoPage() {
 
         {/* Workflow Benefits */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Why Our Advanced Workflows Excel</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Why Our Advanced Workflows Excel
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Process Automation */}
             <div className="nude-card hover:shadow-nude transition-shadow">
@@ -406,63 +429,90 @@ export default function AdvancedWorkflowsDemoPage() {
                 <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Zap className="w-8 h-8 text-emerald-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Process Automation</h3>
-                <p className="text-sm text-nude-700">Automate complex business processes with intelligent decision making.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Process Automation
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Automate complex business processes with intelligent decision
+                  making.
+                </p>
               </div>
             </div>
-            
+
             {/* AI Optimization */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Brain className="w-8 h-8 text-blue-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">AI Optimization</h3>
-                <p className="text-sm text-nude-700">Machine learning algorithms optimize workflows for maximum efficiency.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  AI Optimization
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Machine learning algorithms optimize workflows for maximum
+                  efficiency.
+                </p>
               </div>
             </div>
-            
+
             {/* Real-time Monitoring */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Activity className="w-8 h-8 text-green-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Real-time Monitoring</h3>
-                <p className="text-sm text-nude-700">Live workflow monitoring with instant alerts and optimization.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Real-time Monitoring
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Live workflow monitoring with instant alerts and optimization.
+                </p>
               </div>
             </div>
-            
+
             {/* Custom Builder */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Settings className="w-8 h-8 text-purple-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Custom Builder</h3>
-                <p className="text-sm text-nude-700">Drag-and-drop workflow builder for custom business processes.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Custom Builder
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Drag-and-drop workflow builder for custom business processes.
+                </p>
               </div>
             </div>
-            
+
             {/* Integration Hub */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Network className="w-8 h-8 text-orange-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Integration Hub</h3>
-                <p className="text-sm text-nude-700">Seamless integration with all platform features and external systems.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Integration Hub
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Seamless integration with all platform features and external
+                  systems.
+                </p>
               </div>
             </div>
-            
+
             {/* Performance Analytics */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="w-8 h-8 text-teal-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Performance Analytics</h3>
-                <p className="text-sm text-nude-700">Detailed workflow analytics and optimization recommendations.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Performance Analytics
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Detailed workflow analytics and optimization recommendations.
+                </p>
               </div>
             </div>
           </div>
@@ -470,7 +520,9 @@ export default function AdvancedWorkflowsDemoPage() {
 
         {/* Workflow Categories */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Workflow Categories & Automation</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Workflow Categories & Automation
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Guest Operations */}
             <div className="nude-card">
@@ -481,7 +533,9 @@ export default function AdvancedWorkflowsDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Guest Operations</h3>
-                    <p className="text-sm text-nude-700">Customer service automation</p>
+                    <p className="text-sm text-nude-700">
+                      Customer service automation
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -514,7 +568,9 @@ export default function AdvancedWorkflowsDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Staff Management</h3>
-                    <p className="text-sm text-nude-700">Employee workflow automation</p>
+                    <p className="text-sm text-nude-700">
+                      Employee workflow automation
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -547,7 +603,9 @@ export default function AdvancedWorkflowsDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Business Operations</h3>
-                    <p className="text-sm text-nude-700">Management workflow automation</p>
+                    <p className="text-sm text-nude-700">
+                      Management workflow automation
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -575,15 +633,22 @@ export default function AdvancedWorkflowsDemoPage() {
 
         {/* Advanced Features */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Advanced Workflow Features</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Advanced Workflow Features
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Machine Learning Optimization */}
             <div className="text-center">
               <div className="w-20 h-20 bg-primary text-primary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <Brain className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">ML-Powered Optimization</h3>
-              <p className="text-nude-700">Machine learning algorithms continuously optimize workflow performance.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                ML-Powered Optimization
+              </h3>
+              <p className="text-nude-700">
+                Machine learning algorithms continuously optimize workflow
+                performance.
+              </p>
             </div>
 
             {/* Predictive Analytics */}
@@ -591,8 +656,13 @@ export default function AdvancedWorkflowsDemoPage() {
               <div className="w-20 h-20 bg-secondary text-secondary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Predictive Analytics</h3>
-              <p className="text-nude-700">Anticipate bottlenecks and optimize workflows before issues occur.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                Predictive Analytics
+              </h3>
+              <p className="text-nude-700">
+                Anticipate bottlenecks and optimize workflows before issues
+                occur.
+              </p>
             </div>
 
             {/* Dynamic Adaptation */}
@@ -601,7 +671,10 @@ export default function AdvancedWorkflowsDemoPage() {
                 <Settings className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Dynamic Adaptation</h3>
-              <p className="text-nude-700">Workflows automatically adapt to changing business conditions and requirements.</p>
+              <p className="text-nude-700">
+                Workflows automatically adapt to changing business conditions
+                and requirements.
+              </p>
             </div>
           </div>
         </div>
@@ -609,7 +682,9 @@ export default function AdvancedWorkflowsDemoPage() {
         {/* Demo Actions */}
         <div className="py-16">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Experience Advanced Workflows</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Experience Advanced Workflows
+            </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Workflow Builder */}
               <div className="card bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-xl">
@@ -622,14 +697,15 @@ export default function AdvancedWorkflowsDemoPage() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold">Workflow Builder</h3>
-                      <p className="text-white/80">See how advanced workflows work</p>
+                      <p className="text-white/80">
+                        See how advanced workflows work
+                      </p>
                     </div>
                   </div>
                   <p className="text-white/90 mb-6">
-                    Experience our advanced workflow engine. 
-                    Build custom processes, configure automation, 
-                    monitor performance, and see how intelligent 
-                    workflows drive operational excellence.
+                    Experience our advanced workflow engine. Build custom
+                    processes, configure automation, monitor performance, and
+                    see how intelligent workflows drive operational excellence.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -668,15 +744,18 @@ export default function AdvancedWorkflowsDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">Workflow Management</h3>
-                      <p className="text-nude-700">See how workflows drive platform success</p>
+                      <h3 className="text-2xl font-bold">
+                        Workflow Management
+                      </h3>
+                      <p className="text-nude-700">
+                        See how workflows drive platform success
+                      </p>
                     </div>
                   </div>
                   <p className="text-base-content/80 mb-6">
-                    Explore our workflow management dashboard. 
-                    Configure automation rules, monitor 
-                    workflow performance, analyze bottlenecks, 
-                    and optimize for maximum efficiency.
+                    Explore our workflow management dashboard. Configure
+                    automation rules, monitor workflow performance, analyze
+                    bottlenecks, and optimize for maximum efficiency.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -697,7 +776,10 @@ export default function AdvancedWorkflowsDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link
+                      href="/demo/etuna/management-demo"
+                      className="btn btn-primary"
+                    >
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>
@@ -715,17 +797,23 @@ export default function AdvancedWorkflowsDemoPage() {
               <div className="text-center">
                 <Phone className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Ready to Automate?</h3>
-                <p className="text-primary-content/80">Contact us to implement advanced workflows.</p>
+                <p className="text-primary-content/80">
+                  Contact us to implement advanced workflows.
+                </p>
               </div>
               <div className="text-center">
                 <Mail className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Schedule a Demo</h3>
-                <p className="text-primary-content/80">Book a personalized demonstration of our workflow system.</p>
+                <p className="text-primary-content/80">
+                  Book a personalized demonstration of our workflow system.
+                </p>
               </div>
               <div className="text-center">
                 <Globe className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Learn More</h3>
-                <p className="text-primary-content/80">Visit our main website for more information about Buffr Host.</p>
+                <p className="text-primary-content/80">
+                  Visit our main website for more information about Buffr Host.
+                </p>
               </div>
             </div>
           </div>

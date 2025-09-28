@@ -7,19 +7,21 @@ including document upload, search, and AI agent interactions.
 
 import asyncio
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime
 import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
+from fastapi import (APIRouter, Depends, File, Form, HTTPException, Query,
+                     UploadFile)
 from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from rag.knowledge_base import KnowledgeBaseManager, DocumentType, DocumentStatus
-from rag.rag_agent import RAGAgent, QueryType
 from rag.document_processor import DocumentProcessor
+from rag.knowledge_base import (DocumentStatus, DocumentType,
+                                KnowledgeBaseManager)
+from rag.rag_agent import QueryType, RAGAgent
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +34,9 @@ class DocumentCreateRequest(BaseModel):
     content: str = Field(..., description="Document content")
     document_type: DocumentType = Field(..., description="Type of document")
     tags: Optional[List[str]] = Field(default_factory=list, description="Document tags")
-    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Additional metadata")
+    metadata: Optional[Dict[str, Any]] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
 
 
 class DocumentUpdateRequest(BaseModel):
@@ -45,32 +49,44 @@ class DocumentUpdateRequest(BaseModel):
 
 class QueryRequest(BaseModel):
     question: str = Field(..., description="Question to ask")
-    context: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Additional context")
+    context: Optional[Dict[str, Any]] = Field(
+        default_factory=dict, description="Additional context"
+    )
 
 
 class QueryResponse(BaseModel):
     answer: str = Field(..., description="Generated answer")
     confidence: float = Field(..., description="Confidence score")
-    sources: List[Dict[str, Any]] = Field(default_factory=list, description="Source documents")
+    sources: List[Dict[str, Any]] = Field(
+        default_factory=list, description="Source documents"
+    )
     query_type: QueryType = Field(..., description="Type of query")
-    follow_up_questions: List[str] = Field(default_factory=list, description="Follow-up questions")
+    follow_up_questions: List[str] = Field(
+        default_factory=list, description="Follow-up questions"
+    )
     requires_human: bool = Field(..., description="Whether human assistance is needed")
 
 
 class SearchRequest(BaseModel):
     query: str = Field(..., description="Search query")
-    document_types: Optional[List[DocumentType]] = Field(None, description="Filter by document types")
+    document_types: Optional[List[DocumentType]] = Field(
+        None, description="Filter by document types"
+    )
     tags: Optional[List[str]] = Field(None, description="Filter by tags")
     limit: int = Field(default=10, description="Maximum number of results")
 
 
 # Dependency to get knowledge base manager
-async def get_knowledge_base(db: AsyncSession = Depends(get_db)) -> KnowledgeBaseManager:
+async def get_knowledge_base(
+    db: AsyncSession = Depends(get_db),
+) -> KnowledgeBaseManager:
     return KnowledgeBaseManager(db)
 
 
 # Dependency to get RAG agent
-async def get_rag_agent(kb: KnowledgeBaseManager = Depends(get_knowledge_base)) -> RAGAgent:
+async def get_rag_agent(
+    kb: KnowledgeBaseManager = Depends(get_knowledge_base),
+) -> RAGAgent:
     return RAGAgent(kb)
 
 
@@ -79,7 +95,7 @@ async def create_document(
     property_id: int,
     request: DocumentCreateRequest,
     created_by: str = Form(...),
-    kb: KnowledgeBaseManager = Depends(get_knowledge_base)
+    kb: KnowledgeBaseManager = Depends(get_knowledge_base),
 ):
     """Create a new document in the knowledge base."""
     try:
@@ -90,18 +106,18 @@ async def create_document(
             document_type=request.document_type,
             created_by=created_by,
             metadata=request.metadata,
-            tags=request.tags
+            tags=request.tags,
         )
-        
+
         return JSONResponse(
             status_code=201,
             content={
                 "message": "Document created successfully",
                 "document_id": document.document_id,
-                "status": document.status.value
-            }
+                "status": document.status.value,
+            },
         )
-        
+
     except Exception as e:
         logger.error(f"Error creating document: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -115,24 +131,24 @@ async def upload_document(
     document_type: DocumentType = Form(...),
     tags: str = Form(default=""),
     created_by: str = Form(...),
-    kb: KnowledgeBaseManager = Depends(get_knowledge_base)
+    kb: KnowledgeBaseManager = Depends(get_knowledge_base),
 ):
     """Upload and process a document file."""
     try:
         # Read file content
         content = await file.read()
-        
+
         # Process the file based on its type
         processor = DocumentProcessor()
         processed_content = await processor.process_file(
             file_path=file.filename,
             document_type=document_type,
-            metadata={"original_filename": file.filename}
+            metadata={"original_filename": file.filename},
         )
-        
+
         # Parse tags
         tag_list = [tag.strip() for tag in tags.split(",") if tag.strip()]
-        
+
         # Create document
         document = await kb.add_document(
             property_id=property_id,
@@ -143,18 +159,18 @@ async def upload_document(
             tags=tag_list,
             file_path=file.filename,
             file_type=file.content_type,
-            file_size=len(content)
+            file_size=len(content),
         )
-        
+
         return JSONResponse(
             status_code=201,
             content={
                 "message": "Document uploaded and processed successfully",
                 "document_id": document.document_id,
-                "status": document.status.value
-            }
+                "status": document.status.value,
+            },
         )
-        
+
     except Exception as e:
         logger.error(f"Error uploading document: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -165,7 +181,7 @@ async def update_document(
     document_id: str,
     request: DocumentUpdateRequest,
     updated_by: str = Form(...),
-    kb: KnowledgeBaseManager = Depends(get_knowledge_base)
+    kb: KnowledgeBaseManager = Depends(get_knowledge_base),
 ):
     """Update an existing document."""
     try:
@@ -176,18 +192,18 @@ async def update_document(
             document_type=request.document_type,
             metadata=request.metadata,
             tags=request.tags,
-            updated_by=updated_by
+            updated_by=updated_by,
         )
-        
+
         return JSONResponse(
             status_code=200,
             content={
                 "message": "Document updated successfully",
                 "document_id": document.document_id,
-                "status": document.status.value
-            }
+                "status": document.status.value,
+            },
         )
-        
+
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
@@ -197,21 +213,19 @@ async def update_document(
 
 @router.delete("/documents/{document_id}")
 async def delete_document(
-    document_id: str,
-    kb: KnowledgeBaseManager = Depends(get_knowledge_base)
+    document_id: str, kb: KnowledgeBaseManager = Depends(get_knowledge_base)
 ):
     """Delete a document from the knowledge base."""
     try:
         success = await kb.delete_document(document_id)
-        
+
         if not success:
             raise HTTPException(status_code=404, detail="Document not found")
-        
+
         return JSONResponse(
-            status_code=200,
-            content={"message": "Document deleted successfully"}
+            status_code=200, content={"message": "Document deleted successfully"}
         )
-        
+
     except Exception as e:
         logger.error(f"Error deleting document: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -219,21 +233,17 @@ async def delete_document(
 
 @router.get("/documents/{document_id}")
 async def get_document(
-    document_id: str,
-    kb: KnowledgeBaseManager = Depends(get_knowledge_base)
+    document_id: str, kb: KnowledgeBaseManager = Depends(get_knowledge_base)
 ):
     """Get a document by ID."""
     try:
         document = await kb.get_document(document_id)
-        
+
         if not document:
             raise HTTPException(status_code=404, detail="Document not found")
-        
-        return JSONResponse(
-            status_code=200,
-            content=document.dict()
-        )
-        
+
+        return JSONResponse(status_code=200, content=document.dict())
+
     except Exception as e:
         logger.error(f"Error getting document: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -243,7 +253,7 @@ async def get_document(
 async def search_documents(
     property_id: int,
     request: SearchRequest,
-    kb: KnowledgeBaseManager = Depends(get_knowledge_base)
+    kb: KnowledgeBaseManager = Depends(get_knowledge_base),
 ):
     """Search documents in the knowledge base."""
     try:
@@ -252,18 +262,18 @@ async def search_documents(
             query=request.query,
             document_types=request.document_types,
             tags=request.tags,
-            limit=request.limit
+            limit=request.limit,
         )
-        
+
         return JSONResponse(
             status_code=200,
             content={
                 "query": request.query,
                 "results": [doc.dict() for doc in documents],
-                "total": len(documents)
-            }
+                "total": len(documents),
+            },
         )
-        
+
     except Exception as e:
         logger.error(f"Error searching documents: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -273,21 +283,18 @@ async def search_documents(
 async def query_knowledge_base(
     property_id: int,
     request: QueryRequest,
-    rag_agent: RAGAgent = Depends(get_rag_agent)
+    rag_agent: RAGAgent = Depends(get_rag_agent),
 ):
     """Query the knowledge base using the RAG agent."""
     try:
         response = await rag_agent.query(
             property_id=property_id,
             question=request.question,
-            user_context=request.context
+            user_context=request.context,
         )
-        
-        return JSONResponse(
-            status_code=200,
-            content=response.dict()
-        )
-        
+
+        return JSONResponse(status_code=200, content=response.dict())
+
     except Exception as e:
         logger.error(f"Error querying knowledge base: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -295,21 +302,17 @@ async def query_knowledge_base(
 
 @router.get("/properties/{property_id}/suggested-questions")
 async def get_suggested_questions(
-    property_id: int,
-    rag_agent: RAGAgent = Depends(get_rag_agent)
+    property_id: int, rag_agent: RAGAgent = Depends(get_rag_agent)
 ):
     """Get suggested questions based on available knowledge."""
     try:
         questions = await rag_agent.get_suggested_questions(property_id)
-        
+
         return JSONResponse(
             status_code=200,
-            content={
-                "property_id": property_id,
-                "suggested_questions": questions
-            }
+            content={"property_id": property_id, "suggested_questions": questions},
         )
-        
+
     except Exception as e:
         logger.error(f"Error getting suggested questions: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -317,18 +320,14 @@ async def get_suggested_questions(
 
 @router.get("/properties/{property_id}/summary")
 async def get_knowledge_summary(
-    property_id: int,
-    kb: KnowledgeBaseManager = Depends(get_knowledge_base)
+    property_id: int, kb: KnowledgeBaseManager = Depends(get_knowledge_base)
 ):
     """Get a summary of the knowledge base for a property."""
     try:
         summary = await kb.get_property_knowledge_summary(property_id)
-        
-        return JSONResponse(
-            status_code=200,
-            content=summary
-        )
-        
+
+        return JSONResponse(status_code=200, content=summary)
+
     except Exception as e:
         logger.error(f"Error getting knowledge summary: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -338,21 +337,21 @@ async def get_knowledge_summary(
 async def analyze_knowledge_gaps(
     property_id: int,
     common_questions: List[str],
-    rag_agent: RAGAgent = Depends(get_rag_agent)
+    rag_agent: RAGAgent = Depends(get_rag_agent),
 ):
     """Analyze knowledge gaps based on common questions."""
     try:
         gaps = await rag_agent.get_knowledge_gaps(property_id, common_questions)
-        
+
         return JSONResponse(
             status_code=200,
             content={
                 "property_id": property_id,
                 "knowledge_gaps": gaps,
-                "total_gaps": len(gaps)
-            }
+                "total_gaps": len(gaps),
+            },
         )
-        
+
     except Exception as e:
         logger.error(f"Error analyzing knowledge gaps: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -368,11 +367,11 @@ async def get_document_types():
                 {
                     "value": doc_type.value,
                     "label": doc_type.value.replace("_", " ").title(),
-                    "description": f"Documents related to {doc_type.value.replace('_', ' ')}"
+                    "description": f"Documents related to {doc_type.value.replace('_', ' ')}",
                 }
                 for doc_type in DocumentType
             ]
-        }
+        },
     )
 
 
@@ -386,9 +385,9 @@ async def get_query_types():
                 {
                     "value": query_type.value,
                     "label": query_type.value.replace("_", " ").title(),
-                    "description": f"Queries related to {query_type.value.replace('_', ' ')}"
+                    "description": f"Queries related to {query_type.value.replace('_', ' ')}",
                 }
                 for query_type in QueryType
             ]
-        }
+        },
     )

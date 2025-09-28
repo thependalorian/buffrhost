@@ -1,8 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { XCircleIcon, ArrowRightIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from "react";
+import {
+  XCircleIcon,
+  ArrowRightIcon,
+  ArrowPathIcon,
+} from "@heroicons/react/24/outline";
+import { useSearchParams } from "next/navigation";
 
 export default function PaymentFailedPage() {
   const searchParams = useSearchParams();
@@ -12,18 +16,20 @@ export default function PaymentFailedPage() {
   useEffect(() => {
     const fetchPaymentDetails = async () => {
       try {
-        const transactionId = searchParams?.get('transaction_id');
-        const orderId = searchParams?.get('order_id');
-        
+        const transactionId = searchParams?.get("transaction_id");
+        const orderId = searchParams?.get("order_id");
+
         if (transactionId) {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/status/${transactionId}`);
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/payments/status/${transactionId}`,
+          );
           if (response.ok) {
             const data = await response.json();
             setPaymentData(data);
           }
         }
       } catch (error) {
-        console.error('Error fetching payment details:', error);
+        console.error("Error fetching payment details:", error);
       } finally {
         setIsLoading(false);
       }
@@ -37,7 +43,9 @@ export default function PaymentFailedPage() {
       <div className="min-h-screen bg-sand-50 dark:bg-sand-900/20 flex items-center justify-center">
         <div className="text-center">
           <div className="loading loading-spinner loading-lg text-primary"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Checking payment status...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
+            Checking payment status...
+          </p>
         </div>
       </div>
     );
@@ -65,25 +73,31 @@ export default function PaymentFailedPage() {
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Transaction ID:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Transaction ID:
+                </span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   {paymentData.transaction_id}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Amount:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Amount:
+                </span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   N${paymentData.amount}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Status:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Status:
+                </span>
                 <span className="badge badge-error">Failed</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">Error:</span>
                 <span className="font-medium text-red-600 dark:text-red-400">
-                  {paymentData.error_message || 'Payment declined'}
+                  {paymentData.error_message || "Payment declined"}
                 </span>
               </div>
             </div>
@@ -104,15 +118,15 @@ export default function PaymentFailedPage() {
 
         <div className="space-y-4">
           <button
-            onClick={() => window.location.href = '/dashboard/orders'}
+            onClick={() => (window.location.href = "/dashboard/orders")}
             className="btn btn-primary w-full"
           >
             Try Again
             <ArrowPathIcon className="w-5 h-5 ml-2" />
           </button>
-          
+
           <button
-            onClick={() => window.location.href = '/dashboard'}
+            onClick={() => (window.location.href = "/dashboard")}
             className="btn btn-outline w-full"
           >
             Go to Dashboard
@@ -122,9 +136,12 @@ export default function PaymentFailedPage() {
 
         <div className="text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Need help? Contact our support team at{' '}
-            <a href="mailto:support@buffr.ai" className="text-primary hover:underline">
-              support@buffr.ai
+            Need help? Contact our support team at{" "}
+            <a
+              href="mailto:support@mail.buffr.ai"
+              className="text-primary hover:underline"
+            >
+              support@mail.buffr.ai
             </a>
           </p>
         </div>

@@ -1,12 +1,12 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import React from 'react';
-import ResourceList from '@/components/calendar/ResourceList';
-import ResourceForm from '@/components/calendar/ResourceForm';
+"use client";
+export const dynamic = "force-dynamic";
+import React from "react";
+import ResourceList from "@/components/calendar/ResourceList";
+import ResourceForm from "@/components/calendar/ResourceForm";
 
 const ResourcesPage: React.FC = () => {
   const handleAddResource = (data: any) => {
-    console.log('Adding resource:', data);
+    console.log("Adding resource:", data);
     // In a real app, send data to backend
   };
 

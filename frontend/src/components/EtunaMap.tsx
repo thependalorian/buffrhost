@@ -1,22 +1,22 @@
 /**
  * Etuna Map Component
- * 
+ *
  * Embedded map with directions to Etuna Guesthouse & Tours
  * Includes interactive features and property information
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { 
-  MapPin, 
-  Phone, 
+import { useState } from "react";
+import {
+  MapPin,
+  Phone,
   Clock,
   Truck,
   User,
   Building,
-  ArrowRight
-} from 'lucide-react';
+  ArrowRight,
+} from "lucide-react";
 
 interface EtunaMapProps {
   className?: string;
@@ -24,67 +24,70 @@ interface EtunaMapProps {
   height?: string;
 }
 
-export default function EtunaMap({ 
-  className = '', 
-  showDirections = true, 
-  height = '400px' 
+export default function EtunaMap({
+  className = "",
+  showDirections = true,
+  height = "400px",
 }: EtunaMapProps) {
-  const [activeTab, setActiveTab] = useState<'map' | 'directions'>('map');
+  const [activeTab, setActiveTab] = useState<"map" | "directions">("map");
 
   const propertyInfo = {
-    name: 'Etuna Guesthouse & Tours',
-    address: '5544 Valley Street, Ongwediva, Namibia',
+    name: "Etuna Guesthouse & Tours",
+    address: "5544 Valley Street, Ongwediva, Namibia",
     coordinates: {
       lat: -17.7833,
-      lng: 15.7667
+      lng: 15.7667,
     },
-    phone: '+264 65 231 177',
-    email: 'bookings@etunaguesthouse.com',
-    website: 'http://www.etunaguesthouse.com'
+    phone: "+264 65 231 177",
+    email: "bookings@etunaguesthouse.com",
+    website: "http://www.etunaguesthouse.com",
   };
 
   const directions = [
     {
-      from: 'Ondangwa Airport',
-      distance: '15 km',
-      duration: '20 minutes',
-      method: 'car',
+      from: "Ondangwa Airport",
+      distance: "15 km",
+      duration: "20 minutes",
+      method: "car",
       steps: [
-        'Exit Ondangwa Airport',
-        'Take C46 towards Ongwediva',
-        'Turn right onto Valley Street',
-        'Etuna Guesthouse is on your left'
-      ]
+        "Exit Ondangwa Airport",
+        "Take C46 towards Ongwediva",
+        "Turn right onto Valley Street",
+        "Etuna Guesthouse is on your left",
+      ],
     },
     {
-      from: 'Windhoek (City Center)',
-      distance: '450 km',
-      duration: '5 hours',
-      method: 'car',
+      from: "Windhoek (City Center)",
+      distance: "450 km",
+      duration: "5 hours",
+      method: "car",
       steps: [
-        'Take B1 north from Windhoek',
-        'Continue on B1 through Otjiwarongo',
-        'Take C46 towards Ongwediva',
-        'Turn right onto Valley Street',
-        'Etuna Guesthouse is on your left'
-      ]
+        "Take B1 north from Windhoek",
+        "Continue on B1 through Otjiwarongo",
+        "Take C46 towards Ongwediva",
+        "Turn right onto Valley Street",
+        "Etuna Guesthouse is on your left",
+      ],
     },
     {
-      from: 'Ongwediva Town Center',
-      distance: '2 km',
-      duration: '5 minutes',
-      method: 'walking',
+      from: "Ongwediva Town Center",
+      distance: "2 km",
+      duration: "5 minutes",
+      method: "walking",
       steps: [
-        'Head south on Main Street',
-        'Turn left onto Valley Street',
-        'Etuna Guesthouse is 200m on your right'
-      ]
-    }
+        "Head south on Main Street",
+        "Turn left onto Valley Street",
+        "Etuna Guesthouse is 200m on your right",
+      ],
+    },
   ];
 
   const getGoogleMapsUrl = () => {
     const { lat, lng } = propertyInfo.coordinates;
-    return `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyBvOkBwJcSxqK8Q9R2T3U4V5W6X7Y8Z9A'}&q=${lat},${lng}&zoom=15`;
+    return `https://www.google.com/maps/embed/v1/place?key=${
+      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
+      "AIzaSyBvOkBwJcSxqK8Q9R2T3U4V5W6X7Y8Z9A"
+    }&q=${lat},${lng}&zoom=15`;
   };
 
   const getDirectionsUrl = (destination: string) => {
@@ -119,15 +122,15 @@ export default function EtunaMap({
         {/* Tabs */}
         <div className="tabs tabs-boxed bg-gray-100 dark:bg-gray-800 m-4">
           <button
-            className={`tab ${activeTab === 'map' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('map')}
+            className={`tab ${activeTab === "map" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("map")}
           >
             <MapPin className="w-4 h-4 mr-2" />
             Map
           </button>
           <button
-            className={`tab ${activeTab === 'directions' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('directions')}
+            className={`tab ${activeTab === "directions" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("directions")}
           >
             <ArrowRight className="w-4 h-4 mr-2" />
             Directions
@@ -136,10 +139,10 @@ export default function EtunaMap({
 
         {/* Content */}
         <div className="p-4">
-          {activeTab === 'map' ? (
+          {activeTab === "map" ? (
             <div className="space-y-4">
               {/* Embedded Map */}
-              <div 
+              <div
                 className="rounded-lg overflow-hidden border"
                 style={{ height }}
               >
@@ -162,7 +165,10 @@ export default function EtunaMap({
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-primary" />
-                      <a href={`tel:${propertyInfo.phone}`} className="link link-primary">
+                      <a
+                        href={`tel:${propertyInfo.phone}`}
+                        className="link link-primary"
+                      >
                         {propertyInfo.phone}
                       </a>
                     </div>
@@ -203,7 +209,7 @@ export default function EtunaMap({
           ) : (
             <div className="space-y-4">
               <h4 className="font-semibold">Directions to Etuna Guesthouse</h4>
-              
+
               {directions.map((direction, index) => (
                 <div key={index} className="card bg-base-200 shadow-sm">
                   <div className="card-body p-4">
@@ -214,10 +220,18 @@ export default function EtunaMap({
                           <span>{direction.distance}</span>
                           <span>{direction.duration}</span>
                           <div className="flex items-center gap-1">
-                            {direction.method === 'car' && <Truck className="w-4 h-4" />}
-                            {direction.method === 'walking' && <User className="w-4 h-4" />}
-                            {direction.method === 'bus' && <Building className="w-4 h-4" />}
-                            <span className="capitalize">{direction.method}</span>
+                            {direction.method === "car" && (
+                              <Truck className="w-4 h-4" />
+                            )}
+                            {direction.method === "walking" && (
+                              <User className="w-4 h-4" />
+                            )}
+                            {direction.method === "bus" && (
+                              <Building className="w-4 h-4" />
+                            )}
+                            <span className="capitalize">
+                              {direction.method}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -230,10 +244,13 @@ export default function EtunaMap({
                         Get Directions
                       </a>
                     </div>
-                    
+
                     <div className="space-y-2">
                       {direction.steps.map((step, stepIndex) => (
-                        <div key={stepIndex} className="flex items-start gap-2 text-sm">
+                        <div
+                          key={stepIndex}
+                          className="flex items-start gap-2 text-sm"
+                        >
                           <span className="w-6 h-6 bg-primary text-primary-content rounded-full flex items-center justify-center text-xs font-semibold">
                             {stepIndex + 1}
                           </span>
@@ -251,8 +268,14 @@ export default function EtunaMap({
                   <h4 className="font-semibold">Travel Tips</h4>
                   <ul className="text-sm mt-2 space-y-1">
                     <li>• Free parking available on-site</li>
-                    <li>• Airport shuttle service available (advance booking required)</li>
-                    <li>• Located in the heart of Ongwediva, close to local attractions</li>
+                    <li>
+                      • Airport shuttle service available (advance booking
+                      required)
+                    </li>
+                    <li>
+                      • Located in the heart of Ongwediva, close to local
+                      attractions
+                    </li>
                     <li>• GPS coordinates: -17.7833, 15.7667</li>
                   </ul>
                 </div>

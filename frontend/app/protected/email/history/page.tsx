@@ -1,5 +1,5 @@
-import React from 'react';
-import EmailHistory from '@/components/email/EmailHistory';
+import React from "react";
+import EmailHistory from "@/components/email/EmailHistory";
 
 const UserEmailHistoryPage: React.FC = () => {
   return (

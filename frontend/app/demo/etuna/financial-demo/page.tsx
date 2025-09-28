@@ -1,22 +1,30 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  DollarSign, 
-  TrendingUp, 
-  TrendingDown, 
-  BarChart3, 
-  PieChart, 
-  LineChart, 
-  Calculator, 
-  Receipt, 
-  CreditCard, 
-  Banknote, 
-  Coins, 
-  Target, 
-  Users, 
-  Calendar, 
-  Clock, 
+import { Metadata } from "next";
+import Image from "next/image";
+import {
+  PageHeader,
+  StatCard,
+  ActionButton,
+  ModalForm,
+  FormField,
+  FormSelect,
+  Alert,
+} from "@/src/components/ui";
+import {
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  PieChart,
+  LineChart,
+  Calculator,
+  Receipt,
+  CreditCard,
+  Banknote,
+  Coins,
+  Target,
+  Users,
+  Calendar,
+  Clock,
   Star,
   MapPin,
   Phone,
@@ -63,7 +71,7 @@ import {
   Percent,
   Activity,
   FileText,
-  Image,
+  Image as ImageIcon,
   Video,
   Upload as UploadIcon,
   Folder,
@@ -102,7 +110,6 @@ import {
   Megaphone,
   File as FileIcon,
   Folder as FolderIcon,
-  Image as ImageIcon,
   Video as VideoIcon,
   Upload as UploadIcon2,
   Edit as EditIcon,
@@ -155,12 +162,14 @@ import {
   PieChart as PieChartIcon,
   LineChart as LineChartIcon,
   TrendingDown as TrendingDownIcon,
-  DollarSign as DollarSignIcon
-} from 'lucide-react';
+  DollarSign as DollarSignIcon,
+} from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Financial Analytics Demo - Buffr Host Platform',
-  description: 'Experience our comprehensive financial analytics system that provides deep insights into revenue, costs, profitability, and business performance.',
+  title: "Financial Analytics Demo - Buffr Host Platform",
+  description:
+    "Experience our comprehensive financial analytics system that provides deep insights into revenue, costs, profitability, and business performance.",
 };
 
 export default function FinancialAnalyticsDemoPage() {
@@ -170,7 +179,8 @@ export default function FinancialAnalyticsDemoPage() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm">
-            🎯 <strong>Financial Analytics Demo</strong> - Deep business insights and forecasting
+            🎯 <strong>Financial Analytics Demo</strong> - Deep business
+            insights and forecasting
           </p>
         </div>
       </div>
@@ -182,14 +192,21 @@ export default function FinancialAnalyticsDemoPage() {
             <div className="mb-8">
               <DollarSign className="w-24 h-24 mx-auto mb-4 opacity-90" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Financial Intelligence</h1>
-            <p className="text-xl md:text-2xl mb-6">Advanced analytics that drive profitability</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              Financial Intelligence
+            </h1>
+            <p className="text-xl md:text-2xl mb-6">
+              Advanced analytics that drive profitability
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="btn btn-accent btn-lg">
                 <BarChart3 className="w-5 h-5 mr-2" />
                 View Analytics
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link
+                href="/demo/etuna/management-demo"
+                className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900"
+              >
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -204,12 +221,15 @@ export default function FinancialAnalyticsDemoPage() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Comprehensive Financial Analytics</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Comprehensive Financial Analytics
+              </h2>
               <p className="text-lg text-base-content/80 mb-6">
-                See how our advanced financial analytics system provides deep insights into revenue, 
-                costs, profitability, and business performance across all Etuna services.
+                See how our advanced financial analytics system provides deep
+                insights into revenue, costs, profitability, and business
+                performance across all Etuna services.
               </p>
-              
+
               {/* Demo Financial Dashboard */}
               <div className="bg-white dark:bg-base-200 p-6 rounded-lg shadow-xl mb-6">
                 <h3 className="text-lg font-bold mb-4">Financial Overview</h3>
@@ -226,11 +246,15 @@ export default function FinancialAnalyticsDemoPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-green-600 font-bold">N$125,000</p>
-                      <p className="text-xs text-gray-500">+12% vs last month</p>
+                      <p className="text-sm text-green-600 font-bold">
+                        N$125,000
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        +12% vs last month
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -242,11 +266,13 @@ export default function FinancialAnalyticsDemoPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-blue-600 font-bold">N$78,500</p>
+                      <p className="text-sm text-blue-600 font-bold">
+                        N$78,500
+                      </p>
                       <p className="text-xs text-gray-500">62.8% margin</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
@@ -258,7 +284,9 @@ export default function FinancialAnalyticsDemoPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-purple-600 font-bold">N$45,200</p>
+                      <p className="text-sm text-purple-600 font-bold">
+                        N$45,200
+                      </p>
                       <p className="text-xs text-gray-500">36.2% margin</p>
                     </div>
                   </div>
@@ -284,7 +312,7 @@ export default function FinancialAnalyticsDemoPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2070&auto=format&fit=crop"
@@ -308,7 +336,9 @@ export default function FinancialAnalyticsDemoPage() {
 
         {/* Financial Benefits */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Why Our Financial Analytics Excel</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Why Our Financial Analytics Excel
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Real-time Tracking */}
             <div className="nude-card hover:shadow-nude transition-shadow">
@@ -316,63 +346,93 @@ export default function FinancialAnalyticsDemoPage() {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Clock className="w-8 h-8 text-green-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Real-time Tracking</h3>
-                <p className="text-sm text-nude-700">Monitor revenue, costs, and profitability in real-time across all services.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Real-time Tracking
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Monitor revenue, costs, and profitability in real-time across
+                  all services.
+                </p>
               </div>
             </div>
-            
+
             {/* Advanced Forecasting */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <TrendingUp className="w-8 h-8 text-blue-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Advanced Forecasting</h3>
-                <p className="text-sm text-nude-700">AI-powered predictions for revenue, costs, and seasonal trends.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Advanced Forecasting
+                </h3>
+                <p className="text-sm text-nude-700">
+                  AI-powered predictions for revenue, costs, and seasonal
+                  trends.
+                </p>
               </div>
             </div>
-            
+
             {/* Cost Optimization */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Target className="w-8 h-8 text-purple-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Cost Optimization</h3>
-                <p className="text-sm text-nude-700">Identify cost-saving opportunities and optimize spending across departments.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Cost Optimization
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Identify cost-saving opportunities and optimize spending
+                  across departments.
+                </p>
               </div>
             </div>
-            
+
             {/* Profitability Analysis */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <PieChart className="w-8 h-8 text-orange-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Profitability Analysis</h3>
-                <p className="text-sm text-nude-700">Deep dive into profit margins, revenue streams, and service profitability.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Profitability Analysis
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Deep dive into profit margins, revenue streams, and service
+                  profitability.
+                </p>
               </div>
             </div>
-            
+
             {/* Multi-service Analytics */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="w-8 h-8 text-teal-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Multi-service Analytics</h3>
-                <p className="text-sm text-nude-700">Compare performance across restaurant, hotel, spa, and tour services.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Multi-service Analytics
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Compare performance across restaurant, hotel, spa, and tour
+                  services.
+                </p>
               </div>
             </div>
-            
+
             {/* Custom Reporting */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FileText className="w-8 h-8 text-red-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Custom Reporting</h3>
-                <p className="text-sm text-nude-700">Create custom reports and dashboards tailored to your business needs.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Custom Reporting
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Create custom reports and dashboards tailored to your business
+                  needs.
+                </p>
               </div>
             </div>
           </div>
@@ -380,7 +440,9 @@ export default function FinancialAnalyticsDemoPage() {
 
         {/* Financial Metrics */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Key Financial Metrics</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Key Financial Metrics
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Revenue Metrics */}
             <div className="nude-card">
@@ -401,7 +463,9 @@ export default function FinancialAnalyticsDemoPage() {
                   </div>
                   <div className="flex justify-between">
                     <span>Daily Avg</span>
-                    <span className="font-semibold text-green-600">N$4,032</span>
+                    <span className="font-semibold text-green-600">
+                      N$4,032
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Growth</span>
@@ -478,7 +542,9 @@ export default function FinancialAnalyticsDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">ROI</h3>
-                    <p className="text-sm text-nude-700">Return on investment</p>
+                    <p className="text-sm text-nude-700">
+                      Return on investment
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -502,15 +568,22 @@ export default function FinancialAnalyticsDemoPage() {
 
         {/* Advanced Features */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Advanced Financial Features</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Advanced Financial Features
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Predictive Analytics */}
             <div className="text-center">
               <div className="w-20 h-20 bg-primary text-primary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Predictive Analytics</h3>
-              <p className="text-nude-700">AI-powered forecasting for revenue, costs, and seasonal trends with 95% accuracy.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                Predictive Analytics
+              </h3>
+              <p className="text-nude-700">
+                AI-powered forecasting for revenue, costs, and seasonal trends
+                with 95% accuracy.
+              </p>
             </div>
 
             {/* Cost Center Analysis */}
@@ -518,8 +591,13 @@ export default function FinancialAnalyticsDemoPage() {
               <div className="w-20 h-20 bg-secondary text-secondary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <PieChart className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Cost Center Analysis</h3>
-              <p className="text-nude-700">Detailed breakdown of costs by department, service, and expense category.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                Cost Center Analysis
+              </h3>
+              <p className="text-nude-700">
+                Detailed breakdown of costs by department, service, and expense
+                category.
+              </p>
             </div>
 
             {/* Budget Management */}
@@ -528,7 +606,10 @@ export default function FinancialAnalyticsDemoPage() {
                 <Target className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Budget Management</h3>
-              <p className="text-nude-700">Set budgets, track performance, and receive alerts for budget variances.</p>
+              <p className="text-nude-700">
+                Set budgets, track performance, and receive alerts for budget
+                variances.
+              </p>
             </div>
           </div>
         </div>
@@ -536,7 +617,9 @@ export default function FinancialAnalyticsDemoPage() {
         {/* Demo Actions */}
         <div className="py-16">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Experience Financial Intelligence</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Experience Financial Intelligence
+            </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Financial Insights */}
               <div className="card bg-gradient-to-br from-green-500 to-blue-500 text-white shadow-xl">
@@ -549,13 +632,16 @@ export default function FinancialAnalyticsDemoPage() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold">Financial Insights</h3>
-                      <p className="text-white/80">See how data drives business decisions</p>
+                      <p className="text-white/80">
+                        See how data drives business decisions
+                      </p>
                     </div>
                   </div>
                   <p className="text-white/90 mb-6">
-                    Experience how our financial analytics provide actionable insights 
-                    that drive profitability. From real-time tracking to predictive 
-                    forecasting, see how data transforms business performance.
+                    Experience how our financial analytics provide actionable
+                    insights that drive profitability. From real-time tracking
+                    to predictive forecasting, see how data transforms business
+                    performance.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -594,13 +680,17 @@ export default function FinancialAnalyticsDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">Management Dashboard</h3>
-                      <p className="text-nude-700">See how analytics drive profitability</p>
+                      <h3 className="text-2xl font-bold">
+                        Management Dashboard
+                      </h3>
+                      <p className="text-nude-700">
+                        See how analytics drive profitability
+                      </p>
                     </div>
                   </div>
                   <p className="text-base-content/80 mb-6">
-                    Explore our comprehensive financial management dashboard. 
-                    Track revenue, analyze costs, forecast trends, and optimize 
+                    Explore our comprehensive financial management dashboard.
+                    Track revenue, analyze costs, forecast trends, and optimize
                     profitability with powerful analytics and reporting tools.
                   </p>
                   <div className="space-y-3">
@@ -622,7 +712,10 @@ export default function FinancialAnalyticsDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link
+                      href="/demo/etuna/management-demo"
+                      className="btn btn-primary"
+                    >
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>
@@ -640,17 +733,24 @@ export default function FinancialAnalyticsDemoPage() {
               <div className="text-center">
                 <Phone className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Ready to Analyze?</h3>
-                <p className="text-primary-content/80">Contact us to implement comprehensive financial analytics.</p>
+                <p className="text-primary-content/80">
+                  Contact us to implement comprehensive financial analytics.
+                </p>
               </div>
               <div className="text-center">
                 <Mail className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Schedule a Demo</h3>
-                <p className="text-primary-content/80">Book a personalized demonstration of our financial analytics system.</p>
+                <p className="text-primary-content/80">
+                  Book a personalized demonstration of our financial analytics
+                  system.
+                </p>
               </div>
               <div className="text-center">
                 <Globe className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Learn More</h3>
-                <p className="text-primary-content/80">Visit our main website for more information about Buffr Host.</p>
+                <p className="text-primary-content/80">
+                  Visit our main website for more information about Buffr Host.
+                </p>
               </div>
             </div>
           </div>

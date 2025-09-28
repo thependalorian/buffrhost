@@ -1,24 +1,24 @@
 /**
  * Email Analytics Chart Component
- * 
+ *
  * Displays email performance analytics and charts
  */
 
-'use client';
+"use client";
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  TrendingDown, 
-  Mail, 
-  Send, 
-  CheckCircle, 
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
+  Mail,
+  Send,
+  CheckCircle,
   AlertCircle,
   Eye,
-  MousePointer
-} from 'lucide-react';
+  MousePointer,
+} from "lucide-react";
 
 interface EmailAnalyticsData {
   totalSent: number;
@@ -35,12 +35,12 @@ interface EmailAnalyticsData {
 
 interface EmailAnalyticsChartProps {
   data?: EmailAnalyticsData;
-  timeRange?: '7d' | '30d' | '90d';
+  timeRange?: "7d" | "30d" | "90d";
 }
 
-export default function EmailAnalyticsChart({ 
-  data, 
-  timeRange = '30d' 
+export default function EmailAnalyticsChart({
+  data,
+  timeRange = "30d",
 }: EmailAnalyticsChartProps) {
   const mockData: EmailAnalyticsData = {
     totalSent: 1250,
@@ -52,74 +52,74 @@ export default function EmailAnalyticsChart({
     deliveryRate: 95.0,
     openRate: 75.1,
     clickRate: 30.0,
-    bounceRate: 5.0
+    bounceRate: 5.0,
   };
 
   const analyticsData = data || mockData;
 
   const metrics = [
     {
-      label: 'Total Sent',
+      label: "Total Sent",
       value: analyticsData.totalSent.toLocaleString(),
       icon: Send,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100'
+      color: "text-blue-600",
+      bgColor: "bg-blue-100",
     },
     {
-      label: 'Delivered',
+      label: "Delivered",
       value: analyticsData.delivered.toLocaleString(),
       icon: CheckCircle,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100'
+      color: "text-green-600",
+      bgColor: "bg-green-100",
     },
     {
-      label: 'Opened',
+      label: "Opened",
       value: analyticsData.opened.toLocaleString(),
       icon: Eye,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100'
+      color: "text-purple-600",
+      bgColor: "bg-purple-100",
     },
     {
-      label: 'Clicked',
+      label: "Clicked",
       value: analyticsData.clicked.toLocaleString(),
       icon: MousePointer,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100'
+      color: "text-orange-600",
+      bgColor: "bg-orange-100",
     },
     {
-      label: 'Bounced',
+      label: "Bounced",
       value: analyticsData.bounced.toLocaleString(),
       icon: AlertCircle,
-      color: 'text-red-600',
-      bgColor: 'bg-red-100'
-    }
+      color: "text-red-600",
+      bgColor: "bg-red-100",
+    },
   ];
 
   const rates = [
     {
-      label: 'Delivery Rate',
+      label: "Delivery Rate",
       value: `${analyticsData.deliveryRate}%`,
-      trend: 'up',
-      change: '+2.1%'
+      trend: "up",
+      change: "+2.1%",
     },
     {
-      label: 'Open Rate',
+      label: "Open Rate",
       value: `${analyticsData.openRate}%`,
-      trend: 'up',
-      change: '+5.3%'
+      trend: "up",
+      change: "+5.3%",
     },
     {
-      label: 'Click Rate',
+      label: "Click Rate",
       value: `${analyticsData.clickRate}%`,
-      trend: 'down',
-      change: '-1.2%'
+      trend: "down",
+      change: "-1.2%",
     },
     {
-      label: 'Bounce Rate',
+      label: "Bounce Rate",
       value: `${analyticsData.bounceRate}%`,
-      trend: 'down',
-      change: '-0.8%'
-    }
+      trend: "down",
+      change: "-0.8%",
+    },
   ];
 
   return (
@@ -128,10 +128,12 @@ export default function EmailAnalyticsChart({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Email Analytics</h1>
-          <p className="text-gray-600">Email performance metrics and insights</p>
+          <p className="text-gray-600">
+            Email performance metrics and insights
+          </p>
         </div>
         <div className="flex items-center space-x-2">
-          <select 
+          <select
             value={timeRange}
             className="p-2 border border-gray-300 rounded-md"
           >
@@ -172,14 +174,16 @@ export default function EmailAnalyticsChart({
                   <p className="text-2xl font-bold">{rate.value}</p>
                 </div>
                 <div className="flex items-center space-x-1">
-                  {rate.trend === 'up' ? (
+                  {rate.trend === "up" ? (
                     <TrendingUp className="w-4 h-4 text-green-500" />
                   ) : (
                     <TrendingDown className="w-4 h-4 text-red-500" />
                   )}
-                  <span className={`text-sm font-medium ${
-                    rate.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                  <span
+                    className={`text-sm font-medium ${
+                      rate.trend === "up" ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
                     {rate.change}
                   </span>
                 </div>
@@ -199,7 +203,9 @@ export default function EmailAnalyticsChart({
             <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
               <div className="text-center">
                 <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">Chart visualization would go here</p>
+                <p className="text-gray-500">
+                  Chart visualization would go here
+                </p>
               </div>
             </div>
           </CardContent>
@@ -213,7 +219,9 @@ export default function EmailAnalyticsChart({
             <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
               <div className="text-center">
                 <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">Pie chart visualization would go here</p>
+                <p className="text-gray-500">
+                  Pie chart visualization would go here
+                </p>
               </div>
             </div>
           </CardContent>

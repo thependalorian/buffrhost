@@ -5,16 +5,18 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package*.json /app/
 
 # Install dependencies
 RUN npm ci --only=production
 
 # Copy source code
-COPY . .
+COPY . /app
 
+ENV NODE_ENV production
 # Build the application
-RUN npm run build
+WORKDIR /app
+RUN npx next build
 
 # Production stage
 FROM nginx:alpine

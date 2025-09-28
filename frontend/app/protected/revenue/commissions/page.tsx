@@ -1,12 +1,12 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import React from 'react';
-import CommissionStructureList from '@/components/revenue/CommissionStructureList';
-import CommissionStructureForm from '@/components/revenue/CommissionStructureForm';
+"use client";
+export const dynamic = "force-dynamic";
+import React from "react";
+import CommissionStructureList from "@/components/revenue/CommissionStructureList";
+import CommissionStructureForm from "@/components/revenue/CommissionStructureForm";
 
 const CommissionsPage: React.FC = () => {
   const handleAddCommission = (data: any) => {
-    console.log('Adding commission structure:', data);
+    console.log("Adding commission structure:", data);
     // In a real app, send data to backend
   };
 

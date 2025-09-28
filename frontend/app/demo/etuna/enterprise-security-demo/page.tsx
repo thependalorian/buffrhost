@@ -1,26 +1,34 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  Shield, 
-  Lock, 
-  Key, 
-  Eye, 
-  EyeOff, 
-  AlertTriangle, 
-  CheckCircle, 
-  Server, 
-  Database, 
-  Network, 
-  FileText, 
-  Users, 
-  Settings, 
-  Monitor, 
-  BarChart3, 
-  TrendingUp, 
-  Target, 
-  Calendar, 
-  Clock, 
+import { Metadata } from "next";
+import Image from "next/image";
+import {
+  PageHeader,
+  StatCard,
+  ActionButton,
+  ModalForm,
+  FormField,
+  FormSelect,
+  Alert,
+} from "@/src/components/ui";
+import {
+  Shield,
+  Lock,
+  Key,
+  Eye,
+  EyeOff,
+  AlertTriangle,
+  CheckCircle,
+  Server,
+  Database,
+  Network,
+  FileText,
+  Users,
+  Settings,
+  Monitor,
+  BarChart3,
+  TrendingUp,
+  Target,
+  Calendar,
+  Clock,
   Star,
   MapPin,
   Phone,
@@ -202,12 +210,14 @@ import {
   Server as ServerIcon2,
   Database as DatabaseIcon2,
   Network as NetworkIcon2,
-  FileText as FileTextIcon3
-} from 'lucide-react';
+  FileText as FileTextIcon3,
+} from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Enterprise Security Demo - Buffr Host Platform',
-  description: 'Experience our enterprise-grade security features including compliance, encryption, and advanced threat protection.',
+  title: "Enterprise Security Demo - Buffr Host Platform",
+  description:
+    "Experience our enterprise-grade security features including compliance, encryption, and advanced threat protection.",
 };
 
 export default function EnterpriseSecurityDemoPage() {
@@ -217,7 +227,8 @@ export default function EnterpriseSecurityDemoPage() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm">
-            🎯 <strong>Enterprise Security Demo</strong> - Enterprise-grade security and compliance
+            🎯 <strong>Enterprise Security Demo</strong> - Enterprise-grade
+            security and compliance
           </p>
         </div>
       </div>
@@ -229,14 +240,21 @@ export default function EnterpriseSecurityDemoPage() {
             <div className="mb-8">
               <Shield className="w-24 h-24 mx-auto mb-4 opacity-90" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Enterprise Security</h1>
-            <p className="text-xl md:text-2xl mb-6">Military-grade security and compliance</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              Enterprise Security
+            </h1>
+            <p className="text-xl md:text-2xl mb-6">
+              Military-grade security and compliance
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="btn btn-accent btn-lg">
                 <Lock className="w-5 h-5 mr-2" />
                 Explore Security
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link
+                href="/demo/etuna/management-demo"
+                className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900"
+              >
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -251,13 +269,16 @@ export default function EnterpriseSecurityDemoPage() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Enterprise-Grade Security</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Enterprise-Grade Security
+              </h2>
               <p className="text-lg text-base-content/80 mb-6">
-                See how our enterprise security framework provides military-grade protection, 
-                compliance with international standards, and advanced threat detection 
-                across all Etuna operations and data.
+                See how our enterprise security framework provides
+                military-grade protection, compliance with international
+                standards, and advanced threat detection across all Etuna
+                operations and data.
               </p>
-              
+
               {/* Demo Security Dashboard */}
               <div className="bg-white dark:bg-base-200 p-6 rounded-lg shadow-xl mb-6">
                 <h3 className="text-lg font-bold mb-4">Security Status</h3>
@@ -270,7 +291,9 @@ export default function EnterpriseSecurityDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Data Encryption</p>
-                        <p className="text-sm text-gray-500">AES-256 encryption</p>
+                        <p className="text-sm text-gray-500">
+                          AES-256 encryption
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -278,7 +301,7 @@ export default function EnterpriseSecurityDemoPage() {
                       <p className="text-xs text-gray-500">100% coverage</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -286,7 +309,9 @@ export default function EnterpriseSecurityDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Threat Detection</p>
-                        <p className="text-sm text-gray-500">AI-powered monitoring</p>
+                        <p className="text-sm text-gray-500">
+                          AI-powered monitoring
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -294,7 +319,7 @@ export default function EnterpriseSecurityDemoPage() {
                       <p className="text-xs text-gray-500">24/7 monitoring</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
@@ -302,7 +327,9 @@ export default function EnterpriseSecurityDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Access Control</p>
-                        <p className="text-sm text-gray-500">Multi-factor authentication</p>
+                        <p className="text-sm text-gray-500">
+                          Multi-factor authentication
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -332,7 +359,7 @@ export default function EnterpriseSecurityDemoPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2070&auto=format&fit=crop"
@@ -356,7 +383,9 @@ export default function EnterpriseSecurityDemoPage() {
 
         {/* Security Benefits */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Why Our Enterprise Security Excels</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Why Our Enterprise Security Excels
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Data Encryption */}
             <div className="nude-card hover:shadow-nude transition-shadow">
@@ -364,33 +393,47 @@ export default function EnterpriseSecurityDemoPage() {
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Lock className="w-8 h-8 text-red-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Data Encryption</h3>
-                <p className="text-sm text-nude-700">AES-256 encryption for data at rest and in transit with key management.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Data Encryption
+                </h3>
+                <p className="text-sm text-nude-700">
+                  AES-256 encryption for data at rest and in transit with key
+                  management.
+                </p>
               </div>
             </div>
-            
+
             {/* Threat Detection */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <AlertTriangle className="w-8 h-8 text-orange-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Threat Detection</h3>
-                <p className="text-sm text-nude-700">AI-powered threat detection and real-time security monitoring.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Threat Detection
+                </h3>
+                <p className="text-sm text-nude-700">
+                  AI-powered threat detection and real-time security monitoring.
+                </p>
               </div>
             </div>
-            
+
             {/* Access Control */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Key className="w-8 h-8 text-blue-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Access Control</h3>
-                <p className="text-sm text-nude-700">Multi-factor authentication and role-based access control (RBAC).</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Access Control
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Multi-factor authentication and role-based access control
+                  (RBAC).
+                </p>
               </div>
             </div>
-            
+
             {/* Compliance */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
@@ -398,29 +441,39 @@ export default function EnterpriseSecurityDemoPage() {
                   <CheckCircle className="w-8 h-8 text-green-700" />
                 </div>
                 <h3 className="font-semibold mb-2 text-nude-800">Compliance</h3>
-                <p className="text-sm text-nude-700">SOC 2, GDPR, PCI DSS, and ISO 27001 compliance certifications.</p>
+                <p className="text-sm text-nude-700">
+                  SOC 2, GDPR, PCI DSS, and ISO 27001 compliance certifications.
+                </p>
               </div>
             </div>
-            
+
             {/* Audit Logging */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FileText className="w-8 h-8 text-purple-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Audit Logging</h3>
-                <p className="text-sm text-nude-700">Comprehensive audit trails and compliance reporting.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Audit Logging
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Comprehensive audit trails and compliance reporting.
+                </p>
               </div>
             </div>
-            
+
             {/* Security Monitoring */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Monitor className="w-8 h-8 text-teal-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">24/7 Monitoring</h3>
-                <p className="text-sm text-nude-700">Continuous security monitoring with instant threat response.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  24/7 Monitoring
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Continuous security monitoring with instant threat response.
+                </p>
               </div>
             </div>
           </div>
@@ -428,7 +481,9 @@ export default function EnterpriseSecurityDemoPage() {
 
         {/* Security Features */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Security Features & Certifications</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Security Features & Certifications
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Data Protection */}
             <div className="nude-card">
@@ -439,7 +494,9 @@ export default function EnterpriseSecurityDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Data Protection</h3>
-                    <p className="text-sm text-nude-700">Advanced data security</p>
+                    <p className="text-sm text-nude-700">
+                      Advanced data security
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -472,7 +529,9 @@ export default function EnterpriseSecurityDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Network Security</h3>
-                    <p className="text-sm text-nude-700">Infrastructure protection</p>
+                    <p className="text-sm text-nude-700">
+                      Infrastructure protection
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -505,7 +564,9 @@ export default function EnterpriseSecurityDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Compliance</h3>
-                    <p className="text-sm text-nude-700">Certifications & standards</p>
+                    <p className="text-sm text-nude-700">
+                      Certifications & standards
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -533,15 +594,22 @@ export default function EnterpriseSecurityDemoPage() {
 
         {/* Advanced Features */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Advanced Security Features</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Advanced Security Features
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Zero Trust Architecture */}
             <div className="text-center">
               <div className="w-20 h-20 bg-primary text-primary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Zero Trust Architecture</h3>
-              <p className="text-nude-700">Never trust, always verify - comprehensive zero trust security model.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                Zero Trust Architecture
+              </h3>
+              <p className="text-nude-700">
+                Never trust, always verify - comprehensive zero trust security
+                model.
+              </p>
             </div>
 
             {/* AI-Powered Threat Detection */}
@@ -549,8 +617,13 @@ export default function EnterpriseSecurityDemoPage() {
               <div className="w-20 h-20 bg-secondary text-secondary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <Brain className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">AI Threat Detection</h3>
-              <p className="text-nude-700">Machine learning-powered threat detection and behavioral analysis.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                AI Threat Detection
+              </h3>
+              <p className="text-nude-700">
+                Machine learning-powered threat detection and behavioral
+                analysis.
+              </p>
             </div>
 
             {/* Security Orchestration */}
@@ -558,8 +631,12 @@ export default function EnterpriseSecurityDemoPage() {
               <div className="w-20 h-20 bg-accent text-accent-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <Settings className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Security Orchestration</h3>
-              <p className="text-nude-700">Automated incident response and security workflow orchestration.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                Security Orchestration
+              </h3>
+              <p className="text-nude-700">
+                Automated incident response and security workflow orchestration.
+              </p>
             </div>
           </div>
         </div>
@@ -567,7 +644,9 @@ export default function EnterpriseSecurityDemoPage() {
         {/* Demo Actions */}
         <div className="py-16">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Experience Enterprise Security</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Experience Enterprise Security
+            </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Security Features */}
               <div className="card bg-gradient-to-br from-red-500 to-orange-500 text-white shadow-xl">
@@ -580,13 +659,15 @@ export default function EnterpriseSecurityDemoPage() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold">Security Features</h3>
-                      <p className="text-white/80">See how enterprise security works</p>
+                      <p className="text-white/80">
+                        See how enterprise security works
+                      </p>
                     </div>
                   </div>
                   <p className="text-white/90 mb-6">
-                    Experience our enterprise security features in action. 
-                    See encryption, threat detection, access control, 
-                    and compliance features that protect your business.
+                    Experience our enterprise security features in action. See
+                    encryption, threat detection, access control, and compliance
+                    features that protect your business.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -626,13 +707,15 @@ export default function EnterpriseSecurityDemoPage() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold">Security Dashboard</h3>
-                      <p className="text-nude-700">See how security drives enterprise success</p>
+                      <p className="text-nude-700">
+                        See how security drives enterprise success
+                      </p>
                     </div>
                   </div>
                   <p className="text-base-content/80 mb-6">
-                    Explore our security management dashboard. 
-                    Monitor threats, manage access, configure 
-                    policies, and ensure compliance across your organization.
+                    Explore our security management dashboard. Monitor threats,
+                    manage access, configure policies, and ensure compliance
+                    across your organization.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -653,7 +736,10 @@ export default function EnterpriseSecurityDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link
+                      href="/demo/etuna/management-demo"
+                      className="btn btn-primary"
+                    >
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>
@@ -671,17 +757,23 @@ export default function EnterpriseSecurityDemoPage() {
               <div className="text-center">
                 <Phone className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Ready to Secure?</h3>
-                <p className="text-primary-content/80">Contact us to implement enterprise security.</p>
+                <p className="text-primary-content/80">
+                  Contact us to implement enterprise security.
+                </p>
               </div>
               <div className="text-center">
                 <Mail className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Schedule a Demo</h3>
-                <p className="text-primary-content/80">Book a personalized demonstration of our security system.</p>
+                <p className="text-primary-content/80">
+                  Book a personalized demonstration of our security system.
+                </p>
               </div>
               <div className="text-center">
                 <Globe className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Learn More</h3>
-                <p className="text-primary-content/80">Visit our main website for more information about Buffr Host.</p>
+                <p className="text-primary-content/80">
+                  Visit our main website for more information about Buffr Host.
+                </p>
               </div>
             </div>
           </div>

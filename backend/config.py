@@ -88,13 +88,12 @@ class Settings(BaseSettings):
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
     SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "")
     SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
-    SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "noreply@host.buffr.ai")
+    SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "noreply@mail.buffr.ai")
     
-    # AWS configuration
-    AWS_ACCESS_KEY_ID: str = os.getenv("AWS_ACCESS_KEY_ID", "")
-    AWS_SECRET_ACCESS_KEY: str = os.getenv("AWS_SECRET_ACCESS_KEY", "")
-    AWS_REGION: str = os.getenv("AWS_REGION", "us-east-1")
-    AWS_S3_BUCKET: str = os.getenv("AWS_S3_BUCKET", "")
+    # Supabase Storage configuration
+    SUPABASE_STORAGE_BUCKET: str = os.getenv("SUPABASE_STORAGE_BUCKET", "buffr-host-files")
+    SUPABASE_STORAGE_URL: str = os.getenv("SUPABASE_STORAGE_URL", "")
+    SUPABASE_STORAGE_PUBLIC_URL: str = os.getenv("SUPABASE_STORAGE_PUBLIC_URL", "")
     
     # Monitoring & Logging
     SENTRY_DSN: str = os.getenv("SENTRY_DSN", "")

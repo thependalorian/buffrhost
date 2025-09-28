@@ -1,14 +1,22 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  Package, 
-  AlertTriangle, 
-  CheckCircle, 
-  TrendingDown, 
-  TrendingUp, 
-  BarChart3, 
-  Clock, 
+import { Metadata } from "next";
+import Image from "next/image";
+import {
+  PageHeader,
+  StatCard,
+  ActionButton,
+  ModalForm,
+  FormField,
+  FormSelect,
+  Alert,
+} from "@/src/components/ui";
+import {
+  Package,
+  AlertTriangle,
+  CheckCircle,
+  TrendingDown,
+  TrendingUp,
+  BarChart3,
+  Clock,
   DollarSign,
   Users,
   Star,
@@ -35,12 +43,14 @@ import {
   Filter,
   Download,
   Upload,
-  RefreshCw
-} from 'lucide-react';
+  RefreshCw,
+} from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Inventory Management Demo - Buffr Host Platform',
-  description: 'See how our AI-powered inventory management system reduces waste, prevents stockouts, and optimizes costs across all hospitality services.',
+  title: "Inventory Management Demo - Buffr Host Platform",
+  description:
+    "See how our AI-powered inventory management system reduces waste, prevents stockouts, and optimizes costs across all hospitality services.",
 };
 
 export default function InventoryDemoPage() {
@@ -50,7 +60,8 @@ export default function InventoryDemoPage() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm">
-            🎯 <strong>Inventory Management Demo</strong> - AI-powered stock optimization
+            🎯 <strong>Inventory Management Demo</strong> - AI-powered stock
+            optimization
           </p>
         </div>
       </div>
@@ -62,14 +73,21 @@ export default function InventoryDemoPage() {
             <div className="mb-8">
               <Package className="w-24 h-24 mx-auto mb-4 opacity-90" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Smart Inventory</h1>
-            <p className="text-xl md:text-2xl mb-6">AI-powered stock management that saves money</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              Smart Inventory
+            </h1>
+            <p className="text-xl md:text-2xl mb-6">
+              AI-powered stock management that saves money
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="btn btn-accent btn-lg">
                 <BarChart3 className="w-5 h-5 mr-2" />
                 View Live Dashboard
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link
+                href="/demo/etuna/management-demo"
+                className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900"
+              >
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -84,15 +102,20 @@ export default function InventoryDemoPage() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Real-Time Inventory Control</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Real-Time Inventory Control
+              </h2>
               <p className="text-lg text-base-content/80 mb-6">
-                See how our AI-powered inventory management system automatically tracks stock levels, 
-                predicts demand, and prevents costly stockouts across all Etuna services.
+                See how our AI-powered inventory management system automatically
+                tracks stock levels, predicts demand, and prevents costly
+                stockouts across all Etuna services.
               </p>
-              
+
               {/* Demo Inventory Dashboard */}
               <div className="bg-white dark:bg-base-200 p-6 rounded-lg shadow-xl mb-6">
-                <h3 className="text-lg font-bold mb-4">Live Inventory Status</h3>
+                <h3 className="text-lg font-bold mb-4">
+                  Live Inventory Status
+                </h3>
                 <div className="space-y-4">
                   {/* Stock Level Indicators */}
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
@@ -105,7 +128,7 @@ export default function InventoryDemoPage() {
                       <p className="text-xs text-gray-500">45 units</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <AlertTriangle className="w-5 h-5 text-yellow-500" />
@@ -116,7 +139,7 @@ export default function InventoryDemoPage() {
                       <p className="text-xs text-gray-500">8 units</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <AlertTriangle className="w-5 h-5 text-red-500" />
@@ -149,7 +172,7 @@ export default function InventoryDemoPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2070&auto=format&fit=crop"
@@ -173,7 +196,9 @@ export default function InventoryDemoPage() {
 
         {/* Inventory Benefits */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Why Smart Inventory Management Matters</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Why Smart Inventory Management Matters
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Cost Reduction */}
             <div className="nude-card hover:shadow-nude transition-shadow">
@@ -181,55 +206,80 @@ export default function InventoryDemoPage() {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <DollarSign className="w-8 h-8 text-green-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Cost Reduction</h3>
-                <p className="text-sm text-nude-700">Reduce waste by up to 30% with AI-powered demand forecasting and optimal ordering.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Cost Reduction
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Reduce waste by up to 30% with AI-powered demand forecasting
+                  and optimal ordering.
+                </p>
               </div>
             </div>
-            
+
             {/* Prevent Stockouts */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <AlertTriangle className="w-8 h-8 text-red-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Prevent Stockouts</h3>
-                <p className="text-sm text-nude-700">Never run out of popular items with intelligent reorder alerts and safety stock management.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Prevent Stockouts
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Never run out of popular items with intelligent reorder alerts
+                  and safety stock management.
+                </p>
               </div>
             </div>
-            
+
             {/* Real-time Tracking */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Clock className="w-8 h-8 text-blue-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Real-time Tracking</h3>
-                <p className="text-sm text-nude-700">Monitor stock levels across all locations in real-time with automatic updates.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Real-time Tracking
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Monitor stock levels across all locations in real-time with
+                  automatic updates.
+                </p>
               </div>
             </div>
-            
+
             {/* Multi-location */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Target className="w-8 h-8 text-purple-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Multi-location</h3>
-                <p className="text-sm text-nude-700">Manage inventory across restaurant, hotel, spa, and all hospitality services.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Multi-location
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Manage inventory across restaurant, hotel, spa, and all
+                  hospitality services.
+                </p>
               </div>
             </div>
-            
+
             {/* Analytics */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="w-8 h-8 text-orange-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Advanced Analytics</h3>
-                <p className="text-sm text-nude-700">Get insights on usage patterns, seasonal trends, and optimization opportunities.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Advanced Analytics
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Get insights on usage patterns, seasonal trends, and
+                  optimization opportunities.
+                </p>
               </div>
             </div>
-            
+
             {/* Automation */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
@@ -237,7 +287,10 @@ export default function InventoryDemoPage() {
                   <Zap className="w-8 h-8 text-teal-700" />
                 </div>
                 <h3 className="font-semibold mb-2 text-nude-800">Automation</h3>
-                <p className="text-sm text-nude-700">Automated reordering, supplier integration, and workflow optimization.</p>
+                <p className="text-sm text-nude-700">
+                  Automated reordering, supplier integration, and workflow
+                  optimization.
+                </p>
               </div>
             </div>
           </div>
@@ -245,12 +298,16 @@ export default function InventoryDemoPage() {
 
         {/* Inventory Categories */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Comprehensive Inventory Management</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Comprehensive Inventory Management
+          </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Restaurant Inventory */}
             <div className="nude-card">
               <div className="card-body">
-                <h3 className="card-title text-xl mb-4">Restaurant Inventory</h3>
+                <h3 className="card-title text-xl mb-4">
+                  Restaurant Inventory
+                </h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-3 bg-base-100 rounded-lg">
                     <div className="flex items-center space-x-3">
@@ -329,7 +386,9 @@ export default function InventoryDemoPage() {
 
         {/* AI Features */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">AI-Powered Features</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            AI-Powered Features
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Demand Forecasting */}
             <div className="text-center">
@@ -337,7 +396,10 @@ export default function InventoryDemoPage() {
                 <TrendingUp className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Demand Forecasting</h3>
-              <p className="text-nude-700">AI predicts future demand based on historical data, seasonality, and trends.</p>
+              <p className="text-nude-700">
+                AI predicts future demand based on historical data, seasonality,
+                and trends.
+              </p>
             </div>
 
             {/* Smart Reordering */}
@@ -346,7 +408,10 @@ export default function InventoryDemoPage() {
                 <RefreshCw className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Smart Reordering</h3>
-              <p className="text-nude-700">Automatically generate purchase orders when stock levels reach optimal reorder points.</p>
+              <p className="text-nude-700">
+                Automatically generate purchase orders when stock levels reach
+                optimal reorder points.
+              </p>
             </div>
 
             {/* Waste Reduction */}
@@ -355,7 +420,10 @@ export default function InventoryDemoPage() {
                 <TrendingDown className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Waste Reduction</h3>
-              <p className="text-nude-700">Identify slow-moving items and suggest promotions to reduce waste and costs.</p>
+              <p className="text-nude-700">
+                Identify slow-moving items and suggest promotions to reduce
+                waste and costs.
+              </p>
             </div>
           </div>
         </div>
@@ -363,7 +431,9 @@ export default function InventoryDemoPage() {
         {/* Demo Actions */}
         <div className="py-16">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Experience Smart Inventory Management</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Experience Smart Inventory Management
+            </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Customer Experience */}
               <div className="card bg-gradient-to-br from-green-500 to-blue-500 text-white shadow-xl">
@@ -375,14 +445,19 @@ export default function InventoryDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">Operational Efficiency</h3>
-                      <p className="text-white/80">See how inventory optimization improves operations</p>
+                      <h3 className="text-2xl font-bold">
+                        Operational Efficiency
+                      </h3>
+                      <p className="text-white/80">
+                        See how inventory optimization improves operations
+                      </p>
                     </div>
                   </div>
                   <p className="text-white/90 mb-6">
-                    Experience how our inventory management system streamlines operations, 
-                    reduces costs, and ensures you never run out of essential items. 
-                    See real-time tracking and AI-powered insights in action.
+                    Experience how our inventory management system streamlines
+                    operations, reduces costs, and ensures you never run out of
+                    essential items. See real-time tracking and AI-powered
+                    insights in action.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -421,14 +496,18 @@ export default function InventoryDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">Management Dashboard</h3>
-                      <p className="text-nude-700">See how inventory drives business success</p>
+                      <h3 className="text-2xl font-bold">
+                        Management Dashboard
+                      </h3>
+                      <p className="text-nude-700">
+                        See how inventory drives business success
+                      </p>
                     </div>
                   </div>
                   <p className="text-base-content/80 mb-6">
-                    Explore our comprehensive inventory management dashboard. 
-                    Track stock levels, analyze usage patterns, optimize ordering, 
-                    and reduce costs with AI-powered insights.
+                    Explore our comprehensive inventory management dashboard.
+                    Track stock levels, analyze usage patterns, optimize
+                    ordering, and reduce costs with AI-powered insights.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -449,7 +528,10 @@ export default function InventoryDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link
+                      href="/demo/etuna/management-demo"
+                      className="btn btn-primary"
+                    >
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>
@@ -467,17 +549,25 @@ export default function InventoryDemoPage() {
               <div className="text-center">
                 <Phone className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Ready to Optimize?</h3>
-                <p className="text-primary-content/80">Contact us to implement smart inventory management that reduces costs.</p>
+                <p className="text-primary-content/80">
+                  Contact us to implement smart inventory management that
+                  reduces costs.
+                </p>
               </div>
               <div className="text-center">
                 <Mail className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Schedule a Demo</h3>
-                <p className="text-primary-content/80">Book a personalized demonstration of our inventory management system.</p>
+                <p className="text-primary-content/80">
+                  Book a personalized demonstration of our inventory management
+                  system.
+                </p>
               </div>
               <div className="text-center">
                 <Globe className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Learn More</h3>
-                <p className="text-primary-content/80">Visit our main website for more information about Buffr Host.</p>
+                <p className="text-primary-content/80">
+                  Visit our main website for more information about Buffr Host.
+                </p>
               </div>
             </div>
           </div>

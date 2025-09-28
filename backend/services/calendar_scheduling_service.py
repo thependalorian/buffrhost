@@ -1,15 +1,15 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete
 from typing import List, Optional
 from uuid import UUID
 
-from models.calendar_scheduling import Booking, Schedule, Resource, Event
-from schemas.calendar_scheduling import (
-    BookingCreate, BookingUpdate, 
-    ScheduleCreate, ScheduleUpdate, 
-    ResourceCreate, ResourceUpdate, 
-    EventCreate, EventUpdate
-)
+from sqlalchemy import delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.calendar_scheduling import Booking, Event, Resource, Schedule
+from schemas.calendar_scheduling import (BookingCreate, BookingUpdate,
+                                         EventCreate, EventUpdate,
+                                         ResourceCreate, ResourceUpdate,
+                                         ScheduleCreate, ScheduleUpdate)
+
 
 class CalendarSchedulingService:
     def __init__(self, db: AsyncSession):
@@ -31,7 +31,9 @@ class CalendarSchedulingService:
         result = await self.db.execute(select(Booking).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_booking(self, booking_id: UUID, booking_data: BookingUpdate) -> Optional[Booking]:
+    async def update_booking(
+        self, booking_id: UUID, booking_data: BookingUpdate
+    ) -> Optional[Booking]:
         booking = await self.get_booking(booking_id)
         if booking:
             update_data = booking_data.model_dump(exclude_unset=True)
@@ -58,14 +60,18 @@ class CalendarSchedulingService:
         return schedule
 
     async def get_schedule(self, schedule_id: UUID) -> Optional[Schedule]:
-        result = await self.db.execute(select(Schedule).where(Schedule.id == schedule_id))
+        result = await self.db.execute(
+            select(Schedule).where(Schedule.id == schedule_id)
+        )
         return result.scalar_one_or_none()
 
     async def get_schedules(self, skip: int = 0, limit: int = 100) -> List[Schedule]:
         result = await self.db.execute(select(Schedule).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_schedule(self, schedule_id: UUID, schedule_data: ScheduleUpdate) -> Optional[Schedule]:
+    async def update_schedule(
+        self, schedule_id: UUID, schedule_data: ScheduleUpdate
+    ) -> Optional[Schedule]:
         schedule = await self.get_schedule(schedule_id)
         if schedule:
             update_data = schedule_data.model_dump(exclude_unset=True)
@@ -92,14 +98,18 @@ class CalendarSchedulingService:
         return resource
 
     async def get_resource(self, resource_id: UUID) -> Optional[Resource]:
-        result = await self.db.execute(select(Resource).where(Resource.id == resource_id))
+        result = await self.db.execute(
+            select(Resource).where(Resource.id == resource_id)
+        )
         return result.scalar_one_or_none()
 
     async def get_resources(self, skip: int = 0, limit: int = 100) -> List[Resource]:
         result = await self.db.execute(select(Resource).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_resource(self, resource_id: UUID, resource_data: ResourceUpdate) -> Optional[Resource]:
+    async def update_resource(
+        self, resource_id: UUID, resource_data: ResourceUpdate
+    ) -> Optional[Resource]:
         resource = await self.get_resource(resource_id)
         if resource:
             update_data = resource_data.model_dump(exclude_unset=True)
@@ -133,7 +143,9 @@ class CalendarSchedulingService:
         result = await self.db.execute(select(Event).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_event(self, event_id: UUID, event_data: EventUpdate) -> Optional[Event]:
+    async def update_event(
+        self, event_id: UUID, event_data: EventUpdate
+    ) -> Optional[Event]:
         event = await self.get_event(event_id)
         if event:
             update_data = event_data.model_dump(exclude_unset=True)

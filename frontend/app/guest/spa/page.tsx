@@ -1,9 +1,9 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
+import { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: 'Spa & Wellness - Buffr Host',
-  description: 'Book spa treatments and wellness services',
+  title: "Spa & Wellness - Buffr Host",
+  description: "Book spa treatments and wellness services",
 };
 
 export default function SpaWellnessPage() {
@@ -28,14 +28,27 @@ export default function SpaWellnessPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <Image src="/placeholder-spa.jpg" alt="Deep Tissue Massage" width={300} height={192} className="w-full h-48 object-cover" />
+                <Image
+                  src="/placeholder-spa.jpg"
+                  alt="Deep Tissue Massage"
+                  width={300}
+                  height={192}
+                  className="w-full h-48 object-cover"
+                />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Deep Tissue Massage</h2>
-                <p>Targeted massage therapy to relieve muscle tension and improve circulation</p>
+                <p>
+                  Targeted massage therapy to relieve muscle tension and improve
+                  circulation
+                </p>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-base-content/70">Duration: 60 minutes</span>
-                  <span className="text-2xl font-bold text-primary">N$ 450</span>
+                  <span className="text-sm text-base-content/70">
+                    Duration: 60 minutes
+                  </span>
+                  <span className="text-2xl font-bold text-primary">
+                    N$ 450
+                  </span>
                 </div>
                 <div className="card-actions justify-end">
                   <button className="btn btn-primary">Book Now</button>
@@ -45,14 +58,27 @@ export default function SpaWellnessPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <Image src="/placeholder-spa.jpg" alt="Swedish Massage" width={300} height={192} className="w-full h-48 object-cover" />
+                <Image
+                  src="/placeholder-spa.jpg"
+                  alt="Swedish Massage"
+                  width={300}
+                  height={192}
+                  className="w-full h-48 object-cover"
+                />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Swedish Massage</h2>
-                <p>Classic relaxation massage with long, flowing strokes to ease tension</p>
+                <p>
+                  Classic relaxation massage with long, flowing strokes to ease
+                  tension
+                </p>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-base-content/70">Duration: 60 minutes</span>
-                  <span className="text-2xl font-bold text-primary">N$ 380</span>
+                  <span className="text-sm text-base-content/70">
+                    Duration: 60 minutes
+                  </span>
+                  <span className="text-2xl font-bold text-primary">
+                    N$ 380
+                  </span>
                 </div>
                 <div className="card-actions justify-end">
                   <button className="btn btn-primary">Book Now</button>
@@ -62,14 +88,27 @@ export default function SpaWellnessPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <Image src="/placeholder-spa.jpg" alt="Hot Stone Massage" width={300} height={192} className="w-full h-48 object-cover" />
+                <Image
+                  src="/placeholder-spa.jpg"
+                  alt="Hot Stone Massage"
+                  width={300}
+                  height={192}
+                  className="w-full h-48 object-cover"
+                />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Hot Stone Massage</h2>
-                <p>Heated stones placed on key points to melt away tension and stress</p>
+                <p>
+                  Heated stones placed on key points to melt away tension and
+                  stress
+                </p>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-base-content/70">Duration: 90 minutes</span>
-                  <span className="text-2xl font-bold text-primary">N$ 520</span>
+                  <span className="text-sm text-base-content/70">
+                    Duration: 90 minutes
+                  </span>
+                  <span className="text-2xl font-bold text-primary">
+                    N$ 520
+                  </span>
                 </div>
                 <div className="card-actions justify-end">
                   <button className="btn btn-primary">Book Now</button>
@@ -79,14 +118,27 @@ export default function SpaWellnessPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <Image src="/placeholder-spa.jpg" alt="Aromatherapy Facial" width={300} height={192} className="w-full h-48 object-cover" />
+                <Image
+                  src="/placeholder-spa.jpg"
+                  alt="Aromatherapy Facial"
+                  width={300}
+                  height={192}
+                  className="w-full h-48 object-cover"
+                />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Aromatherapy Facial</h2>
-                <p>Rejuvenating facial treatment with essential oils for glowing skin</p>
+                <p>
+                  Rejuvenating facial treatment with essential oils for glowing
+                  skin
+                </p>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-base-content/70">Duration: 75 minutes</span>
-                  <span className="text-2xl font-bold text-primary">N$ 420</span>
+                  <span className="text-sm text-base-content/70">
+                    Duration: 75 minutes
+                  </span>
+                  <span className="text-2xl font-bold text-primary">
+                    N$ 420
+                  </span>
                 </div>
                 <div className="card-actions justify-end">
                   <button className="btn btn-primary">Book Now</button>
@@ -96,14 +148,27 @@ export default function SpaWellnessPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <Image src="/placeholder-spa.jpg" alt="Body Scrub" width={300} height={192} className="w-full h-48 object-cover" />
+                <Image
+                  src="/placeholder-spa.jpg"
+                  alt="Body Scrub"
+                  width={300}
+                  height={192}
+                  className="w-full h-48 object-cover"
+                />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Exfoliating Body Scrub</h2>
-                <p>Gentle exfoliation to remove dead skin cells and reveal smooth, radiant skin</p>
+                <p>
+                  Gentle exfoliation to remove dead skin cells and reveal
+                  smooth, radiant skin
+                </p>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-base-content/70">Duration: 45 minutes</span>
-                  <span className="text-2xl font-bold text-primary">N$ 350</span>
+                  <span className="text-sm text-base-content/70">
+                    Duration: 45 minutes
+                  </span>
+                  <span className="text-2xl font-bold text-primary">
+                    N$ 350
+                  </span>
                 </div>
                 <div className="card-actions justify-end">
                   <button className="btn btn-primary">Book Now</button>
@@ -113,14 +178,27 @@ export default function SpaWellnessPage() {
 
             <div className="card bg-base-100 shadow-xl">
               <figure>
-                <Image src="/placeholder-spa.jpg" alt="Wellness Package" width={300} height={192} className="w-full h-48 object-cover" />
+                <Image
+                  src="/placeholder-spa.jpg"
+                  alt="Wellness Package"
+                  width={300}
+                  height={192}
+                  className="w-full h-48 object-cover"
+                />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">Ultimate Wellness Package</h2>
-                <p>Complete wellness experience including massage, facial, and body treatment</p>
+                <p>
+                  Complete wellness experience including massage, facial, and
+                  body treatment
+                </p>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-base-content/70">Duration: 3 hours</span>
-                  <span className="text-2xl font-bold text-primary">N$ 1,200</span>
+                  <span className="text-sm text-base-content/70">
+                    Duration: 3 hours
+                  </span>
+                  <span className="text-2xl font-bold text-primary">
+                    N$ 1,200
+                  </span>
                 </div>
                 <div className="card-actions justify-end">
                   <button className="btn btn-primary">Book Now</button>
@@ -165,7 +243,9 @@ export default function SpaWellnessPage() {
                     <option>Mike Johnson</option>
                   </select>
                 </div>
-                <button className="btn btn-primary w-full">Confirm Booking</button>
+                <button className="btn btn-primary w-full">
+                  Confirm Booking
+                </button>
               </div>
             </div>
           </div>
@@ -175,32 +255,87 @@ export default function SpaWellnessPage() {
               <h2 className="card-title">Spa Facilities</h2>
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-success"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   <span>Sauna</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-success"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   <span>Steam Room</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-success"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   <span>Relaxation Lounge</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-success"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   <span>Changing Rooms</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-success"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   <span>Shower Facilities</span>
                 </div>

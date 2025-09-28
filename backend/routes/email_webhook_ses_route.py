@@ -1,13 +1,14 @@
+from typing import Any, Dict, List
 
-from fastapi import APIRouter, Request, HTTPException, status
-from typing import List, Dict, Any
+from fastapi import APIRouter, HTTPException, Request, status
 
 router = APIRouter()
 
-@router.post("/webhook/ses", status_code=status.HTTP_200_OK)
-async def handle_ses_webhook(request: Request):
-    # Placeholder for handling AWS SES webhook events
+
+@router.post("/webhook/email", status_code=status.HTTP_200_OK)
+async def handle_email_webhook(request: Request):
+    # Placeholder for handling email service webhook events
     payload = await request.json()
-    print(f"Received AWS SES webhook event: {payload}")
+    print(f"Received email service webhook event: {payload}")
     # Process events like delivered, bounced, opened, clicked, etc.
-    return {"message": "AWS SES webhook received"}
+    return {"message": "Email service webhook received"}

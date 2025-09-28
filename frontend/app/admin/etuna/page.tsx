@@ -1,13 +1,14 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import { 
-  MapPin, 
-  Star, 
-  Wifi, 
-  Car, 
-  Coffee, 
-  Dumbbell, 
-  Waves, 
+"use client";
+
+import Image from "next/image";
+import {
+  MapPin,
+  Star,
+  Wifi,
+  Car,
+  Coffee,
+  Dumbbell,
+  Waves,
   Utensils,
   Phone,
   Mail,
@@ -17,14 +18,10 @@ import {
   TrendingUp,
   Award,
   Shield,
-  Monitor
-} from 'lucide-react';
-import { etunaUnifiedData } from '@/lib/data/etuna-property-unified';
-
-export const metadata: Metadata = {
-  title: 'Etuna Guesthouse & Tours - Property Management',
-  description: 'Manage Etuna Guesthouse and Tours property operations in Ongwediva, Namibia',
-};
+  Monitor,
+} from "lucide-react";
+import { etunaUnifiedData } from "@/lib/data/etuna-property-unified";
+import { StatCard, PageHeader } from "@/src/components/ui";
 
 export default function EtunaPropertyPage() {
   const property = etunaUnifiedData.property;
@@ -35,37 +32,30 @@ export default function EtunaPropertyPage() {
 
   return (
     <div className="container mx-auto p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-base-content">{property.property_name}</h1>
-            <p className="text-base-content/70 mt-2">Your House Away From Home - {property.property_type} property</p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center">
-              <Star className="w-5 h-5 text-yellow-500 fill-current" />
-              <span className="ml-1 font-semibold">4.8</span>
-              <span className="text-sm text-base-content/70 ml-1">(127 reviews)</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title={property.name}
+        description={`Your House Away From Home - mixed property`}
+      />
 
       {/* Hero Section */}
       <div className="card bg-base-100 shadow-xl mb-8">
         <figure className="relative h-96">
           <Image
             src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop"
-            alt={property.property_name}
+            alt={property.name}
             width={1200}
             height={400}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black bg-opacity-30"></div>
           <div className="absolute bottom-6 left-6 text-white">
-            <h2 className="text-2xl font-bold mb-2">{property.property_name}</h2>
-            <p className="text-lg opacity-90">Your House Away From Home - Etuna means &quot;He is taking care of us&quot; in Oshiwambo</p>
+            <h2 className="text-2xl font-bold mb-2">
+              {property.name}
+            </h2>
+            <p className="text-lg opacity-90">
+              Your House Away From Home - Etuna means &quot;He is taking care of
+              us&quot; in Oshiwambo
+            </p>
           </div>
         </figure>
       </div>
@@ -78,7 +68,9 @@ export default function EtunaPropertyPage() {
               <Users className="w-8 h-8" />
             </div>
             <div className="stat-title">Total Capacity</div>
-            <div className="stat-value text-primary">{property.total_rooms}</div>
+            <div className="stat-value text-primary">
+              35
+            </div>
             <div className="stat-desc">guests</div>
           </div>
         </div>
@@ -130,7 +122,7 @@ export default function EtunaPropertyPage() {
                   <div>
                     <p className="font-semibold">Address</p>
                     <p className="text-sm text-base-content/70">
-                      {property.address}
+                      {String(property.address)}
                     </p>
                   </div>
                 </div>
@@ -138,21 +130,27 @@ export default function EtunaPropertyPage() {
                   <Phone className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-semibold">Phone</p>
-                    <p className="text-sm text-base-content/70">{property.phone}</p>
+                    <p className="text-sm text-base-content/70">
+                      {property.phone}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-semibold">Email</p>
-                    <p className="text-sm text-base-content/70">{property.email}</p>
+                    <p className="text-sm text-base-content/70">
+                      {property.email}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Globe className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-semibold">Website</p>
-                    <p className="text-sm text-base-content/70">{property.website}</p>
+                    <p className="text-sm text-base-content/70">
+                      {property.website}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -164,19 +162,35 @@ export default function EtunaPropertyPage() {
             <div className="card-body">
               <h3 className="card-title">Amenities & Services</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {property.amenities.map((amenity, index) => (
+                {["wifi", "parking", "restaurant", "bar", "conference", "spa"].map((amenity, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                      {amenity === 'wifi' && <Wifi className="w-4 h-4 text-primary" />}
-                      {amenity === 'parking' && <Car className="w-4 h-4 text-primary" />}
-                      {amenity === 'restaurant' && <Utensils className="w-4 h-4 text-primary" />}
-                      {amenity === 'pool' && <Waves className="w-4 h-4 text-primary" />}
-                      {amenity === 'gym' && <Dumbbell className="w-4 h-4 text-primary" />}
-                      {amenity === 'business_center' && <Monitor className="w-4 h-4 text-primary" />}
-                      {amenity === 'security' && <Shield className="w-4 h-4 text-primary" />}
+                      {amenity === "wifi" && (
+                        <Wifi className="w-4 h-4 text-primary" />
+                      )}
+                      {amenity === "parking" && (
+                        <Car className="w-4 h-4 text-primary" />
+                      )}
+                      {amenity === "restaurant" && (
+                        <Utensils className="w-4 h-4 text-primary" />
+                      )}
+                      {amenity === "pool" && (
+                        <Waves className="w-4 h-4 text-primary" />
+                      )}
+                      {amenity === "gym" && (
+                        <Dumbbell className="w-4 h-4 text-primary" />
+                      )}
+                      {amenity === "business_center" && (
+                        <Monitor className="w-4 h-4 text-primary" />
+                      )}
+                      {amenity === "security" && (
+                        <Shield className="w-4 h-4 text-primary" />
+                      )}
                     </div>
                     <div>
-                      <p className="font-medium text-sm capitalize">{amenity.replace('_', ' ')}</p>
+                      <p className="font-medium text-sm capitalize">
+                        {amenity.replace("_", " ")}
+                      </p>
                       <p className="text-xs text-base-content/70">Available</p>
                     </div>
                   </div>
@@ -197,10 +211,15 @@ export default function EtunaPropertyPage() {
                       NAD 750/night
                     </span>
                   </div>
-                  <p className="text-sm text-base-content/70 mb-2">Twin beds, shower, flats screen television with DSTV, fridge and mosquito net</p>
+                  <p className="text-sm text-base-content/70 mb-2">
+                    Twin beds, shower, flats screen television with DSTV, fridge
+                    and mosquito net
+                  </p>
                   <div className="flex items-center space-x-4 text-sm">
                     <span>Capacity: 2 adults, 0 children</span>
-                    <span className="badge badge-primary badge-sm">Standard</span>
+                    <span className="badge badge-primary badge-sm">
+                      Standard
+                    </span>
                   </div>
                 </div>
                 <div className="border border-base-300 rounded-lg p-4">
@@ -210,10 +229,15 @@ export default function EtunaPropertyPage() {
                       NAD 900/night
                     </span>
                   </div>
-                  <p className="text-sm text-base-content/70 mb-2">Great attention to every detail to make the room as comfortable and relaxing as possible</p>
+                  <p className="text-sm text-base-content/70 mb-2">
+                    Great attention to every detail to make the room as
+                    comfortable and relaxing as possible
+                  </p>
                   <div className="flex items-center space-x-4 text-sm">
                     <span>Capacity: 2 adults, 0 children</span>
-                    <span className="badge badge-primary badge-sm">Executive</span>
+                    <span className="badge badge-primary badge-sm">
+                      Executive
+                    </span>
                   </div>
                 </div>
                 <div className="border border-base-300 rounded-lg p-4">
@@ -223,7 +247,10 @@ export default function EtunaPropertyPage() {
                       NAD 1,800/night
                     </span>
                   </div>
-                  <p className="text-sm text-base-content/70 mb-2">Double bed, shower, fridge, working space, mosquito net and WiFi</p>
+                  <p className="text-sm text-base-content/70 mb-2">
+                    Double bed, shower, fridge, working space, mosquito net and
+                    WiFi
+                  </p>
                   <div className="flex items-center space-x-4 text-sm">
                     <span>Capacity: 2 adults, 0 children</span>
                     <span className="badge badge-primary badge-sm">Luxury</span>
@@ -241,10 +268,18 @@ export default function EtunaPropertyPage() {
             <div className="card-body">
               <h3 className="card-title">Quick Actions</h3>
               <div className="space-y-2">
-                <button className="btn btn-primary btn-sm w-full">View Bookings</button>
-                <button className="btn btn-secondary btn-sm w-full">Manage Rooms</button>
-                <button className="btn btn-accent btn-sm w-full">Update Information</button>
-                <button className="btn btn-outline btn-sm w-full">View Analytics</button>
+                <button className="btn btn-primary btn-sm w-full">
+                  View Bookings
+                </button>
+                <button className="btn btn-secondary btn-sm w-full">
+                  Manage Rooms
+                </button>
+                <button className="btn btn-accent btn-sm w-full">
+                  Update Information
+                </button>
+                <button className="btn btn-outline btn-sm w-full">
+                  View Analytics
+                </button>
               </div>
             </div>
           </div>
@@ -257,24 +292,23 @@ export default function EtunaPropertyPage() {
                 <div>
                   <p className="font-semibold">Check-in/Check-out</p>
                   <p className="text-base-content/70">
-                    Check-in: {property.check_in_time} | Check-out: {property.check_out_time}
+                    Check-in: 14:00 | Check-out: 10:00
                   </p>
                 </div>
                 <div>
                   <p className="font-semibold">Cancellation</p>
-                  <p className="text-base-content/70">Cancellation and prepayment policies vary according to room type</p>
+                  <p className="text-base-content/70">
+                    Cancellation and prepayment policies vary according to room
+                    type
+                  </p>
                 </div>
                 <div>
                   <p className="font-semibold">Pets</p>
-                  <p className="text-base-content/70">
-                    Not allowed
-                  </p>
+                  <p className="text-base-content/70">Not allowed</p>
                 </div>
                 <div>
                   <p className="font-semibold">Smoking</p>
-                  <p className="text-base-content/70">
-                    Not allowed
-                  </p>
+                  <p className="text-base-content/70">Not allowed</p>
                 </div>
               </div>
             </div>

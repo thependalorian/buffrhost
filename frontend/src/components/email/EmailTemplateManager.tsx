@@ -1,37 +1,37 @@
 /**
  * Email Template Manager Component
- * 
+ *
  * Manages email templates for the system
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Mail, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  Copy, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Mail,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Copy,
   Search,
   Filter,
   FileText,
   CheckCircle,
   AlertCircle,
-  Clock
-} from 'lucide-react';
+  Clock,
+} from "lucide-react";
 
 interface EmailTemplate {
   id: string;
   name: string;
   subject: string;
-  type: 'booking' | 'payment' | 'system' | 'marketing';
-  status: 'active' | 'draft' | 'archived';
+  type: "booking" | "payment" | "system" | "marketing";
+  status: "active" | "draft" | "archived";
   lastModified: string;
   usage: number;
   description: string;
@@ -45,103 +45,104 @@ interface EmailTemplateManagerProps {
   onPreview?: (id: string) => void;
 }
 
-export default function EmailTemplateManager({ 
-  templates, 
-  onEdit, 
-  onDelete, 
-  onDuplicate, 
-  onPreview 
+export default function EmailTemplateManager({
+  templates,
+  onEdit,
+  onDelete,
+  onDuplicate,
+  onPreview,
 }: EmailTemplateManagerProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("all");
 
   const mockTemplates: EmailTemplate[] = [
     {
-      id: '1',
-      name: 'Booking Confirmation',
-      subject: 'Your booking at {{property_name}} is confirmed',
-      type: 'booking',
-      status: 'active',
-      lastModified: '2024-01-15 10:30',
+      id: "1",
+      name: "Booking Confirmation",
+      subject: "Your booking at {{property_name}} is confirmed",
+      type: "booking",
+      status: "active",
+      lastModified: "2024-01-15 10:30",
       usage: 45,
-      description: 'Standard booking confirmation email'
+      description: "Standard booking confirmation email",
     },
     {
-      id: '2',
-      name: 'Payment Receipt',
-      subject: 'Payment Receipt - {{transaction_id}}',
-      type: 'payment',
-      status: 'active',
-      lastModified: '2024-01-14 16:45',
+      id: "2",
+      name: "Payment Receipt",
+      subject: "Payment Receipt - {{transaction_id}}",
+      type: "payment",
+      status: "active",
+      lastModified: "2024-01-14 16:45",
       usage: 32,
-      description: 'Payment confirmation and receipt'
+      description: "Payment confirmation and receipt",
     },
     {
-      id: '3',
-      name: 'Welcome Email',
-      subject: 'Welcome to {{property_name}}!',
-      type: 'marketing',
-      status: 'draft',
-      lastModified: '2024-01-13 14:20',
+      id: "3",
+      name: "Welcome Email",
+      subject: "Welcome to {{property_name}}!",
+      type: "marketing",
+      status: "draft",
+      lastModified: "2024-01-13 14:20",
       usage: 0,
-      description: 'Welcome email for new guests'
+      description: "Welcome email for new guests",
     },
     {
-      id: '4',
-      name: 'System Maintenance',
-      subject: 'Scheduled Maintenance Notice',
-      type: 'system',
-      status: 'active',
-      lastModified: '2024-01-12 09:15',
+      id: "4",
+      name: "System Maintenance",
+      subject: "Scheduled Maintenance Notice",
+      type: "system",
+      status: "active",
+      lastModified: "2024-01-12 09:15",
       usage: 8,
-      description: 'System maintenance notifications'
-    }
+      description: "System maintenance notifications",
+    },
   ];
 
   const displayTemplates = templates || mockTemplates;
 
-  const filteredTemplates = displayTemplates.filter(template => {
-    const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         template.subject.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === 'all' || template.type === filterType;
+  const filteredTemplates = displayTemplates.filter((template) => {
+    const matchesSearch =
+      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.subject.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterType === "all" || template.type === filterType;
     return matchesSearch && matchesFilter;
   });
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'booking':
-        return 'bg-blue-100 text-blue-800';
-      case 'payment':
-        return 'bg-green-100 text-green-800';
-      case 'system':
-        return 'bg-purple-100 text-purple-800';
-      case 'marketing':
-        return 'bg-orange-100 text-orange-800';
+      case "booking":
+        return "bg-blue-100 text-blue-800";
+      case "payment":
+        return "bg-green-100 text-green-800";
+      case "system":
+        return "bg-purple-100 text-purple-800";
+      case "marketing":
+        return "bg-orange-100 text-orange-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'archived':
-        return 'bg-gray-100 text-gray-800';
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "draft":
+        return "bg-yellow-100 text-yellow-800";
+      case "archived":
+        return "bg-gray-100 text-gray-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'draft':
+      case "draft":
         return <Clock className="w-4 h-4 text-yellow-500" />;
-      case 'archived':
+      case "archived":
         return <AlertCircle className="w-4 h-4 text-gray-500" />;
       default:
         return <Clock className="w-4 h-4 text-gray-500" />;
@@ -154,7 +155,9 @@ export default function EmailTemplateManager({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Email Templates</h1>
-          <p className="text-gray-600">Manage email templates for your communications</p>
+          <p className="text-gray-600">
+            Manage email templates for your communications
+          </p>
         </div>
         <Button>
           <Plus className="w-4 h-4 mr-2" />
@@ -204,7 +207,9 @@ export default function EmailTemplateManager({
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <CardTitle className="text-lg">{template.name}</CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">{template.description}</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {template.description}
+                  </p>
                 </div>
                 {getStatusIcon(template.status)}
               </div>
@@ -212,7 +217,9 @@ export default function EmailTemplateManager({
             <CardContent className="space-y-4">
               <div>
                 <p className="text-sm font-medium text-gray-700">Subject:</p>
-                <p className="text-sm text-gray-600 truncate">{template.subject}</p>
+                <p className="text-sm text-gray-600 truncate">
+                  {template.subject}
+                </p>
               </div>
 
               <div className="flex items-center space-x-2">
@@ -278,10 +285,9 @@ export default function EmailTemplateManager({
               No templates found
             </h3>
             <p className="text-gray-500">
-              {searchTerm || filterType !== 'all' 
-                ? 'No templates match your search criteria.'
-                : 'Create your first email template to get started.'
-              }
+              {searchTerm || filterType !== "all"
+                ? "No templates match your search criteria."
+                : "Create your first email template to get started."}
             </p>
           </CardContent>
         </Card>
@@ -302,13 +308,13 @@ export default function EmailTemplateManager({
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {displayTemplates.filter(t => t.status === 'active').length}
+                {displayTemplates.filter((t) => t.status === "active").length}
               </div>
               <p className="text-sm text-gray-600">Active</p>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">
-                {displayTemplates.filter(t => t.status === 'draft').length}
+                {displayTemplates.filter((t) => t.status === "draft").length}
               </div>
               <p className="text-sm text-gray-600">Drafts</p>
             </div>

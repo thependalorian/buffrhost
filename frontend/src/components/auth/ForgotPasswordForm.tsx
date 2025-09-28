@@ -1,18 +1,31 @@
 /**
  * Forgot Password Form Component for BuffrHost
- * 
+ *
  * This component handles password reset requests with email verification.
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/lib/contexts/auth-context';
-import { Loader2, Mail, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { useAuth } from "@/src/lib/contexts/auth-context";
+import {
+  Loader2,
+  Mail,
+  ArrowLeft,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
@@ -21,40 +34,43 @@ interface ForgotPasswordFormProps {
   className?: string;
 }
 
-export function ForgotPasswordForm({ 
-  onSuccess, 
-  onError, 
+export function ForgotPasswordForm({
+  onSuccess,
+  onError,
   onBackToLogin,
-  className = ""
+  className = "",
 }: ForgotPasswordFormProps) {
   const { resetPassword, loading } = useAuth();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError('');
+    setError("");
 
     try {
       // Validate email
       if (!email.trim()) {
-        setError('Email is required');
+        setError("Email is required");
         return;
       }
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setError('Please enter a valid email address');
+        setError("Please enter a valid email address");
         return;
       }
 
       // Attempt password reset
       const result = await resetPassword(email);
-      
+
       if (result.error) {
-        const errorMessage = typeof result.error === 'string' ? result.error : 'Password reset failed';
+        const errorMessage =
+          typeof result.error === "string"
+            ? result.error
+            : "Password reset failed";
         setError(errorMessage);
         onError?.(errorMessage);
       } else {
@@ -62,7 +78,8 @@ export function ForgotPasswordForm({
         onSuccess?.();
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
       setError(errorMessage);
       onError?.(errorMessage);
     } finally {
@@ -81,34 +98,40 @@ export function ForgotPasswordForm({
           <div className="flex items-center justify-center w-12 h-12 mx-auto bg-green-100 rounded-full">
             <CheckCircle className="w-6 h-6 text-green-600" />
           </div>
-          <CardTitle className="text-xl font-bold text-center sm:text-2xl">Check Your Email</CardTitle>
+          <CardTitle className="text-xl font-bold text-center sm:text-2xl">
+            Check Your Email
+          </CardTitle>
           <CardDescription className="text-center text-sm sm:text-base">
-            We've sent a password reset link to <strong>{email}</strong>
+            We&apos;ve sent a password reset link to <strong>{email}</strong>
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           <div className="text-center text-sm text-gray-600">
-            <p>Please check your email and click the link to reset your password.</p>
-            <p className="mt-2">If you don't see the email, check your spam folder.</p>
+            <p>
+              Please check your email and click the link to reset your password.
+            </p>
+            <p className="mt-2">
+              If you don&apos;t see the email, check your spam folder.
+            </p>
           </div>
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full"
             onClick={() => {
               setIsSubmitted(false);
-              setEmail('');
+              setEmail("");
             }}
           >
             Try Different Email
           </Button>
-          
+
           {onBackToLogin && (
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="w-full"
               onClick={handleBackToLogin}
             >
@@ -124,12 +147,15 @@ export function ForgotPasswordForm({
   return (
     <Card className={`w-full max-w-sm mx-auto sm:max-w-md ${className}`}>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-xl font-bold text-center sm:text-2xl">Forgot Password?</CardTitle>
+        <CardTitle className="text-xl font-bold text-center sm:text-2xl">
+          Forgot Password?
+        </CardTitle>
         <CardDescription className="text-center text-sm sm:text-base">
-          Enter your email address and we'll send you a link to reset your password
+          Enter your email address and we&apos;ll send you a link to reset your
+          password
         </CardDescription>
       </CardHeader>
-      
+
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {/* Error Display */}
@@ -163,9 +189,9 @@ export function ForgotPasswordForm({
 
         <CardFooter className="flex flex-col space-y-4">
           {/* Reset Password Button */}
-          <Button 
-            type="submit" 
-            className="w-full" 
+          <Button
+            type="submit"
+            className="w-full"
             disabled={isSubmitting || loading}
           >
             {isSubmitting || loading ? (
@@ -174,15 +200,15 @@ export function ForgotPasswordForm({
                 Sending Reset Link...
               </>
             ) : (
-              'Send Reset Link'
+              "Send Reset Link"
             )}
           </Button>
 
           {/* Back to Login */}
           {onBackToLogin && (
-            <Button 
+            <Button
               type="button"
-              variant="ghost" 
+              variant="ghost"
               className="w-full"
               onClick={handleBackToLogin}
               disabled={isSubmitting}

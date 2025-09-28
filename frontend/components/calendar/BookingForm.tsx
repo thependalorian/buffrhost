@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useState } from 'react';
+import React from "react";
+import { useState } from "react";
 
 interface BookingFormData {
   user_id: string;
@@ -18,16 +18,20 @@ interface BookingFormProps {
 
 const BookingForm: React.FC<BookingFormProps> = ({ onSubmit }) => {
   const [formData, setFormData] = useState<BookingFormData>({
-    user_id: 'mock-user-id',
-    resource_id: '',
-    resource_type: '',
-    start_time: '',
-    end_time: '',
+    user_id: "mock-user-id",
+    resource_id: "",
+    resource_type: "",
+    start_time: "",
+    end_time: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -40,11 +44,24 @@ const BookingForm: React.FC<BookingFormProps> = ({ onSubmit }) => {
       <h2>Create New Booking</h2>
       <div>
         <label htmlFor="resource_id">Resource ID:</label>
-        <input type="text" id="resource_id" name="resource_id" value={formData.resource_id} onChange={handleChange} required />
+        <input
+          type="text"
+          id="resource_id"
+          name="resource_id"
+          value={formData.resource_id}
+          onChange={handleChange}
+          required
+        />
       </div>
       <div>
         <label htmlFor="resource_type">Resource Type:</label>
-        <select id="resource_type" name="resource_type" value={formData.resource_type} onChange={handleChange} required>
+        <select
+          id="resource_type"
+          name="resource_type"
+          value={formData.resource_type}
+          onChange={handleChange}
+          required
+        >
           <option value="">Select Type</option>
           <option value="room">Room</option>
           <option value="service">Service</option>
@@ -53,15 +70,34 @@ const BookingForm: React.FC<BookingFormProps> = ({ onSubmit }) => {
       </div>
       <div>
         <label htmlFor="start_time">Start Time:</label>
-        <input type="datetime-local" id="start_time" name="start_time" value={formData.start_time} onChange={handleChange} required />
+        <input
+          type="datetime-local"
+          id="start_time"
+          name="start_time"
+          value={formData.start_time}
+          onChange={handleChange}
+          required
+        />
       </div>
       <div>
         <label htmlFor="end_time">End Time:</label>
-        <input type="datetime-local" id="end_time" name="end_time" value={formData.end_time} onChange={handleChange} required />
+        <input
+          type="datetime-local"
+          id="end_time"
+          name="end_time"
+          value={formData.end_time}
+          onChange={handleChange}
+          required
+        />
       </div>
       <div>
         <label htmlFor="notes">Notes:</label>
-        <textarea id="notes" name="notes" value={formData.notes || ''} onChange={handleChange} />
+        <textarea
+          id="notes"
+          name="notes"
+          value={formData.notes || ""}
+          onChange={handleChange}
+        />
       </div>
       <button type="submit">Create Booking</button>
     </form>

@@ -1,6 +1,6 @@
-'use client';
-import React from 'react';
-import { useState, useEffect } from 'react';
+"use client";
+import React from "react";
+import { useState, useEffect } from "react";
 
 interface Employee {
   id: string;
@@ -22,12 +22,26 @@ const EmployeeList: React.FC = () => {
         // In a real application, this would fetch from your FastAPI backend
         // For now, using mock data
         const mockEmployees: Employee[] = [
-          { id: '1', first_name: 'John', last_name: 'Doe', email: 'john.doe@example.com', job_title: 'Manager', department: 'Operations' },
-          { id: '2', first_name: 'Jane', last_name: 'Smith', email: 'jane.smith@example.com', job_title: 'Chef', department: 'Kitchen' },
+          {
+            id: "1",
+            first_name: "John",
+            last_name: "Doe",
+            email: "john.doe@example.com",
+            job_title: "Manager",
+            department: "Operations",
+          },
+          {
+            id: "2",
+            first_name: "Jane",
+            last_name: "Smith",
+            email: "jane.smith@example.com",
+            job_title: "Chef",
+            department: "Kitchen",
+          },
         ];
         setEmployees(mockEmployees);
       } catch (err) {
-        setError('Failed to fetch employees');
+        setError("Failed to fetch employees");
       } finally {
         setLoading(false);
       }
@@ -42,9 +56,10 @@ const EmployeeList: React.FC = () => {
     <div className="employee-list">
       <h2>Employee List</h2>
       <ul>
-        {employees.map(employee => (
+        {employees.map((employee) => (
           <li key={employee.id}>
-            {employee.first_name} {employee.last_name} - {employee.job_title} ({employee.department})
+            {employee.first_name} {employee.last_name} - {employee.job_title} (
+            {employee.department})
           </li>
         ))}
       </ul>

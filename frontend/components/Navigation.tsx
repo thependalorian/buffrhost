@@ -45,10 +45,17 @@ export default function Navigation({ className = '' }: NavigationProps) {
     },
     {
       name: 'Etuna Management',
-      href: '/protected/etuna/dashboard',
+      href: '/demo/etuna/admin-dashboard-demo/dashboard',
       icon: ChartBarIcon,
       description: 'Etuna admin dashboard',
       badge: 'Admin'
+    },
+    {
+      name: 'Restaurants',
+      href: '/restaurants',
+      icon: BuildingOffice2Icon,
+      description: 'Manage restaurants',
+      badge: 'New'
     },
     {
       name: 'Menu Demo',
@@ -122,7 +129,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
               </Link>
               
               <Link 
-                href="/protected/etuna/dashboard" 
+                href="/demo/etuna/admin-dashboard-demo/dashboard" 
                 className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               >
                 <ChartBarIcon className="w-4 h-4" />

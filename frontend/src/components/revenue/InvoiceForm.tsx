@@ -1,29 +1,29 @@
 /**
  * Invoice Form Component
- * 
+ *
  * Form for creating and editing invoices in serverless microservices architecture
  * Integrates with Revenue Service microservice
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { 
-  FileText, 
-  Save, 
-  X, 
-  Plus, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  FileText,
+  Save,
+  X,
+  Plus,
   Trash2,
   CheckCircle,
   AlertCircle,
   User,
   Calendar,
-  DollarSign
-} from 'lucide-react';
+  DollarSign,
+} from "lucide-react";
 
 interface InvoiceItem {
   description: string;
@@ -41,7 +41,7 @@ interface InvoiceFormData {
   description: string;
   items: InvoiceItem[];
   currency: string;
-  status: 'draft' | 'sent' | 'paid';
+  status: "draft" | "sent" | "paid";
   notes?: string;
 }
 
@@ -49,31 +49,38 @@ interface InvoiceFormProps {
   initialData?: Partial<InvoiceFormData>;
   onSubmit?: (data: InvoiceFormData) => Promise<void>;
   onCancel?: () => void;
-  mode?: 'create' | 'edit';
+  mode?: "create" | "edit";
   // Microservice integration props
   revenueServiceUrl?: string;
   apiKey?: string;
 }
 
-export default function InvoiceForm({ 
-  initialData, 
-  onSubmit, 
-  onCancel, 
-  mode = 'create',
-  revenueServiceUrl = process.env.NEXT_PUBLIC_REVENUE_SERVICE_URL || 'https://revenue-service.buffrhost.com',
-  apiKey
+export default function InvoiceForm({
+  initialData,
+  onSubmit,
+  onCancel,
+  mode = "create",
+  revenueServiceUrl = process.env.NEXT_PUBLIC_REVENUE_SERVICE_URL ||
+    "https://revenue-service.buffrhost.com",
+  apiKey,
 }: InvoiceFormProps) {
   const [formData, setFormData] = useState<InvoiceFormData>({
-    customerName: initialData?.customerName || '',
-    customerEmail: initialData?.customerEmail || '',
-    customerAddress: initialData?.customerAddress || '',
-    dueDate: initialData?.dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    issueDate: initialData?.issueDate || new Date().toISOString().split('T')[0],
-    description: initialData?.description || '',
-    items: initialData?.items || [{ description: '', quantity: 1, unitPrice: 0, total: 0 }],
-    currency: initialData?.currency || 'NAD',
-    status: initialData?.status || 'draft',
-    notes: initialData?.notes || ''
+    customerName: initialData?.customerName || "",
+    customerEmail: initialData?.customerEmail || "",
+    customerAddress: initialData?.customerAddress || "",
+    dueDate:
+      initialData?.dueDate ||
+      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+    issueDate: initialData?.issueDate || new Date().toISOString().split("T")[0],
+    description: initialData?.description || "",
+    items: initialData?.items || [
+      { description: "", quantity: 1, unitPrice: 0, total: 0 },
+    ],
+    currency: initialData?.currency || "NAD",
+    status: initialData?.status || "draft",
+    notes: initialData?.notes || "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,33 +90,37 @@ export default function InvoiceForm({
     const newErrors: Record<string, string> = {};
 
     if (!formData.customerName.trim()) {
-      newErrors.customerName = 'Customer name is required';
+      newErrors.customerName = "Customer name is required";
     }
 
     if (!formData.customerEmail.trim()) {
-      newErrors.customerEmail = 'Customer email is required';
+      newErrors.customerEmail = "Customer email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)) {
-      newErrors.customerEmail = 'Invalid email format';
+      newErrors.customerEmail = "Invalid email format";
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = 'Invoice description is required';
+      newErrors.description = "Invoice description is required";
     }
 
-    if (formData.items.length === 0 || formData.items.every(item => !item.description.trim())) {
-      newErrors.items = 'At least one invoice item is required';
+    if (
+      formData.items.length === 0 ||
+      formData.items.every((item) => !item.description.trim())
+    ) {
+      newErrors.items = "At least one invoice item is required";
     }
 
     // Validate items
     formData.items.forEach((item, index) => {
       if (!item.description.trim()) {
-        newErrors[`item_${index}_description`] = 'Item description is required';
+        newErrors[`item_${index}_description`] = "Item description is required";
       }
       if (item.quantity <= 0) {
-        newErrors[`item_${index}_quantity`] = 'Quantity must be greater than 0';
+        newErrors[`item_${index}_quantity`] = "Quantity must be greater than 0";
       }
       if (item.unitPrice < 0) {
-        newErrors[`item_${index}_unitPrice`] = 'Unit price must be non-negative';
+        newErrors[`item_${index}_unitPrice`] =
+          "Unit price must be non-negative";
       }
     });
 
@@ -117,43 +128,54 @@ export default function InvoiceForm({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof InvoiceFormData, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof InvoiceFormData,
+    value: string | number,
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
-  const handleItemChange = (index: number, field: keyof InvoiceItem, value: string | number) => {
+  const handleItemChange = (
+    index: number,
+    field: keyof InvoiceItem,
+    value: string | number,
+  ) => {
     const newItems = [...formData.items];
     newItems[index] = { ...newItems[index], [field]: value };
-    
+
     // Recalculate total
-    if (field === 'quantity' || field === 'unitPrice') {
-      newItems[index].total = newItems[index].quantity * newItems[index].unitPrice;
+    if (field === "quantity" || field === "unitPrice") {
+      newItems[index].total =
+        newItems[index].quantity * newItems[index].unitPrice;
     }
-    
-    setFormData(prev => ({ ...prev, items: newItems }));
-    
+
+    setFormData((prev) => ({ ...prev, items: newItems }));
+
     // Clear item-specific errors
     const errorKey = `item_${index}_${field}`;
     if (errors[errorKey]) {
-      setErrors(prev => ({ ...prev, [errorKey]: '' }));
+      setErrors((prev) => ({ ...prev, [errorKey]: "" }));
     }
   };
 
   const addItem = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      items: [...prev.items, { description: '', quantity: 1, unitPrice: 0, total: 0 }] 
+    setFormData((prev) => ({
+      ...prev,
+      items: [
+        ...prev.items,
+        { description: "", quantity: 1, unitPrice: 0, total: 0 },
+      ],
     }));
   };
 
   const removeItem = (index: number) => {
     if (formData.items.length > 1) {
       const newItems = formData.items.filter((_, i) => i !== index);
-      setFormData(prev => ({ ...prev, items: newItems }));
+      setFormData((prev) => ({ ...prev, items: newItems }));
     }
   };
 
@@ -163,7 +185,7 @@ export default function InvoiceForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -175,10 +197,10 @@ export default function InvoiceForm({
         ...formData,
         totalAmount: calculateTotal(),
         // Add microservice-specific fields
-        service: 'revenue',
+        service: "revenue",
         timestamp: new Date().toISOString(),
         // Include API key for authentication
-        ...(apiKey && { apiKey })
+        ...(apiKey && { apiKey }),
       };
 
       // Call Revenue Service microservice
@@ -187,12 +209,12 @@ export default function InvoiceForm({
       } else {
         // Default microservice call
         const response = await fetch(`${revenueServiceUrl}/api/invoices`, {
-          method: mode === 'create' ? 'POST' : 'PUT',
+          method: mode === "create" ? "POST" : "PUT",
           headers: {
-            'Content-Type': 'application/json',
-            ...(apiKey && { 'Authorization': `Bearer ${apiKey}` })
+            "Content-Type": "application/json",
+            ...(apiKey && { Authorization: `Bearer ${apiKey}` }),
           },
-          body: JSON.stringify(invoiceData)
+          body: JSON.stringify(invoiceData),
         });
 
         if (!response.ok) {
@@ -200,17 +222,17 @@ export default function InvoiceForm({
         }
       }
     } catch (error) {
-      console.error('Error submitting invoice:', error);
-      setErrors({ submit: 'Failed to save invoice. Please try again.' });
+      console.error("Error submitting invoice:", error);
+      setErrors({ submit: "Failed to save invoice. Please try again." });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const formatPrice = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
     }).format(amount);
   };
 
@@ -219,7 +241,7 @@ export default function InvoiceForm({
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <FileText className="w-5 h-5" />
-          <span>{mode === 'create' ? 'Create Invoice' : 'Edit Invoice'}</span>
+          <span>{mode === "create" ? "Create Invoice" : "Edit Invoice"}</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -230,16 +252,18 @@ export default function InvoiceForm({
               <User className="w-5 h-5" />
               <span>Customer Information</span>
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="customerName">Customer Name *</Label>
                 <Input
                   id="customerName"
                   value={formData.customerName}
-                  onChange={(e) => handleInputChange('customerName', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("customerName", e.target.value)
+                  }
                   placeholder="Enter customer name"
-                  className={errors.customerName ? 'border-red-500' : ''}
+                  className={errors.customerName ? "border-red-500" : ""}
                 />
                 {errors.customerName && (
                   <p className="text-sm text-red-600 flex items-center space-x-1">
@@ -255,9 +279,11 @@ export default function InvoiceForm({
                   id="customerEmail"
                   type="email"
                   value={formData.customerEmail}
-                  onChange={(e) => handleInputChange('customerEmail', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("customerEmail", e.target.value)
+                  }
                   placeholder="customer@example.com"
-                  className={errors.customerEmail ? 'border-red-500' : ''}
+                  className={errors.customerEmail ? "border-red-500" : ""}
                 />
                 {errors.customerEmail && (
                   <p className="text-sm text-red-600 flex items-center space-x-1">
@@ -273,7 +299,9 @@ export default function InvoiceForm({
               <textarea
                 id="customerAddress"
                 value={formData.customerAddress}
-                onChange={(e) => handleInputChange('customerAddress', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("customerAddress", e.target.value)
+                }
                 placeholder="Enter customer address"
                 rows={2}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -287,7 +315,7 @@ export default function InvoiceForm({
               <Calendar className="w-5 h-5" />
               <span>Invoice Details</span>
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="issueDate">Issue Date</Label>
@@ -295,7 +323,9 @@ export default function InvoiceForm({
                   id="issueDate"
                   type="date"
                   value={formData.issueDate}
-                  onChange={(e) => handleInputChange('issueDate', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("issueDate", e.target.value)
+                  }
                 />
               </div>
 
@@ -305,7 +335,7 @@ export default function InvoiceForm({
                   id="dueDate"
                   type="date"
                   value={formData.dueDate}
-                  onChange={(e) => handleInputChange('dueDate', e.target.value)}
+                  onChange={(e) => handleInputChange("dueDate", e.target.value)}
                 />
               </div>
 
@@ -314,7 +344,9 @@ export default function InvoiceForm({
                 <select
                   id="currency"
                   value={formData.currency}
-                  onChange={(e) => handleInputChange('currency', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("currency", e.target.value)
+                  }
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="NAD">NAD</option>
@@ -330,9 +362,11 @@ export default function InvoiceForm({
               <Input
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 placeholder="Invoice description"
-                className={errors.description ? 'border-red-500' : ''}
+                className={errors.description ? "border-red-500" : ""}
               />
               {errors.description && (
                 <p className="text-sm text-red-600 flex items-center space-x-1">
@@ -349,22 +383,32 @@ export default function InvoiceForm({
               <DollarSign className="w-5 h-5" />
               <span>Invoice Items *</span>
             </h3>
-            
+
             <div className="space-y-4">
               {formData.items.map((item, index) => (
                 <div key={index} className="border rounded-lg p-4 space-y-3">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="md:col-span-2 space-y-2">
-                      <Label htmlFor={`item_${index}_description`}>Description</Label>
+                      <Label htmlFor={`item_${index}_description`}>
+                        Description
+                      </Label>
                       <Input
                         id={`item_${index}_description`}
                         value={item.description}
-                        onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                        onChange={(e) =>
+                          handleItemChange(index, "description", e.target.value)
+                        }
                         placeholder="Item description"
-                        className={errors[`item_${index}_description`] ? 'border-red-500' : ''}
+                        className={
+                          errors[`item_${index}_description`]
+                            ? "border-red-500"
+                            : ""
+                        }
                       />
                       {errors[`item_${index}_description`] && (
-                        <p className="text-sm text-red-600">{errors[`item_${index}_description`]}</p>
+                        <p className="text-sm text-red-600">
+                          {errors[`item_${index}_description`]}
+                        </p>
                       )}
                     </div>
 
@@ -375,27 +419,53 @@ export default function InvoiceForm({
                         type="number"
                         min="1"
                         value={item.quantity}
-                        onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
-                        className={errors[`item_${index}_quantity`] ? 'border-red-500' : ''}
+                        onChange={(e) =>
+                          handleItemChange(
+                            index,
+                            "quantity",
+                            parseInt(e.target.value) || 1,
+                          )
+                        }
+                        className={
+                          errors[`item_${index}_quantity`]
+                            ? "border-red-500"
+                            : ""
+                        }
                       />
                       {errors[`item_${index}_quantity`] && (
-                        <p className="text-sm text-red-600">{errors[`item_${index}_quantity`]}</p>
+                        <p className="text-sm text-red-600">
+                          {errors[`item_${index}_quantity`]}
+                        </p>
                       )}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor={`item_${index}_unitPrice`}>Unit Price</Label>
+                      <Label htmlFor={`item_${index}_unitPrice`}>
+                        Unit Price
+                      </Label>
                       <Input
                         id={`item_${index}_unitPrice`}
                         type="number"
                         min="0"
                         step="0.01"
                         value={item.unitPrice}
-                        onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-                        className={errors[`item_${index}_unitPrice`] ? 'border-red-500' : ''}
+                        onChange={(e) =>
+                          handleItemChange(
+                            index,
+                            "unitPrice",
+                            parseFloat(e.target.value) || 0,
+                          )
+                        }
+                        className={
+                          errors[`item_${index}_unitPrice`]
+                            ? "border-red-500"
+                            : ""
+                        }
                       />
                       {errors[`item_${index}_unitPrice`] && (
-                        <p className="text-sm text-red-600">{errors[`item_${index}_unitPrice`]}</p>
+                        <p className="text-sm text-red-600">
+                          {errors[`item_${index}_unitPrice`]}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -417,7 +487,7 @@ export default function InvoiceForm({
                   </div>
                 </div>
               ))}
-              
+
               <Button
                 type="button"
                 variant="outline"
@@ -455,7 +525,7 @@ export default function InvoiceForm({
             <textarea
               id="notes"
               value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
+              onChange={(e) => handleInputChange("notes", e.target.value)}
               placeholder="Additional notes..."
               rows={3}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -474,24 +544,21 @@ export default function InvoiceForm({
 
           {/* Actions */}
           <div className="flex items-center justify-end space-x-3 pt-6 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-            >
+            <Button type="button" variant="outline" onClick={onCancel}>
               <X className="w-4 h-4 mr-2" />
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <Save className="w-4 h-4 mr-2" />
               )}
-              {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Invoice' : 'Update Invoice'}
+              {isSubmitting
+                ? "Saving..."
+                : mode === "create"
+                  ? "Create Invoice"
+                  : "Update Invoice"}
             </Button>
           </div>
         </form>

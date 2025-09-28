@@ -1,29 +1,29 @@
 /**
  * User Email Dashboard Component
- * 
+ *
  * Main dashboard for user email management
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Mail, 
-  Send, 
-  Inbox, 
-  Archive, 
-  Trash2, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Mail,
+  Send,
+  Inbox,
+  Archive,
+  Trash2,
   Plus,
   Settings,
   BarChart3,
   Clock,
   CheckCircle,
-  AlertCircle
-} from 'lucide-react';
-import EmailNotificationList from './EmailNotificationList';
+  AlertCircle,
+} from "lucide-react";
+import EmailNotificationList from "./EmailNotificationList";
 
 interface EmailStats {
   total: number;
@@ -33,25 +33,25 @@ interface EmailStats {
 }
 
 export default function UserEmailDashboard() {
-  const [activeTab, setActiveTab] = useState('inbox');
+  const [activeTab, setActiveTab] = useState("inbox");
 
   const emailStats: EmailStats = {
     total: 156,
     unread: 12,
     sent: 89,
-    failed: 3
+    failed: 3,
   };
 
   const handleMarkAsRead = (id: string) => {
-    console.log('Mark as read:', id);
+    console.log("Mark as read:", id);
   };
 
   const handleDelete = (id: string) => {
-    console.log('Delete notification:', id);
+    console.log("Delete notification:", id);
   };
 
   const handleFilter = (type: string) => {
-    console.log('Filter by type:', type);
+    console.log("Filter by type:", type);
   };
 
   return (
@@ -140,14 +140,17 @@ export default function UserEmailDashboard() {
             <Archive className="w-4 h-4" />
             <span>Archive</span>
           </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center space-x-2">
+          <TabsTrigger
+            value="analytics"
+            className="flex items-center space-x-2"
+          >
             <BarChart3 className="w-4 h-4" />
             <span>Analytics</span>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="inbox" className="space-y-4">
-          <EmailNotificationList 
+          <EmailNotificationList
             onMarkAsRead={handleMarkAsRead}
             onDelete={handleDelete}
             onFilter={handleFilter}

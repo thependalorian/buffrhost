@@ -1,33 +1,34 @@
-/**
- * PropertyPreview Component for Buffr Host
- * 
- * Specialized preview component for property content including amenities,
- * services, rooms, and guest-facing information.
- */
-
 "use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { 
-  MapPin, 
-  Star, 
-  Wifi, 
-  Car, 
-  Coffee, 
-  Dumbbell, 
-  Waves, 
+import {
+  MapPin,
+  Star,
+  Wifi,
+  Car,
+  Coffee,
+  Dumbbell,
+  Waves,
   Utensils,
-  Smartphone, 
-  Monitor, 
-  Tablet, 
-  Eye, 
+  Smartphone,
+  Monitor,
+  Tablet,
+  Eye,
   Share2,
   X,
   Phone,
   Mail,
-  Globe
-} from 'lucide-react';
+  Globe,
+} from "lucide-react";
+
+/**
+ * PropertyPreview Component for Buffr Host
+ *
+ * Specialized preview component for property content including amenities,
+ * services, rooms, and guest-facing information.
+ */
+
+import React, { useState } from "react";
+import Image from "next/image";
 
 interface PropertyData {
   name: string;
@@ -57,7 +58,7 @@ interface PropertyData {
     title: string;
     description: string;
   }>;
-  theme: 'modern' | 'classic' | 'luxury' | 'boutique';
+  theme: "modern" | "classic" | "luxury" | "boutique";
 }
 
 interface PropertyPreviewProps {
@@ -68,54 +69,54 @@ interface PropertyPreviewProps {
   showContactInfo?: boolean;
 }
 
-type DeviceType = 'desktop' | 'tablet' | 'mobile';
+type DeviceType = "desktop" | "tablet" | "mobile";
 
 const PropertyPreview: React.FC<PropertyPreviewProps> = ({
   propertyData,
   isOpen,
   onClose,
   onSave,
-  showContactInfo = true
+  showContactInfo = true,
 }) => {
-  const [deviceType, setDeviceType] = useState<DeviceType>('desktop');
+  const [deviceType, setDeviceType] = useState<DeviceType>("desktop");
 
   const deviceConfig = {
-    desktop: { width: '100%', maxWidth: '1200px', icon: Monitor },
-    tablet: { width: '768px', maxWidth: '768px', icon: Tablet },
-    mobile: { width: '375px', maxWidth: '375px', icon: Smartphone }
+    desktop: { width: "100%", maxWidth: "1200px", icon: Monitor },
+    tablet: { width: "768px", maxWidth: "768px", icon: Tablet },
+    mobile: { width: "375px", maxWidth: "375px", icon: Smartphone },
   };
 
   const DeviceIcon = deviceConfig[deviceType].icon;
 
   const getThemeClasses = () => {
     switch (propertyData.theme) {
-      case 'luxury':
+      case "luxury":
         return {
-          primary: 'bg-gradient-to-r from-yellow-600 to-yellow-800',
-          secondary: 'bg-yellow-50',
-          accent: 'text-yellow-600',
-          card: 'bg-white shadow-xl'
+          primary: "bg-gradient-to-r from-yellow-600 to-yellow-800",
+          secondary: "bg-yellow-50",
+          accent: "text-yellow-600",
+          card: "bg-white shadow-xl",
         };
-      case 'boutique':
+      case "boutique":
         return {
-          primary: 'bg-gradient-to-r from-purple-600 to-pink-600',
-          secondary: 'bg-purple-50',
-          accent: 'text-purple-600',
-          card: 'bg-white shadow-lg'
+          primary: "bg-gradient-to-r from-purple-600 to-pink-600",
+          secondary: "bg-purple-50",
+          accent: "text-purple-600",
+          card: "bg-white shadow-lg",
         };
-      case 'classic':
+      case "classic":
         return {
-          primary: 'bg-gradient-to-r from-gray-700 to-gray-900',
-          secondary: 'bg-gray-50',
-          accent: 'text-gray-700',
-          card: 'bg-white shadow-md'
+          primary: "bg-gradient-to-r from-gray-700 to-gray-900",
+          secondary: "bg-gray-50",
+          accent: "text-gray-700",
+          card: "bg-white shadow-md",
         };
       default: // modern
         return {
-          primary: 'bg-gradient-to-r from-blue-600 to-blue-800',
-          secondary: 'bg-blue-50',
-          accent: 'text-blue-600',
-          card: 'bg-white shadow-lg'
+          primary: "bg-gradient-to-r from-blue-600 to-blue-800",
+          secondary: "bg-blue-50",
+          accent: "text-blue-600",
+          card: "bg-white shadow-lg",
         };
     }
   };
@@ -124,22 +125,27 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
 
   const getAmenityIcon = (amenity: string) => {
     const amenityLower = amenity.toLowerCase();
-    if (amenityLower.includes('wifi') || amenityLower.includes('internet')) return <Wifi className="w-5 h-5" />;
-    if (amenityLower.includes('parking')) return <Car className="w-5 h-5" />;
-    if (amenityLower.includes('restaurant') || amenityLower.includes('dining')) return <Utensils className="w-5 h-5" />;
-    if (amenityLower.includes('gym') || amenityLower.includes('fitness')) return <Dumbbell className="w-5 h-5" />;
-    if (amenityLower.includes('pool')) return <Waves className="w-5 h-5" />;
-    if (amenityLower.includes('coffee') || amenityLower.includes('cafe')) return <Coffee className="w-5 h-5" />;
+    if (amenityLower.includes("wifi") || amenityLower.includes("internet"))
+      return <Wifi className="w-5 h-5" />;
+    if (amenityLower.includes("parking")) return <Car className="w-5 h-5" />;
+    if (amenityLower.includes("restaurant") || amenityLower.includes("dining"))
+      return <Utensils className="w-5 h-5" />;
+    if (amenityLower.includes("gym") || amenityLower.includes("fitness"))
+      return <Dumbbell className="w-5 h-5" />;
+    if (amenityLower.includes("pool")) return <Waves className="w-5 h-5" />;
+    if (amenityLower.includes("coffee") || amenityLower.includes("cafe"))
+      return <Coffee className="w-5 h-5" />;
     return <Star className="w-5 h-5" />;
   };
 
   const renderAmenities = () => (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
       {propertyData.amenities.map((amenity, index) => (
-        <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-          <div className={theme.accent}>
-            {getAmenityIcon(amenity)}
-          </div>
+        <div
+          key={index}
+          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+        >
+          <div className={theme.accent}>{getAmenityIcon(amenity)}</div>
           <span className="text-sm font-medium text-gray-700">{amenity}</span>
         </div>
       ))}
@@ -150,7 +156,9 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
     <div className="grid md:grid-cols-2 gap-6">
       {propertyData.services.map((service, index) => (
         <div key={index} className={`p-6 ${theme.card} rounded-lg`}>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{service.name}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            {service.name}
+          </h3>
           <p className="text-gray-600">{service.description}</p>
         </div>
       ))}
@@ -163,7 +171,10 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
     return (
       <div className="space-y-6">
         {propertyData.rooms.map((room, index) => (
-          <div key={index} className={`${theme.card} rounded-lg overflow-hidden`}>
+          <div
+            key={index}
+            className={`${theme.card} rounded-lg overflow-hidden`}
+          >
             {room.image && (
               <Image
                 src={room.image}
@@ -175,8 +186,12 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
             )}
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-semibold text-gray-900">{room.name}</h3>
-                <span className="text-2xl font-bold text-blue-600">${room.price}/night</span>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  {room.name}
+                </h3>
+                <span className="text-2xl font-bold text-blue-600">
+                  ${room.price}/night
+                </span>
               </div>
               <p className="text-gray-600 mb-4">{room.description}</p>
               <div className="flex flex-wrap gap-2">
@@ -209,7 +224,9 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className={`w-full h-full ${theme.primary} flex items-center justify-center`}>
+          <div
+            className={`w-full h-full ${theme.primary} flex items-center justify-center`}
+          >
             <div className="text-white text-center">
               {propertyData.logo && (
                 <Image
@@ -227,7 +244,9 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
         <div className="absolute inset-0 bg-black bg-opacity-30"></div>
         <div className="absolute inset-0 flex items-center justify-center text-white text-center">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{propertyData.name}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              {propertyData.name}
+            </h1>
             <div className="flex items-center justify-center gap-2 mb-4">
               <MapPin className="w-5 h-5" />
               <span className="text-lg">{propertyData.address}</span>
@@ -237,7 +256,11 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`w-5 h-5 ${i < propertyData.rating! ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                    className={`w-5 h-5 ${
+                      i < propertyData.rating!
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-gray-300"
+                    }`}
                   />
                 ))}
                 <span className="ml-2 text-lg">{propertyData.rating}/5</span>
@@ -251,8 +274,12 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
       <div className="max-w-6xl mx-auto p-6 space-y-12">
         {/* About Section */}
         <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">About {propertyData.name}</h2>
-          <p className="text-lg text-gray-600 leading-relaxed">{propertyData.description}</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">
+            About {propertyData.name}
+          </h2>
+          <p className="text-lg text-gray-600 leading-relaxed">
+            {propertyData.description}
+          </p>
         </section>
 
         {/* Amenities Section */}
@@ -263,14 +290,18 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
 
         {/* Services Section */}
         <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Services</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">
+            Our Services
+          </h2>
           {renderServices()}
         </section>
 
         {/* Rooms Section */}
         {propertyData.rooms && propertyData.rooms.length > 0 && (
           <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Accommodations</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              Accommodations
+            </h2>
             {renderRooms()}
           </section>
         )}
@@ -301,7 +332,9 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
             <div className="space-y-4">
               {propertyData.policies.map((policy, index) => (
                 <div key={index} className={`p-4 ${theme.card} rounded-lg`}>
-                  <h3 className="font-semibold text-gray-900 mb-2">{policy.title}</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    {policy.title}
+                  </h3>
                   <p className="text-gray-600">{policy.description}</p>
                 </div>
               ))}
@@ -312,7 +345,9 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
         {/* Contact Section */}
         {showContactInfo && (
           <section className={`p-8 ${theme.secondary} rounded-lg`}>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Contact Us</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              Contact Us
+            </h2>
             <div className="grid md:grid-cols-3 gap-6">
               {propertyData.phone && (
                 <div className="flex items-center gap-3">
@@ -359,8 +394,11 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
-      
+      <div
+        className="absolute inset-0 bg-black bg-opacity-50"
+        onClick={onClose}
+      ></div>
+
       {/* Modal */}
       <div className="relative flex flex-col h-full bg-white">
         {/* Header */}
@@ -371,7 +409,7 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
               Property Preview: {propertyData.name}
             </h2>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {/* Device Toggle */}
             <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
@@ -383,17 +421,19 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
                     onClick={() => setDeviceType(device as DeviceType)}
                     className={`p-2 rounded-md transition-colors ${
                       deviceType === device
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
+                        ? "bg-white text-blue-600 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900"
                     }`}
-                    title={`${device.charAt(0).toUpperCase() + device.slice(1)} view`}
+                    title={`${
+                      device.charAt(0).toUpperCase() + device.slice(1)
+                    } view`}
                   >
                     <Icon className="w-4 h-4" />
                   </button>
                 );
               })}
             </div>
-            
+
             {/* Save Button */}
             {onSave && (
               <button
@@ -404,7 +444,7 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
                 Save Property
               </button>
             )}
-            
+
             <button
               onClick={onClose}
               className="p-2 text-gray-400 hover:text-gray-600"
@@ -416,7 +456,13 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
 
         {/* Preview Content */}
         <div className="flex-1 overflow-auto bg-gray-100 p-4">
-          <div className="mx-auto" style={{ width: deviceConfig[deviceType].width, maxWidth: deviceConfig[deviceType].maxWidth }}>
+          <div
+            className="mx-auto"
+            style={{
+              width: deviceConfig[deviceType].width,
+              maxWidth: deviceConfig[deviceType].maxWidth,
+            }}
+          >
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               {renderPropertyContent()}
             </div>
@@ -428,7 +474,9 @@ const PropertyPreview: React.FC<PropertyPreviewProps> = ({
           <div className="flex items-center justify-between text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <DeviceIcon className="w-4 h-4" />
-              <span>{deviceType.charAt(0).toUpperCase() + deviceType.slice(1)} View</span>
+              <span>
+                {deviceType.charAt(0).toUpperCase() + deviceType.slice(1)} View
+              </span>
             </div>
             <p>This is how your property will appear to guests</p>
           </div>

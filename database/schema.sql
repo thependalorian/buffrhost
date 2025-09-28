@@ -1717,7 +1717,7 @@ CREATE TABLE voice_models (
     property_id INTEGER REFERENCES HospitalityProperty(property_id) ON DELETE CASCADE,
     model_name VARCHAR(100) NOT NULL,
     model_type VARCHAR(20) NOT NULL, -- 'tts' or 'stt'
-    provider VARCHAR(50) NOT NULL, -- 'openai', 'local', 'azure', 'aws'
+    provider VARCHAR(50) NOT NULL, -- 'openai', 'local', 'azure'
     model_id VARCHAR(100) NOT NULL,
     language VARCHAR(10) DEFAULT 'en',
     voice VARCHAR(50), -- For TTS models

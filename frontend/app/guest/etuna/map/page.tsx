@@ -1,10 +1,3 @@
-/**
- * Etuna Map Page
- * 
- * Dedicated page for location, directions, and interactive map
- * Includes comprehensive travel information and local attractions
- */
-
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { 
@@ -18,7 +11,14 @@ import {
   Home,
   Star
 } from 'lucide-react';
-import EtunaMap from '@/components/EtunaMap';
+/**
+ * Etuna Map Page
+ * 
+ * Dedicated page for location, directions, and interactive map
+ * Includes comprehensive travel information and local attractions
+ */
+
+// import EtunaMap from '@/components/EtunaMap';
 
 export const metadata: Metadata = {
   title: 'Etuna Guesthouse Location & Directions - Find Us',
@@ -118,7 +118,13 @@ export default function EtunaMapPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Map */}
           <div className="lg:col-span-2">
-            <EtunaMap showDirections={true} height="600px" />
+            <div className="bg-gray-200 rounded-lg flex items-center justify-center h-[600px]">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🗺️</div>
+                <h3 className="text-lg font-semibold text-gray-700">Interactive Map</h3>
+                <p className="text-gray-500">Map component would be integrated here</p>
+              </div>
+            </div>
           </div>
 
           {/* Information Sidebar */}

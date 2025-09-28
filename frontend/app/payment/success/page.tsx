@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { CheckCircleIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { CheckCircleIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { useSearchParams } from "next/navigation";
 
 export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
@@ -12,18 +12,20 @@ export default function PaymentSuccessPage() {
   useEffect(() => {
     const fetchPaymentDetails = async () => {
       try {
-        const transactionId = searchParams?.get('transaction_id');
-        const orderId = searchParams?.get('order_id');
-        
+        const transactionId = searchParams?.get("transaction_id");
+        const orderId = searchParams?.get("order_id");
+
         if (transactionId) {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/status/${transactionId}`);
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/payments/status/${transactionId}`,
+          );
           if (response.ok) {
             const data = await response.json();
             setPaymentData(data);
           }
         }
       } catch (error) {
-        console.error('Error fetching payment details:', error);
+        console.error("Error fetching payment details:", error);
       } finally {
         setIsLoading(false);
       }
@@ -37,7 +39,9 @@ export default function PaymentSuccessPage() {
       <div className="min-h-screen bg-sand-50 dark:bg-sand-900/20 flex items-center justify-center">
         <div className="text-center">
           <div className="loading loading-spinner loading-lg text-primary"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Verifying payment...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
+            Verifying payment...
+          </p>
         </div>
       </div>
     );
@@ -65,19 +69,25 @@ export default function PaymentSuccessPage() {
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Transaction ID:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Transaction ID:
+                </span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   {paymentData.transaction_id}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Amount:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Amount:
+                </span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   N${paymentData.amount}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Status:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Status:
+                </span>
                 <span className="badge badge-success">Completed</span>
               </div>
               <div className="flex justify-between">
@@ -92,15 +102,15 @@ export default function PaymentSuccessPage() {
 
         <div className="space-y-4">
           <button
-            onClick={() => window.location.href = '/dashboard'}
+            onClick={() => (window.location.href = "/dashboard")}
             className="btn btn-primary w-full"
           >
             Go to Dashboard
             <ArrowRightIcon className="w-5 h-5 ml-2" />
           </button>
-          
+
           <button
-            onClick={() => window.location.href = '/'}
+            onClick={() => (window.location.href = "/")}
             className="btn btn-outline w-full"
           >
             Return to Home

@@ -1,8 +1,9 @@
+from typing import Any, Dict, List
 
-from fastapi import APIRouter, Request, HTTPException, status
-from typing import List, Dict, Any
+from fastapi import APIRouter, HTTPException, Request, status
 
 router = APIRouter()
+
 
 @router.post("/webhook/sendgrid", status_code=status.HTTP_200_OK)
 async def handle_sendgrid_webhook(request: Request):

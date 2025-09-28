@@ -1,16 +1,20 @@
 """
 Vehicle model for Buffr Host platform.
 """
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Numeric, ForeignKey, Date, Time
+from sqlalchemy import (Boolean, Column, Date, DateTime, ForeignKey, Integer,
+                        Numeric, String, Text, Time)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from database import Base
 
+
 class Vehicle(Base):
     __tablename__ = "vehicle"
     vehicle_id = Column(Integer, primary_key=True, index=True)
-    property_id = Column(Integer, ForeignKey("hospitality_property.property_id"), nullable=False)
+    property_id = Column(
+        Integer, ForeignKey("hospitality_property.property_id"), nullable=False
+    )
     vehicle_type = Column(String(100), nullable=False)
     make = Column(String(100))
     model = Column(String(100))

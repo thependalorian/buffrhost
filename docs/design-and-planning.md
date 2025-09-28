@@ -49,7 +49,7 @@ Authentication is handled using JWT tokens with bcrypt password hashing. Users c
 PostgreSQL is used as the primary database with pgvector extension for AI features. It stores information about hospitality properties, menu items, orders, rooms, reservations, and categories. The database includes vector storage for AI embeddings and semantic search capabilities.
 
 #### 5. Storage
-File storage is handled through cloud services (AWS S3) for images and other files.
+File storage is handled through Supabase Storage for images and other files.
 
 #### 6. Utilities
 Utility functions and configurations that support various functionalities, such as JWT generation and custom hooks.

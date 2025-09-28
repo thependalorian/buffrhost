@@ -1,34 +1,34 @@
 /**
  * Email Notification List Component
- * 
+ *
  * Displays a list of email notifications for users
  */
 
-'use client';
+"use client";
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { 
-  Mail, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle, 
-  Eye, 
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Mail,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Eye,
   Trash2,
   Filter,
-  Search
-} from 'lucide-react';
+  Search,
+} from "lucide-react";
 
 interface EmailNotification {
   id: string;
   subject: string;
   sender: string;
   timestamp: string;
-  status: 'read' | 'unread' | 'sent' | 'failed';
-  priority: 'low' | 'medium' | 'high';
-  type: 'booking' | 'payment' | 'system' | 'marketing';
+  status: "read" | "unread" | "sent" | "failed";
+  priority: "low" | "medium" | "high";
+  type: "booking" | "payment" | "system" | "marketing";
 }
 
 interface EmailNotificationListProps {
@@ -38,53 +38,54 @@ interface EmailNotificationListProps {
   onFilter?: (type: string) => void;
 }
 
-export default function EmailNotificationList({ 
-  notifications = [], 
-  onMarkAsRead, 
-  onDelete, 
-  onFilter 
+export default function EmailNotificationList({
+  notifications = [],
+  onMarkAsRead,
+  onDelete,
+  onFilter,
 }: EmailNotificationListProps) {
   const mockNotifications: EmailNotification[] = [
     {
-      id: '1',
-      subject: 'New Booking Confirmation',
-      sender: 'system@buffrhost.com',
-      timestamp: '2024-01-15 10:30',
-      status: 'unread',
-      priority: 'high',
-      type: 'booking'
+      id: "1",
+      subject: "New Booking Confirmation",
+      sender: "system@buffrhost.com",
+      timestamp: "2024-01-15 10:30",
+      status: "unread",
+      priority: "high",
+      type: "booking",
     },
     {
-      id: '2',
-      subject: 'Payment Received',
-      sender: 'payments@buffrhost.com',
-      timestamp: '2024-01-15 09:15',
-      status: 'read',
-      priority: 'medium',
-      type: 'payment'
+      id: "2",
+      subject: "Payment Received",
+      sender: "payments@buffrhost.com",
+      timestamp: "2024-01-15 09:15",
+      status: "read",
+      priority: "medium",
+      type: "payment",
     },
     {
-      id: '3',
-      subject: 'System Maintenance Notice',
-      sender: 'admin@buffrhost.com',
-      timestamp: '2024-01-14 16:45',
-      status: 'read',
-      priority: 'low',
-      type: 'system'
-    }
+      id: "3",
+      subject: "System Maintenance Notice",
+      sender: "admin@buffrhost.com",
+      timestamp: "2024-01-14 16:45",
+      status: "read",
+      priority: "low",
+      type: "system",
+    },
   ];
 
-  const displayNotifications = notifications.length > 0 ? notifications : mockNotifications;
+  const displayNotifications =
+    notifications.length > 0 ? notifications : mockNotifications;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'read':
+      case "read":
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'unread':
+      case "unread":
         return <AlertCircle className="w-4 h-4 text-blue-500" />;
-      case 'sent':
+      case "sent":
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'failed':
+      case "failed":
         return <AlertCircle className="w-4 h-4 text-red-500" />;
       default:
         return <Mail className="w-4 h-4 text-gray-500" />;
@@ -93,29 +94,29 @@ export default function EmailNotificationList({
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high':
-        return 'bg-red-100 text-red-800';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'low':
-        return 'bg-green-100 text-green-800';
+      case "high":
+        return "bg-red-100 text-red-800";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800";
+      case "low":
+        return "bg-green-100 text-green-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'booking':
-        return 'bg-blue-100 text-blue-800';
-      case 'payment':
-        return 'bg-green-100 text-green-800';
-      case 'system':
-        return 'bg-purple-100 text-purple-800';
-      case 'marketing':
-        return 'bg-orange-100 text-orange-800';
+      case "booking":
+        return "bg-blue-100 text-blue-800";
+      case "payment":
+        return "bg-green-100 text-green-800";
+      case "system":
+        return "bg-purple-100 text-purple-800";
+      case "marketing":
+        return "bg-orange-100 text-orange-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -139,7 +140,10 @@ export default function EmailNotificationList({
       {/* Notifications List */}
       <div className="space-y-3">
         {displayNotifications.map((notification) => (
-          <Card key={notification.id} className="hover:shadow-md transition-shadow">
+          <Card
+            key={notification.id}
+            className="hover:shadow-md transition-shadow"
+          >
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-3 flex-1">
@@ -149,7 +153,9 @@ export default function EmailNotificationList({
                       <h3 className="font-semibold text-sm truncate">
                         {notification.subject}
                       </h3>
-                      <Badge className={getPriorityColor(notification.priority)}>
+                      <Badge
+                        className={getPriorityColor(notification.priority)}
+                      >
                         {notification.priority}
                       </Badge>
                       <Badge className={getTypeColor(notification.type)}>
@@ -166,7 +172,7 @@ export default function EmailNotificationList({
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  {notification.status === 'unread' && (
+                  {notification.status === "unread" && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -197,7 +203,7 @@ export default function EmailNotificationList({
               No notifications
             </h3>
             <p className="text-gray-500">
-              You don't have any email notifications at the moment.
+              You don&apos;t have any email notifications at the moment.
             </p>
           </CardContent>
         </Card>

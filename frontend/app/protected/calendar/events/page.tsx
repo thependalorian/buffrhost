@@ -1,12 +1,12 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import React from 'react';
-import EventList from '@/components/calendar/EventList';
-import EventForm from '@/components/calendar/EventForm';
+"use client";
+export const dynamic = "force-dynamic";
+import React from "react";
+import EventList from "@/components/calendar/EventList";
+import EventForm from "@/components/calendar/EventForm";
 
 const EventsPage: React.FC = () => {
   const handleAddEvent = (data: any) => {
-    console.log('Adding event:', data);
+    console.log("Adding event:", data);
     // In a real app, send data to backend
   };
 

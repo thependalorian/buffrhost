@@ -1,5 +1,5 @@
-import React from 'react';
-import EmailNotificationList from '@/components/email/EmailNotificationList';
+import React from "react";
+import EmailNotificationList from "@/components/email/EmailNotificationList";
 
 const UserEmailNotificationsPage: React.FC = () => {
   return (

@@ -1,20 +1,20 @@
 /**
  * Invoice List Component
- * 
+ *
  * Displays and manages invoices
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  FileText, 
-  Download, 
-  Eye, 
-  Send, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  FileText,
+  Download,
+  Eye,
+  Send,
   Search,
   Filter,
   Calendar,
@@ -23,8 +23,8 @@ import {
   CheckCircle,
   AlertCircle,
   Clock,
-  XCircle
-} from 'lucide-react';
+  XCircle,
+} from "lucide-react";
 
 interface Invoice {
   id: string;
@@ -33,7 +33,7 @@ interface Invoice {
   customerEmail: string;
   amount: number;
   currency: string;
-  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+  status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
   dueDate: string;
   issueDate: string;
   paidDate?: string;
@@ -56,138 +56,140 @@ interface InvoiceListProps {
   onEdit?: (id: string) => void;
 }
 
-export default function InvoiceList({ 
-  invoices, 
-  onView, 
-  onDownload, 
-  onSend, 
-  onEdit 
+export default function InvoiceList({
+  invoices,
+  onView,
+  onDownload,
+  onSend,
+  onEdit,
 }: InvoiceListProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const mockInvoices: Invoice[] = [
     {
-      id: '1',
-      invoiceNumber: 'INV-2024-001',
-      customerName: 'John Smith',
-      customerEmail: 'john.smith@email.com',
+      id: "1",
+      invoiceNumber: "INV-2024-001",
+      customerName: "John Smith",
+      customerEmail: "john.smith@email.com",
       amount: 299.99,
-      currency: 'NAD',
-      status: 'paid',
-      dueDate: '2024-01-15',
-      issueDate: '2024-01-01',
-      paidDate: '2024-01-10',
-      description: 'Monthly subscription - Professional Plan',
+      currency: "NAD",
+      status: "paid",
+      dueDate: "2024-01-15",
+      issueDate: "2024-01-01",
+      paidDate: "2024-01-10",
+      description: "Monthly subscription - Professional Plan",
       items: [
         {
-          description: 'Professional Plan',
+          description: "Professional Plan",
           quantity: 1,
           unitPrice: 299.99,
-          total: 299.99
-        }
-      ]
+          total: 299.99,
+        },
+      ],
     },
     {
-      id: '2',
-      invoiceNumber: 'INV-2024-002',
-      customerName: 'Maria Garcia',
-      customerEmail: 'maria.garcia@company.com',
+      id: "2",
+      invoiceNumber: "INV-2024-002",
+      customerName: "Maria Garcia",
+      customerEmail: "maria.garcia@company.com",
       amount: 199.99,
-      currency: 'NAD',
-      status: 'sent',
-      dueDate: '2024-01-20',
-      issueDate: '2024-01-05',
-      description: 'Monthly subscription - Basic Plan',
+      currency: "NAD",
+      status: "sent",
+      dueDate: "2024-01-20",
+      issueDate: "2024-01-05",
+      description: "Monthly subscription - Basic Plan",
       items: [
         {
-          description: 'Basic Plan',
+          description: "Basic Plan",
           quantity: 1,
           unitPrice: 199.99,
-          total: 199.99
-        }
-      ]
+          total: 199.99,
+        },
+      ],
     },
     {
-      id: '3',
-      invoiceNumber: 'INV-2024-003',
-      customerName: 'David Johnson',
-      customerEmail: 'david.j@email.com',
+      id: "3",
+      invoiceNumber: "INV-2024-003",
+      customerName: "David Johnson",
+      customerEmail: "david.j@email.com",
       amount: 599.99,
-      currency: 'NAD',
-      status: 'overdue',
-      dueDate: '2024-01-10',
-      issueDate: '2023-12-15',
-      description: 'Monthly subscription - Enterprise Plan',
+      currency: "NAD",
+      status: "overdue",
+      dueDate: "2024-01-10",
+      issueDate: "2023-12-15",
+      description: "Monthly subscription - Enterprise Plan",
       items: [
         {
-          description: 'Enterprise Plan',
+          description: "Enterprise Plan",
           quantity: 1,
           unitPrice: 599.99,
-          total: 599.99
-        }
-      ]
+          total: 599.99,
+        },
+      ],
     },
     {
-      id: '4',
-      invoiceNumber: 'INV-2024-004',
-      customerName: 'Sarah Wilson',
-      customerEmail: 'sarah.wilson@email.com',
+      id: "4",
+      invoiceNumber: "INV-2024-004",
+      customerName: "Sarah Wilson",
+      customerEmail: "sarah.wilson@email.com",
       amount: 99.99,
-      currency: 'NAD',
-      status: 'draft',
-      dueDate: '2024-01-25',
-      issueDate: '2024-01-15',
-      description: 'Monthly subscription - Starter Plan',
+      currency: "NAD",
+      status: "draft",
+      dueDate: "2024-01-25",
+      issueDate: "2024-01-15",
+      description: "Monthly subscription - Starter Plan",
       items: [
         {
-          description: 'Starter Plan',
+          description: "Starter Plan",
           quantity: 1,
           unitPrice: 99.99,
-          total: 99.99
-        }
-      ]
-    }
+          total: 99.99,
+        },
+      ],
+    },
   ];
 
   const displayInvoices = invoices || mockInvoices;
 
-  const filteredInvoices = displayInvoices.filter(invoice => {
-    const matchesSearch = invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         invoice.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         invoice.customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || invoice.status === filterStatus;
+  const filteredInvoices = displayInvoices.filter((invoice) => {
+    const matchesSearch =
+      invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter =
+      filterStatus === "all" || invoice.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'paid':
-        return 'bg-green-100 text-green-800';
-      case 'sent':
-        return 'bg-blue-100 text-blue-800';
-      case 'overdue':
-        return 'bg-red-100 text-red-800';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'cancelled':
-        return 'bg-gray-100 text-gray-800';
+      case "paid":
+        return "bg-green-100 text-green-800";
+      case "sent":
+        return "bg-blue-100 text-blue-800";
+      case "overdue":
+        return "bg-red-100 text-red-800";
+      case "draft":
+        return "bg-yellow-100 text-yellow-800";
+      case "cancelled":
+        return "bg-gray-100 text-gray-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'paid':
+      case "paid":
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'sent':
+      case "sent":
         return <Send className="w-4 h-4 text-blue-500" />;
-      case 'overdue':
+      case "overdue":
         return <AlertCircle className="w-4 h-4 text-red-500" />;
-      case 'draft':
+      case "draft":
         return <Clock className="w-4 h-4 text-yellow-500" />;
-      case 'cancelled':
+      case "cancelled":
         return <XCircle className="w-4 h-4 text-gray-500" />;
       default:
         return <FileText className="w-4 h-4 text-gray-500" />;
@@ -195,26 +197,29 @@ export default function InvoiceList({
   };
 
   const formatPrice = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
     }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
-  const totalAmount = displayInvoices.reduce((sum, invoice) => sum + invoice.amount, 0);
+  const totalAmount = displayInvoices.reduce(
+    (sum, invoice) => sum + invoice.amount,
+    0,
+  );
   const paidAmount = displayInvoices
-    .filter(invoice => invoice.status === 'paid')
+    .filter((invoice) => invoice.status === "paid")
     .reduce((sum, invoice) => sum + invoice.amount, 0);
   const overdueAmount = displayInvoices
-    .filter(invoice => invoice.status === 'overdue')
+    .filter((invoice) => invoice.status === "overdue")
     .reduce((sum, invoice) => sum + invoice.amount, 0);
 
   return (
@@ -251,7 +256,9 @@ export default function InvoiceList({
               <DollarSign className="w-5 h-5 text-green-500" />
               <div>
                 <p className="text-sm text-gray-600">Total Amount</p>
-                <p className="text-2xl font-bold">{formatPrice(totalAmount, 'NAD')}</p>
+                <p className="text-2xl font-bold">
+                  {formatPrice(totalAmount, "NAD")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -263,7 +270,9 @@ export default function InvoiceList({
               <CheckCircle className="w-5 h-5 text-green-500" />
               <div>
                 <p className="text-sm text-gray-600">Paid Amount</p>
-                <p className="text-2xl font-bold">{formatPrice(paidAmount, 'NAD')}</p>
+                <p className="text-2xl font-bold">
+                  {formatPrice(paidAmount, "NAD")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -275,7 +284,9 @@ export default function InvoiceList({
               <AlertCircle className="w-5 h-5 text-red-500" />
               <div>
                 <p className="text-sm text-gray-600">Overdue Amount</p>
-                <p className="text-2xl font-bold">{formatPrice(overdueAmount, 'NAD')}</p>
+                <p className="text-2xl font-bold">
+                  {formatPrice(overdueAmount, "NAD")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -341,14 +352,22 @@ export default function InvoiceList({
                   <tr key={invoice.id} className="border-b hover:bg-gray-50">
                     <td className="p-3">
                       <div>
-                        <div className="font-medium">{invoice.invoiceNumber}</div>
-                        <div className="text-sm text-gray-600">{invoice.description}</div>
+                        <div className="font-medium">
+                          {invoice.invoiceNumber}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {invoice.description}
+                        </div>
                       </div>
                     </td>
                     <td className="p-3">
                       <div>
-                        <div className="font-medium">{invoice.customerName}</div>
-                        <div className="text-sm text-gray-600">{invoice.customerEmail}</div>
+                        <div className="font-medium">
+                          {invoice.customerName}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {invoice.customerEmail}
+                        </div>
                       </div>
                     </td>
                     <td className="p-3">
@@ -385,7 +404,7 @@ export default function InvoiceList({
                         >
                           <Download className="w-4 h-4" />
                         </Button>
-                        {invoice.status === 'draft' && (
+                        {invoice.status === "draft" && (
                           <Button
                             variant="outline"
                             size="sm"
@@ -409,10 +428,9 @@ export default function InvoiceList({
                 No invoices found
               </h3>
               <p className="text-gray-500">
-                {searchTerm || filterStatus !== 'all' 
-                  ? 'No invoices match your search criteria.'
-                  : 'Create your first invoice to get started.'
-                }
+                {searchTerm || filterStatus !== "all"
+                  ? "No invoices match your search criteria."
+                  : "Create your first invoice to get started."}
               </p>
             </div>
           )}

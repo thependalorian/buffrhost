@@ -1,5 +1,5 @@
-import React from 'react';
-import EmailQueueManager from '@/components/email/EmailQueueManager';
+import React from "react";
+import EmailQueueManager from "@/components/email/EmailQueueManager";
 
 const AdminEmailQueuePage: React.FC = () => {
   return (

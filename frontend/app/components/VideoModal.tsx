@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { XMarkIcon, PlayIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect } from "react";
+import { XMarkIcon, PlayIcon } from "@heroicons/react/24/outline";
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -9,7 +9,11 @@ interface VideoModalProps {
   videoUrl?: string;
 }
 
-export default function VideoModal({ isOpen, onClose, videoUrl }: VideoModalProps) {
+export default function VideoModal({
+  isOpen,
+  onClose,
+  videoUrl,
+}: VideoModalProps) {
   const [isPlaying, setIsPlaying] = useState(false);
 
   // Default demo video URL (you can replace this with your actual demo video)
@@ -18,13 +22,13 @@ export default function VideoModal({ isOpen, onClose, videoUrl }: VideoModalProp
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
@@ -38,8 +42,11 @@ export default function VideoModal({ isOpen, onClose, videoUrl }: VideoModalProp
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
-        <div className="fixed inset-0 bg-black bg-opacity-75" onClick={handleClose}></div>
-        
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75"
+          onClick={handleClose}
+        ></div>
+
         <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-4xl w-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
@@ -67,8 +74,10 @@ export default function VideoModal({ isOpen, onClose, videoUrl }: VideoModalProp
                 />
               </div>
             ) : (
-              <div className="aspect-video bg-sand-100 dark:bg-sand-800 rounded-lg flex items-center justify-center relative group cursor-pointer"
-                   onClick={() => setIsPlaying(true)}>
+              <div
+                className="aspect-video bg-sand-100 dark:bg-sand-800 rounded-lg flex items-center justify-center relative group cursor-pointer"
+                onClick={() => setIsPlaying(true)}
+              >
                 <div className="text-center">
                   <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                     <PlayIcon className="w-8 h-8 text-white ml-1" />
@@ -87,7 +96,9 @@ export default function VideoModal({ isOpen, onClose, videoUrl }: VideoModalProp
             <div className="mt-6 space-y-4">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">What you&apos;ll see:</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                    What you&apos;ll see:
+                  </h4>
                   <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                     <li>• QR Code ordering system</li>
                     <li>• Real-time inventory management</li>
@@ -97,10 +108,16 @@ export default function VideoModal({ isOpen, onClose, videoUrl }: VideoModalProp
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Duration:</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">5 minutes</p>
-                  
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Perfect for:</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                    Duration:
+                  </h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    5 minutes
+                  </p>
+
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                    Perfect for:
+                  </h4>
                   <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                     <li>• Hotel managers</li>
                     <li>• Restaurant owners</li>
@@ -112,8 +129,9 @@ export default function VideoModal({ isOpen, onClose, videoUrl }: VideoModalProp
               {!isPlaying && (
                 <div className="bg-sand-50 dark:bg-sand-900/20 rounded-lg p-4">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    <strong>Note:</strong> This is a general demo video. For a personalized demonstration 
-                    tailored to your specific business needs, please request a custom demo.
+                    <strong>Note:</strong> This is a general demo video. For a
+                    personalized demonstration tailored to your specific
+                    business needs, please request a custom demo.
                   </p>
                 </div>
               )}

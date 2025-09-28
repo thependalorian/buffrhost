@@ -1,20 +1,28 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  FileText, 
-  Upload, 
-  Download, 
-  Eye, 
-  Edit, 
-  Trash2, 
-  Search, 
-  Filter, 
-  CheckCircle, 
-  AlertCircle, 
-  Clock, 
-  Users, 
-  Calendar, 
+import { Metadata } from "next";
+import Image from "next/image";
+import {
+  PageHeader,
+  StatCard,
+  ActionButton,
+  ModalForm,
+  FormField,
+  FormSelect,
+  Alert,
+} from "@/src/components/ui";
+import {
+  FileText,
+  Upload,
+  Download,
+  Eye,
+  Edit,
+  Trash2,
+  Search,
+  Filter,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  Users,
+  Calendar,
   Star,
   MapPin,
   Phone,
@@ -165,12 +173,14 @@ import {
   Edit as EditIcon2,
   Trash2 as TrashIcon2,
   Search as SearchIcon2,
-  Filter as FilterIcon2
-} from 'lucide-react';
+  Filter as FilterIcon2,
+} from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Document Processing Demo - Buffr Host Platform',
-  description: 'Experience our AI-powered document processing system that extracts, analyzes, and manages documents with intelligent automation.',
+  title: "Document Processing Demo - Buffr Host Platform",
+  description:
+    "Experience our AI-powered document processing system that extracts, analyzes, and manages documents with intelligent automation.",
 };
 
 export default function DocumentProcessingDemoPage() {
@@ -180,7 +190,8 @@ export default function DocumentProcessingDemoPage() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm">
-            🎯 <strong>Document Processing Demo</strong> - AI-powered document intelligence
+            🎯 <strong>Document Processing Demo</strong> - AI-powered document
+            intelligence
           </p>
         </div>
       </div>
@@ -192,14 +203,21 @@ export default function DocumentProcessingDemoPage() {
             <div className="mb-8">
               <FileText className="w-24 h-24 mx-auto mb-4 opacity-90" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Document Intelligence</h1>
-            <p className="text-xl md:text-2xl mb-6">AI-powered document processing and analysis</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              Document Intelligence
+            </h1>
+            <p className="text-xl md:text-2xl mb-6">
+              AI-powered document processing and analysis
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="btn btn-accent btn-lg">
                 <Upload className="w-5 h-5 mr-2" />
                 Process Document
               </button>
-              <Link href="/demo/etuna/management" className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900">
+              <Link
+                href="/demo/etuna/management-demo"
+                className="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-gray-900"
+              >
                 <Monitor className="w-5 h-5 mr-2" />
                 View Management Demo
               </Link>
@@ -214,15 +232,20 @@ export default function DocumentProcessingDemoPage() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Intelligent Document Processing</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Intelligent Document Processing
+              </h2>
               <p className="text-lg text-base-content/80 mb-6">
-                See how our AI-powered document processing system extracts, analyzes, 
-                and manages documents with intelligent automation across all Etuna operations.
+                See how our AI-powered document processing system extracts,
+                analyzes, and manages documents with intelligent automation
+                across all Etuna operations.
               </p>
-              
+
               {/* Demo Document Processing */}
               <div className="bg-white dark:bg-base-200 p-6 rounded-lg shadow-xl mb-6">
-                <h3 className="text-lg font-bold mb-4">Document Processing Queue</h3>
+                <h3 className="text-lg font-bold mb-4">
+                  Document Processing Queue
+                </h3>
                 <div className="space-y-4">
                   {/* Processing Examples */}
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
@@ -232,7 +255,9 @@ export default function DocumentProcessingDemoPage() {
                       </div>
                       <div>
                         <p className="font-medium">Invoice_2024_001.pdf</p>
-                        <p className="text-sm text-gray-500">Processed successfully</p>
+                        <p className="text-sm text-gray-500">
+                          Processed successfully
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -240,14 +265,16 @@ export default function DocumentProcessingDemoPage() {
                       <p className="text-xs text-gray-500">2.3s processing</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                         <Clock className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <p className="font-medium">Contract_Supplier_ABC.docx</p>
+                        <p className="font-medium">
+                          Contract_Supplier_ABC.docx
+                        </p>
                         <p className="text-sm text-gray-500">Processing...</p>
                       </div>
                     </div>
@@ -256,7 +283,7 @@ export default function DocumentProcessingDemoPage() {
                       <p className="text-xs text-gray-500">45% complete</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
@@ -294,7 +321,7 @@ export default function DocumentProcessingDemoPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2070&auto=format&fit=crop"
@@ -318,7 +345,9 @@ export default function DocumentProcessingDemoPage() {
 
         {/* Document Processing Benefits */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Why Our Document Processing Excels</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Why Our Document Processing Excels
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* OCR Technology */}
             <div className="nude-card hover:shadow-nude transition-shadow">
@@ -326,63 +355,93 @@ export default function DocumentProcessingDemoPage() {
                 <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Eye className="w-8 h-8 text-indigo-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Advanced OCR</h3>
-                <p className="text-sm text-nude-700">State-of-the-art optical character recognition with 98% accuracy across multiple languages.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Advanced OCR
+                </h3>
+                <p className="text-sm text-nude-700">
+                  State-of-the-art optical character recognition with 98%
+                  accuracy across multiple languages.
+                </p>
               </div>
             </div>
-            
+
             {/* Intelligent Extraction */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Brain className="w-8 h-8 text-blue-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Intelligent Extraction</h3>
-                <p className="text-sm text-nude-700">AI-powered data extraction that understands context and extracts relevant information.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Intelligent Extraction
+                </h3>
+                <p className="text-sm text-nude-700">
+                  AI-powered data extraction that understands context and
+                  extracts relevant information.
+                </p>
               </div>
             </div>
-            
+
             {/* Document Classification */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Folder className="w-8 h-8 text-green-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Auto Classification</h3>
-                <p className="text-sm text-nude-700">Automatically classify documents by type, importance, and category for better organization.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Auto Classification
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Automatically classify documents by type, importance, and
+                  category for better organization.
+                </p>
               </div>
             </div>
-            
+
             {/* Multi-format Support */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FileText className="w-8 h-8 text-purple-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Multi-format Support</h3>
-                <p className="text-sm text-nude-700">Process PDFs, images, Word docs, Excel files, and more with consistent accuracy.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Multi-format Support
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Process PDFs, images, Word docs, Excel files, and more with
+                  consistent accuracy.
+                </p>
               </div>
             </div>
-            
+
             {/* Workflow Automation */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Zap className="w-8 h-8 text-orange-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Workflow Automation</h3>
-                <p className="text-sm text-nude-700">Automate document processing workflows with approval chains and routing rules.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Workflow Automation
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Automate document processing workflows with approval chains
+                  and routing rules.
+                </p>
               </div>
             </div>
-            
+
             {/* Quality Assurance */}
             <div className="nude-card hover:shadow-nude transition-shadow">
               <div className="card-body text-center">
                 <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Shield className="w-8 h-8 text-teal-700" />
                 </div>
-                <h3 className="font-semibold mb-2 text-nude-800">Quality Assurance</h3>
-                <p className="text-sm text-nude-700">Built-in validation and confidence scoring to ensure processing accuracy.</p>
+                <h3 className="font-semibold mb-2 text-nude-800">
+                  Quality Assurance
+                </h3>
+                <p className="text-sm text-nude-700">
+                  Built-in validation and confidence scoring to ensure
+                  processing accuracy.
+                </p>
               </div>
             </div>
           </div>
@@ -390,7 +449,9 @@ export default function DocumentProcessingDemoPage() {
 
         {/* Document Types */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Supported Document Types</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Supported Document Types
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Financial Documents */}
             <div className="nude-card">
@@ -401,7 +462,9 @@ export default function DocumentProcessingDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Financial Documents</h3>
-                    <p className="text-sm text-nude-700">Invoices, receipts, contracts</p>
+                    <p className="text-sm text-nude-700">
+                      Invoices, receipts, contracts
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -434,7 +497,9 @@ export default function DocumentProcessingDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">Legal Documents</h3>
-                    <p className="text-sm text-nude-700">Contracts, agreements, permits</p>
+                    <p className="text-sm text-nude-700">
+                      Contracts, agreements, permits
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -467,7 +532,9 @@ export default function DocumentProcessingDemoPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold">HR Documents</h3>
-                    <p className="text-sm text-nude-700">Employee records, applications</p>
+                    <p className="text-sm text-nude-700">
+                      Employee records, applications
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -495,15 +562,22 @@ export default function DocumentProcessingDemoPage() {
 
         {/* Advanced Features */}
         <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">Advanced Document Features</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-nude-800">
+            Advanced Document Features
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Intelligent Parsing */}
             <div className="text-center">
               <div className="w-20 h-20 bg-primary text-primary-content rounded-full flex items-center justify-center mx-auto mb-4">
                 <Brain className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Intelligent Parsing</h3>
-              <p className="text-nude-700">AI understands document structure and extracts relevant data with context awareness.</p>
+              <h3 className="text-xl font-semibold mb-2">
+                Intelligent Parsing
+              </h3>
+              <p className="text-nude-700">
+                AI understands document structure and extracts relevant data
+                with context awareness.
+              </p>
             </div>
 
             {/* Batch Processing */}
@@ -512,7 +586,10 @@ export default function DocumentProcessingDemoPage() {
                 <Upload className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Batch Processing</h3>
-              <p className="text-nude-700">Process hundreds of documents simultaneously with parallel processing and queue management.</p>
+              <p className="text-nude-700">
+                Process hundreds of documents simultaneously with parallel
+                processing and queue management.
+              </p>
             </div>
 
             {/* Data Validation */}
@@ -521,7 +598,10 @@ export default function DocumentProcessingDemoPage() {
                 <CheckCircle className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Data Validation</h3>
-              <p className="text-nude-700">Automated validation and confidence scoring to ensure extracted data accuracy.</p>
+              <p className="text-nude-700">
+                Automated validation and confidence scoring to ensure extracted
+                data accuracy.
+              </p>
             </div>
           </div>
         </div>
@@ -529,7 +609,9 @@ export default function DocumentProcessingDemoPage() {
         {/* Demo Actions */}
         <div className="py-16">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Experience Document Intelligence</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Experience Document Intelligence
+            </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Document Processing */}
               <div className="card bg-gradient-to-br from-indigo-500 to-purple-500 text-white shadow-xl">
@@ -541,14 +623,18 @@ export default function DocumentProcessingDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">Document Processing</h3>
-                      <p className="text-white/80">See how AI transforms document management</p>
+                      <h3 className="text-2xl font-bold">
+                        Document Processing
+                      </h3>
+                      <p className="text-white/80">
+                        See how AI transforms document management
+                      </p>
                     </div>
                   </div>
                   <p className="text-white/90 mb-6">
-                    Experience our document processing system in action. 
-                    Upload documents, see AI extraction in real-time, 
-                    and discover how intelligent automation streamlines operations.
+                    Experience our document processing system in action. Upload
+                    documents, see AI extraction in real-time, and discover how
+                    intelligent automation streamlines operations.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -587,14 +673,18 @@ export default function DocumentProcessingDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">Management Dashboard</h3>
-                      <p className="text-nude-700">See how document AI enhances operations</p>
+                      <h3 className="text-2xl font-bold">
+                        Management Dashboard
+                      </h3>
+                      <p className="text-nude-700">
+                        See how document AI enhances operations
+                      </p>
                     </div>
                   </div>
                   <p className="text-base-content/80 mb-6">
-                    Explore our document management dashboard. 
-                    Monitor processing queues, analyze accuracy metrics, 
-                    configure workflows, and optimize document operations.
+                    Explore our document management dashboard. Monitor
+                    processing queues, analyze accuracy metrics, configure
+                    workflows, and optimize document operations.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
@@ -615,7 +705,10 @@ export default function DocumentProcessingDemoPage() {
                     </div>
                   </div>
                   <div className="card-actions justify-end mt-6">
-                    <Link href="/demo/etuna/management" className="btn btn-primary">
+                    <Link
+                      href="/demo/etuna/management-demo"
+                      className="btn btn-primary"
+                    >
                       <Monitor className="w-4 h-4 mr-2" />
                       View Management Demo
                     </Link>
@@ -633,17 +726,24 @@ export default function DocumentProcessingDemoPage() {
               <div className="text-center">
                 <Phone className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Ready to Automate?</h3>
-                <p className="text-primary-content/80">Contact us to implement intelligent document processing.</p>
+                <p className="text-primary-content/80">
+                  Contact us to implement intelligent document processing.
+                </p>
               </div>
               <div className="text-center">
                 <Mail className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Schedule a Demo</h3>
-                <p className="text-primary-content/80">Book a personalized demonstration of our document processing system.</p>
+                <p className="text-primary-content/80">
+                  Book a personalized demonstration of our document processing
+                  system.
+                </p>
               </div>
               <div className="text-center">
                 <Globe className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Learn More</h3>
-                <p className="text-primary-content/80">Visit our main website for more information about Buffr Host.</p>
+                <p className="text-primary-content/80">
+                  Visit our main website for more information about Buffr Host.
+                </p>
               </div>
             </div>
           </div>

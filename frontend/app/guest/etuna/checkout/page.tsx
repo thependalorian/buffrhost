@@ -1,15 +1,7 @@
-/**
- * Etuna Checkout Page - Customer View
- * 
- * Comprehensive checkout and booking flow with payment processing
- * Demonstrates Buffr Host platform capabilities for booking management
- */
-
 'use client';
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { 
   ArrowLeft,
   CreditCard,
@@ -33,6 +25,14 @@ import {
   Heart,
   MessageCircle
 } from 'lucide-react';
+/**
+ * Etuna Checkout Page - Customer View
+ * 
+ * Comprehensive checkout and booking flow with payment processing
+ * Demonstrates Buffr Host platform capabilities for booking management
+ */
+
+import Link from 'next/link';
 
 export default function EtunaCheckoutPage() {
   const [currentStep, setCurrentStep] = useState(1);

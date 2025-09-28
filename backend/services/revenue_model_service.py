@@ -1,21 +1,26 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete
 from typing import List, Optional
 from uuid import UUID
 
-from models.revenue_model import Subscription, ServiceFee, CommissionStructure, from schemas.revenue_model import (
-    SubscriptionCreate, SubscriptionUpdate, 
-    ServiceFeeCreate, ServiceFeeUpdate, 
-    CommissionStructureCreate, CommissionStructureUpdate, 
-    Create, Update
-)
+from sqlalchemy import delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.revenue_model import (CommissionStructure, Invoice, ServiceFee,
+                                  Subscription)
+from schemas.revenue_model import (CommissionStructureCreate,
+                                   CommissionStructureUpdate, Create,
+                                   ServiceFeeCreate, ServiceFeeUpdate,
+                                   SubscriptionCreate, SubscriptionUpdate,
+                                   Update)
+
 
 class RevenueModelService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
     # Subscription Operations
-    async def create_subscription(self, subscription_data: SubscriptionCreate) -> Subscription:
+    async def create_subscription(
+        self, subscription_data: SubscriptionCreate
+    ) -> Subscription:
         subscription = Subscription(**subscription_data.model_dump())
         self.db.add(subscription)
         await self.db.commit()
@@ -23,14 +28,20 @@ class RevenueModelService:
         return subscription
 
     async def get_subscription(self, subscription_id: UUID) -> Optional[Subscription]:
-        result = await self.db.execute(select(Subscription).where(Subscription.id == subscription_id))
+        result = await self.db.execute(
+            select(Subscription).where(Subscription.id == subscription_id)
+        )
         return result.scalar_one_or_none()
 
-    async def get_subscriptions(self, skip: int = 0, limit: int = 100) -> List[Subscription]:
+    async def get_subscriptions(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[Subscription]:
         result = await self.db.execute(select(Subscription).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_subscription(self, subscription_id: UUID, subscription_data: SubscriptionUpdate) -> Optional[Subscription]:
+    async def update_subscription(
+        self, subscription_id: UUID, subscription_data: SubscriptionUpdate
+    ) -> Optional[Subscription]:
         subscription = await self.get_subscription(subscription_id)
         if subscription:
             update_data = subscription_data.model_dump(exclude_unset=True)
@@ -57,14 +68,20 @@ class RevenueModelService:
         return fee
 
     async def get_service_fee(self, fee_id: UUID) -> Optional[ServiceFee]:
-        result = await self.db.execute(select(ServiceFee).where(ServiceFee.id == fee_id))
+        result = await self.db.execute(
+            select(ServiceFee).where(ServiceFee.id == fee_id)
+        )
         return result.scalar_one_or_none()
 
-    async def get_service_fees(self, skip: int = 0, limit: int = 100) -> List[ServiceFee]:
+    async def get_service_fees(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ServiceFee]:
         result = await self.db.execute(select(ServiceFee).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_service_fee(self, fee_id: UUID, fee_data: ServiceFeeUpdate) -> Optional[ServiceFee]:
+    async def update_service_fee(
+        self, fee_id: UUID, fee_data: ServiceFeeUpdate
+    ) -> Optional[ServiceFee]:
         fee = await self.get_service_fee(fee_id)
         if fee:
             update_data = fee_data.model_dump(exclude_unset=True)
@@ -83,22 +100,34 @@ class RevenueModelService:
         return False
 
     # CommissionStructure Operations
-    async def create_commission_structure(self, commission_data: CommissionStructureCreate) -> CommissionStructure:
+    async def create_commission_structure(
+        self, commission_data: CommissionStructureCreate
+    ) -> CommissionStructure:
         commission = CommissionStructure(**commission_data.model_dump())
         self.db.add(commission)
         await self.db.commit()
         await self.db.refresh(commission)
         return commission
 
-    async def get_commission_structure(self, commission_id: UUID) -> Optional[CommissionStructure]:
-        result = await self.db.execute(select(CommissionStructure).where(CommissionStructure.id == commission_id))
+    async def get_commission_structure(
+        self, commission_id: UUID
+    ) -> Optional[CommissionStructure]:
+        result = await self.db.execute(
+            select(CommissionStructure).where(CommissionStructure.id == commission_id)
+        )
         return result.scalar_one_or_none()
 
-    async def get_commission_structures(self, skip: int = 0, limit: int = 100) -> List[CommissionStructure]:
-        result = await self.db.execute(select(CommissionStructure).offset(skip).limit(limit))
+    async def get_commission_structures(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[CommissionStructure]:
+        result = await self.db.execute(
+            select(CommissionStructure).offset(skip).limit(limit)
+        )
         return list(result.scalars().all())
 
-    async def update_commission_structure(self, commission_id: UUID, commission_data: CommissionStructureUpdate) -> Optional[CommissionStructure]:
+    async def update_commission_structure(
+        self, commission_id: UUID, commission_data: CommissionStructureUpdate
+    ) -> Optional[CommissionStructure]:
         commission = await self.get_commission_structure(commission_id)
         if commission:
             update_data = commission_data.model_dump(exclude_unset=True)
@@ -117,22 +146,24 @@ class RevenueModelService:
         return False
 
     # Operations
-    async def create_invoice(self, invoice_data: Create) -> :
-        invoice = (**invoice_data.model_dump())
+    async def create_invoice(self, invoice_data: Create) -> Invoice:
+        invoice = Invoice(**invoice_data.model_dump())
         self.db.add(invoice)
         await self.db.commit()
         await self.db.refresh(invoice)
         return invoice
 
-    async def get_invoice(self, invoice_id: UUID) -> Optional[]:
-        result = await self.db.execute(select().where(.id == invoice_id))
+    async def get_invoice(self, invoice_id: UUID) -> Optional[Invoice]:
+        result = await self.db.execute(select(Invoice).where(Invoice.id == invoice_id))
         return result.scalar_one_or_none()
 
-    async def get_invoices(self, skip: int = 0, limit: int = 100) -> List[]:
-        result = await self.db.execute(select().offset(skip).limit(limit))
+    async def get_invoices(self, skip: int = 0, limit: int = 100) -> List[Invoice]:
+        result = await self.db.execute(select(Invoice).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def update_invoice(self, invoice_id: UUID, invoice_data: Update) -> Optional[]:
+    async def update_invoice(
+        self, invoice_id: UUID, invoice_data: Update
+    ) -> Optional[Invoice]:
         invoice = await self.get_invoice(invoice_id)
         if invoice:
             update_data = invoice_data.model_dump(exclude_unset=True)

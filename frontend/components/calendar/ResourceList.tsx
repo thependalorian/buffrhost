@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React from "react";
+import { useState, useEffect } from "react";
 
 interface Resource {
   id: string;
@@ -22,12 +22,23 @@ const ResourceList: React.FC = () => {
         // In a real application, this would fetch from your FastAPI backend
         // For now, using mock data
         const mockResources: Resource[] = [
-          { id: 'r1', name: 'Conference Room A', resource_type: 'conference_room', capacity: 20, is_available: true },
-          { id: 'r2', name: 'Spa Room 3', resource_type: 'spa_treatment_room', is_available: false },
+          {
+            id: "r1",
+            name: "Conference Room A",
+            resource_type: "conference_room",
+            capacity: 20,
+            is_available: true,
+          },
+          {
+            id: "r2",
+            name: "Spa Room 3",
+            resource_type: "spa_treatment_room",
+            is_available: false,
+          },
         ];
         setResources(mockResources);
       } catch (err) {
-        setError('Failed to fetch resources');
+        setError("Failed to fetch resources");
       } finally {
         setLoading(false);
       }
@@ -42,9 +53,10 @@ const ResourceList: React.FC = () => {
     <div className="resource-list">
       <h2>Resource List</h2>
       <ul>
-        {resources.map(resource => (
+        {resources.map((resource) => (
           <li key={resource.id}>
-            {resource.name} ({resource.resource_type}) - {resource.is_available ? 'Available' : 'Not Available'}
+            {resource.name} ({resource.resource_type}) -{" "}
+            {resource.is_available ? "Available" : "Not Available"}
           </li>
         ))}
       </ul>

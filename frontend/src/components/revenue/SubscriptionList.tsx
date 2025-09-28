@@ -1,21 +1,21 @@
 /**
  * Subscription List Component
- * 
+ *
  * Displays and manages subscription plans
  */
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  CreditCard, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  CreditCard,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
   Search,
   Filter,
   DollarSign,
@@ -23,8 +23,8 @@ import {
   Calendar,
   CheckCircle,
   AlertCircle,
-  Clock
-} from 'lucide-react';
+  Clock,
+} from "lucide-react";
 
 interface Subscription {
   id: string;
@@ -32,9 +32,9 @@ interface Subscription {
   description: string;
   price: number;
   currency: string;
-  billingCycle: 'monthly' | 'yearly' | 'lifetime';
+  billingCycle: "monthly" | "yearly" | "lifetime";
   features: string[];
-  status: 'active' | 'inactive' | 'draft';
+  status: "active" | "inactive" | "draft";
   subscribers: number;
   revenue: number;
   createdAt: string;
@@ -49,104 +49,116 @@ interface SubscriptionListProps {
   onCreate?: () => void;
 }
 
-export default function SubscriptionList({ 
-  subscriptions, 
-  onEdit, 
-  onDelete, 
-  onView, 
-  onCreate 
+export default function SubscriptionList({
+  subscriptions,
+  onEdit,
+  onDelete,
+  onView,
+  onCreate,
 }: SubscriptionListProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const mockSubscriptions: Subscription[] = [
     {
-      id: '1',
-      name: 'Basic Plan',
-      description: 'Essential features for small properties',
+      id: "1",
+      name: "Basic Plan",
+      description: "Essential features for small properties",
       price: 29.99,
-      currency: 'NAD',
-      billingCycle: 'monthly',
-      features: ['Up to 10 rooms', 'Basic reporting', 'Email support'],
-      status: 'active',
+      currency: "NAD",
+      billingCycle: "monthly",
+      features: ["Up to 10 rooms", "Basic reporting", "Email support"],
+      status: "active",
       subscribers: 45,
       revenue: 1349.55,
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-15'
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-15",
     },
     {
-      id: '2',
-      name: 'Professional Plan',
-      description: 'Advanced features for growing businesses',
+      id: "2",
+      name: "Professional Plan",
+      description: "Advanced features for growing businesses",
       price: 79.99,
-      currency: 'NAD',
-      billingCycle: 'monthly',
-      features: ['Up to 50 rooms', 'Advanced analytics', 'Priority support', 'API access'],
-      status: 'active',
+      currency: "NAD",
+      billingCycle: "monthly",
+      features: [
+        "Up to 50 rooms",
+        "Advanced analytics",
+        "Priority support",
+        "API access",
+      ],
+      status: "active",
       subscribers: 23,
       revenue: 1839.77,
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-15'
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-15",
     },
     {
-      id: '3',
-      name: 'Enterprise Plan',
-      description: 'Full-featured solution for large properties',
+      id: "3",
+      name: "Enterprise Plan",
+      description: "Full-featured solution for large properties",
       price: 199.99,
-      currency: 'NAD',
-      billingCycle: 'monthly',
-      features: ['Unlimited rooms', 'Custom integrations', '24/7 support', 'White-label'],
-      status: 'active',
+      currency: "NAD",
+      billingCycle: "monthly",
+      features: [
+        "Unlimited rooms",
+        "Custom integrations",
+        "24/7 support",
+        "White-label",
+      ],
+      status: "active",
       subscribers: 8,
       revenue: 1599.92,
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-15'
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-15",
     },
     {
-      id: '4',
-      name: 'Starter Plan',
-      description: 'Free plan for new users',
+      id: "4",
+      name: "Starter Plan",
+      description: "Free plan for new users",
       price: 0,
-      currency: 'NAD',
-      billingCycle: 'monthly',
-      features: ['Up to 3 rooms', 'Basic features'],
-      status: 'draft',
+      currency: "NAD",
+      billingCycle: "monthly",
+      features: ["Up to 3 rooms", "Basic features"],
+      status: "draft",
       subscribers: 0,
       revenue: 0,
-      createdAt: '2024-01-10',
-      updatedAt: '2024-01-10'
-    }
+      createdAt: "2024-01-10",
+      updatedAt: "2024-01-10",
+    },
   ];
 
   const displaySubscriptions = subscriptions || mockSubscriptions;
 
-  const filteredSubscriptions = displaySubscriptions.filter(subscription => {
-    const matchesSearch = subscription.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         subscription.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || subscription.status === filterStatus;
+  const filteredSubscriptions = displaySubscriptions.filter((subscription) => {
+    const matchesSearch =
+      subscription.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      subscription.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter =
+      filterStatus === "all" || subscription.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'inactive':
-        return 'bg-red-100 text-red-800';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800';
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "inactive":
+        return "bg-red-100 text-red-800";
+      case "draft":
+        return "bg-yellow-100 text-yellow-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'inactive':
+      case "inactive":
         return <AlertCircle className="w-4 h-4 text-red-500" />;
-      case 'draft':
+      case "draft":
         return <Clock className="w-4 h-4 text-yellow-500" />;
       default:
         return <Clock className="w-4 h-4 text-gray-500" />;
@@ -155,26 +167,32 @@ export default function SubscriptionList({
 
   const getBillingCycleColor = (cycle: string) => {
     switch (cycle) {
-      case 'monthly':
-        return 'bg-blue-100 text-blue-800';
-      case 'yearly':
-        return 'bg-purple-100 text-purple-800';
-      case 'lifetime':
-        return 'bg-orange-100 text-orange-800';
+      case "monthly":
+        return "bg-blue-100 text-blue-800";
+      case "yearly":
+        return "bg-purple-100 text-purple-800";
+      case "lifetime":
+        return "bg-orange-100 text-orange-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
     }).format(price);
   };
 
-  const totalRevenue = displaySubscriptions.reduce((sum, sub) => sum + sub.revenue, 0);
-  const totalSubscribers = displaySubscriptions.reduce((sum, sub) => sum + sub.subscribers, 0);
+  const totalRevenue = displaySubscriptions.reduce(
+    (sum, sub) => sum + sub.revenue,
+    0,
+  );
+  const totalSubscribers = displaySubscriptions.reduce(
+    (sum, sub) => sum + sub.subscribers,
+    0,
+  );
 
   return (
     <div className="space-y-6">
@@ -198,7 +216,9 @@ export default function SubscriptionList({
               <CreditCard className="w-5 h-5 text-blue-500" />
               <div>
                 <p className="text-sm text-gray-600">Total Plans</p>
-                <p className="text-2xl font-bold">{displaySubscriptions.length}</p>
+                <p className="text-2xl font-bold">
+                  {displaySubscriptions.length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -222,7 +242,9 @@ export default function SubscriptionList({
               <DollarSign className="w-5 h-5 text-purple-500" />
               <div>
                 <p className="text-sm text-gray-600">Monthly Revenue</p>
-                <p className="text-2xl font-bold">{formatPrice(totalRevenue, 'NAD')}</p>
+                <p className="text-2xl font-bold">
+                  {formatPrice(totalRevenue, "NAD")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -235,7 +257,10 @@ export default function SubscriptionList({
               <div>
                 <p className="text-sm text-gray-600">Active Plans</p>
                 <p className="text-2xl font-bold">
-                  {displaySubscriptions.filter(s => s.status === 'active').length}
+                  {
+                    displaySubscriptions.filter((s) => s.status === "active")
+                      .length
+                  }
                 </p>
               </div>
             </div>
@@ -280,12 +305,17 @@ export default function SubscriptionList({
       {/* Subscriptions Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredSubscriptions.map((subscription) => (
-          <Card key={subscription.id} className="hover:shadow-md transition-shadow">
+          <Card
+            key={subscription.id}
+            className="hover:shadow-md transition-shadow"
+          >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <CardTitle className="text-lg">{subscription.name}</CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">{subscription.description}</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {subscription.description}
+                  </p>
                 </div>
                 {getStatusIcon(subscription.status)}
               </div>
@@ -316,14 +346,18 @@ export default function SubscriptionList({
                 <Badge className={getStatusColor(subscription.status)}>
                   {subscription.status}
                 </Badge>
-                <Badge className={getBillingCycleColor(subscription.billingCycle)}>
+                <Badge
+                  className={getBillingCycleColor(subscription.billingCycle)}
+                >
                   {subscription.billingCycle}
                 </Badge>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="text-center">
-                  <div className="font-semibold text-green-600">{subscription.subscribers}</div>
+                  <div className="font-semibold text-green-600">
+                    {subscription.subscribers}
+                  </div>
                   <div className="text-gray-600">Subscribers</div>
                 </div>
                 <div className="text-center">
@@ -370,10 +404,9 @@ export default function SubscriptionList({
               No subscriptions found
             </h3>
             <p className="text-gray-500">
-              {searchTerm || filterStatus !== 'all' 
-                ? 'No subscriptions match your search criteria.'
-                : 'Create your first subscription plan to get started.'
-              }
+              {searchTerm || filterStatus !== "all"
+                ? "No subscriptions match your search criteria."
+                : "Create your first subscription plan to get started."}
             </p>
           </CardContent>
         </Card>

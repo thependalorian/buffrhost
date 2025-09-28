@@ -1,12 +1,12 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import React from 'react';
-import PaymentGatewayList from '@/components/finance/PaymentGatewayList';
-import PaymentGatewayForm from '@/components/finance/PaymentGatewayForm';
+"use client";
+export const dynamic = "force-dynamic";
+import React from "react";
+import PaymentGatewayList from "@/components/finance/PaymentGatewayList";
+import PaymentGatewayForm from "@/components/finance/PaymentGatewayForm";
 
 const PaymentGatewaysPage: React.FC = () => {
   const handleAddGateway = (data: any) => {
-    console.log('Adding payment gateway:', data);
+    console.log("Adding payment gateway:", data);
     // In a real app, send data to backend
   };
 

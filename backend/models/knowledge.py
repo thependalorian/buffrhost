@@ -1,11 +1,13 @@
 """
 Knowledge base models for Buffr Host platform.
 """
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, JSON
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy import (JSON, Column, DateTime, ForeignKey, Integer, String,
+                        Text)
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.sql import func
 
 from database import Base
+
 
 class KnowledgeDocument(Base):
     __tablename__ = "knowledgedocument"
