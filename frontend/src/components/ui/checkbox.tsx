@@ -1,5 +1,5 @@
 /**
- * Checkbox Component for The Shandi Frontend
+ * Checkbox Component for Buffr Host Frontend
  *
  * A reusable checkbox component with consistent styling.
  */

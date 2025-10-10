@@ -1,153 +1,265 @@
 """
-Configuration settings for Buffr Host platform.
+Configuration Management
+Centralized configuration for Buffr Host application
 """
+
 import os
-from typing import List
+from typing import List, Optional, Dict, Any
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
+from functools import lru_cache
 
 class Settings(BaseSettings):
-    """Application settings loaded from environment variables."""
+    """Application settings with environment variable support"""
     
-    # Application settings
-    APP_NAME: str = "Buffr Host API"
+    # Application
+    APP_NAME: str = "Buffr Host"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
     
-    # Database configuration
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+asyncpg://buffrhost:password@localhost:5432/buffrhost_dev")
-    DATABASE_POOL_SIZE: int = int(os.getenv("DATABASE_POOL_SIZE", "10"))
-    DATABASE_MAX_OVERFLOW: int = int(os.getenv("DATABASE_MAX_OVERFLOW", "20"))
+    # Security
+    SECRET_KEY: str = "your-secret-key-change-in-production"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
     
-    # Redis configuration
-    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379")
+    # Database
+    DATABASE_URL: str = "sqlite:///./test.db"
+    DATABASE_POOL_SIZE: int = 10
+    DATABASE_MAX_OVERFLOW: int = 20
+    DATABASE_ECHO: bool = False
     
-    # Authentication & Security
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
-    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+    # Redis
+    REDIS_URL: str = "redis://localhost:6379"
+    REDIS_PASSWORD: Optional[str] = None
+    REDIS_DB: int = 0
     
-    # Validate critical security settings
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._validate_security_settings()
+    # CORS
+    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000"]
+    CORS_ALLOW_CREDENTIALS: bool = True
+    CORS_ALLOW_METHODS: List[str] = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    CORS_ALLOW_HEADERS: List[str] = ["*"]
     
-    def _validate_security_settings(self):
-        """Validate critical security settings."""
-        if not self.SECRET_KEY or self.SECRET_KEY == "your-super-secret-key-change-this-in-production":
-            if self.ENVIRONMENT == "production":
-                raise ValueError("SECRET_KEY must be set in production environment")
-            else:
-                import secrets
-                self.SECRET_KEY = secrets.token_urlsafe(32)
-                print("WARNING: Using auto-generated SECRET_KEY for development")
-        
-        if self.ENVIRONMENT == "production" and self.DEBUG:
-            raise ValueError("DEBUG must be False in production environment")
-        
-        if self.ENVIRONMENT == "production" and not self.SMTP_HOST:
-            raise ValueError("SMTP configuration required in production environment")
+    # Email Configuration
+    SMTP_SERVER: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_USE_TLS: bool = True
+    SMTP_USE_SSL: bool = False
     
-    # External API Keys
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    STRIPE_SECRET_KEY: str = os.getenv("STRIPE_SECRET_KEY", "")
-    STRIPE_PUBLISHABLE_KEY: str = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
-    TWILIO_ACCOUNT_SID: str = os.getenv("TWILIO_ACCOUNT_SID", "")
-    TWILIO_AUTH_TOKEN: str = os.getenv("TWILIO_AUTH_TOKEN", "")
-    TWILIO_PHONE_NUMBER: str = os.getenv("TWILIO_PHONE_NUMBER", "")
+    # Email Providers
+    SENDGRID_API_KEY: Optional[str] = None
+    RESEND_API_KEY: Optional[str] = None
+    AWS_SES_ACCESS_KEY: Optional[str] = None
+    AWS_SES_SECRET_KEY: Optional[str] = None
+    AWS_SES_REGION: str = "us-east-1"
     
-    # Adumo Online Payment Integration
-    ADUMO_MERCHANT_ID: str = os.getenv("ADUMO_MERCHANT_ID", "")
-    ADUMO_APPLICATION_ID: str = os.getenv("ADUMO_APPLICATION_ID", "")
-    ADUMO_JWT_SECRET: str = os.getenv("ADUMO_JWT_SECRET", "")
-    ADUMO_TEST_MODE: bool = os.getenv("ADUMO_TEST_MODE", "true").lower() == "true"
-    ADUMO_TEST_BASE_URL: str = os.getenv("ADUMO_TEST_BASE_URL", "https://staging-apiv3.adumoonline.com")
-    ADUMO_PROD_BASE_URL: str = os.getenv("ADUMO_PROD_BASE_URL", "https://apiv3.adumoonline.com")
-    ADUMO_WEBHOOK_BASE_URL: str = os.getenv("ADUMO_WEBHOOK_BASE_URL", "")
-    ADUMO_SUCCESS_REDIRECT_URL: str = os.getenv("ADUMO_SUCCESS_REDIRECT_URL", "")
-    ADUMO_FAILED_REDIRECT_URL: str = os.getenv("ADUMO_FAILED_REDIRECT_URL", "")
+    # AI Services
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-4"
+    OPENAI_MAX_TOKENS: int = 4000
+    OPENAI_TEMPERATURE: float = 0.7
     
-    # File upload configuration
-    MAX_FILE_SIZE: int = int(os.getenv("MAX_FILE_SIZE", "10485760"))  # 10MB
-    UPLOAD_DIRECTORY: str = os.getenv("UPLOAD_DIRECTORY", "uploads")
+    # LangChain Configuration
+    LANGCHAIN_API_KEY: Optional[str] = None
+    LANGCHAIN_PROJECT: str = "buffr-host"
+    LANGCHAIN_TRACING: bool = False
     
-    # CORS configuration
-    ALLOWED_ORIGINS: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001")
+    # Payment Gateways
+    STRIPE_SECRET_KEY: str = ""
+    STRIPE_PUBLISHABLE_KEY: str = ""
+    STRIPE_WEBHOOK_SECRET: str = ""
     
-    # Rate limiting
-    RATE_LIMIT_REQUESTS: int = int(os.getenv("RATE_LIMIT_REQUESTS", "1000"))
-    RATE_LIMIT_WINDOW: int = int(os.getenv("RATE_LIMIT_WINDOW", "3600"))
+    ADUMO_API_KEY: str = ""
+    ADUMO_MERCHANT_ID: str = ""
+    ADUMO_ENVIRONMENT: str = "sandbox"  # sandbox or production
     
-    # Email configuration
-    SMTP_HOST: str = os.getenv("SMTP_HOST", "")
-    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
-    SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "")
-    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
-    SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "noreply@mail.buffr.ai")
+    REALPAY_API_KEY: str = ""
+    REALPAY_MERCHANT_ID: str = ""
+    REALPAY_ENVIRONMENT: str = "sandbox"
     
-    # Supabase Storage configuration
-    SUPABASE_STORAGE_BUCKET: str = os.getenv("SUPABASE_STORAGE_BUCKET", "buffr-host-files")
-    SUPABASE_STORAGE_URL: str = os.getenv("SUPABASE_STORAGE_URL", "")
-    SUPABASE_STORAGE_PUBLIC_URL: str = os.getenv("SUPABASE_STORAGE_PUBLIC_URL", "")
+    # BuffrPay Configuration
+    BUFFR_PAY_API_KEY: str = ""
+    BUFFR_PAY_MERCHANT_ID: str = ""
+    BUFFR_PAY_WEBHOOK_SECRET: str = ""
+    BUFFR_PAY_ENVIRONMENT: str = "sandbox"
     
-    # Monitoring & Logging
-    SENTRY_DSN: str = os.getenv("SENTRY_DSN", "")
-    LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+    # File Storage
+    UPLOAD_DIR: str = "./uploads"
+    MAX_FILE_SIZE: int = 50 * 1024 * 1024  # 50MB
+    ALLOWED_FILE_TYPES: List[str] = [
+        "image/jpeg", "image/png", "image/gif", "image/webp",
+        "application/pdf", "text/plain", "application/json"
+    ]
     
-    # Development settings
-    SQL_ECHO: bool = os.getenv("SQL_ECHO", "false").lower() == "true"
-    DETAILED_ERRORS: bool = os.getenv("DETAILED_ERRORS", "false").lower() == "true"
+    # AWS S3 (if using S3 for file storage)
+    AWS_ACCESS_KEY_ID: Optional[str] = None
+    AWS_SECRET_ACCESS_KEY: Optional[str] = None
+    AWS_S3_BUCKET: Optional[str] = None
+    AWS_S3_REGION: str = "us-east-1"
     
-    # Production settings
-    FORCE_HTTPS: bool = os.getenv("FORCE_HTTPS", "false").lower() == "true"
-    TRUST_PROXY: bool = os.getenv("TRUST_PROXY", "false").lower() == "true"
+    # Rate Limiting
+    RATE_LIMIT_REQUESTS: int = 100
+    RATE_LIMIT_WINDOW: int = 60  # seconds
+    RATE_LIMIT_STORAGE: str = "redis"  # redis or memory
     
-    # Feature flags
-    ENABLE_AI_FEATURES: bool = os.getenv("ENABLE_AI_FEATURES", "true").lower() == "true"
-    ENABLE_REALTIME: bool = os.getenv("ENABLE_REALTIME", "true").lower() == "true"
-    ENABLE_ANALYTICS: bool = os.getenv("ENABLE_ANALYTICS", "true").lower() == "true"
-    ENABLE_MARKETING: bool = os.getenv("ENABLE_MARKETING", "true").lower() == "true"
-    ENABLE_API_DOCS: bool = os.getenv("ENABLE_API_DOCS", "true").lower() == "true"
+    # Logging
+    LOG_LEVEL: str = "INFO"
+    LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    LOG_FILE: Optional[str] = None
     
-    # Business settings
-    DEFAULT_TIMEZONE: str = os.getenv("DEFAULT_TIMEZONE", "UTC")
-    DEFAULT_CURRENCY: str = os.getenv("DEFAULT_CURRENCY", "NAD")
-    CURRENCY_SYMBOL: str = os.getenv("CURRENCY_SYMBOL", "N$")
+    # Monitoring
+    ENABLE_METRICS: bool = True
+    METRICS_PORT: int = 9090
+    HEALTH_CHECK_INTERVAL: int = 30
     
-    # Loyalty program settings (Namibian Dollar based)
-    LOYALTY_POINTS_PER_DOLLAR: int = int(os.getenv("LOYALTY_POINTS_PER_DOLLAR", "1"))  # 1 point per N$1
-    LOYALTY_POINT_VALUE: float = float(os.getenv("LOYALTY_POINT_VALUE", "0.01"))  # N$0.01 per point
+    # Features
+    ENABLE_AI_FEATURES: bool = True
+    ENABLE_REALTIME: bool = True
+    ENABLE_ANALYTICS: bool = True
+    ENABLE_MARKETING: bool = True
+    ENABLE_MULTI_TENANT: bool = True
+    ENABLE_API_DOCS: bool = True
     
-    # Notification settings
-    EMAIL_NOTIFICATIONS_ENABLED: bool = os.getenv("EMAIL_NOTIFICATIONS_ENABLED", "true").lower() == "true"
-    SMS_NOTIFICATIONS_ENABLED: bool = os.getenv("SMS_NOTIFICATIONS_ENABLED", "true").lower() == "true"
-    PUSH_NOTIFICATIONS_ENABLED: bool = os.getenv("PUSH_NOTIFICATIONS_ENABLED", "true").lower() == "true"
+    # Multi-tenant Configuration
+    DEFAULT_TENANT_TIER: str = "essential"
+    TENANT_TRIAL_DAYS: int = 14
+    MAX_TENANTS_PER_USER: int = 5
     
-    # Cache settings
-    CACHE_TTL_SHORT: int = int(os.getenv("CACHE_TTL_SHORT", "300"))  # 5 minutes
-    CACHE_TTL_MEDIUM: int = int(os.getenv("CACHE_TTL_MEDIUM", "3600"))  # 1 hour
-    CACHE_TTL_LONG: int = int(os.getenv("CACHE_TTL_LONG", "86400"))  # 24 hours
+    # Onboarding
+    ONBOARDING_EMAIL_TEMPLATES: bool = True
+    ONBOARDING_AUTOMATION: bool = True
+    ONBOARDING_AI_RECOMMENDATIONS: bool = True
     
-    # Security settings
-    MIN_PASSWORD_LENGTH: int = int(os.getenv("MIN_PASSWORD_LENGTH", "8"))
-    REQUIRE_SPECIAL_CHARS: bool = os.getenv("REQUIRE_SPECIAL_CHARS", "true").lower() == "true"
-    REQUIRE_NUMBERS: bool = os.getenv("REQUIRE_NUMBERS", "true").lower() == "true"
-    REQUIRE_UPPERCASE: bool = os.getenv("REQUIRE_UPPERCASE", "true").lower() == "true"
+    # Business Logic
+    DEFAULT_CURRENCY: str = "USD"
+    DEFAULT_TIMEZONE: str = "UTC"
+    DEFAULT_LANGUAGE: str = "en"
     
-    # Session settings
-    SESSION_TIMEOUT_MINUTES: int = int(os.getenv("SESSION_TIMEOUT_MINUTES", "480"))  # 8 hours
-    MAX_LOGIN_ATTEMPTS: int = int(os.getenv("MAX_LOGIN_ATTEMPTS", "5"))
-    LOCKOUT_DURATION_MINUTES: int = int(os.getenv("LOCKOUT_DURATION_MINUTES", "30"))
+    # Booking Engine
+    BOOKING_ADVANCE_DAYS: int = 365
+    BOOKING_CANCELLATION_HOURS: int = 24
+    BOOKING_MIN_STAY: int = 1
+    BOOKING_MAX_STAY: int = 30
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    # Revenue Management
+    ENABLE_DYNAMIC_PRICING: bool = True
+    PRICING_UPDATE_INTERVAL: int = 60  # minutes
+    OCCUPANCY_THRESHOLD: float = 0.8
+    
+    # Integration Settings
+    ENABLE_WEBHOOKS: bool = True
+    WEBHOOK_TIMEOUT: int = 30
+    WEBHOOK_RETRY_ATTEMPTS: int = 3
+    
+    # Cache Settings
+    CACHE_TTL: int = 300  # 5 minutes
+    CACHE_MAX_SIZE: int = 1000
+    CACHE_BACKEND: str = "redis"  # redis or memory
+    
+    # Background Tasks
+    ENABLE_BACKGROUND_TASKS: bool = True
+    TASK_BROKER_URL: str = "redis://localhost:6379/1"
+    TASK_RESULT_BACKEND: str = "redis://localhost:6379/2"
+    
+    # API Configuration
+    API_V1_STR: str = "/api/v1"
+    API_PREFIX: str = "/api"
+    API_TITLE: str = "Buffr Host API"
+    API_DESCRIPTION: str = "Comprehensive hospitality management platform API"
+    
+    # Pagination
+    DEFAULT_PAGE_SIZE: int = 20
+    MAX_PAGE_SIZE: int = 100
+    
+    # Validation
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v):
+        if isinstance(v, str):
+            return [i.strip() for i in v.split(",")]
+        return v
+    
+    @field_validator("ALLOWED_FILE_TYPES", mode="before")
+    @classmethod
+    def assemble_file_types(cls, v):
+        if isinstance(v, str):
+            return [i.strip() for i in v.split(",")]
+        return v
+    
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def validate_database_url(cls, v):
+        if not v:
+            raise ValueError("DATABASE_URL is required")
+        return v
+    
+    @field_validator("SECRET_KEY")
+    @classmethod
+    def validate_secret_key(cls, v):
+        if len(v) < 32:
+            raise ValueError("SECRET_KEY must be at least 32 characters long")
+        return v
+    
+    @field_validator("ENVIRONMENT")
+    @classmethod
+    def validate_environment(cls, v):
+        allowed = ["development", "staging", "production", "testing"]
+        if v not in allowed:
+            raise ValueError(f"ENVIRONMENT must be one of {allowed}")
+        return v
+    
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": True
+    }
 
+@lru_cache()
+def get_settings() -> Settings:
+    """Get cached settings instance"""
+    return Settings()
 
-# Create settings instance
-settings = Settings()
+# Global settings instance
+settings = get_settings()
+
+# Environment-specific configurations
+class DevelopmentConfig(Settings):
+    """Development environment configuration"""
+    DEBUG: bool = True
+    ENVIRONMENT: str = "development"
+    DATABASE_ECHO: bool = True
+    LOG_LEVEL: str = "DEBUG"
+    CORS_ORIGINS: List[str] = ["*"]
+    ENABLE_API_DOCS: bool = True
+
+class StagingConfig(Settings):
+    """Staging environment configuration"""
+    DEBUG: bool = False
+    ENVIRONMENT: str = "staging"
+    LOG_LEVEL: str = "INFO"
+    ENABLE_API_DOCS: bool = True
+
+class ProductionConfig(Settings):
+    """Production environment configuration"""
+    DEBUG: bool = False
+    ENVIRONMENT: str = "production"
+    LOG_LEVEL: str = "WARNING"
+    ENABLE_API_DOCS: bool = False
+    CORS_ORIGINS: List[str] = ["https://buffr.ai", "https://host.buffr.ai"]
+
+def get_config() -> Settings:
+    """Get configuration based on environment"""
+    env = os.getenv("ENVIRONMENT", "development")
+    
+    if env == "production":
+        return ProductionConfig()
+    elif env == "staging":
+        return StagingConfig()
+    else:
+        return DevelopmentConfig()
+
+# Export the appropriate configuration
+config = get_config()

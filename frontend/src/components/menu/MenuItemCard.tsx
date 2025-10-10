@@ -1,5 +1,5 @@
 /**
- * Menu Item Card Component for The Shandi Frontend
+ * Menu Item Card Component for Buffr Host Frontend
  *
  * A card-based display for menu items with enhanced features.
  */

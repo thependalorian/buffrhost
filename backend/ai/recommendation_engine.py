@@ -34,7 +34,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.menu import Menu
 from models.order import Order, OrderItem
 from models.services import ConferenceRoom, SpaService, TransportationService
-from models.user import Profile, User
+from models.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +59,7 @@ class ServiceCategory(str, Enum):
 
 
 # Pydantic models for structured responses
-class GuestProfile(BaseModel):
+class GuestUser(BaseModel):
     customer_id: int
     spending_patterns: Dict[str, float] = Field(default_factory=dict)
     preferred_service_types: List[ServiceCategory] = Field(default_factory=list)
@@ -226,17 +226,17 @@ class RecommendationEngine:
                 algorithm_used=[],
             )
 
-    async def _build_guest_profile(self, customer_id: int) -> GuestProfile:
+    async def _build_guest_profile(self, customer_id: int) -> GuestUser:
         """Build a comprehensive guest profile from historical data"""
         try:
             # Get customer basic info
             customer_result = await self.db_session.execute(
-                select(Profile).where(Customer.customer_id == customer_id)
+                select(User).where(Customer.customer_id == customer_id)
             )
             customer = customer_result.scalar_one_or_none()
 
             if not customer:
-                return GuestProfile(customer_id=customer_id)
+                return GuestUser(customer_id=customer_id)
 
             # Get service history
             service_history = await self._get_service_history(customer_id)
@@ -250,7 +250,7 @@ class RecommendationEngine:
             # Calculate visit frequency
             visit_frequency = await self._calculate_visit_frequency(customer_id)
 
-            return GuestProfile(
+            return GuestUser(
                 customer_id=customer_id,
                 spending_patterns=spending_patterns,
                 preferred_service_types=list(spending_patterns.keys()),
@@ -263,7 +263,7 @@ class RecommendationEngine:
 
         except Exception as e:
             logger.error(f"Error building guest profile: {e}")
-            return GuestProfile(customer_id=customer_id)
+            return GuestUser(customer_id=customer_id)
 
     async def _get_service_history(self, customer_id: int) -> List[Dict[str, Any]]:
         """Get customer's service history"""
@@ -459,7 +459,7 @@ class RecommendationEngine:
 
     async def _get_collaborative_recommendations(
         self,
-        guest_profile: GuestProfile,
+        guest_profile: GuestUser,
         available_services: Dict[str, List[Any]],
         request: RecommendationRequest,
     ) -> List[Recommendation]:
@@ -533,7 +533,7 @@ class RecommendationEngine:
 
     async def _get_personalized_recommendations(
         self,
-        guest_profile: GuestProfile,
+        guest_profile: GuestUser,
         available_services: Dict[str, List[Any]],
         request: RecommendationRequest,
     ) -> List[Recommendation]:
@@ -650,7 +650,7 @@ class RecommendationEngine:
         else:
             return "fall"
 
-    async def _find_similar_guests(self, guest_profile: GuestProfile) -> List[int]:
+    async def _find_similar_guests(self, guest_profile: GuestUser) -> List[int]:
         """Find guests with similar preferences"""
         try:
             # This would use collaborative filtering algorithms
@@ -987,7 +987,7 @@ class RecommendationEngine:
 
     async def _get_ml_based_recommendations(
         self,
-        guest_profile: GuestProfile,
+        guest_profile: GuestUser,
         available_services: List[Dict],
         request: RecommendationRequest,
     ) -> List[Recommendation]:
@@ -1297,7 +1297,7 @@ class RecommendationEngine:
             return None
 
     async def _cluster_guests(
-        self, guest_profiles: List[GuestProfile]
+        self, guest_profiles: List[GuestUser]
     ) -> Dict[int, int]:
         """Cluster guests using K-means clustering"""
         try:
@@ -1343,7 +1343,7 @@ class RecommendationEngine:
 
     async def _get_cluster_based_recommendations(
         self,
-        guest_profile: GuestProfile,
+        guest_profile: GuestUser,
         available_services: List[Dict],
         guest_clusters: Dict[int, int],
     ) -> List[Recommendation]:

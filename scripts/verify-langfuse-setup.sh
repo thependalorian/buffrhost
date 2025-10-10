@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Langfuse Setup Verification Script
-echo "🔍 Verifying Langfuse Setup for The Shandi Microservices"
+echo "🔍 Verifying Langfuse Setup for Buffr Host Microservices"
 echo "========================================================"
 
 # Colors

@@ -1,7 +1,7 @@
 """
 Buffr Host Email Service
 
-Email service for The Shandi (Buffr Host) hotel management system
+Email service for Buffr Host (Buffr Host) hotel management system
 Founder: George Nekwaya (george@mail.buffr.ai +12065308433)
 """
 
@@ -185,6 +185,43 @@ class BuffrHostEmailService:
 
         return await self._send_email(
             to=guest_email, subject=subject, html=html, text=text
+        )
+
+    async def send_password_reset_email(
+        self, user_email: str, user_name: str, reset_token: str
+    ) -> EmailResponse:
+        """Send password reset email"""
+
+        subject = "Reset Your Buffr Host Password"
+        reset_link = f"{self.app_url}/reset-password?token={reset_token}"
+
+        html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Password Reset</title>
+        </head>
+        <body>
+            <p>Hello {user_name},</p>
+            <p>You requested a password reset. Click the link below to reset your password:</p>
+            <p><a href="{reset_link}">Reset Password</a></p>
+            <p>If you did not request this, please ignore this email.</p>
+        </body>
+        </html>
+        """
+
+        text = f"""
+        Hello {user_name},
+
+        You requested a password reset. Copy and paste the link below into your browser to reset your password:
+        {reset_link}
+
+        If you did not request this, please ignore this email.
+        """
+
+        return await self._send_email(
+            to=user_email, subject=subject, html=html, text=text
         )
 
     async def _send_email(

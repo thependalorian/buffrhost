@@ -1,4 +1,4 @@
-# The Shandi Terraform Variables
+# Buffr Host Terraform Variables
 
 variable "project_id" {
   description = "Google Cloud Project ID"

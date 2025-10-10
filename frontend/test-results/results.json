@@ -1,11 +1,11 @@
 {
   "config": {
-    "configFile": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/playwright.config.ts",
-    "rootDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/e2e",
+    "configFile": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/playwright.config.ts",
+    "rootDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/e2e",
     "forbidOnly": false,
     "fullyParallel": true,
-    "globalSetup": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/e2e/global-setup.ts",
-    "globalTeardown": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/e2e/global-teardown.ts",
+    "globalSetup": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/e2e/global-setup.ts",
+    "globalTeardown": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/e2e/global-teardown.ts",
     "globalTimeout": 0,
     "grep": {},
     "grepInvert": null,
@@ -34,61 +34,61 @@
     "quiet": false,
     "projects": [
       {
-        "outputDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/test-results",
+        "outputDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "chromium",
         "name": "chromium",
-        "testDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/e2e",
+        "testDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
-        "outputDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/test-results",
+        "outputDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "firefox",
         "name": "firefox",
-        "testDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/e2e",
+        "testDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
-        "outputDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/test-results",
+        "outputDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "webkit",
         "name": "webkit",
-        "testDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/e2e",
+        "testDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
-        "outputDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/test-results",
+        "outputDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
-        "testDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/e2e",
+        "testDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
-        "outputDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/test-results",
+        "outputDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "Mobile Safari",
         "name": "Mobile Safari",
-        "testDir": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/e2e",
+        "testDir": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
@@ -110,9 +110,9 @@
   "errors": [
     {
       "message": "Error: browserType.launch: Executable doesn't exist at /Users/georgenekwaya/Library/Caches/ms-playwright/chromium_headless_shell-1193/chrome-mac/headless_shell\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝",
-      "stack": "Error: browserType.launch: Executable doesn't exist at /Users/georgenekwaya/Library/Caches/ms-playwright/chromium_headless_shell-1193/chrome-mac/headless_shell\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝\n    at globalSetup (/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/e2e/global-setup.ts:9:34)",
+      "stack": "Error: browserType.launch: Executable doesn't exist at /Users/georgenekwaya/Library/Caches/ms-playwright/chromium_headless_shell-1193/chrome-mac/headless_shell\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝\n    at globalSetup (/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/e2e/global-setup.ts:9:34)",
       "location": {
-        "file": "/Users/georgenekwaya/ai-agent-mastery/the-shandi/frontend/e2e/global-setup.ts",
+        "file": "/Users/georgenekwaya/ai-agent-mastery/buffr-host/frontend/e2e/global-setup.ts",
         "column": 34,
         "line": 9
       },

@@ -42,7 +42,7 @@ async def demonstrate_rag_pipeline():
     
     Contact Information:
     Phone: +264 61 123 4567
-    Email: info@theshandi.com
+    Email: info@buffrhost.com
     Address: 123 Independence Avenue, Windhoek, Namibia
     """
 

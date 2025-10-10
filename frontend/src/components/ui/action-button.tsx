@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Universal Action Button Component for The Shandi Platform
+ * Universal Action Button Component for Buffr Host Platform
  *
  * A comprehensive action button component with modal triggers, loading states,
  * and various action types for use across the entire application.

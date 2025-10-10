@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from models.hospitality_property import HospitalityProperty
 from models.menu import Menu, MenuCategory
 from models.room import Room, RoomType
-from models.user import Profile, User
+from models.user import User
 from models.user_type import UserType
 
 

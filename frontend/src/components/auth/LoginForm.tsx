@@ -30,6 +30,7 @@ interface LoginFormProps {
   onSuccess?: () => void;
   onError?: (error: string) => void;
   showSocialAuth?: boolean;
+  showWhatsApp?: boolean;
   className?: string;
 }
 

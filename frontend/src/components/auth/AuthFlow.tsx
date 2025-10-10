@@ -1,5 +1,5 @@
 /**
- * Auth Flow Component for The Shandi Frontend
+ * Auth Flow Component for Buffr Host Frontend
  *
  * Component that handles the complete authentication flow.
  */

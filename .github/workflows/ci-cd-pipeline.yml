@@ -1,4 +1,4 @@
-name: The Shandi CI/CD Pipeline
+name: Buffr Host CI/CD Pipeline
 
 on:
   push:
@@ -172,7 +172,7 @@ jobs:
     steps:
     - name: Pipeline Summary
       run: |
-        echo "✅ The Shandi CI/CD Pipeline Summary"
+        echo "✅ Buffr Host CI/CD Pipeline Summary"
         echo "Frontend Lint: ${{ needs.frontend-lint.result }}"
         echo "Frontend Type Check: ${{ needs.frontend-type-check.result }}"
         echo "Frontend Test: ${{ needs.frontend-test.result }}"

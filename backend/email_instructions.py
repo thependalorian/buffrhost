@@ -23,7 +23,7 @@ def show_instructions():
 
     print("\n🔧 STEP 2: Update Your Environment File")
     print("-" * 40)
-    env_file = "/Users/georgenekwaya/ai-agent-mastery/the-shandi/.env.local"
+    env_file = "/Users/georgenekwaya/ai-agent-mastery/buffr-host/.env.local"
     print(f"Edit this file: {env_file}")
     print("Find this line:")
     print("  SENDGRID_API_KEY=SG.YOUR_ACTUAL_SENDGRID_API_KEY_HERE")
@@ -33,7 +33,7 @@ def show_instructions():
     print("\n📧 STEP 3: Send Test Email")
     print("-" * 40)
     print("After updating the API key, run:")
-    print("  cd /Users/georgenekwaya/ai-agent-mastery/the-shandi/backend")
+    print("  cd /Users/georgenekwaya/ai-agent-mastery/buffr-host/backend")
     print("  source ../.env.local")
     print("  python test_email.py")
 

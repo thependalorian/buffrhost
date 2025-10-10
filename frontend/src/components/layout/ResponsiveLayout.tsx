@@ -1,5 +1,5 @@
 /**
- * Responsive Layout Component for The Shandi Frontend
+ * Responsive Layout Component for Buffr Host Frontend
  *
  * Provides responsive layout containers and utilities.
  */

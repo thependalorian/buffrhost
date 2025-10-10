@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Simplified Langfuse Setup Script for The Shandi Microservices
+# Simplified Langfuse Setup Script for Buffr Host Microservices
 # This script sets up Langfuse integration without installing dependencies
 
 set -e
 
-echo "🚀 Setting up Langfuse Integration for The Shandi Microservices (Simplified)"
+echo "🚀 Setting up Langfuse Integration for Buffr Host Microservices (Simplified)"
 echo "============================================================================="
 
 # Colors for output
@@ -34,7 +34,7 @@ print_info() {
 
 # Check if we're in the right directory
 if [ ! -f "README.md" ] && [ ! -f "MICROSERVICES_ARCHITECTURE_DESIGN.md" ]; then
-    print_error "Please run this script from the the-shandi project directory"
+    print_error "Please run this script from the buffr-host project directory"
     exit 1
 fi
 
@@ -282,7 +282,7 @@ cat > scripts/verify-langfuse-setup.sh << 'EOF'
 #!/bin/bash
 
 # Langfuse Setup Verification Script
-echo "🔍 Verifying Langfuse Setup for The Shandi Microservices"
+echo "🔍 Verifying Langfuse Setup for Buffr Host Microservices"
 echo "========================================================"
 
 # Colors
@@ -360,11 +360,11 @@ print_status "Created setup verification script"
 print_info "Creating Langfuse integration README..."
 
 cat > LANGFUSE_INTEGRATION_README.md << 'EOF'
-# Langfuse Integration for The Shandi Microservices
+# Langfuse Integration for Buffr Host Microservices
 
 ## 🎯 Overview
 
-This document provides comprehensive instructions for setting up and using Langfuse integration with The Shandi microservices platform for enhanced AI observability and tracing.
+This document provides comprehensive instructions for setting up and using Langfuse integration with Buffr Host microservices platform for enhanced AI observability and tracing.
 
 ## 🚀 Quick Start
 

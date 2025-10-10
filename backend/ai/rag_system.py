@@ -73,7 +73,7 @@ from models.hospitality_property import HospitalityProperty
 from models.knowledge import KnowledgeDocument
 from models.order import Order
 from models.room import RoomReservation
-from models.user import Profile, User
+from models.user import User
 
 logger = logging.getLogger(__name__)
 

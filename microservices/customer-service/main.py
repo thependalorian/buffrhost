@@ -1,55 +1,35 @@
 """
-Buffr Host Customer Service - Microservice
-Handles customer relationship management, profiles, and preferences for Buffr Host platform
+Buffr Host Customer Service
+Comprehensive customer management and loyalty programs for Buffr Host platform
 """
 
 import os
-import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Optional, Dict, Any, List
+from typing import Dict, List, Optional, Any
+from contextlib import asynccontextmanager
 from enum import Enum
 
-import redis.asyncio as redis
-from fastapi import FastAPI, HTTPException, status, Depends, Query
+from fastapi import FastAPI, HTTPException, Depends, status, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, EmailStr
-from sqlalchemy import Column, String, Integer, DateTime, Boolean, Text, JSON, create_engine, ForeignKey, Float, Date
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session, relationship
+from pydantic import BaseModel, Field, validator, EmailStr
 import jwt
-from contextlib import asynccontextmanager
+from supabase import create_client, Client
+import logging
 
-# Configure logging
+# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Database setup
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/buffr_host_customers")
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-# Redis setup
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
-redis_client = None
-
-# Security
+# Global variables
+supabase_client: Optional[Client] = None
 security = HTTPBearer()
 
 # JWT Configuration
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key")
-
-# Service configuration
-SERVICE_NAME = "customer-service"
-SERVICE_VERSION = "1.0.0"
-SERVICE_PORT = int(os.getenv("SERVICE_PORT", 8005))
-
-# Enums
-class CustomerType(str, Enum):
-    INDIVIDUAL = "individual"
-    BUSINESS = "business"
-    CORPORATE = "corporate"
+JWT_ACCESS_SECRET = os.getenv("JWT_ACCESS_SECRET", "buffr-host-access-secret-key-change-in-production")
+JWT_ALGORITHM = "HS256"
 
 class CustomerStatus(str, Enum):
     ACTIVE = "active"
@@ -57,783 +37,724 @@ class CustomerStatus(str, Enum):
     SUSPENDED = "suspended"
     VIP = "vip"
 
-class Gender(str, Enum):
-    MALE = "male"
-    FEMALE = "female"
-    OTHER = "other"
-    PREFER_NOT_TO_SAY = "prefer_not_to_say"
+class LoyaltyTier(str, Enum):
+    BRONZE = "bronze"
+    SILVER = "silver"
+    GOLD = "gold"
+    PLATINUM = "platinum"
+    DIAMOND = "diamond"
 
-class CommunicationPreference(str, Enum):
+class NotificationPreference(str, Enum):
     EMAIL = "email"
     SMS = "sms"
-    PHONE = "phone"
     PUSH = "push"
     NONE = "none"
 
-# Database Models
-class Customer(Base):
-    __tablename__ = "customers"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    property_id = Column(String, nullable=False, index=True)
-    user_id = Column(String, nullable=True, index=True)  # Link to auth service
-    
-    # Personal Information
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    email = Column(String, nullable=True, index=True)
-    phone = Column(String, nullable=True, index=True)
-    date_of_birth = Column(Date, nullable=True)
-    gender = Column(String, nullable=True)
-    
-    # Address Information
-    address = Column(Text, nullable=True)
-    city = Column(String, nullable=True)
-    state = Column(String, nullable=True)
-    country = Column(String, nullable=True)
-    postal_code = Column(String, nullable=True)
-    
-    # Customer Information
-    customer_type = Column(String, default=CustomerType.INDIVIDUAL)
-    status = Column(String, default=CustomerStatus.ACTIVE)
-    customer_since = Column(DateTime, default=datetime.utcnow)
-    last_visit = Column(DateTime, nullable=True)
-    
-    # Business Information (for business/corporate customers)
-    company_name = Column(String, nullable=True)
-    job_title = Column(String, nullable=True)
-    industry = Column(String, nullable=True)
-    
-    # Preferences and Settings
-    preferences = Column(JSON, default=dict)
-    communication_preferences = Column(JSON, default=dict)
-    dietary_restrictions = Column(JSON, default=list)
-    allergies = Column(JSON, default=list)
-    
-    # Loyalty Information
-    loyalty_points = Column(Integer, default=0)
-    loyalty_tier = Column(String, default="bronze")
-    total_spent = Column(Float, default=0.0)
-    visit_count = Column(Integer, default=0)
-    
-    # Notes and Tags
-    notes = Column(Text, nullable=True)
-    tags = Column(JSON, default=list)
-    
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-class CustomerInteraction(Base):
-    __tablename__ = "customer_interactions"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    customer_id = Column(String, ForeignKey("customers.id"), nullable=False, index=True)
-    property_id = Column(String, nullable=False, index=True)
-    interaction_type = Column(String, nullable=False)  # visit, call, email, complaint, feedback
-    interaction_date = Column(DateTime, default=datetime.utcnow)
-    
-    # Interaction Details
-    subject = Column(String, nullable=True)
-    description = Column(Text, nullable=True)
-    outcome = Column(String, nullable=True)
-    satisfaction_rating = Column(Integer, nullable=True)  # 1-5 stars
-    
-    # Staff Information
-    staff_id = Column(String, nullable=True)
-    staff_name = Column(String, nullable=True)
-    
-    # Follow-up Information
-    follow_up_required = Column(Boolean, default=False)
-    follow_up_date = Column(DateTime, nullable=True)
-    follow_up_notes = Column(Text, nullable=True)
-    
-    # Additional Data
-    metadata = Column(JSON, default=dict)
-    
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-class CustomerSegment(Base):
-    __tablename__ = "customer_segments"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    property_id = Column(String, nullable=False, index=True)
-    name = Column(String, nullable=False)
-    description = Column(Text, nullable=True)
-    
-    # Segment Criteria
-    criteria = Column(JSON, nullable=False)  # Spending, frequency, demographics, etc.
-    
-    # Segment Information
-    customer_count = Column(Integer, default=0)
-    average_spending = Column(Float, default=0.0)
-    average_frequency = Column(Float, default=0.0)
-    
-    # Status
-    is_active = Column(Boolean, default=True)
-    
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-class CustomerSegmentMember(Base):
-    __tablename__ = "customer_segment_members"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    segment_id = Column(String, ForeignKey("customer_segments.id"), nullable=False, index=True)
-    customer_id = Column(String, ForeignKey("customers.id"), nullable=False, index=True)
-    added_at = Column(DateTime, default=datetime.utcnow)
-
-class CustomerPreference(Base):
-    __tablename__ = "customer_preferences"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    customer_id = Column(String, ForeignKey("customers.id"), nullable=False, index=True)
-    preference_type = Column(String, nullable=False)  # dietary, seating, service, etc.
-    preference_value = Column(String, nullable=False)
-    preference_details = Column(JSON, default=dict)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-# Pydantic Models
-class CustomerCreate(BaseModel):
-    property_id: str
-    user_id: Optional[str] = None
-    first_name: str
-    last_name: str
-    email: Optional[EmailStr] = None
-    phone: Optional[str] = None
-    date_of_birth: Optional[datetime] = None
-    gender: Optional[Gender] = None
-    address: Optional[str] = None
-    city: Optional[str] = None
-    state: Optional[str] = None
-    country: Optional[str] = None
-    postal_code: Optional[str] = None
-    customer_type: CustomerType = CustomerType.INDIVIDUAL
-    company_name: Optional[str] = None
-    job_title: Optional[str] = None
-    industry: Optional[str] = None
-    preferences: Optional[Dict[str, Any]] = {}
-    communication_preferences: Optional[Dict[str, Any]] = {}
-    dietary_restrictions: Optional[List[str]] = []
-    allergies: Optional[List[str]] = []
-    notes: Optional[str] = None
-    tags: Optional[List[str]] = []
-
-class CustomerUpdate(BaseModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    phone: Optional[str] = None
-    date_of_birth: Optional[datetime] = None
-    gender: Optional[Gender] = None
-    address: Optional[str] = None
-    city: Optional[str] = None
-    state: Optional[str] = None
-    country: Optional[str] = None
-    postal_code: Optional[str] = None
-    customer_type: Optional[CustomerType] = None
-    status: Optional[CustomerStatus] = None
-    company_name: Optional[str] = None
-    job_title: Optional[str] = None
-    industry: Optional[str] = None
-    preferences: Optional[Dict[str, Any]] = None
-    communication_preferences: Optional[Dict[str, Any]] = None
-    dietary_restrictions: Optional[List[str]] = None
-    allergies: Optional[List[str]] = None
-    notes: Optional[str] = None
-    tags: Optional[List[str]] = None
-
-class CustomerInteractionCreate(BaseModel):
-    customer_id: str
-    property_id: str
-    interaction_type: str
-    subject: Optional[str] = None
-    description: Optional[str] = None
-    outcome: Optional[str] = None
-    satisfaction_rating: Optional[int] = None
-    staff_id: Optional[str] = None
-    staff_name: Optional[str] = None
-    follow_up_required: bool = False
-    follow_up_date: Optional[datetime] = None
-    follow_up_notes: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = {}
-
-class CustomerSegmentCreate(BaseModel):
-    property_id: str
-    name: str
-    description: Optional[str] = None
-    criteria: Dict[str, Any]
-
-class CustomerResponse(BaseModel):
-    id: str
-    property_id: str
-    user_id: Optional[str]
-    first_name: str
-    last_name: str
-    email: Optional[str]
-    phone: Optional[str]
-    date_of_birth: Optional[datetime]
-    gender: Optional[str]
-    address: Optional[str]
-    city: Optional[str]
-    state: Optional[str]
-    country: Optional[str]
-    postal_code: Optional[str]
-    customer_type: str
-    status: str
-    customer_since: datetime
-    last_visit: Optional[datetime]
-    company_name: Optional[str]
-    job_title: Optional[str]
-    industry: Optional[str]
-    preferences: Dict[str, Any]
-    communication_preferences: Dict[str, Any]
-    dietary_restrictions: List[str]
-    allergies: List[str]
-    loyalty_points: int
-    loyalty_tier: str
-    total_spent: float
-    visit_count: int
-    notes: Optional[str]
-    tags: List[str]
-    created_at: datetime
-    updated_at: datetime
-
-class CustomerMetrics(BaseModel):
-    total_customers: int
-    active_customers: int
-    new_customers_this_month: int
-    customers_by_type: Dict[str, int]
-    customers_by_status: Dict[str, int]
-    average_spending: float
-    total_loyalty_points: int
-    top_customers: List[Dict[str, Any]]
-    customer_segments: int
-    interactions_today: int
-
-# Database dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# Redis connection
-async def connect_redis():
-    global redis_client
-    try:
-        redis_client = redis.from_url(REDIS_URL)
-        await redis_client.ping()
-        logger.info("✅ Redis connected for customer service")
-    except Exception as e:
-        logger.warning(f"⚠️ Redis not available: {e}")
-        redis_client = None
-
-# Authentication dependency
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-    """Get current user from JWT token"""
-    token = credentials.credentials
-    try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"])
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-        return {"user_id": user_id, "email": payload.get("email"), "role": payload.get("role")}
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
-    except jwt.JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-
-# Application lifespan
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    logger.info(f"🚀 Starting {SERVICE_NAME} v{SERVICE_VERSION}")
-    await connect_redis()
+    """Application lifespan manager"""
+    global supabase_client
     
-    # Create database tables
-    Base.metadata.create_all(bind=engine)
-    logger.info("✅ Database tables created/verified")
+    # Startup
+    logger.info("Starting Buffr Host Customer Service Service...")
+    
+    try:
+        # Initialize Supabase client
+        supabase_url = os.getenv("SUPABASE_URL")
+        supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+        
+        if not supabase_url or not supabase_key:
+            raise ValueError("Missing Supabase configuration")
+        
+        supabase_client = create_client(supabase_url, supabase_key)
+        
+        # Run database migrations
+        try:
+            from shared.supabase_migrations.supabase_migration_runner import CustomerserviceServiceSupabaseMigrationRunner
+            database_url = os.getenv("DATABASE_URL")
+            if database_url:
+                migration_runner = CustomerserviceServiceSupabaseMigrationRunner(database_url)
+                migration_success = await migration_runner.run_migrations()
+                if migration_success:
+                    logger.info("Database migrations completed successfully")
+                else:
+                    logger.warning("Database migrations failed - continuing anyway")
+            else:
+                logger.warning("No DATABASE_URL provided - skipping migrations")
+        except Exception as migration_error:
+            logger.error(f"Migration error: {migration_error} - continuing anyway")
+        
+        logger.info("Customer Service Service initialized successfully")
+        
+    except Exception as e:
+        logger.error(f"Failed to initialize Customer Service Service: {e}")
+        raise
     
     yield
     
     # Shutdown
-    if redis_client:
-        await redis_client.close()
-    logger.info(f"🛑 {SERVICE_NAME} shutdown complete")
-
-# FastAPI app
+    logger.info("Shutting down Customer Service Service...")# Create FastAPI app
 app = FastAPI(
-    title=f"{SERVICE_NAME.title()}",
-    description="Customer relationship management microservice",
-    version=SERVICE_VERSION,
+    title="Buffr Host Customer Service",
+    description="Customer management and loyalty programs for Buffr Host platform",
+    version="1.0.0",
     lifespan=lifespan
 )
 
+# Add middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Configure appropriately for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"]  # Configure appropriately for production
+)
+
+# Pydantic Models
+class Address(BaseModel):
+    street: str
+    city: str
+    state: str
+    zip_code: str
+    country: str = "US"
+    is_primary: bool = False
+
+class ContactInfo(BaseModel):
+    phone: str = Field(..., regex=r'^\+?[1-9]\d{1,14}$')
+    email: EmailStr
+    alternate_phone: Optional[str] = None
+    alternate_email: Optional[EmailStr] = None
+
+class LoyaltyProgram(BaseModel):
+    tier: LoyaltyTier = LoyaltyTier.BRONZE
+    points: int = 0
+    total_spent: float = 0.0
+    visits_count: int = 0
+    last_visit: Optional[str] = None
+    join_date: str
+
+class Preferences(BaseModel):
+    dietary_restrictions: List[str] = []
+    allergies: List[str] = []
+    favorite_cuisines: List[str] = []
+    preferred_payment_method: Optional[str] = None
+    notification_preferences: List[NotificationPreference] = [NotificationPreference.EMAIL]
+    marketing_consent: bool = False
+
+class CreateCustomerRequest(BaseModel):
+    first_name: str = Field(..., min_length=1, max_length=50)
+    last_name: str = Field(..., min_length=1, max_length=50)
+    contact_info: ContactInfo
+    addresses: List[Address] = []
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    preferences: Preferences = Preferences()
+    status: CustomerStatus = CustomerStatus.ACTIVE
+    notes: Optional[str] = None
+    referral_source: Optional[str] = None
+
+class CustomerResponse(BaseModel):
+    id: str
+    first_name: str
+    last_name: str
+    contact_info: ContactInfo
+    addresses: List[Address]
+    date_of_birth: Optional[str]
+    gender: Optional[str]
+    preferences: Preferences
+    loyalty_program: LoyaltyProgram
+    status: CustomerStatus
+    notes: Optional[str]
+    referral_source: Optional[str]
+    created_at: str
+    updated_at: str
+
+class UpdateCustomerRequest(BaseModel):
+    first_name: Optional[str] = Field(None, min_length=1, max_length=50)
+    last_name: Optional[str] = Field(None, min_length=1, max_length=50)
+    contact_info: Optional[ContactInfo] = None
+    addresses: Optional[List[Address]] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    preferences: Optional[Preferences] = None
+    status: Optional[CustomerStatus] = None
+    notes: Optional[str] = None
+
+class LoyaltyTransaction(BaseModel):
+    customer_id: str
+    points_earned: int = 0
+    points_redeemed: int = 0
+    transaction_type: str  # earn, redeem, expire, bonus
+    description: str
+    order_id: Optional[str] = None
+    amount: Optional[float] = None
+
+class LoyaltyTransactionResponse(BaseModel):
+    id: str
+    customer_id: str
+    points_earned: int
+    points_redeemed: int
+    transaction_type: str
+    description: str
+    order_id: Optional[str]
+    amount: Optional[float]
+    created_at: str
+
+# Utility Functions
+def verify_jwt_token(token: str) -> Dict[str, Any]:
+    """Verify and decode JWT token"""
+    try:
+        payload = jwt.decode(token, JWT_ACCESS_SECRET, algorithms=[JWT_ALGORITHM])
+        
+        if payload.get("type") != "access":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type"
+            )
+        
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired"
+        )
+    except jwt.JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+
+def calculate_loyalty_tier(total_spent: float, visits_count: int) -> LoyaltyTier:
+    """Calculate loyalty tier based on spending and visits"""
+    if total_spent >= 10000 or visits_count >= 100:
+        return LoyaltyTier.DIAMOND
+    elif total_spent >= 5000 or visits_count >= 50:
+        return LoyaltyTier.PLATINUM
+    elif total_spent >= 2000 or visits_count >= 25:
+        return LoyaltyTier.GOLD
+    elif total_spent >= 500 or visits_count >= 10:
+        return LoyaltyTier.SILVER
+    else:
+        return LoyaltyTier.BRONZE
+
+def calculate_points_earned(amount: float, tier: LoyaltyTier) -> int:
+    """Calculate points earned based on amount and tier"""
+    base_rate = 1  # 1 point per dollar
+    tier_multiplier = {
+        LoyaltyTier.BRONZE: 1.0,
+        LoyaltyTier.SILVER: 1.2,
+        LoyaltyTier.GOLD: 1.5,
+        LoyaltyTier.PLATINUM: 2.0,
+        LoyaltyTier.DIAMOND: 2.5
+    }
+    
+    return int(amount * base_rate * tier_multiplier.get(tier, 1.0))
+
+# Authentication Dependencies
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
+    """Get current authenticated user"""
+    token = credentials.credentials
+    payload = verify_jwt_token(token)
+    
+    # Get user from database
+    result = supabase_client.table("users").select("*").eq("id", payload["sub"]).execute()
+    
+    if not result.data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
+    
+    user = result.data[0]
+    
+    if not user["is_active"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is deactivated"
+        )
+    
+    return user
+
+async def require_role(required_role: str):
+    """Require specific role for endpoint access"""
+    def role_checker(current_user: Dict[str, Any] = Depends(get_current_user)):
+        user_role = current_user["role"]
+        
+        # Role hierarchy: admin > manager > staff > customer
+        role_hierarchy = {"admin": 4, "manager": 3, "staff": 2, "customer": 1}
+        
+        if role_hierarchy.get(user_role, 0) < role_hierarchy.get(required_role, 0):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Required role: {required_role}"
+            )
+        
+        return current_user
+    
+    return role_checker
+
 # API Endpoints
+@app.post("/customers", response_model=CustomerResponse)
+async def create_customer(
+    customer_data: CreateCustomerRequest,
+    current_user: Dict[str, Any] = Depends(require_role("staff"))
+):
+    """Create a new customer"""
+    try:
+        # Check if customer already exists by email
+        existing_customer = supabase_client.table("customers").select("id").eq("contact_info->>email", customer_data.contact_info.email).execute()
+        
+        if existing_customer.data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Customer with this email already exists"
+            )
+        
+        # Create customer record
+        customer_id = str(uuid.uuid4())
+        loyalty_program = LoyaltyProgram(
+            tier=LoyaltyTier.BRONZE,
+            points=0,
+            total_spent=0.0,
+            visits_count=0,
+            join_date=datetime.utcnow().isoformat()
+        )
+        
+        customer_record = {
+            "id": customer_id,
+            "first_name": customer_data.first_name,
+            "last_name": customer_data.last_name,
+            "contact_info": customer_data.contact_info.dict(),
+            "addresses": [address.dict() for address in customer_data.addresses],
+            "date_of_birth": customer_data.date_of_birth,
+            "gender": customer_data.gender,
+            "preferences": customer_data.preferences.dict(),
+            "loyalty_program": loyalty_program.dict(),
+            "status": customer_data.status.value,
+            "notes": customer_data.notes,
+            "referral_source": customer_data.referral_source,
+            "created_by": current_user["id"],
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        result = supabase_client.table("customers").insert(customer_record).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create customer"
+            )
+        
+        return CustomerResponse(**result.data[0])
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Create customer error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create customer"
+        )
+
+@app.get("/customers/{customer_id}", response_model=CustomerResponse)
+async def get_customer(
+    customer_id: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Get customer by ID"""
+    try:
+        result = supabase_client.table("customers").select("*").eq("id", customer_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Customer not found"
+            )
+        
+        customer = result.data[0]
+        
+        # Check if user has access to this customer
+        user_role = current_user["role"]
+        if user_role not in ["admin", "manager", "staff"] and customer["id"] != current_user["id"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to this customer"
+            )
+        
+        return CustomerResponse(**customer)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Get customer error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get customer"
+        )
+
+@app.get("/customers", response_model=List[CustomerResponse])
+async def list_customers(
+    skip: int = 0,
+    limit: int = 100,
+    status: Optional[CustomerStatus] = None,
+    loyalty_tier: Optional[LoyaltyTier] = None,
+    search: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(require_role("staff"))
+):
+    """List customers with filters"""
+    try:
+        query = supabase_client.table("customers").select("*")
+        
+        # Apply filters
+        if status:
+            query = query.eq("status", status.value)
+        if loyalty_tier:
+            query = query.eq("loyalty_program->>tier", loyalty_tier.value)
+        if search:
+            query = query.or_(f"first_name.ilike.%{search}%,last_name.ilike.%{search}%,contact_info->>email.ilike.%{search}%")
+        
+        # Apply pagination
+        result = query.range(skip, skip + limit - 1).order("created_at", desc=True).execute()
+        
+        customers = [CustomerResponse(**customer) for customer in result.data]
+        return customers
+        
+    except Exception as e:
+        logger.error(f"List customers error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to list customers"
+        )
+
+@app.put("/customers/{customer_id}", response_model=CustomerResponse)
+async def update_customer(
+    customer_id: str,
+    customer_update: UpdateCustomerRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Update customer"""
+    try:
+        # Get current customer
+        customer_result = supabase_client.table("customers").select("*").eq("id", customer_id).execute()
+        
+        if not customer_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Customer not found"
+            )
+        
+        customer = customer_result.data[0]
+        
+        # Check if user has access to update this customer
+        user_role = current_user["role"]
+        if user_role not in ["admin", "manager", "staff"] and customer["id"] != current_user["id"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to update this customer"
+            )
+        
+        # Prepare update data
+        update_data = {k: v for k, v in customer_update.dict().items() if v is not None}
+        
+        # Convert nested objects to dict
+        if "contact_info" in update_data:
+            update_data["contact_info"] = update_data["contact_info"].dict()
+        if "addresses" in update_data:
+            update_data["addresses"] = [address.dict() for address in update_data["addresses"]]
+        if "preferences" in update_data:
+            update_data["preferences"] = update_data["preferences"].dict()
+        
+        update_data["updated_at"] = datetime.utcnow().isoformat()
+        
+        # Update customer
+        result = supabase_client.table("customers").update(update_data).eq("id", customer_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update customer"
+            )
+        
+        return CustomerResponse(**result.data[0])
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Update customer error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update customer"
+        )
+
+@app.post("/customers/{customer_id}/loyalty/earn", response_model=LoyaltyTransactionResponse)
+async def earn_loyalty_points(
+    customer_id: str,
+    transaction_data: LoyaltyTransaction,
+    current_user: Dict[str, Any] = Depends(require_role("staff"))
+):
+    """Earn loyalty points for customer"""
+    try:
+        # Get customer
+        customer_result = supabase_client.table("customers").select("*").eq("id", customer_id).execute()
+        
+        if not customer_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Customer not found"
+            )
+        
+        customer = customer_result.data[0]
+        loyalty_program = customer["loyalty_program"]
+        
+        # Calculate new tier and points
+        new_total_spent = loyalty_program["total_spent"] + (transaction_data.amount or 0)
+        new_points = loyalty_program["points"] + transaction_data.points_earned
+        new_tier = calculate_loyalty_tier(new_total_spent, loyalty_program["visits_count"])
+        
+        # Update loyalty program
+        updated_loyalty = {
+            "tier": new_tier.value,
+            "points": new_points,
+            "total_spent": new_total_spent,
+            "visits_count": loyalty_program["visits_count"] + 1,
+            "last_visit": datetime.utcnow().isoformat()
+        }
+        
+        # Update customer
+        supabase_client.table("customers").update({
+            "loyalty_program": updated_loyalty,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", customer_id).execute()
+        
+        # Create loyalty transaction record
+        transaction_id = str(uuid.uuid4())
+        transaction_record = {
+            "id": transaction_id,
+            "customer_id": customer_id,
+            "points_earned": transaction_data.points_earned,
+            "points_redeemed": 0,
+            "transaction_type": transaction_data.transaction_type,
+            "description": transaction_data.description,
+            "order_id": transaction_data.order_id,
+            "amount": transaction_data.amount,
+            "created_by": current_user["id"],
+            "created_at": datetime.utcnow().isoformat()
+        }
+        
+        result = supabase_client.table("loyalty_transactions").insert(transaction_record).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create loyalty transaction"
+            )
+        
+        return LoyaltyTransactionResponse(**result.data[0])
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Earn loyalty points error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to earn loyalty points"
+        )
+
+@app.post("/customers/{customer_id}/loyalty/redeem", response_model=LoyaltyTransactionResponse)
+async def redeem_loyalty_points(
+    customer_id: str,
+    points_to_redeem: int,
+    description: str,
+    current_user: Dict[str, Any] = Depends(require_role("staff"))
+):
+    """Redeem loyalty points for customer"""
+    try:
+        # Get customer
+        customer_result = supabase_client.table("customers").select("*").eq("id", customer_id).execute()
+        
+        if not customer_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Customer not found"
+            )
+        
+        customer = customer_result.data[0]
+        loyalty_program = customer["loyalty_program"]
+        
+        # Check if customer has enough points
+        if loyalty_program["points"] < points_to_redeem:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Insufficient loyalty points"
+            )
+        
+        # Update loyalty program
+        updated_loyalty = {
+            **loyalty_program,
+            "points": loyalty_program["points"] - points_to_redeem
+        }
+        
+        # Update customer
+        supabase_client.table("customers").update({
+            "loyalty_program": updated_loyalty,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", customer_id).execute()
+        
+        # Create loyalty transaction record
+        transaction_id = str(uuid.uuid4())
+        transaction_record = {
+            "id": transaction_id,
+            "customer_id": customer_id,
+            "points_earned": 0,
+            "points_redeemed": points_to_redeem,
+            "transaction_type": "redeem",
+            "description": description,
+            "created_by": current_user["id"],
+            "created_at": datetime.utcnow().isoformat()
+        }
+        
+        result = supabase_client.table("loyalty_transactions").insert(transaction_record).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create loyalty transaction"
+            )
+        
+        return LoyaltyTransactionResponse(**result.data[0])
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Redeem loyalty points error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to redeem loyalty points"
+        )
+
+@app.get("/customers/{customer_id}/loyalty/transactions", response_model=List[LoyaltyTransactionResponse])
+async def get_loyalty_transactions(
+    customer_id: str,
+    skip: int = 0,
+    limit: int = 50,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Get loyalty transactions for customer"""
+    try:
+        # Check if user has access to this customer
+        customer_result = supabase_client.table("customers").select("id").eq("id", customer_id).execute()
+        
+        if not customer_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Customer not found"
+            )
+        
+        user_role = current_user["role"]
+        if user_role not in ["admin", "manager", "staff"] and customer_id != current_user["id"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to this customer's transactions"
+            )
+        
+        # Get transactions
+        result = supabase_client.table("loyalty_transactions").select("*").eq("customer_id", customer_id).range(skip, skip + limit - 1).order("created_at", desc=True).execute()
+        
+        transactions = [LoyaltyTransactionResponse(**transaction) for transaction in result.data]
+        return transactions
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Get loyalty transactions error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get loyalty transactions"
+        )
+
+@app.get("/customers/analytics/summary")
+async def get_customer_analytics(
+    property_id: Optional[str] = None,
+    date_from: Optional[datetime] = None,
+    date_to: Optional[datetime] = None,
+    current_user: Dict[str, Any] = Depends(require_role("manager"))
+):
+    """Get customer analytics summary"""
+    try:
+        # Get customers
+        query = supabase_client.table("customers").select("*")
+        
+        if date_from:
+            query = query.gte("created_at", date_from.isoformat())
+        
+        if date_to:
+            query = query.lte("created_at", date_to.isoformat())
+        
+        result = query.execute()
+        customers = result.data
+        
+        # Calculate analytics
+        total_customers = len(customers)
+        active_customers = len([c for c in customers if c["status"] == CustomerStatus.ACTIVE.value])
+        
+        # Loyalty tier breakdown
+        tier_counts = {}
+        for customer in customers:
+            tier = customer["loyalty_program"]["tier"]
+            tier_counts[tier] = tier_counts.get(tier, 0) + 1
+        
+        # Total loyalty points
+        total_points = sum(c["loyalty_program"]["points"] for c in customers)
+        
+        # Total spending
+        total_spending = sum(c["loyalty_program"]["total_spent"] for c in customers)
+        
+        # Average spending per customer
+        avg_spending = total_spending / total_customers if total_customers > 0 else 0
+        
+        return {
+            "total_customers": total_customers,
+            "active_customers": active_customers,
+            "inactive_customers": total_customers - active_customers,
+            "loyalty_tier_breakdown": tier_counts,
+            "total_loyalty_points": total_points,
+            "total_spending": round(total_spending, 2),
+            "average_spending_per_customer": round(avg_spending, 2),
+            "period": {
+                "from": date_from.isoformat() if date_from else None,
+                "to": date_to.isoformat() if date_to else None
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Get customer analytics error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get customer analytics"
+        )
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
     return {
-        "service": SERVICE_NAME,
-        "version": SERVICE_VERSION,
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat()
+        "service": "customer-service",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0"
     }
-
-@app.get("/")
-async def root():
-    """Root endpoint"""
-    return {
-        "service": SERVICE_NAME,
-        "version": SERVICE_VERSION,
-        "description": "Customer relationship management",
-        "endpoints": {
-            "health": "/health",
-            "customers": "/api/customers",
-            "interactions": "/api/customers/interactions",
-            "segments": "/api/customers/segments",
-            "preferences": "/api/customers/preferences",
-            "metrics": "/api/customers/metrics"
-        }
-    }
-
-@app.get("/api/customers", response_model=List[CustomerResponse])
-async def get_customers(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
-    property_id: Optional[str] = None,
-    customer_type: Optional[CustomerType] = None,
-    status: Optional[CustomerStatus] = None,
-    loyalty_tier: Optional[str] = None,
-    search: Optional[str] = None,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Get customers with filtering and search"""
-    query = db.query(Customer)
-    
-    if property_id:
-        query = query.filter(Customer.property_id == property_id)
-    if customer_type:
-        query = query.filter(Customer.customer_type == customer_type)
-    if status:
-        query = query.filter(Customer.status == status)
-    if loyalty_tier:
-        query = query.filter(Customer.loyalty_tier == loyalty_tier)
-    if search:
-        query = query.filter(
-            (Customer.first_name.ilike(f"%{search}%")) |
-            (Customer.last_name.ilike(f"%{search}%")) |
-            (Customer.email.ilike(f"%{search}%")) |
-            (Customer.phone.ilike(f"%{search}%")) |
-            (Customer.company_name.ilike(f"%{search}%"))
-        )
-    
-    customers = query.order_by(Customer.created_at.desc()).offset(skip).limit(limit).all()
-    
-    return [
-        CustomerResponse(
-            id=customer.id,
-            property_id=customer.property_id,
-            user_id=customer.user_id,
-            first_name=customer.first_name,
-            last_name=customer.last_name,
-            email=customer.email,
-            phone=customer.phone,
-            date_of_birth=customer.date_of_birth,
-            gender=customer.gender,
-            address=customer.address,
-            city=customer.city,
-            state=customer.state,
-            country=customer.country,
-            postal_code=customer.postal_code,
-            customer_type=customer.customer_type,
-            status=customer.status,
-            customer_since=customer.customer_since,
-            last_visit=customer.last_visit,
-            company_name=customer.company_name,
-            job_title=customer.job_title,
-            industry=customer.industry,
-            preferences=customer.preferences,
-            communication_preferences=customer.communication_preferences,
-            dietary_restrictions=customer.dietary_restrictions,
-            allergies=customer.allergies,
-            loyalty_points=customer.loyalty_points,
-            loyalty_tier=customer.loyalty_tier,
-            total_spent=customer.total_spent,
-            visit_count=customer.visit_count,
-            notes=customer.notes,
-            tags=customer.tags,
-            created_at=customer.created_at,
-            updated_at=customer.updated_at
-        )
-        for customer in customers
-    ]
-
-@app.post("/api/customers", response_model=CustomerResponse)
-async def create_customer(
-    customer_data: CustomerCreate,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Create a new customer"""
-    # Check if email already exists for this property
-    if customer_data.email:
-        existing_customer = db.query(Customer).filter(
-            Customer.email == customer_data.email,
-            Customer.property_id == customer_data.property_id
-        ).first()
-        if existing_customer:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already exists for this property"
-            )
-    
-    new_customer = Customer(
-        property_id=customer_data.property_id,
-        user_id=customer_data.user_id,
-        first_name=customer_data.first_name,
-        last_name=customer_data.last_name,
-        email=customer_data.email,
-        phone=customer_data.phone,
-        date_of_birth=customer_data.date_of_birth,
-        gender=customer_data.gender,
-        address=customer_data.address,
-        city=customer_data.city,
-        state=customer_data.state,
-        country=customer_data.country,
-        postal_code=customer_data.postal_code,
-        customer_type=customer_data.customer_type,
-        company_name=customer_data.company_name,
-        job_title=customer_data.job_title,
-        industry=customer_data.industry,
-        preferences=customer_data.preferences,
-        communication_preferences=customer_data.communication_preferences,
-        dietary_restrictions=customer_data.dietary_restrictions,
-        allergies=customer_data.allergies,
-        notes=customer_data.notes,
-        tags=customer_data.tags
-    )
-    
-    db.add(new_customer)
-    db.commit()
-    db.refresh(new_customer)
-    
-    logger.info(f"✅ Customer created: {new_customer.first_name} {new_customer.last_name}")
-    
-    return CustomerResponse(
-        id=new_customer.id,
-        property_id=new_customer.property_id,
-        user_id=new_customer.user_id,
-        first_name=new_customer.first_name,
-        last_name=new_customer.last_name,
-        email=new_customer.email,
-        phone=new_customer.phone,
-        date_of_birth=new_customer.date_of_birth,
-        gender=new_customer.gender,
-        address=new_customer.address,
-        city=new_customer.city,
-        state=new_customer.state,
-        country=new_customer.country,
-        postal_code=new_customer.postal_code,
-        customer_type=new_customer.customer_type,
-        status=new_customer.status,
-        customer_since=new_customer.customer_since,
-        last_visit=new_customer.last_visit,
-        company_name=new_customer.company_name,
-        job_title=new_customer.job_title,
-        industry=new_customer.industry,
-        preferences=new_customer.preferences,
-        communication_preferences=new_customer.communication_preferences,
-        dietary_restrictions=new_customer.dietary_restrictions,
-        allergies=new_customer.allergies,
-        loyalty_points=new_customer.loyalty_points,
-        loyalty_tier=new_customer.loyalty_tier,
-        total_spent=new_customer.total_spent,
-        visit_count=new_customer.visit_count,
-        notes=new_customer.notes,
-        tags=new_customer.tags,
-        created_at=new_customer.created_at,
-        updated_at=new_customer.updated_at
-    )
-
-@app.get("/api/customers/{customer_id}", response_model=CustomerResponse)
-async def get_customer(
-    customer_id: str,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Get a specific customer by ID"""
-    customer = db.query(Customer).filter(Customer.id == customer_id).first()
-    if not customer:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Customer not found"
-        )
-    
-    return CustomerResponse(
-        id=customer.id,
-        property_id=customer.property_id,
-        user_id=customer.user_id,
-        first_name=customer.first_name,
-        last_name=customer.last_name,
-        email=customer.email,
-        phone=customer.phone,
-        date_of_birth=customer.date_of_birth,
-        gender=customer.gender,
-        address=customer.address,
-        city=customer.city,
-        state=customer.state,
-        country=customer.country,
-        postal_code=customer.postal_code,
-        customer_type=customer.customer_type,
-        status=customer.status,
-        customer_since=customer.customer_since,
-        last_visit=customer.last_visit,
-        company_name=customer.company_name,
-        job_title=customer.job_title,
-        industry=customer.industry,
-        preferences=customer.preferences,
-        communication_preferences=customer.communication_preferences,
-        dietary_restrictions=customer.dietary_restrictions,
-        allergies=customer.allergies,
-        loyalty_points=customer.loyalty_points,
-        loyalty_tier=customer.loyalty_tier,
-        total_spent=customer.total_spent,
-        visit_count=customer.visit_count,
-        notes=customer.notes,
-        tags=customer.tags,
-        created_at=customer.created_at,
-        updated_at=customer.updated_at
-    )
-
-@app.put("/api/customers/{customer_id}", response_model=CustomerResponse)
-async def update_customer(
-    customer_id: str,
-    customer_data: CustomerUpdate,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Update a customer"""
-    customer = db.query(Customer).filter(Customer.id == customer_id).first()
-    if not customer:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Customer not found"
-        )
-    
-    # Update fields
-    if customer_data.first_name is not None:
-        customer.first_name = customer_data.first_name
-    if customer_data.last_name is not None:
-        customer.last_name = customer_data.last_name
-    if customer_data.email is not None:
-        customer.email = customer_data.email
-    if customer_data.phone is not None:
-        customer.phone = customer_data.phone
-    if customer_data.date_of_birth is not None:
-        customer.date_of_birth = customer_data.date_of_birth
-    if customer_data.gender is not None:
-        customer.gender = customer_data.gender
-    if customer_data.address is not None:
-        customer.address = customer_data.address
-    if customer_data.city is not None:
-        customer.city = customer_data.city
-    if customer_data.state is not None:
-        customer.state = customer_data.state
-    if customer_data.country is not None:
-        customer.country = customer_data.country
-    if customer_data.postal_code is not None:
-        customer.postal_code = customer_data.postal_code
-    if customer_data.customer_type is not None:
-        customer.customer_type = customer_data.customer_type
-    if customer_data.status is not None:
-        customer.status = customer_data.status
-    if customer_data.company_name is not None:
-        customer.company_name = customer_data.company_name
-    if customer_data.job_title is not None:
-        customer.job_title = customer_data.job_title
-    if customer_data.industry is not None:
-        customer.industry = customer_data.industry
-    if customer_data.preferences is not None:
-        customer.preferences = customer_data.preferences
-    if customer_data.communication_preferences is not None:
-        customer.communication_preferences = customer_data.communication_preferences
-    if customer_data.dietary_restrictions is not None:
-        customer.dietary_restrictions = customer_data.dietary_restrictions
-    if customer_data.allergies is not None:
-        customer.allergies = customer_data.allergies
-    if customer_data.notes is not None:
-        customer.notes = customer_data.notes
-    if customer_data.tags is not None:
-        customer.tags = customer_data.tags
-    
-    customer.updated_at = datetime.utcnow()
-    db.commit()
-    db.refresh(customer)
-    
-    logger.info(f"✅ Customer updated: {customer.first_name} {customer.last_name}")
-    
-    return CustomerResponse(
-        id=customer.id,
-        property_id=customer.property_id,
-        user_id=customer.user_id,
-        first_name=customer.first_name,
-        last_name=customer.last_name,
-        email=customer.email,
-        phone=customer.phone,
-        date_of_birth=customer.date_of_birth,
-        gender=customer.gender,
-        address=customer.address,
-        city=customer.city,
-        state=customer.state,
-        country=customer.country,
-        postal_code=customer.postal_code,
-        customer_type=customer.customer_type,
-        status=customer.status,
-        customer_since=customer.customer_since,
-        last_visit=customer.last_visit,
-        company_name=customer.company_name,
-        job_title=customer.job_title,
-        industry=customer.industry,
-        preferences=customer.preferences,
-        communication_preferences=customer.communication_preferences,
-        dietary_restrictions=customer.dietary_restrictions,
-        allergies=customer.allergies,
-        loyalty_points=customer.loyalty_points,
-        loyalty_tier=customer.loyalty_tier,
-        total_spent=customer.total_spent,
-        visit_count=customer.visit_count,
-        notes=customer.notes,
-        tags=customer.tags,
-        created_at=customer.created_at,
-        updated_at=customer.updated_at
-    )
-
-@app.post("/api/customers/interactions")
-async def create_customer_interaction(
-    interaction_data: CustomerInteractionCreate,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Create a customer interaction"""
-    new_interaction = CustomerInteraction(
-        customer_id=interaction_data.customer_id,
-        property_id=interaction_data.property_id,
-        interaction_type=interaction_data.interaction_type,
-        subject=interaction_data.subject,
-        description=interaction_data.description,
-        outcome=interaction_data.outcome,
-        satisfaction_rating=interaction_data.satisfaction_rating,
-        staff_id=interaction_data.staff_id,
-        staff_name=interaction_data.staff_name,
-        follow_up_required=interaction_data.follow_up_required,
-        follow_up_date=interaction_data.follow_up_date,
-        follow_up_notes=interaction_data.follow_up_notes,
-        metadata=interaction_data.metadata
-    )
-    
-    db.add(new_interaction)
-    db.commit()
-    db.refresh(new_interaction)
-    
-    logger.info(f"✅ Customer interaction created: {new_interaction.interaction_type}")
-    
-    return {
-        "message": "Customer interaction created successfully",
-        "interaction_id": new_interaction.id,
-        "customer_id": new_interaction.customer_id
-    }
-
-@app.get("/api/customers/metrics", response_model=CustomerMetrics)
-async def get_customer_metrics(
-    property_id: Optional[str] = None,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Get customer metrics"""
-    query = db.query(Customer)
-    if property_id:
-        query = query.filter(Customer.property_id == property_id)
-    
-    # Get basic counts
-    total_customers = query.count()
-    active_customers = query.filter(Customer.status == CustomerStatus.ACTIVE).count()
-    
-    # Get new customers this month
-    this_month = datetime.utcnow().replace(day=1)
-    new_customers_this_month = query.filter(Customer.created_at >= this_month).count()
-    
-    # Get customers by type
-    customers_by_type = {}
-    for customer_type in CustomerType:
-        count = query.filter(Customer.customer_type == customer_type).count()
-        customers_by_type[customer_type] = count
-    
-    # Get customers by status
-    customers_by_status = {}
-    for status in CustomerStatus:
-        count = query.filter(Customer.status == status).count()
-        customers_by_status[status] = count
-    
-    # Get average spending
-    customers = query.filter(Customer.total_spent > 0).all()
-    average_spending = 0.0
-    if customers:
-        average_spending = sum(customer.total_spent for customer in customers) / len(customers)
-    
-    # Get total loyalty points
-    total_loyalty_points = sum(customer.loyalty_points for customer in query.all())
-    
-    # Get top customers
-    top_customers = query.order_by(Customer.total_spent.desc()).limit(10).all()
-    top_customers_data = [
-        {
-            "id": customer.id,
-            "name": f"{customer.first_name} {customer.last_name}",
-            "total_spent": customer.total_spent,
-            "visit_count": customer.visit_count,
-            "loyalty_tier": customer.loyalty_tier
-        }
-        for customer in top_customers
-    ]
-    
-    # Get customer segments count
-    segment_query = db.query(CustomerSegment)
-    if property_id:
-        segment_query = segment_query.filter(CustomerSegment.property_id == property_id)
-    customer_segments = segment_query.count()
-    
-    # Get interactions today
-    today = datetime.utcnow().date()
-    interactions_today = db.query(CustomerInteraction).filter(
-        db.func.date(CustomerInteraction.interaction_date) == today
-    ).count()
-    
-    return CustomerMetrics(
-        total_customers=total_customers,
-        active_customers=active_customers,
-        new_customers_this_month=new_customers_this_month,
-        customers_by_type=customers_by_type,
-        customers_by_status=customers_by_status,
-        average_spending=average_spending,
-        total_loyalty_points=total_loyalty_points,
-        top_customers=top_customers_data,
-        customer_segments=customer_segments,
-        interactions_today=interactions_today
-    )
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=SERVICE_PORT,
-        reload=True
+        port=8004,
+        reload=True,
+        log_level="info"
     )

@@ -1,3 +1,4 @@
+"use client";
 'use client';
 
 /**
@@ -56,6 +57,29 @@ export default function RestaurantsPage() {
     }
   };
 
+  const handleModalSubmit = async (formData: FormData) => {
+    // Convert FormData to RestaurantFormData
+    const data: RestaurantFormData = {
+      restaurant_name: formData.get('restaurant_name') as string,
+      is_active: formData.get('is_active') === 'true'
+    };
+    await handleCreateSubmit(data);
+  };
+
+  const handleRestaurantFormSubmit = async (data: RestaurantFormData) => {
+    await handleCreateSubmit(data);
+  };
+
+  const handleEditModalSubmit = async (formData: FormData) => {
+    if (!selectedRestaurant) return;
+    // Convert FormData to RestaurantFormData
+    const data: RestaurantFormData = {
+      restaurant_name: formData.get('restaurant_name') as string,
+      is_active: formData.get('is_active') === 'true'
+    };
+    await handleEditSubmit(data);
+  };
+
   const handleEditSubmit = async (data: RestaurantFormData) => {
     if (!selectedRestaurant) return;
     
@@ -106,12 +130,12 @@ export default function RestaurantsPage() {
         title="Create New Restaurant"
         description="Add a new restaurant to your system"
         size="lg"
-        onSubmit={handleCreateSubmit}
+        onSubmit={handleModalSubmit}
         submitText="Create Restaurant"
         cancelText="Cancel"
       >
         <RestaurantForm
-          onSubmit={handleCreateSubmit}
+          onSubmit={handleRestaurantFormSubmit}
           onCancel={() => setShowCreateModal(false)}
           submitText="Create Restaurant"
         />
@@ -124,7 +148,7 @@ export default function RestaurantsPage() {
         title="Edit Restaurant"
         description="Update restaurant information"
         size="lg"
-        onSubmit={handleEditSubmit}
+        onSubmit={handleEditModalSubmit}
         submitText="Update Restaurant"
         cancelText="Cancel"
       >

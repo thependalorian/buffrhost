@@ -1,10 +1,10 @@
 /**
- * Badge Component Tests
+ * Badge Component Tests - shadcn/ui Badge
  */
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/src/components/ui/badge";
 
 describe("Badge Component", () => {
   it("renders badge with default props", () => {
@@ -23,24 +23,7 @@ describe("Badge Component", () => {
     expect(screen.getByText("Destructive")).toHaveClass("bg-destructive");
 
     rerender(<Badge variant="outline">Outline</Badge>);
-    expect(screen.getByText("Outline")).toHaveClass("border");
-
-    rerender(<Badge variant="success">Success</Badge>);
-    expect(screen.getByText("Success")).toHaveClass("bg-green-100");
-
-    rerender(<Badge variant="warning">Warning</Badge>);
-    expect(screen.getByText("Warning")).toHaveClass("bg-yellow-100");
-  });
-
-  it("renders badge with different sizes", () => {
-    const { rerender } = render(<Badge size="sm">Small</Badge>);
-    expect(screen.getByText("Small")).toHaveClass("px-2");
-
-    rerender(<Badge size="md">Medium</Badge>);
-    expect(screen.getByText("Medium")).toHaveClass("px-2.5");
-
-    rerender(<Badge size="lg">Large</Badge>);
-    expect(screen.getByText("Large")).toHaveClass("px-3");
+    expect(screen.getByText("Outline")).toHaveClass("text-foreground");
   });
 
   it("applies custom className", () => {
@@ -50,13 +33,6 @@ describe("Badge Component", () => {
     expect(badge).toHaveClass("custom-class");
   });
 
-  it("forwards ref correctly", () => {
-    const ref = React.createRef<HTMLDivElement>();
-    render(<Badge ref={ref}>Ref test</Badge>);
-
-    expect(ref.current).toBeInstanceOf(HTMLDivElement);
-  });
-
   it("handles click events", () => {
     const handleClick = jest.fn();
     render(<Badge onClick={handleClick}>Clickable</Badge>);
@@ -64,5 +40,12 @@ describe("Badge Component", () => {
     const badge = screen.getByText("Clickable");
     badge.click();
     expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders with base classes", () => {
+    render(<Badge>Base Classes</Badge>);
+
+    const badge = screen.getByText("Base Classes");
+    expect(badge).toHaveClass("inline-flex", "items-center", "rounded-full");
   });
 });

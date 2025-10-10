@@ -1,5 +1,5 @@
 services:
-  # BuffrHost (The Shandi) Fintech API Service
+  # BuffrHost (Buffr Host) Fintech API Service
   buffrhost-api:
     build: ./backend
     container_name: buffrhost-api

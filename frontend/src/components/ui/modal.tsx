@@ -1,5 +1,5 @@
 /**
- * Universal Modal Component for The Shandi Platform
+ * Universal Modal Component for Buffr Host Platform
  *
  * A comprehensive modal component for the entire application with form handling,
  * validation, submission logic, and multiple variants for different use cases.

@@ -1,426 +1,362 @@
 """
-Role-Based Access Control (RBAC) for Buffr Host Hospitality Ecosystem Management Platform
-Provides comprehensive permission management for hospitality properties.
+Role-Based Access Control (RBAC) Service
+Advanced permission management and role assignment
 """
 
-from dataclasses import dataclass
+from sqlalchemy.orm import Session
+from typing import List, Optional, Dict, Any
 from enum import Enum
-from typing import Dict, List, Optional, Set
+from datetime import datetime
+import logging
 
-from models.user import Profile, User
+logger = logging.getLogger(__name__)
 
-
-class Permission(Enum):
-    """System permissions for hospitality ecosystem"""
-
-    # Property Management
-    MANAGE_PROPERTY = "manage_property"
-    VIEW_PROPERTY = "view_property"
-    UPDATE_PROPERTY = "update_property"
-    DELETE_PROPERTY = "delete_property"
-
-    # User Management
-    MANAGE_USERS = "manage_users"
-    VIEW_USERS = "view_users"
-    CREATE_USERS = "create_users"
-    UPDATE_USERS = "update_users"
-    DELETE_USERS = "delete_users"
-
-    # Menu Management
-    MANAGE_MENU = "manage_menu"
-    VIEW_MENU = "view_menu"
-    CREATE_MENU_ITEMS = "create_menu_items"
-    UPDATE_MENU_ITEMS = "update_menu_items"
-    DELETE_MENU_ITEMS = "delete_menu_items"
-
-    # Order Management
-    MANAGE_ORDERS = "manage_orders"
-    VIEW_ORDERS = "view_orders"
-    CREATE_ORDERS = "create_orders"
-    UPDATE_ORDERS = "update_orders"
-    CANCEL_ORDERS = "cancel_orders"
-
-    # Customer Management
-    MANAGE_CUSTOMERS = "manage_customers"
-    VIEW_CUSTOMERS = "view_customers"
-    CREATE_CUSTOMERS = "create_customers"
-    UPDATE_CUSTOMERS = "update_customers"
-    DELETE_CUSTOMERS = "delete_customers"
-
-    # Room Management (Hotel)
-    MANAGE_ROOMS = "manage_rooms"
-    VIEW_ROOMS = "view_rooms"
-    CREATE_ROOMS = "create_rooms"
-    UPDATE_ROOMS = "update_rooms"
-    DELETE_ROOMS = "delete_rooms"
-
-    # Reservations
-    MANAGE_RESERVATIONS = "manage_reservations"
-    VIEW_RESERVATIONS = "view_reservations"
-    CREATE_RESERVATIONS = "create_reservations"
-    UPDATE_RESERVATIONS = "update_reservations"
-    CANCEL_RESERVATIONS = "cancel_reservations"
-
-    # Analytics & Reports
-    VIEW_ANALYTICS = "view_analytics"
-    VIEW_REPORTS = "view_reports"
-    EXPORT_DATA = "export_data"
-
-    # Loyalty Program
-    MANAGE_LOYALTY = "manage_loyalty"
-    VIEW_LOYALTY = "view_loyalty"
-    UPDATE_LOYALTY_POINTS = "update_loyalty_points"
-
-    # CMS & Content
-    MANAGE_CONTENT = "manage_content"
-    VIEW_CONTENT = "view_content"
-    CREATE_CONTENT = "create_content"
-    UPDATE_CONTENT = "update_content"
-    DELETE_CONTENT = "delete_content"
-    PUBLISH_CONTENT = "publish_content"
-
-    # AI & Knowledge Base
-    MANAGE_AI_AGENTS = "manage_ai_agents"
-    VIEW_AI_AGENTS = "view_ai_agents"
-    MANAGE_KNOWLEDGE_BASE = "manage_knowledge_base"
-    VIEW_KNOWLEDGE_BASE = "view_knowledge_base"
-
-    # Financial
-    VIEW_FINANCIALS = "view_financials"
-    MANAGE_PRICING = "manage_pricing"
-    PROCESS_PAYMENTS = "process_payments"
-
-    # System Administration
-    MANAGE_SYSTEM = "manage_system"
-    VIEW_LOGS = "view_logs"
-    MANAGE_INTEGRATIONS = "manage_integrations"
-
-
-class Role(Enum):
-    """System roles for hospitality ecosystem"""
-
-    # Property Roles
-    PROPERTY_OWNER = "property_owner"
-    PROPERTY_MANAGER = "property_manager"
-    PROPERTY_ADMIN = "property_admin"
-
-    # Service-Specific Roles
-    RESTAURANT_MANAGER = "restaurant_manager"
-    HOTEL_MANAGER = "hotel_manager"
-    SPA_MANAGER = "spa_manager"
-    CONFERENCE_MANAGER = "conference_manager"
-
-    # Staff Roles
-    FRONT_DESK_STAFF = "front_desk_staff"
-    WAITER = "waiter"
-    CHEF = "chef"
-    HOUSEKEEPING = "housekeeping"
-    CONCIERGE = "concierge"
-
-    # Support Roles
-    CUSTOMER_SERVICE = "customer_service"
-    MARKETING = "marketing"
-    ACCOUNTING = "accounting"
-    IT_SUPPORT = "it_support"
-
-    # System Roles
-    SYSTEM_ADMIN = "system_admin"
+class UserRole(str, Enum):
+    """Available user roles in the system"""
     SUPER_ADMIN = "super_admin"
+    ADMIN = "admin"
+    MANAGER = "manager"
+    STAFF = "staff"
+    GUEST = "guest"
 
+class PermissionScope(str, Enum):
+    """Permission scopes for fine-grained access control"""
+    GLOBAL = "global"      # System-wide access
+    TENANT = "tenant"      # Tenant-specific access
+    PROPERTY = "property"  # Property-specific access
+    USER = "user"          # User-specific access
 
-@dataclass
-class RolePermission:
-    """Role and its associated permissions"""
-
-    role: Role
-    permissions: Set[Permission]
-    description: str
-
-
-class RBACManager:
-    """Role-Based Access Control Manager"""
-
-    def __init__(self):
-        self.role_permissions = self._initialize_role_permissions()
-
-    def _initialize_role_permissions(self) -> Dict[Role, RolePermission]:
-        """Initialize role-permission mappings"""
-        return {
-            Role.SUPER_ADMIN: RolePermission(
-                role=Role.SUPER_ADMIN,
-                permissions=set(Permission),  # All permissions
-                description="Full system access",
-            ),
-            Role.SYSTEM_ADMIN: RolePermission(
-                role=Role.SYSTEM_ADMIN,
-                permissions={
-                    Permission.MANAGE_SYSTEM,
-                    Permission.VIEW_LOGS,
-                    Permission.MANAGE_INTEGRATIONS,
-                    Permission.VIEW_ANALYTICS,
-                    Permission.VIEW_REPORTS,
-                    Permission.EXPORT_DATA,
-                    Permission.MANAGE_AI_AGENTS,
-                    Permission.VIEW_AI_AGENTS,
-                    Permission.MANAGE_KNOWLEDGE_BASE,
-                    Permission.VIEW_KNOWLEDGE_BASE,
-                },
-                description="System administration access",
-            ),
-            Role.PROPERTY_OWNER: RolePermission(
-                role=Role.PROPERTY_OWNER,
-                permissions={
-                    Permission.MANAGE_PROPERTY,
-                    Permission.VIEW_PROPERTY,
-                    Permission.UPDATE_PROPERTY,
-                    Permission.MANAGE_USERS,
-                    Permission.VIEW_USERS,
-                    Permission.CREATE_USERS,
-                    Permission.UPDATE_USERS,
-                    Permission.VIEW_ANALYTICS,
-                    Permission.VIEW_REPORTS,
-                    Permission.EXPORT_DATA,
-                    Permission.VIEW_FINANCIALS,
-                    Permission.MANAGE_PRICING,
-                    Permission.MANAGE_LOYALTY,
-                    Permission.VIEW_LOYALTY,
-                    Permission.MANAGE_CONTENT,
-                    Permission.VIEW_CONTENT,
-                    Permission.CREATE_CONTENT,
-                    Permission.UPDATE_CONTENT,
-                    Permission.DELETE_CONTENT,
-                    Permission.PUBLISH_CONTENT,
-                },
-                description="Property owner with full property access",
-            ),
-            Role.PROPERTY_MANAGER: RolePermission(
-                role=Role.PROPERTY_MANAGER,
-                permissions={
-                    Permission.VIEW_PROPERTY,
-                    Permission.UPDATE_PROPERTY,
-                    Permission.VIEW_USERS,
-                    Permission.UPDATE_USERS,
-                    Permission.MANAGE_MENU,
-                    Permission.VIEW_MENU,
-                    Permission.CREATE_MENU_ITEMS,
-                    Permission.UPDATE_MENU_ITEMS,
-                    Permission.DELETE_MENU_ITEMS,
-                    Permission.MANAGE_ORDERS,
-                    Permission.VIEW_ORDERS,
-                    Permission.UPDATE_ORDERS,
-                    Permission.CANCEL_ORDERS,
-                    Permission.MANAGE_CUSTOMERS,
-                    Permission.VIEW_CUSTOMERS,
-                    Permission.CREATE_CUSTOMERS,
-                    Permission.UPDATE_CUSTOMERS,
-                    Permission.MANAGE_ROOMS,
-                    Permission.VIEW_ROOMS,
-                    Permission.CREATE_ROOMS,
-                    Permission.UPDATE_ROOMS,
-                    Permission.MANAGE_RESERVATIONS,
-                    Permission.VIEW_RESERVATIONS,
-                    Permission.CREATE_RESERVATIONS,
-                    Permission.UPDATE_RESERVATIONS,
-                    Permission.CANCEL_RESERVATIONS,
-                    Permission.VIEW_ANALYTICS,
-                    Permission.VIEW_REPORTS,
-                    Permission.VIEW_LOYALTY,
-                    Permission.MANAGE_CONTENT,
-                    Permission.VIEW_CONTENT,
-                    Permission.CREATE_CONTENT,
-                    Permission.UPDATE_CONTENT,
-                },
-                description="Property manager with operational access",
-            ),
-            Role.RESTAURANT_MANAGER: RolePermission(
-                role=Role.RESTAURANT_MANAGER,
-                permissions={
-                    Permission.VIEW_PROPERTY,
-                    Permission.MANAGE_MENU,
-                    Permission.VIEW_MENU,
-                    Permission.CREATE_MENU_ITEMS,
-                    Permission.UPDATE_MENU_ITEMS,
-                    Permission.DELETE_MENU_ITEMS,
-                    Permission.MANAGE_ORDERS,
-                    Permission.VIEW_ORDERS,
-                    Permission.CREATE_ORDERS,
-                    Permission.UPDATE_ORDERS,
-                    Permission.CANCEL_ORDERS,
-                    Permission.MANAGE_CUSTOMERS,
-                    Permission.VIEW_CUSTOMERS,
-                    Permission.CREATE_CUSTOMERS,
-                    Permission.UPDATE_CUSTOMERS,
-                    Permission.VIEW_ANALYTICS,
-                    Permission.VIEW_LOYALTY,
-                    Permission.MANAGE_CONTENT,
-                    Permission.VIEW_CONTENT,
-                    Permission.CREATE_CONTENT,
-                    Permission.UPDATE_CONTENT,
-                },
-                description="Restaurant manager with restaurant-specific access",
-            ),
-            Role.HOTEL_MANAGER: RolePermission(
-                role=Role.HOTEL_MANAGER,
-                permissions={
-                    Permission.VIEW_PROPERTY,
-                    Permission.MANAGE_ROOMS,
-                    Permission.VIEW_ROOMS,
-                    Permission.CREATE_ROOMS,
-                    Permission.UPDATE_ROOMS,
-                    Permission.MANAGE_RESERVATIONS,
-                    Permission.VIEW_RESERVATIONS,
-                    Permission.CREATE_RESERVATIONS,
-                    Permission.UPDATE_RESERVATIONS,
-                    Permission.CANCEL_RESERVATIONS,
-                    Permission.MANAGE_CUSTOMERS,
-                    Permission.VIEW_CUSTOMERS,
-                    Permission.CREATE_CUSTOMERS,
-                    Permission.UPDATE_CUSTOMERS,
-                    Permission.VIEW_ANALYTICS,
-                    Permission.VIEW_LOYALTY,
-                    Permission.MANAGE_CONTENT,
-                    Permission.VIEW_CONTENT,
-                    Permission.CREATE_CONTENT,
-                    Permission.UPDATE_CONTENT,
-                },
-                description="Hotel manager with hotel-specific access",
-            ),
-            Role.FRONT_DESK_STAFF: RolePermission(
-                role=Role.FRONT_DESK_STAFF,
-                permissions={
-                    Permission.VIEW_PROPERTY,
-                    Permission.VIEW_ROOMS,
-                    Permission.VIEW_RESERVATIONS,
-                    Permission.CREATE_RESERVATIONS,
-                    Permission.UPDATE_RESERVATIONS,
-                    Permission.VIEW_CUSTOMERS,
-                    Permission.CREATE_CUSTOMERS,
-                    Permission.UPDATE_CUSTOMERS,
-                    Permission.VIEW_LOYALTY,
-                    Permission.UPDATE_LOYALTY_POINTS,
-                },
-                description="Front desk staff with guest service access",
-            ),
-            Role.WAITER: RolePermission(
-                role=Role.WAITER,
-                permissions={
-                    Permission.VIEW_MENU,
-                    Permission.VIEW_ORDERS,
-                    Permission.CREATE_ORDERS,
-                    Permission.UPDATE_ORDERS,
-                    Permission.VIEW_CUSTOMERS,
-                    Permission.CREATE_CUSTOMERS,
-                    Permission.UPDATE_CUSTOMERS,
-                    Permission.VIEW_LOYALTY,
-                    Permission.UPDATE_LOYALTY_POINTS,
-                },
-                description="Waiter with order and customer service access",
-            ),
-            Role.CHEF: RolePermission(
-                role=Role.CHEF,
-                permissions={
-                    Permission.VIEW_MENU,
-                    Permission.UPDATE_MENU_ITEMS,
-                    Permission.VIEW_ORDERS,
-                    Permission.UPDATE_ORDERS,
-                },
-                description="Chef with kitchen operations access",
-            ),
-            Role.CUSTOMER_SERVICE: RolePermission(
-                role=Role.CUSTOMER_SERVICE,
-                permissions={
-                    Permission.VIEW_CUSTOMERS,
-                    Permission.UPDATE_CUSTOMERS,
-                    Permission.VIEW_ORDERS,
-                    Permission.VIEW_RESERVATIONS,
-                    Permission.VIEW_LOYALTY,
-                    Permission.UPDATE_LOYALTY_POINTS,
-                    Permission.VIEW_AI_AGENTS,
-                    Permission.VIEW_KNOWLEDGE_BASE,
-                },
-                description="Customer service with guest support access",
-            ),
-        }
-
-    def has_permission(self, user: User, permission: Permission) -> bool:
-        """Check if user has specific permission"""
-        if not user.role:
-            return False
-
+class RBACService:
+    """
+    Role-Based Access Control Service
+    Manages user roles, permissions, and access control
+    """
+    
+    def __init__(self, db: Session):
+        self.db = db
+    
+    def assign_role(self, user_id: str, role: UserRole, assigned_by: str) -> bool:
+        """
+        Assign a role to a user
+        """
         try:
-            user_role = Role(user.role)
-            role_permission = self.role_permissions.get(user_role)
-
-            if not role_permission:
+            from models.user import User
+            from models.user_role import UserRoleAssignment
+            
+            user = self.db.query(User).filter(User.id == user_id).first()
+            if not user:
+                logger.error(f"User {user_id} not found for role assignment")
                 return False
-
-            return permission in role_permission.permissions
-        except ValueError:
-            return False
-
-    def has_any_permission(self, user: User, permissions: List[Permission]) -> bool:
-        """Check if user has any of the specified permissions"""
-        return any(self.has_permission(user, perm) for perm in permissions)
-
-    def has_all_permissions(self, user: User, permissions: List[Permission]) -> bool:
-        """Check if user has all of the specified permissions"""
-        return all(self.has_permission(user, perm) for perm in permissions)
-
-    def get_user_permissions(self, user: User) -> Set[Permission]:
-        """Get all permissions for a user"""
-        if not user.role:
-            return set()
-
-        try:
-            user_role = Role(user.role)
-            role_permission = self.role_permissions.get(user_role)
-
-            if not role_permission:
-                return set()
-
-            return role_permission.permissions
-        except ValueError:
-            return set()
-
-    def can_access_property(self, user: User, property_id: int) -> bool:
-        """Check if user can access specific property"""
-        # Super admin can access all properties
-        if self.has_permission(user, Permission.MANAGE_SYSTEM):
+            
+            # Check if user can assign this role
+            assigner = self.db.query(User).filter(User.id == assigned_by).first()
+            if not self._can_assign_role(assigner, role):
+                logger.error(f"User {assigned_by} cannot assign role {role}")
+                return False
+            
+            # Create or update role assignment
+            existing_assignment = self.db.query(UserRoleAssignment).filter(
+                UserRoleAssignment.user_id == user_id
+            ).first()
+            
+            if existing_assignment:
+                existing_assignment.role = role.value
+                existing_assignment.assigned_by = assigned_by
+                existing_assignment.assigned_at = datetime.utcnow()
+            else:
+                role_assignment = UserRoleAssignment(
+                    user_id=user_id,
+                    role=role.value,
+                    assigned_by=assigned_by,
+                    assigned_at=datetime.utcnow()
+                )
+                self.db.add(role_assignment)
+            
+            # Update user role
+            user.role = role.value
+            user.updated_at = datetime.utcnow()
+            
+            self.db.commit()
+            logger.info(f"Role {role} assigned to user {user_id} by {assigned_by}")
             return True
-
-        # User must belong to the property
-        return user.property_id == property_id
-
-    def can_manage_property(self, user: User, property_id: int) -> bool:
-        """Check if user can manage specific property"""
-        if not self.can_access_property(user, property_id):
+            
+        except Exception as e:
+            logger.error(f"Failed to assign role: {str(e)}")
+            self.db.rollback()
             return False
-
-        return self.has_permission(user, Permission.MANAGE_PROPERTY)
-
-    def can_view_analytics(self, user: User, property_id: int) -> bool:
-        """Check if user can view analytics for property"""
-        if not self.can_access_property(user, property_id):
-            return False
-
-        return self.has_permission(user, Permission.VIEW_ANALYTICS)
-
-    def can_manage_users(self, user: User, property_id: int) -> bool:
-        """Check if user can manage users for property"""
-        if not self.can_access_property(user, property_id):
-            return False
-
-        return self.has_permission(user, Permission.MANAGE_USERS)
-
-    def get_role_description(self, role: str) -> str:
-        """Get description for a role"""
+    
+    def revoke_role(self, user_id: str, revoked_by: str) -> bool:
+        """
+        Revoke user's role (set to guest)
+        """
         try:
-            user_role = Role(role)
-            role_permission = self.role_permissions.get(user_role)
-            return role_permission.description if role_permission else "Unknown role"
-        except ValueError:
-            return "Invalid role"
-
-
-# Global RBAC manager instance
-rbac_manager = RBACManager()
+            from models.user import User
+            from models.user_role import UserRoleAssignment
+            
+            user = self.db.query(User).filter(User.id == user_id).first()
+            if not user:
+                logger.error(f"User {user_id} not found for role revocation")
+                return False
+            
+            # Check if user can revoke this role
+            revoker = self.db.query(User).filter(User.id == revoked_by).first()
+            if not self._can_revoke_role(revoker, user):
+                logger.error(f"User {revoked_by} cannot revoke role from user {user_id}")
+                return False
+            
+            # Update role assignment
+            role_assignment = self.db.query(UserRoleAssignment).filter(
+                UserRoleAssignment.user_id == user_id
+            ).first()
+            
+            if role_assignment:
+                role_assignment.role = UserRole.GUEST.value
+                role_assignment.assigned_by = revoked_by
+                role_assignment.assigned_at = datetime.utcnow()
+            
+            # Update user role
+            user.role = UserRole.GUEST.value
+            user.updated_at = datetime.utcnow()
+            
+            self.db.commit()
+            logger.info(f"Role revoked from user {user_id} by {revoked_by}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to revoke role: {str(e)}")
+            self.db.rollback()
+            return False
+    
+    def get_user_permissions(self, user_id: str) -> List[str]:
+        """
+        Get all permissions for a user based on their role
+        """
+        try:
+            from models.user import User
+            from .permissions import PERMISSIONS_MAP
+            
+            user = self.db.query(User).filter(User.id == user_id).first()
+            if not user:
+                return []
+            
+            return PERMISSIONS_MAP.get(user.role, [])
+            
+        except Exception as e:
+            logger.error(f"Failed to get user permissions: {str(e)}")
+            return []
+    
+    def check_permission(self, user_id: str, permission: str, resource_id: Optional[str] = None) -> bool:
+        """
+        Check if user has specific permission, optionally for a specific resource
+        """
+        try:
+            from models.user import User
+            from .permissions import has_permission
+            
+            user = self.db.query(User).filter(User.id == user_id).first()
+            if not user:
+                return False
+            
+            # Check basic permission
+            if not has_permission(user, permission):
+                return False
+            
+            # Check resource-specific access if resource_id provided
+            if resource_id:
+                return self._check_resource_access(user, permission, resource_id)
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to check permission: {str(e)}")
+            return False
+    
+    def get_users_by_role(self, role: UserRole, tenant_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        Get all users with specific role, optionally filtered by tenant
+        """
+        try:
+            from models.user import User
+            
+            query = self.db.query(User).filter(User.role == role.value)
+            
+            if tenant_id:
+                query = query.filter(User.tenant_id == tenant_id)
+            
+            users = query.all()
+            
+            return [
+                {
+                    "id": user.id,
+                    "email": user.email,
+                    "full_name": user.full_name,
+                    "role": user.role,
+                    "is_active": user.is_active,
+                    "created_at": user.created_at,
+                    "last_login": user.last_login
+                }
+                for user in users
+            ]
+            
+        except Exception as e:
+            logger.error(f"Failed to get users by role: {str(e)}")
+            return []
+    
+    def get_role_statistics(self, tenant_id: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Get statistics about role distribution
+        """
+        try:
+            from models.user import User
+            from sqlalchemy import func
+            
+            query = self.db.query(User.role, func.count(User.id).label('count'))
+            
+            if tenant_id:
+                query = query.filter(User.tenant_id == tenant_id)
+            
+            results = query.group_by(User.role).all()
+            
+            stats = {}
+            total_users = 0
+            
+            for role, count in results:
+                stats[role] = count
+                total_users += count
+            
+            stats['total'] = total_users
+            
+            # Calculate percentages
+            for role in stats:
+                if role != 'total' and total_users > 0:
+                    stats[f"{role}_percentage"] = round((stats[role] / total_users) * 100, 2)
+            
+            return stats
+            
+        except Exception as e:
+            logger.error(f"Failed to get role statistics: {str(e)}")
+            return {}
+    
+    def _can_assign_role(self, assigner, target_role: UserRole) -> bool:
+        """
+        Check if user can assign the target role
+        """
+        if not assigner:
+            return False
+        
+        from .permissions import get_role_level, can_manage_role
+        return can_manage_role(assigner.role, target_role.value)
+    
+    def _can_revoke_role(self, revoker, target_user) -> bool:
+        """
+        Check if user can revoke role from target user
+        """
+        if not revoker or not target_user:
+            return False
+        
+        from .permissions import get_role_level, can_manage_role
+        return can_manage_role(revoker.role, target_user.role)
+    
+    def _check_resource_access(self, user, permission: str, resource_id: str) -> bool:
+        """
+        Check if user has access to specific resource
+        """
+        # Super admins can access any resource
+        if user.role == "super_admin":
+            return True
+        
+        # Check tenant access
+        if permission.startswith("tenants:") or permission.startswith("onboarding:"):
+            return user.tenant_id == resource_id
+        
+        # Check property access
+        if permission.startswith("properties:") or permission.startswith("rooms:"):
+            from models.hospitality_property import HospitalityProperty
+            property = self.db.query(HospitalityProperty).filter(
+                HospitalityProperty.id == resource_id
+            ).first()
+            return property and property.tenant_id == user.tenant_id
+        
+        # Check user access
+        if permission.startswith("users:") or permission.startswith("profile:"):
+            return user.id == resource_id or user.role in ["admin", "super_admin"]
+        
+        # Default to True for other permissions
+        return True
+    
+    def create_custom_role(self, role_name: str, permissions: List[str], created_by: str) -> bool:
+        """
+        Create a custom role with specific permissions
+        """
+        try:
+            from models.custom_role import CustomRole
+            
+            # Check if creator can create roles
+            creator = self.db.query(User).filter(User.id == created_by).first()
+            if not creator or creator.role not in ["admin", "super_admin"]:
+                logger.error(f"User {created_by} cannot create custom roles")
+                return False
+            
+            # Check if role already exists
+            existing_role = self.db.query(CustomRole).filter(
+                CustomRole.name == role_name
+            ).first()
+            
+            if existing_role:
+                logger.error(f"Custom role {role_name} already exists")
+                return False
+            
+            # Create custom role
+            custom_role = CustomRole(
+                name=role_name,
+                permissions=permissions,
+                created_by=created_by,
+                created_at=datetime.utcnow()
+            )
+            
+            self.db.add(custom_role)
+            self.db.commit()
+            
+            logger.info(f"Custom role {role_name} created by {created_by}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to create custom role: {str(e)}")
+            self.db.rollback()
+            return False
+    
+    def get_audit_log(self, user_id: Optional[str] = None, action: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        Get audit log for role and permission changes
+        """
+        try:
+            from models.audit_log import AuditLog
+            
+            query = self.db.query(AuditLog).filter(
+                AuditLog.action.in_(["role_assigned", "role_revoked", "permission_granted", "permission_denied"])
+            )
+            
+            if user_id:
+                query = query.filter(AuditLog.user_id == user_id)
+            
+            if action:
+                query = query.filter(AuditLog.action == action)
+            
+            logs = query.order_by(AuditLog.created_at.desc()).limit(100).all()
+            
+            return [
+                {
+                    "id": log.id,
+                    "user_id": log.user_id,
+                    "action": log.action,
+                    "details": log.details,
+                    "ip_address": log.ip_address,
+                    "user_agent": log.user_agent,
+                    "created_at": log.created_at
+                }
+                for log in logs
+            ]
+            
+        except Exception as e:
+            logger.error(f"Failed to get audit log: {str(e)}")
+            return []

@@ -1,737 +1,719 @@
 """
-Buffr Host Menu Service - Microservice
-Handles menu management, categories, and food service for Buffr Host platform
+Buffr Host Menu Service
+Comprehensive menu management for Buffr Host platform
 """
 
 import os
-import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Optional, Dict, Any, List
+from typing import Dict, List, Optional, Any
+from contextlib import asynccontextmanager
 from enum import Enum
 
-import redis.asyncio as redis
-from fastapi import FastAPI, HTTPException, status, Depends, Query
+from fastapi import FastAPI, HTTPException, Depends, status, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, EmailStr
-from sqlalchemy import Column, String, Integer, DateTime, Boolean, Text, JSON, create_engine, ForeignKey, Float
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session, relationship
+from pydantic import BaseModel, Field, validator
 import jwt
-from contextlib import asynccontextmanager
+from supabase import create_client, Client
+import logging
 
-# Configure logging
+# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Database setup
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/buffr_host_menus")
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-# Redis setup
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
-redis_client = None
-
-# Security
+# Global variables
+supabase_client: Optional[Client] = None
 security = HTTPBearer()
 
 # JWT Configuration
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key")
-
-# Service configuration
-SERVICE_NAME = "menu-service"
-SERVICE_VERSION = "1.0.0"
-SERVICE_PORT = int(os.getenv("SERVICE_PORT", 8003))
-
-# Enums
-class MenuStatus(str, Enum):
-    ACTIVE = "active"
-    INACTIVE = "inactive"
-    DRAFT = "draft"
-    ARCHIVED = "archived"
+JWT_ACCESS_SECRET = os.getenv("JWT_ACCESS_SECRET", "buffr-host-access-secret-key-change-in-production")
+JWT_ALGORITHM = "HS256"
 
 class ItemStatus(str, Enum):
-    AVAILABLE = "available"
-    UNAVAILABLE = "unavailable"
+    ACTIVE = "active"
+    INACTIVE = "inactive"
     OUT_OF_STOCK = "out_of_stock"
-    DISCONTINUED = "discontinued"
+    SEASONAL = "seasonal"
 
-class CategoryType(str, Enum):
-    FOOD = "food"
-    BEVERAGE = "beverage"
-    DESSERT = "dessert"
+class ItemCategory(str, Enum):
     APPETIZER = "appetizer"
     MAIN_COURSE = "main_course"
+    DESSERT = "dessert"
+    BEVERAGE = "beverage"
     SIDE_DISH = "side_dish"
-    SPECIALTY = "specialty"
+    SALAD = "salad"
+    SOUP = "soup"
+    BREAKFAST = "breakfast"
+    LUNCH = "lunch"
+    DINNER = "dinner"
 
-class DietaryInfo(str, Enum):
+class AllergenType(str, Enum):
+    GLUTEN = "gluten"
+    DAIRY = "dairy"
+    NUTS = "nuts"
+    PEANUTS = "peanuts"
+    SOY = "soy"
+    EGGS = "eggs"
+    FISH = "fish"
+    SHELLFISH = "shellfish"
+    SESAME = "sesame"
+
+class DietaryType(str, Enum):
     VEGETARIAN = "vegetarian"
     VEGAN = "vegan"
     GLUTEN_FREE = "gluten_free"
     DAIRY_FREE = "dairy_free"
-    NUT_FREE = "nut_free"
-    HALAL = "halal"
-    KOSHER = "kosher"
+    KETO = "keto"
+    PALEO = "paleo"
+    LOW_CARB = "low_carb"
+    HIGH_PROTEIN = "high_protein"
 
-# Database Models
-class Menu(Base):
-    __tablename__ = "menus"
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan manager"""
+    global supabase_client
     
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    property_id = Column(String, nullable=False, index=True)
-    name = Column(String, nullable=False, index=True)
-    description = Column(Text)
-    menu_type = Column(String, nullable=False)  # breakfast, lunch, dinner, etc.
-    status = Column(String, default=MenuStatus.ACTIVE)
+    # Startup
+    logger.info("Starting Buffr Host Menu Service Service...")
     
-    # Timing Information
-    available_from = Column(DateTime, nullable=True)
-    available_until = Column(DateTime, nullable=True)
-    valid_days = Column(JSON, default=list)  # [monday, tuesday, etc.]
+    try:
+        # Initialize Supabase client
+        supabase_url = os.getenv("SUPABASE_URL")
+        supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+        
+        if not supabase_url or not supabase_key:
+            raise ValueError("Missing Supabase configuration")
+        
+        supabase_client = create_client(supabase_url, supabase_key)
+        
+        # Run database migrations
+        try:
+            from shared.supabase_migrations.supabase_migration_runner import MenuserviceServiceSupabaseMigrationRunner
+            database_url = os.getenv("DATABASE_URL")
+            if database_url:
+                migration_runner = MenuserviceServiceSupabaseMigrationRunner(database_url)
+                migration_success = await migration_runner.run_migrations()
+                if migration_success:
+                    logger.info("Database migrations completed successfully")
+                else:
+                    logger.warning("Database migrations failed - continuing anyway")
+            else:
+                logger.warning("No DATABASE_URL provided - skipping migrations")
+        except Exception as migration_error:
+            logger.error(f"Migration error: {migration_error} - continuing anyway")
+        
+        logger.info("Menu Service Service initialized successfully")
+        
+    except Exception as e:
+        logger.error(f"Failed to initialize Menu Service Service: {e}")
+        raise
     
-    # Display Information
-    display_order = Column(Integer, default=0)
-    is_featured = Column(Boolean, default=False)
-    image_url = Column(String, nullable=True)
+    yield
     
-    # Settings
-    settings = Column(JSON, default=dict)
-    
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    # Shutdown
+    logger.info("Shutting down Menu Service Service...")# Create FastAPI app
+app = FastAPI(
+    title="Buffr Host Menu Service",
+    description="Menu management for Buffr Host platform",
+    version="1.0.0",
+    lifespan=lifespan
+)
 
-class MenuCategory(Base):
-    __tablename__ = "menu_categories"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    menu_id = Column(String, ForeignKey("menus.id"), nullable=False, index=True)
-    name = Column(String, nullable=False)
-    description = Column(Text)
-    category_type = Column(String, nullable=False)
-    display_order = Column(Integer, default=0)
-    is_active = Column(Boolean, default=True)
-    image_url = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+# Add middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Configure appropriately for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-class MenuItem(Base):
-    __tablename__ = "menu_items"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    menu_id = Column(String, ForeignKey("menus.id"), nullable=False, index=True)
-    category_id = Column(String, ForeignKey("menu_categories.id"), nullable=False, index=True)
-    name = Column(String, nullable=False, index=True)
-    description = Column(Text)
-    short_description = Column(String, nullable=True)
-    
-    # Pricing Information
-    base_price = Column(Float, nullable=False)
-    currency = Column(String, default="NAD")
-    tax_rate = Column(Float, default=0.0)
-    
-    # Item Information
-    status = Column(String, default=ItemStatus.AVAILABLE)
-    is_featured = Column(Boolean, default=False)
-    is_spicy = Column(Boolean, default=False)
-    spice_level = Column(Integer, default=0)  # 0-5
-    
-    # Dietary Information
-    dietary_info = Column(JSON, default=list)
-    allergens = Column(JSON, default=list)
-    calories = Column(Integer, nullable=True)
-    prep_time_minutes = Column(Integer, nullable=True)
-    
-    # Display Information
-    display_order = Column(Integer, default=0)
-    image_url = Column(String, nullable=True)
-    tags = Column(JSON, default=list)
-    
-    # Inventory Information
-    track_inventory = Column(Boolean, default=False)
-    inventory_item_id = Column(String, nullable=True)
-    low_stock_threshold = Column(Integer, default=0)
-    
-    # Settings
-    settings = Column(JSON, default=dict)
-    
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-class MenuModifier(Base):
-    __tablename__ = "menu_modifiers"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    menu_item_id = Column(String, ForeignKey("menu_items.id"), nullable=False, index=True)
-    name = Column(String, nullable=False)
-    description = Column(Text)
-    modifier_type = Column(String, nullable=False)  # single_choice, multiple_choice, addon
-    is_required = Column(Boolean, default=False)
-    max_selections = Column(Integer, default=1)
-    display_order = Column(Integer, default=0)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-class ModifierOption(Base):
-    __tablename__ = "modifier_options"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    modifier_id = Column(String, ForeignKey("menu_modifiers.id"), nullable=False, index=True)
-    name = Column(String, nullable=False)
-    description = Column(Text)
-    price_adjustment = Column(Float, default=0.0)
-    is_default = Column(Boolean, default=False)
-    display_order = Column(Integer, default=0)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-class MenuTemplate(Base):
-    __tablename__ = "menu_templates"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    name = Column(String, nullable=False, index=True)
-    description = Column(Text)
-    template_type = Column(String, nullable=False)  # restaurant, cafe, bar, etc.
-    cuisine_type = Column(String, nullable=True)
-    is_public = Column(Boolean, default=False)
-    created_by = Column(String, nullable=False)
-    template_data = Column(JSON, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"]  # Configure appropriately for production
+)
 
 # Pydantic Models
-class MenuCreate(BaseModel):
-    property_id: str
+class MenuItemModifier(BaseModel):
     name: str
-    description: Optional[str] = None
-    menu_type: str
-    available_from: Optional[datetime] = None
-    available_until: Optional[datetime] = None
-    valid_days: Optional[List[str]] = []
-    display_order: int = 0
-    is_featured: bool = False
-    image_url: Optional[str] = None
-    settings: Optional[Dict[str, Any]] = {}
-
-class MenuUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    menu_type: Optional[str] = None
-    status: Optional[MenuStatus] = None
-    available_from: Optional[datetime] = None
-    available_until: Optional[datetime] = None
-    valid_days: Optional[List[str]] = None
-    display_order: Optional[int] = None
-    is_featured: Optional[bool] = None
-    image_url: Optional[str] = None
-    settings: Optional[Dict[str, Any]] = None
-
-class MenuCategoryCreate(BaseModel):
-    menu_id: str
-    name: str
-    description: Optional[str] = None
-    category_type: CategoryType
-    display_order: int = 0
-    image_url: Optional[str] = None
-
-class MenuItemCreate(BaseModel):
-    menu_id: str
-    category_id: str
-    name: str
-    description: Optional[str] = None
-    short_description: Optional[str] = None
-    base_price: float
-    currency: str = "NAD"
-    tax_rate: float = 0.0
-    status: ItemStatus = ItemStatus.AVAILABLE
-    is_featured: bool = False
-    is_spicy: bool = False
-    spice_level: int = 0
-    dietary_info: Optional[List[DietaryInfo]] = []
-    allergens: Optional[List[str]] = []
-    calories: Optional[int] = None
-    prep_time_minutes: Optional[int] = None
-    display_order: int = 0
-    image_url: Optional[str] = None
-    tags: Optional[List[str]] = []
-    track_inventory: bool = False
-    inventory_item_id: Optional[str] = None
-    low_stock_threshold: int = 0
-    settings: Optional[Dict[str, Any]] = {}
-
-class MenuModifierCreate(BaseModel):
-    menu_item_id: str
-    name: str
-    description: Optional[str] = None
-    modifier_type: str
-    is_required: bool = False
-    max_selections: int = 1
-    display_order: int = 0
-
-class ModifierOptionCreate(BaseModel):
-    modifier_id: str
-    name: str
-    description: Optional[str] = None
     price_adjustment: float = 0.0
-    is_default: bool = False
-    display_order: int = 0
+    is_required: bool = False
+    options: List[str] = []
+
+class MenuItem(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    price: float = Field(..., gt=0)
+    category: ItemCategory
+    status: ItemStatus = ItemStatus.ACTIVE
+    allergens: List[AllergenType] = []
+    dietary_info: List[DietaryType] = []
+    calories: Optional[int] = Field(None, ge=0)
+    preparation_time: Optional[int] = Field(None, ge=0)  # minutes
+    images: List[str] = []
+    modifiers: List[MenuItemModifier] = []
+    ingredients: List[str] = []
+    tags: List[str] = []
+    is_featured: bool = False
+    sort_order: int = 0
+
+class MenuCategory(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    sort_order: int = 0
+    is_active: bool = True
+    image: Optional[str] = None
+
+class CreateMenuRequest(BaseModel):
+    property_id: str
+    name: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    categories: List[MenuCategory] = []
+    items: List[MenuItem] = []
+    is_active: bool = True
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
 
 class MenuResponse(BaseModel):
     id: str
     property_id: str
     name: str
     description: Optional[str]
-    menu_type: str
-    status: str
-    available_from: Optional[datetime]
-    available_until: Optional[datetime]
-    valid_days: List[str]
-    display_order: int
-    is_featured: bool
-    image_url: Optional[str]
-    settings: Dict[str, Any]
-    created_at: datetime
-    updated_at: datetime
+    categories: List[MenuCategory]
+    items: List[MenuItem]
+    is_active: bool
+    valid_from: Optional[str]
+    valid_until: Optional[str]
+    created_at: str
+    updated_at: str
+
+class UpdateMenuRequest(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    description: Optional[str] = None
+    categories: Optional[List[MenuCategory]] = None
+    items: Optional[List[MenuItem]] = None
+    is_active: Optional[bool] = None
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
 
 class MenuItemResponse(BaseModel):
     id: str
     menu_id: str
-    category_id: str
     name: str
     description: Optional[str]
-    short_description: Optional[str]
-    base_price: float
-    currency: str
-    tax_rate: float
-    status: str
-    is_featured: bool
-    is_spicy: bool
-    spice_level: int
-    dietary_info: List[str]
-    allergens: List[str]
+    price: float
+    category: ItemCategory
+    status: ItemStatus
+    allergens: List[AllergenType]
+    dietary_info: List[DietaryType]
     calories: Optional[int]
-    prep_time_minutes: Optional[int]
-    display_order: int
-    image_url: Optional[str]
+    preparation_time: Optional[int]
+    images: List[str]
+    modifiers: List[MenuItemModifier]
+    ingredients: List[str]
     tags: List[str]
-    track_inventory: bool
-    inventory_item_id: Optional[str]
-    low_stock_threshold: int
-    settings: Dict[str, Any]
-    created_at: datetime
-    updated_at: datetime
+    is_featured: bool
+    sort_order: int
+    created_at: str
+    updated_at: str
 
-class MenuMetrics(BaseModel):
-    total_menus: int
-    active_menus: int
-    total_categories: int
-    total_items: int
-    items_by_status: Dict[str, int]
-    items_by_category: Dict[str, int]
-    average_item_price: float
-    featured_items: int
-
-# Database dependency
-def get_db():
-    db = SessionLocal()
+# Utility Functions
+def verify_jwt_token(token: str) -> Dict[str, Any]:
+    """Verify and decode JWT token"""
     try:
-        yield db
-    finally:
-        db.close()
-
-# Redis connection
-async def connect_redis():
-    global redis_client
-    try:
-        redis_client = redis.from_url(REDIS_URL)
-        await redis_client.ping()
-        logger.info("✅ Redis connected for menu service")
-    except Exception as e:
-        logger.warning(f"⚠️ Redis not available: {e}")
-        redis_client = None
-
-# Authentication dependency
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-    """Get current user from JWT token"""
-    token = credentials.credentials
-    try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"])
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-        return {"user_id": user_id, "email": payload.get("email"), "role": payload.get("role")}
+        payload = jwt.decode(token, JWT_ACCESS_SECRET, algorithms=[JWT_ALGORITHM])
+        
+        if payload.get("type") != "access":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type"
+            )
+        
+        return payload
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired"
+        )
     except jwt.JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
 
-# Application lifespan
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    logger.info(f"🚀 Starting {SERVICE_NAME} v{SERVICE_VERSION}")
-    await connect_redis()
+# Authentication Dependencies
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
+    """Get current authenticated user"""
+    token = credentials.credentials
+    payload = verify_jwt_token(token)
     
-    # Create database tables
-    Base.metadata.create_all(bind=engine)
-    logger.info("✅ Database tables created/verified")
+    # Get user from database
+    result = supabase_client.table("users").select("*").eq("id", payload["sub"]).execute()
     
-    yield
+    if not result.data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
     
-    # Shutdown
-    if redis_client:
-        await redis_client.close()
-    logger.info(f"🛑 {SERVICE_NAME} shutdown complete")
+    user = result.data[0]
+    
+    if not user["is_active"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is deactivated"
+        )
+    
+    return user
 
-# FastAPI app
-app = FastAPI(
-    title=f"{SERVICE_NAME.title()}",
-    description="Menu management and food service microservice",
-    version=SERVICE_VERSION,
-    lifespan=lifespan
-)
+async def require_role(required_role: str):
+    """Require specific role for endpoint access"""
+    def role_checker(current_user: Dict[str, Any] = Depends(get_current_user)):
+        user_role = current_user["role"]
+        
+        # Role hierarchy: admin > manager > staff > customer
+        role_hierarchy = {"admin": 4, "manager": 3, "staff": 2, "customer": 1}
+        
+        if role_hierarchy.get(user_role, 0) < role_hierarchy.get(required_role, 0):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Required role: {required_role}"
+            )
+        
+        return current_user
+    
+    return role_checker
 
 # API Endpoints
+@app.post("/menus", response_model=MenuResponse)
+async def create_menu(
+    menu_data: CreateMenuRequest,
+    current_user: Dict[str, Any] = Depends(require_role("manager"))
+):
+    """Create a new menu"""
+    try:
+        # Validate property exists
+        property_result = supabase_client.table("properties").select("id").eq("id", menu_data.property_id).execute()
+        if not property_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Property not found"
+            )
+        
+        # Create menu record
+        menu_id = str(uuid.uuid4())
+        menu_record = {
+            "id": menu_id,
+            "property_id": menu_data.property_id,
+            "name": menu_data.name,
+            "description": menu_data.description,
+            "categories": [category.dict() for category in menu_data.categories],
+            "items": [item.dict() for item in menu_data.items],
+            "is_active": menu_data.is_active,
+            "valid_from": menu_data.valid_from.isoformat() if menu_data.valid_from else None,
+            "valid_until": menu_data.valid_until.isoformat() if menu_data.valid_until else None,
+            "created_by": current_user["id"],
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        result = supabase_client.table("menus").insert(menu_record).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create menu"
+            )
+        
+        return MenuResponse(**result.data[0])
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Create menu error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create menu"
+        )
+
+@app.get("/menus/{menu_id}", response_model=MenuResponse)
+async def get_menu(
+    menu_id: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Get menu by ID"""
+    try:
+        result = supabase_client.table("menus").select("*").eq("id", menu_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Menu not found"
+            )
+        
+        menu = result.data[0]
+        
+        # Check if user has access to this menu's property
+        property_result = supabase_client.table("properties").select("owner_id").eq("id", menu["property_id"]).execute()
+        
+        if property_result.data:
+            property_data = property_result.data[0]
+            user_role = current_user["role"]
+            if user_role not in ["admin", "manager", "staff"] and property_data["owner_id"] != current_user["id"]:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Access denied to this menu"
+                )
+        
+        return MenuResponse(**menu)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Get menu error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get menu"
+        )
+
+@app.get("/menus", response_model=List[MenuResponse])
+async def list_menus(
+    property_id: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """List menus with filters"""
+    try:
+        query = supabase_client.table("menus").select("*")
+        
+        # Apply filters
+        if property_id:
+            query = query.eq("property_id", property_id)
+        
+        # Apply pagination
+        result = query.range(skip, skip + limit - 1).order("created_at", desc=True).execute()
+        
+        menus = [MenuResponse(**menu) for menu in result.data]
+        return menus
+        
+    except Exception as e:
+        logger.error(f"List menus error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to list menus"
+        )
+
+@app.put("/menus/{menu_id}", response_model=MenuResponse)
+async def update_menu(
+    menu_id: str,
+    menu_update: UpdateMenuRequest,
+    current_user: Dict[str, Any] = Depends(require_role("staff"))
+):
+    """Update menu"""
+    try:
+        # Get current menu
+        menu_result = supabase_client.table("menus").select("*").eq("id", menu_id).execute()
+        
+        if not menu_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Menu not found"
+            )
+        
+        # Prepare update data
+        update_data = {k: v for k, v in menu_update.dict().items() if v is not None}
+        
+        # Convert nested objects to dict
+        if "categories" in update_data:
+            update_data["categories"] = [category.dict() for category in update_data["categories"]]
+        if "items" in update_data:
+            update_data["items"] = [item.dict() for item in update_data["items"]]
+        
+        update_data["updated_at"] = datetime.utcnow().isoformat()
+        
+        # Update menu
+        result = supabase_client.table("menus").update(update_data).eq("id", menu_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update menu"
+            )
+        
+        return MenuResponse(**result.data[0])
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Update menu error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update menu"
+        )
+
+@app.post("/menus/{menu_id}/items", response_model=MenuItemResponse)
+async def add_menu_item(
+    menu_id: str,
+    item_data: MenuItem,
+    current_user: Dict[str, Any] = Depends(require_role("staff"))
+):
+    """Add item to menu"""
+    try:
+        # Get current menu
+        menu_result = supabase_client.table("menus").select("*").eq("id", menu_id).execute()
+        
+        if not menu_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Menu not found"
+            )
+        
+        menu = menu_result.data[0]
+        
+        # Add item to menu
+        items = menu["items"]
+        item_id = str(uuid.uuid4())
+        new_item = {
+            "id": item_id,
+            "menu_id": menu_id,
+            **item_data.dict(),
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        items.append(new_item)
+        
+        # Update menu
+        result = supabase_client.table("menus").update({
+            "items": items,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", menu_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to add menu item"
+            )
+        
+        return MenuItemResponse(**new_item)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Add menu item error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to add menu item"
+        )
+
+@app.put("/menus/{menu_id}/items/{item_id}", response_model=MenuItemResponse)
+async def update_menu_item(
+    menu_id: str,
+    item_id: str,
+    item_update: MenuItem,
+    current_user: Dict[str, Any] = Depends(require_role("staff"))
+):
+    """Update menu item"""
+    try:
+        # Get current menu
+        menu_result = supabase_client.table("menus").select("*").eq("id", menu_id).execute()
+        
+        if not menu_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Menu not found"
+            )
+        
+        menu = menu_result.data[0]
+        items = menu["items"]
+        
+        # Find item to update
+        item_index = None
+        for i, item in enumerate(items):
+            if item["id"] == item_id:
+                item_index = i
+                break
+        
+        if item_index is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Menu item not found"
+            )
+        
+        # Update item
+        updated_item = {
+            **items[item_index],
+            **item_update.dict(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        items[item_index] = updated_item
+        
+        # Update menu
+        result = supabase_client.table("menus").update({
+            "items": items,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", menu_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update menu item"
+            )
+        
+        return MenuItemResponse(**updated_item)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Update menu item error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update menu item"
+        )
+
+@app.delete("/menus/{menu_id}/items/{item_id}")
+async def delete_menu_item(
+    menu_id: str,
+    item_id: str,
+    current_user: Dict[str, Any] = Depends(require_role("staff"))
+):
+    """Delete menu item"""
+    try:
+        # Get current menu
+        menu_result = supabase_client.table("menus").select("*").eq("id", menu_id).execute()
+        
+        if not menu_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Menu not found"
+            )
+        
+        menu = menu_result.data[0]
+        items = menu["items"]
+        
+        # Find item to delete
+        item_index = None
+        for i, item in enumerate(items):
+            if item["id"] == item_id:
+                item_index = i
+                break
+        
+        if item_index is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Menu item not found"
+            )
+        
+        # Remove item
+        items.pop(item_index)
+        
+        # Update menu
+        result = supabase_client.table("menus").update({
+            "items": items,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", menu_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to delete menu item"
+            )
+        
+        return {"message": "Menu item deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Delete menu item error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete menu item"
+        )
+
+@app.get("/menus/property/{property_id}", response_model=List[MenuResponse])
+async def get_property_menus(
+    property_id: str,
+    active_only: bool = True,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Get menus for a specific property"""
+    try:
+        query = supabase_client.table("menus").select("*").eq("property_id", property_id)
+        
+        if active_only:
+            query = query.eq("is_active", True)
+        
+        result = query.order("created_at", desc=True).execute()
+        
+        menus = [MenuResponse(**menu) for menu in result.data]
+        return menus
+        
+    except Exception as e:
+        logger.error(f"Get property menus error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get property menus"
+        )
+
+@app.get("/menus/{menu_id}/items", response_model=List[MenuItemResponse])
+async def get_menu_items(
+    menu_id: str,
+    category: Optional[ItemCategory] = None,
+    status: Optional[ItemStatus] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Get items for a specific menu"""
+    try:
+        # Get menu
+        menu_result = supabase_client.table("menus").select("items").eq("id", menu_id).execute()
+        
+        if not menu_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Menu not found"
+            )
+        
+        items_data = menu_result.data[0]["items"]
+        
+        # Filter items
+        filtered_items = items_data
+        
+        if category:
+            filtered_items = [item for item in filtered_items if item["category"] == category.value]
+        
+        if status:
+            filtered_items = [item for item in filtered_items if item["status"] == status.value]
+        
+        items = [MenuItemResponse(**item) for item in filtered_items]
+        return items
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Get menu items error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get menu items"
+        )
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
     return {
-        "service": SERVICE_NAME,
-        "version": SERVICE_VERSION,
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat()
+        "service": "menu-service",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0"
     }
-
-@app.get("/")
-async def root():
-    """Root endpoint"""
-    return {
-        "service": SERVICE_NAME,
-        "version": SERVICE_VERSION,
-        "description": "Menu management and food service",
-        "endpoints": {
-            "health": "/health",
-            "menus": "/api/menus",
-            "categories": "/api/menus/categories",
-            "items": "/api/menus/items",
-            "modifiers": "/api/menus/modifiers",
-            "templates": "/api/menus/templates",
-            "metrics": "/api/menus/metrics"
-        }
-    }
-
-@app.get("/api/menus", response_model=List[MenuResponse])
-async def get_menus(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
-    property_id: Optional[str] = None,
-    menu_type: Optional[str] = None,
-    status: Optional[MenuStatus] = None,
-    is_featured: Optional[bool] = None,
-    search: Optional[str] = None,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Get menus with filtering and search"""
-    query = db.query(Menu)
-    
-    if property_id:
-        query = query.filter(Menu.property_id == property_id)
-    if menu_type:
-        query = query.filter(Menu.menu_type == menu_type)
-    if status:
-        query = query.filter(Menu.status == status)
-    if is_featured is not None:
-        query = query.filter(Menu.is_featured == is_featured)
-    if search:
-        query = query.filter(
-            (Menu.name.ilike(f"%{search}%")) |
-            (Menu.description.ilike(f"%{search}%"))
-        )
-    
-    menus = query.order_by(Menu.display_order, Menu.created_at.desc()).offset(skip).limit(limit).all()
-    
-    return [
-        MenuResponse(
-            id=menu.id,
-            property_id=menu.property_id,
-            name=menu.name,
-            description=menu.description,
-            menu_type=menu.menu_type,
-            status=menu.status,
-            available_from=menu.available_from,
-            available_until=menu.available_until,
-            valid_days=menu.valid_days,
-            display_order=menu.display_order,
-            is_featured=menu.is_featured,
-            image_url=menu.image_url,
-            settings=menu.settings,
-            created_at=menu.created_at,
-            updated_at=menu.updated_at
-        )
-        for menu in menus
-    ]
-
-@app.post("/api/menus", response_model=MenuResponse)
-async def create_menu(
-    menu_data: MenuCreate,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Create a new menu"""
-    new_menu = Menu(
-        property_id=menu_data.property_id,
-        name=menu_data.name,
-        description=menu_data.description,
-        menu_type=menu_data.menu_type,
-        available_from=menu_data.available_from,
-        available_until=menu_data.available_until,
-        valid_days=menu_data.valid_days,
-        display_order=menu_data.display_order,
-        is_featured=menu_data.is_featured,
-        image_url=menu_data.image_url,
-        settings=menu_data.settings
-    )
-    
-    db.add(new_menu)
-    db.commit()
-    db.refresh(new_menu)
-    
-    logger.info(f"✅ Menu created: {new_menu.name}")
-    
-    return MenuResponse(
-        id=new_menu.id,
-        property_id=new_menu.property_id,
-        name=new_menu.name,
-        description=new_menu.description,
-        menu_type=new_menu.menu_type,
-        status=new_menu.status,
-        available_from=new_menu.available_from,
-        available_until=new_menu.available_until,
-        valid_days=new_menu.valid_days,
-        display_order=new_menu.display_order,
-        is_featured=new_menu.is_featured,
-        image_url=new_menu.image_url,
-        settings=new_menu.settings,
-        created_at=new_menu.created_at,
-        updated_at=new_menu.updated_at
-    )
-
-@app.get("/api/menus/{menu_id}", response_model=MenuResponse)
-async def get_menu(
-    menu_id: str,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Get a specific menu by ID"""
-    menu = db.query(Menu).filter(Menu.id == menu_id).first()
-    if not menu:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Menu not found"
-        )
-    
-    return MenuResponse(
-        id=menu.id,
-        property_id=menu.property_id,
-        name=menu.name,
-        description=menu.description,
-        menu_type=menu.menu_type,
-        status=menu.status,
-        available_from=menu.available_from,
-        available_until=menu.available_until,
-        valid_days=menu.valid_days,
-        display_order=menu.display_order,
-        is_featured=menu.is_featured,
-        image_url=menu.image_url,
-        settings=menu.settings,
-        created_at=menu.created_at,
-        updated_at=menu.updated_at
-    )
-
-@app.get("/api/menus/{menu_id}/items", response_model=List[MenuItemResponse])
-async def get_menu_items(
-    menu_id: str,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
-    category_id: Optional[str] = None,
-    status: Optional[ItemStatus] = None,
-    is_featured: Optional[bool] = None,
-    search: Optional[str] = None,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Get menu items with filtering"""
-    query = db.query(MenuItem).filter(MenuItem.menu_id == menu_id)
-    
-    if category_id:
-        query = query.filter(MenuItem.category_id == category_id)
-    if status:
-        query = query.filter(MenuItem.status == status)
-    if is_featured is not None:
-        query = query.filter(MenuItem.is_featured == is_featured)
-    if search:
-        query = query.filter(
-            (MenuItem.name.ilike(f"%{search}%")) |
-            (MenuItem.description.ilike(f"%{search}%"))
-        )
-    
-    items = query.order_by(MenuItem.display_order, MenuItem.created_at.desc()).offset(skip).limit(limit).all()
-    
-    return [
-        MenuItemResponse(
-            id=item.id,
-            menu_id=item.menu_id,
-            category_id=item.category_id,
-            name=item.name,
-            description=item.description,
-            short_description=item.short_description,
-            base_price=item.base_price,
-            currency=item.currency,
-            tax_rate=item.tax_rate,
-            status=item.status,
-            is_featured=item.is_featured,
-            is_spicy=item.is_spicy,
-            spice_level=item.spice_level,
-            dietary_info=item.dietary_info,
-            allergens=item.allergens,
-            calories=item.calories,
-            prep_time_minutes=item.prep_time_minutes,
-            display_order=item.display_order,
-            image_url=item.image_url,
-            tags=item.tags,
-            track_inventory=item.track_inventory,
-            inventory_item_id=item.inventory_item_id,
-            low_stock_threshold=item.low_stock_threshold,
-            settings=item.settings,
-            created_at=item.created_at,
-            updated_at=item.updated_at
-        )
-        for item in items
-    ]
-
-@app.post("/api/menus/items", response_model=MenuItemResponse)
-async def create_menu_item(
-    item_data: MenuItemCreate,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Create a new menu item"""
-    new_item = MenuItem(
-        menu_id=item_data.menu_id,
-        category_id=item_data.category_id,
-        name=item_data.name,
-        description=item_data.description,
-        short_description=item_data.short_description,
-        base_price=item_data.base_price,
-        currency=item_data.currency,
-        tax_rate=item_data.tax_rate,
-        status=item_data.status,
-        is_featured=item_data.is_featured,
-        is_spicy=item_data.is_spicy,
-        spice_level=item_data.spice_level,
-        dietary_info=item_data.dietary_info,
-        allergens=item_data.allergens,
-        calories=item_data.calories,
-        prep_time_minutes=item_data.prep_time_minutes,
-        display_order=item_data.display_order,
-        image_url=item_data.image_url,
-        tags=item_data.tags,
-        track_inventory=item_data.track_inventory,
-        inventory_item_id=item_data.inventory_item_id,
-        low_stock_threshold=item_data.low_stock_threshold,
-        settings=item_data.settings
-    )
-    
-    db.add(new_item)
-    db.commit()
-    db.refresh(new_item)
-    
-    logger.info(f"✅ Menu item created: {new_item.name}")
-    
-    return MenuItemResponse(
-        id=new_item.id,
-        menu_id=new_item.menu_id,
-        category_id=new_item.category_id,
-        name=new_item.name,
-        description=new_item.description,
-        short_description=new_item.short_description,
-        base_price=new_item.base_price,
-        currency=new_item.currency,
-        tax_rate=new_item.tax_rate,
-        status=new_item.status,
-        is_featured=new_item.is_featured,
-        is_spicy=new_item.is_spicy,
-        spice_level=new_item.spice_level,
-        dietary_info=new_item.dietary_info,
-        allergens=new_item.allergens,
-        calories=new_item.calories,
-        prep_time_minutes=new_item.prep_time_minutes,
-        display_order=new_item.display_order,
-        image_url=new_item.image_url,
-        tags=new_item.tags,
-        track_inventory=new_item.track_inventory,
-        inventory_item_id=new_item.inventory_item_id,
-        low_stock_threshold=new_item.low_stock_threshold,
-        settings=new_item.settings,
-        created_at=new_item.created_at,
-        updated_at=new_item.updated_at
-    )
-
-@app.get("/api/menus/metrics", response_model=MenuMetrics)
-async def get_menu_metrics(
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Get menu metrics"""
-    # Get basic counts
-    total_menus = db.query(Menu).count()
-    active_menus = db.query(Menu).filter(Menu.status == MenuStatus.ACTIVE).count()
-    total_categories = db.query(MenuCategory).count()
-    total_items = db.query(MenuItem).count()
-    
-    # Get items by status
-    items_by_status = {}
-    for status in ItemStatus:
-        count = db.query(MenuItem).filter(MenuItem.status == status).count()
-        items_by_status[status] = count
-    
-    # Get items by category
-    items_by_category = {}
-    categories = db.query(MenuCategory).all()
-    for category in categories:
-        count = db.query(MenuItem).filter(MenuItem.category_id == category.id).count()
-        items_by_category[category.name] = count
-    
-    # Get average item price
-    items = db.query(MenuItem).filter(MenuItem.base_price > 0).all()
-    average_item_price = 0.0
-    if items:
-        average_item_price = sum(item.base_price for item in items) / len(items)
-    
-    # Get featured items count
-    featured_items = db.query(MenuItem).filter(MenuItem.is_featured == True).count()
-    
-    return MenuMetrics(
-        total_menus=total_menus,
-        active_menus=active_menus,
-        total_categories=total_categories,
-        total_items=total_items,
-        items_by_status=items_by_status,
-        items_by_category=items_by_category,
-        average_item_price=average_item_price,
-        featured_items=featured_items
-    )
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=SERVICE_PORT,
-        reload=True
+        port=8003,
+        reload=True,
+        log_level="info"
     )

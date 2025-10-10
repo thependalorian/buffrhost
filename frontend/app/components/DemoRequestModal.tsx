@@ -251,7 +251,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                       value={formData.businessName}
                       onChange={handleInputChange}
                       className="input input-bordered w-full"
-                      placeholder="The Shandi Hotel"
+                      placeholder="Buffr Host Hotel"
                     />
                   </div>
 

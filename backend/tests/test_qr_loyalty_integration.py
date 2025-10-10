@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from models.hospitality_property import HospitalityProperty
-from models.user import Profile, User
+from models.user import User
 from services.loyalty_service import LoyaltyService
 from services.qr_loyalty_service import QRLoyaltyService
 

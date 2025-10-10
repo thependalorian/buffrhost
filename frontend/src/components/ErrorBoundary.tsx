@@ -1,5 +1,5 @@
 /**
- * Error Boundary Component for The Shandi Platform
+ * Error Boundary Component for Buffr Host Platform
  *
  * Provides error handling and fallback UI for React components
  * Includes dashboard-specific error fallback for admin interfaces

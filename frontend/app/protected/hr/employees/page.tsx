@@ -75,7 +75,7 @@ const EmployeesPage: React.FC = () => {
               setEditingEmployee(null);
               setShowForm(true);
             }}
-            variant="primary"
+            variant="default"
           >
             <UserPlus className="w-4 h-4 mr-2" />
             Add Employee
@@ -84,7 +84,7 @@ const EmployeesPage: React.FC = () => {
       />
 
       <div className="container mx-auto px-4 py-8">
-        {alert && <Alert type={alert.type} message={alert.message} className="mb-4" />}
+        {alert && <Alert variant={alert.type} description={alert.message} className="mb-4" />}
 
         {/* Search */}
         <div className="mb-6">

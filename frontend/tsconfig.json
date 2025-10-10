@@ -33,7 +33,7 @@
     "noUncheckedIndexedAccess": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*", "./*"]
     },
     "target": "es2017",
     "forceConsistentCasingInFileNames": true,

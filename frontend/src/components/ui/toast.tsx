@@ -1,5 +1,5 @@
 /**
- * Toast Components for The Shandi Frontend
+ * Toast Components for Buffr Host Frontend
  *
  * Reusable toast components for notifications and alerts.
  */

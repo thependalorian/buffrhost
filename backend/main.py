@@ -18,20 +18,18 @@ from datetime import datetime # Added for timestamp
 import uuid # Added for unique ID generation
 
 from config import settings
-from database import create_tables, close_db
-from routes import auth, hospitality_property, menu, inventory, customer, order, analytics, cms, knowledge_base, spa, conference, transportation, loyalty, qr_loyalty, staff, ai_knowledge, calendar, arcade, payment, demo_requests, buffr_agent, preview, financial, etuna_demo_ai, etuna_demo, waitlist, restaurant
+from database import create_tables, close_db, check_database_connection
+from routes import auth, hospitality_property, menu, inventory, customer, order, analytics, cms, knowledge_base, spa, conference, transportation, loyalty, qr_loyalty, staff, ai_knowledge, calendar, arcade, payment, demo_requests, buffr_agent, preview, financial, etuna_demo_ai, etuna_demo, waitlist, restaurant, onboarding, ml_routes, yango_routes
 from routes import email_send_route, email_analytics_route, email_preferences_route, email_templates_route, email_queue_route, email_blacklist_route, email_booking_confirmation_route, email_check_in_reminder_route, email_check_out_reminder_route, email_property_update_route, email_booking_cancellation_route, email_host_summary_route, email_webhook_sendgrid_route, email_webhook_resend_route, email_webhook_ses_route
 
+# Import new systems
+from error_handling import setup_error_handling, setup_logging
+from routes import user_routes
+from routes import booking_routes
 
-# Configure logging
-logging.basicConfig(
-    level=getattr(logging, settings.LOG_LEVEL.upper()),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler('app.log')
-    ]
-)
+
+# Setup comprehensive logging
+setup_logging()
 
 logger = logging.getLogger(__name__)
 
@@ -41,22 +39,40 @@ async def lifespan(app: FastAPI):
     """Application lifespan manager for startup and shutdown events."""
     # Startup
     logger.info("Starting Buffr Host API...")
-    await create_tables()
+    
+    # Check database connection
+    if not check_database_connection():
+        logger.error("Database connection failed")
+        raise Exception("Database connection failed")
+    
+    # Create database tables
+    create_tables()
     logger.info("Database tables created/verified")
 
     # Initialize FastAPI-Limiter
-    redis = Redis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
-    await FastAPILimiter.init(redis)
-    logger.info("FastAPI-Limiter initialized")
+    try:
+        redis = Redis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
+        await FastAPILimiter.init(redis)
+        logger.info("FastAPI-Limiter initialized")
+    except Exception as e:
+        logger.warning(f"Redis connection failed: {e}. Rate limiting disabled.")
+    
+    logger.info("Buffr Host API startup complete")
     
     yield
     
     # Shutdown
     logger.info("Shutting down Buffr Host API...")
-    await close_db()
+    close_db()
     logger.info("Database connections closed")
-    await FastAPILimiter.close()
-    logger.info("FastAPI-Limiter closed")
+    
+    try:
+        await FastAPILimiter.close()
+        logger.info("FastAPI-Limiter closed")
+    except Exception as e:
+        logger.warning(f"Error closing FastAPI-Limiter: {e}")
+    
+    logger.info("Buffr Host API shutdown complete")
 
 
 # Create FastAPI application
@@ -68,6 +84,9 @@ app = FastAPI(
     redoc_url="/redoc" if settings.ENABLE_API_DOCS else None,
     lifespan=lifespan
 )
+
+# Setup global error handling
+setup_error_handling(app)
 
 # Security
 security = HTTPBearer()
@@ -131,6 +150,20 @@ app.include_router(email_host_summary_route.router, prefix="/api/v1/email", tags
 app.include_router(email_webhook_sendgrid_route.router, prefix="/api/v1/email", tags=["email-webhooks"])
 app.include_router(email_webhook_resend_route.router, prefix="/api/v1/email", tags=["email-webhooks"])
 app.include_router(email_webhook_ses_route.router, prefix="/api/v1/email", tags=["email-webhooks"])
+
+# Include onboarding router
+app.include_router(onboarding.router, tags=["onboarding"])
+
+# Include new system routers
+app.include_router(user_routes.router, prefix="/api/v1/users", tags=["users"])
+app.include_router(booking_routes.router, prefix="/api/v1/bookings", tags=["bookings"])
+
+# Include ML/AI router
+app.include_router(ml_routes.router, prefix="/api/v1/ml", tags=["ml-ai"])
+
+# ✅ ADD PUBLIC ROUTES FOR GUEST PORTAL
+from routes import public
+app.include_router(public.router, prefix="/api/v1/public", tags=["public"])
 
 from routes import email_send_route
 from routes import email_analytics_route

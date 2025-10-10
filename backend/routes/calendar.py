@@ -1,5 +1,5 @@
 """
-Calendar routes for The Shandi Hospitality Ecosystem Management Platform.
+Calendar routes for Buffr Host Hospitality Ecosystem Management Platform.
 Provides API endpoints for calendar and booking management.
 """
 

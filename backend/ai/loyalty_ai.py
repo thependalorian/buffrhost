@@ -9,7 +9,7 @@ This module implements intelligent loyalty campaign management using:
 
 Features:
 - Intelligent loyalty campaign generation
-- Profile segmentation and targeting
+- User segmentation and targeting
 - Campaign performance optimization
 - A/B testing for loyalty programs
 - Cross-service loyalty integration
@@ -48,7 +48,7 @@ from models.loyalty import CrossBusinessLoyalty, LoyaltyTransaction
 from models.order import Order
 from models.room import RoomReservation
 from models.services import ServiceBooking
-from models.user import Profile, User
+from models.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -89,8 +89,8 @@ class RewardType(str, Enum):
     EXPERIENCE = "experience"
 
 
-class ProfileSegment(str, Enum):
-    """Profile segments for targeting"""
+class UserSegment(str, Enum):
+    """User segments for targeting"""
 
     HIGH_VALUE = "high_value"
     FREQUENT = "frequent"
@@ -110,7 +110,7 @@ class LoyaltyCampaign(BaseModel):
     description: str
     campaign_type: CampaignType
     status: CampaignStatus
-    target_segment: ProfileSegment
+    target_segment: UserSegment
     reward_type: RewardType
     reward_value: float
     start_date: datetime
@@ -125,7 +125,7 @@ class CampaignRecommendation(BaseModel):
     """AI-generated campaign recommendation"""
 
     campaign_type: CampaignType
-    target_segment: ProfileSegment
+    target_segment: UserSegment
     reward_type: RewardType
     reward_value: float
     campaign_duration: int  # days
@@ -137,10 +137,10 @@ class CampaignRecommendation(BaseModel):
     key_metrics: List[str] = Field(default_factory=list)
 
 
-class ProfileSegmentAnalysis(BaseModel):
-    """Profile segment analysis"""
+class UserSegmentAnalysis(BaseModel):
+    """User segment analysis"""
 
-    segment: ProfileSegment
+    segment: UserSegment
     customer_count: int
     avg_spending: float
     avg_frequency: float
@@ -156,7 +156,7 @@ class LoyaltyAI:
 
     Features:
     - Intelligent campaign generation and optimization
-    - Profile segmentation and targeting
+    - User segmentation and targeting
     - Campaign performance prediction
     - A/B testing for loyalty programs
     - Cross-service loyalty integration
@@ -188,7 +188,7 @@ class LoyaltyAI:
             "customer_satisfaction": 0.2,
         }
 
-        # Profile segment definitions
+        # User segment definitions
         self.segment_definitions = self._initialize_segment_definitions()
 
         # Campaign templates
@@ -226,7 +226,7 @@ class LoyaltyAI:
         retention, and revenue across all hospitality services.
         
         **Campaign Optimization Guidelines:**
-        1. **Profile-Centric**: Design campaigns that provide genuine value to customers
+        1. **User-Centric**: Design campaigns that provide genuine value to customers
         2. **Data-Driven**: Use customer behavior data to inform campaign decisions
         3. **Cross-Service**: Leverage the full hospitality ecosystem for campaigns
         4. **ROI-Focused**: Ensure campaigns deliver measurable business value
@@ -239,15 +239,15 @@ class LoyaltyAI:
         - Cross-Sell: Promoting additional services
         - Upsell: Encouraging premium services
         - Seasonal: Time-based promotional campaigns
-        - Referral: Profile acquisition through referrals
+        - Referral: User acquisition through referrals
         - Birthday/Anniversary: Personal milestone campaigns
         - Milestone: Achievement-based rewards
         
-        **Profile Segments:**
+        **User Segments:**
         - High Value: Top spending customers
         - Frequent: Regular visitors
         - New: Recent customers
-        - At Risk: Profiles showing churn signals
+        - At Risk: Users showing churn signals
         - Dormant: Inactive customers
         - VIP: Premium tier customers
         - Budget: Price-sensitive customers
@@ -265,43 +265,43 @@ class LoyaltyAI:
         when designing campaigns.
         """
 
-    def _initialize_segment_definitions(self) -> Dict[ProfileSegment, Dict[str, Any]]:
+    def _initialize_segment_definitions(self) -> Dict[UserSegment, Dict[str, Any]]:
         """Initialize customer segment definitions"""
         return {
-            ProfileSegment.HIGH_VALUE: {
+            UserSegment.HIGH_VALUE: {
                 "spending_threshold": 1000,
                 "frequency_threshold": 10,
                 "description": "Top spending customers with high lifetime value",
             },
-            ProfileSegment.FREQUENT: {
+            UserSegment.FREQUENT: {
                 "frequency_threshold": 5,
                 "time_period": 90,  # days
                 "description": "Regular customers with consistent visits",
             },
-            ProfileSegment.NEW: {
+            UserSegment.NEW: {
                 "days_since_first_visit": 30,
                 "max_visits": 3,
                 "description": "Recent customers in onboarding phase",
             },
-            ProfileSegment.AT_RISK: {
+            UserSegment.AT_RISK: {
                 "days_since_last_visit": 60,
                 "declining_frequency": True,
-                "description": "Profiles showing signs of churn",
+                "description": "Users showing signs of churn",
             },
-            ProfileSegment.DORMANT: {
+            UserSegment.DORMANT: {
                 "days_since_last_visit": 180,
                 "description": "Inactive customers needing reactivation",
             },
-            ProfileSegment.VIP: {
+            UserSegment.VIP: {
                 "loyalty_tier": ["Gold", "Platinum", "Diamond"],
                 "description": "Premium loyalty tier customers",
             },
-            ProfileSegment.BUDGET: {
+            UserSegment.BUDGET: {
                 "avg_order_value": 50,
                 "price_sensitivity": "high",
                 "description": "Price-sensitive customers",
             },
-            ProfileSegment.BUSINESS: {
+            UserSegment.BUSINESS: {
                 "customer_type": "corporate",
                 "description": "Business and corporate customers",
             },
@@ -350,7 +350,7 @@ class LoyaltyAI:
                 "reward_type": RewardType.POINTS,
                 "reward_value": 200,
                 "duration": 60,
-                "description": "Profile referral programs",
+                "description": "User referral programs",
             },
             CampaignType.BIRTHDAY: {
                 "reward_type": RewardType.GIFT,
@@ -362,7 +362,7 @@ class LoyaltyAI:
 
     async def analyze_customer_segments(
         self, property_id: int
-    ) -> List[ProfileSegmentAnalysis]:
+    ) -> List[UserSegmentAnalysis]:
         """
         Analyze customer segments for campaign targeting
 
@@ -375,7 +375,7 @@ class LoyaltyAI:
         try:
             segments = []
 
-            for segment_type in ProfileSegment:
+            for segment_type in UserSegment:
                 analysis = await self._analyze_segment(property_id, segment_type)
                 if analysis:
                     segments.append(analysis)
@@ -387,8 +387,8 @@ class LoyaltyAI:
             return []
 
     async def _analyze_segment(
-        self, property_id: int, segment: ProfileSegment
-    ) -> Optional[ProfileSegmentAnalysis]:
+        self, property_id: int, segment: UserSegment
+    ) -> Optional[UserSegmentAnalysis]:
         """Analyze a specific customer segment"""
         try:
             # Get customers in this segment
@@ -408,7 +408,7 @@ class LoyaltyAI:
             # Get recommended campaigns for this segment
             recommended_campaigns = await self._get_recommended_campaigns(segment)
 
-            return ProfileSegmentAnalysis(
+            return UserSegmentAnalysis(
                 segment=segment,
                 customer_count=customer_count,
                 avg_spending=avg_spending,
@@ -424,20 +424,20 @@ class LoyaltyAI:
             return None
 
     async def _get_customers_in_segment(
-        self, property_id: int, segment: ProfileSegment
-    ) -> List[Profile]:
+        self, property_id: int, segment: UserSegment
+    ) -> List[User]:
         """Get customers belonging to a specific segment"""
         try:
             customers = []
 
-            if segment == ProfileSegment.HIGH_VALUE:
+            if segment == UserSegment.HIGH_VALUE:
                 # Get customers with high spending
                 query = (
-                    select(Profile)
+                    select(User)
                     .join(CrossBusinessLoyalty)
                     .where(
                         and_(
-                            Profile.property_id == property_id,
+                            User.property_id == property_id,
                             CrossBusinessLoyalty.total_points >= 1000,
                         )
                     )
@@ -445,12 +445,12 @@ class LoyaltyAI:
                 result = await self.db.execute(query)
                 customers = result.scalars().all()
 
-            elif segment == ProfileSegment.FREQUENT:
+            elif segment == UserSegment.FREQUENT:
                 # Get customers with high visit frequency
-                query = select(Profile).where(
+                query = select(User).where(
                     and_(
-                        Profile.property_id == property_id,
-                        Profile.created_at >= datetime.now() - timedelta(days=90),
+                        User.property_id == property_id,
+                        User.created_at >= datetime.now() - timedelta(days=90),
                     )
                 )
                 result = await self.db.execute(query)
@@ -464,47 +464,47 @@ class LoyaltyAI:
                         frequent_customers.append(customer)
                 customers = frequent_customers
 
-            elif segment == ProfileSegment.NEW:
+            elif segment == UserSegment.NEW:
                 # Get new customers
-                query = select(Profile).where(
+                query = select(User).where(
                     and_(
-                        Profile.property_id == property_id,
-                        Profile.created_at >= datetime.now() - timedelta(days=30),
+                        User.property_id == property_id,
+                        User.created_at >= datetime.now() - timedelta(days=30),
                     )
                 )
                 result = await self.db.execute(query)
                 customers = result.scalars().all()
 
-            elif segment == ProfileSegment.AT_RISK:
+            elif segment == UserSegment.AT_RISK:
                 # Get customers at risk of churn
-                query = select(Profile).where(
+                query = select(User).where(
                     and_(
-                        Profile.property_id == property_id,
-                        Profile.last_login <= datetime.now() - timedelta(days=60),
+                        User.property_id == property_id,
+                        User.last_login <= datetime.now() - timedelta(days=60),
                     )
                 )
                 result = await self.db.execute(query)
                 customers = result.scalars().all()
 
-            elif segment == ProfileSegment.DORMANT:
+            elif segment == UserSegment.DORMANT:
                 # Get dormant customers
-                query = select(Profile).where(
+                query = select(User).where(
                     and_(
-                        Profile.property_id == property_id,
-                        Profile.last_login <= datetime.now() - timedelta(days=180),
+                        User.property_id == property_id,
+                        User.last_login <= datetime.now() - timedelta(days=180),
                     )
                 )
                 result = await self.db.execute(query)
                 customers = result.scalars().all()
 
-            elif segment == ProfileSegment.VIP:
+            elif segment == UserSegment.VIP:
                 # Get VIP customers
                 query = (
-                    select(Profile)
+                    select(User)
                     .join(CrossBusinessLoyalty)
                     .where(
                         and_(
-                            Profile.property_id == property_id,
+                            User.property_id == property_id,
                             CrossBusinessLoyalty.tier_level.in_(
                                 ["Gold", "Platinum", "Diamond"]
                             ),
@@ -514,23 +514,23 @@ class LoyaltyAI:
                 result = await self.db.execute(query)
                 customers = result.scalars().all()
 
-            elif segment == ProfileSegment.BUDGET:
+            elif segment == UserSegment.BUDGET:
                 # Get budget-conscious customers
-                query = select(Profile).where(
+                query = select(User).where(
                     and_(
-                        Profile.property_id == property_id,
-                        Profile.avg_order_value <= 50,
+                        User.property_id == property_id,
+                        User.avg_order_value <= 50,
                     )
                 )
                 result = await self.db.execute(query)
                 customers = result.scalars().all()
 
-            elif segment == ProfileSegment.BUSINESS:
+            elif segment == UserSegment.BUSINESS:
                 # Get business customers
-                query = select(Profile).where(
+                query = select(User).where(
                     and_(
-                        Profile.property_id == property_id,
-                        Profile.customer_type == "corporate",
+                        User.property_id == property_id,
+                        User.customer_type == "corporate",
                     )
                 )
                 result = await self.db.execute(query)
@@ -542,7 +542,7 @@ class LoyaltyAI:
             logger.error(f"Error getting customers in segment {segment}: {e}")
             return []
 
-    async def _calculate_avg_spending(self, customers: List[Profile]) -> float:
+    async def _calculate_avg_spending(self, customers: List[User]) -> float:
         """Calculate average spending for customer segment"""
         try:
             if not customers:
@@ -563,7 +563,7 @@ class LoyaltyAI:
             logger.error(f"Error calculating average spending: {e}")
             return 0.0
 
-    async def _calculate_avg_frequency(self, customers: List[Profile]) -> float:
+    async def _calculate_avg_frequency(self, customers: List[User]) -> float:
         """Calculate average visit frequency for customer segment"""
         try:
             if not customers:
@@ -584,7 +584,7 @@ class LoyaltyAI:
             logger.error(f"Error calculating average frequency: {e}")
             return 0.0
 
-    async def _calculate_loyalty_score(self, customers: List[Profile]) -> float:
+    async def _calculate_loyalty_score(self, customers: List[User]) -> float:
         """Calculate loyalty score for customer segment"""
         try:
             if not customers:
@@ -605,7 +605,7 @@ class LoyaltyAI:
             logger.error(f"Error calculating loyalty score: {e}")
             return 0.0
 
-    async def _calculate_churn_risk(self, customers: List[Profile]) -> float:
+    async def _calculate_churn_risk(self, customers: List[User]) -> float:
         """Calculate churn risk for customer segment"""
         try:
             if not customers:
@@ -626,7 +626,7 @@ class LoyaltyAI:
             logger.error(f"Error calculating churn risk: {e}")
             return 0.0
 
-    async def _calculate_growth_potential(self, customers: List[Profile]) -> float:
+    async def _calculate_growth_potential(self, customers: List[User]) -> float:
         """Calculate growth potential for customer segment"""
         try:
             if not customers:
@@ -657,32 +657,32 @@ class LoyaltyAI:
             return 0.0
 
     async def _get_recommended_campaigns(
-        self, segment: ProfileSegment
+        self, segment: UserSegment
     ) -> List[CampaignType]:
         """Get recommended campaign types for a segment"""
         try:
             recommendations = {
-                ProfileSegment.HIGH_VALUE: [
+                UserSegment.HIGH_VALUE: [
                     CampaignType.UPSELL,
                     CampaignType.CROSS_SELL,
                     CampaignType.VIP,
                 ],
-                ProfileSegment.FREQUENT: [
+                UserSegment.FREQUENT: [
                     CampaignType.RETENTION,
                     CampaignType.CROSS_SELL,
                 ],
-                ProfileSegment.NEW: [CampaignType.WELCOME, CampaignType.CROSS_SELL],
-                ProfileSegment.AT_RISK: [
+                UserSegment.NEW: [CampaignType.WELCOME, CampaignType.CROSS_SELL],
+                UserSegment.AT_RISK: [
                     CampaignType.RETENTION,
                     CampaignType.REACTIVATION,
                 ],
-                ProfileSegment.DORMANT: [
+                UserSegment.DORMANT: [
                     CampaignType.REACTIVATION,
                     CampaignType.SEASONAL,
                 ],
-                ProfileSegment.VIP: [CampaignType.UPSELL, CampaignType.EXPERIENCE],
-                ProfileSegment.BUDGET: [CampaignType.DISCOUNT, CampaignType.SEASONAL],
-                ProfileSegment.BUSINESS: [
+                UserSegment.VIP: [CampaignType.UPSELL, CampaignType.EXPERIENCE],
+                UserSegment.BUDGET: [CampaignType.DISCOUNT, CampaignType.SEASONAL],
+                UserSegment.BUSINESS: [
                     CampaignType.CROSS_SELL,
                     CampaignType.BUSINESS,
                 ],
@@ -697,7 +697,7 @@ class LoyaltyAI:
     async def generate_campaign_recommendations(
         self,
         property_id: int,
-        target_segment: Optional[ProfileSegment] = None,
+        target_segment: Optional[UserSegment] = None,
         campaign_type: Optional[CampaignType] = None,
         budget: Optional[float] = None,
     ) -> List[CampaignRecommendation]:
@@ -741,7 +741,7 @@ class LoyaltyAI:
 
     async def _generate_segment_recommendations(
         self,
-        segment_analysis: ProfileSegmentAnalysis,
+        segment_analysis: UserSegmentAnalysis,
         campaign_type: Optional[CampaignType] = None,
         budget: Optional[float] = None,
     ) -> List[CampaignRecommendation]:
@@ -818,33 +818,33 @@ class LoyaltyAI:
             return []
 
     async def _calculate_expected_participation(
-        self, segment_analysis: ProfileSegmentAnalysis, campaign_type: CampaignType
+        self, segment_analysis: UserSegmentAnalysis, campaign_type: CampaignType
     ) -> float:
         """Calculate expected participation rate for campaign"""
         try:
             # Base participation rates by segment and campaign type
             base_rates = {
-                ProfileSegment.HIGH_VALUE: {
+                UserSegment.HIGH_VALUE: {
                     CampaignType.UPSELL: 0.8,
                     CampaignType.CROSS_SELL: 0.7,
                     CampaignType.RETENTION: 0.6,
                 },
-                ProfileSegment.FREQUENT: {
+                UserSegment.FREQUENT: {
                     CampaignType.RETENTION: 0.7,
                     CampaignType.CROSS_SELL: 0.6,
                     CampaignType.SEASONAL: 0.5,
                 },
-                ProfileSegment.NEW: {
+                UserSegment.NEW: {
                     CampaignType.WELCOME: 0.9,
                     CampaignType.CROSS_SELL: 0.4,
                     CampaignType.REFERRAL: 0.3,
                 },
-                ProfileSegment.AT_RISK: {
+                UserSegment.AT_RISK: {
                     CampaignType.RETENTION: 0.5,
                     CampaignType.REACTIVATION: 0.4,
                     CampaignType.SEASONAL: 0.3,
                 },
-                ProfileSegment.DORMANT: {
+                UserSegment.DORMANT: {
                     CampaignType.REACTIVATION: 0.3,
                     CampaignType.SEASONAL: 0.2,
                     CampaignType.REFERRAL: 0.1,
@@ -867,7 +867,7 @@ class LoyaltyAI:
 
     async def _calculate_expected_roi(
         self,
-        segment_analysis: ProfileSegmentAnalysis,
+        segment_analysis: UserSegmentAnalysis,
         campaign_type: CampaignType,
         reward_value: float,
         expected_participation: float,
@@ -901,7 +901,7 @@ class LoyaltyAI:
             return 0.0
 
     async def _calculate_success_probability(
-        self, segment_analysis: ProfileSegmentAnalysis, campaign_type: CampaignType
+        self, segment_analysis: UserSegmentAnalysis, campaign_type: CampaignType
     ) -> float:
         """Calculate success probability for campaign"""
         try:
@@ -932,7 +932,7 @@ class LoyaltyAI:
 
     async def _calculate_suggested_budget(
         self,
-        segment_analysis: ProfileSegmentAnalysis,
+        segment_analysis: UserSegmentAnalysis,
         reward_value: float,
         expected_participation: float,
     ) -> float:
@@ -952,7 +952,7 @@ class LoyaltyAI:
 
     async def _generate_campaign_reasoning(
         self,
-        segment_analysis: ProfileSegmentAnalysis,
+        segment_analysis: UserSegmentAnalysis,
         campaign_type: CampaignType,
         expected_participation: float,
         expected_roi: float,
@@ -1117,7 +1117,7 @@ class LoyaltyAI:
         """Check if customer is at risk of churn"""
         try:
             # Get customer's last activity
-            query = select(Profile).where(Profile.id == customer_id)
+            query = select(User).where(User.id == customer_id)
             result = await self.db.execute(query)
             customer = result.scalar_one_or_none()
 
@@ -1215,17 +1215,17 @@ class LoyaltyAI:
             }
 
             # Get customer counts
-            customer_query = select(func.count(Profile.id)).where(
-                Profile.property_id == property_id
+            customer_query = select(func.count(User.id)).where(
+                User.property_id == property_id
             )
             customer_result = await self.db.execute(customer_query)
             analytics["total_customers"] = customer_result.scalar() or 0
 
             # Get active customers (last 30 days)
-            active_query = select(func.count(Profile.id)).where(
+            active_query = select(func.count(User.id)).where(
                 and_(
-                    Profile.property_id == property_id,
-                    Profile.last_login >= datetime.now() - timedelta(days=30),
+                    User.property_id == property_id,
+                    User.last_login >= datetime.now() - timedelta(days=30),
                 )
             )
             active_result = await self.db.execute(active_query)
@@ -1251,7 +1251,7 @@ class LoyaltyAI:
             logger.error(f"Error getting loyalty analytics: {e}")
             return {}
 
-    async def _extract_customer_features(self, customer: Profile) -> np.ndarray:
+    async def _extract_customer_features(self, customer: User) -> np.ndarray:
         """Extract comprehensive features for ML models"""
         try:
             features = []
@@ -1260,7 +1260,7 @@ class LoyaltyAI:
             features.append(customer.id)
             features.append(
                 (datetime.now() - customer.created_at).days
-            )  # Profile age in days
+            )  # User age in days
             features.append(1 if customer.is_active else 0)  # Active status
 
             # Behavioral features
@@ -1446,7 +1446,7 @@ class LoyaltyAI:
 
             # Get total campaigns sent (would need campaign tracking table)
             # For now, estimate based on customer tenure and loyalty tier
-            customer_query = select(Profile).where(Profile.id == customer_id)
+            customer_query = select(User).where(User.id == customer_id)
             customer_result = await self.db.execute(customer_query)
             customer = customer_result.scalar_one_or_none()
 
@@ -1695,7 +1695,7 @@ class LoyaltyAI:
             logger.info("Starting ML model training for loyalty system...")
 
             # Get all customers for the property
-            customers_query = select(Profile).where(Profile.property_id == property_id)
+            customers_query = select(User).where(User.property_id == property_id)
             customers_result = await self.db.execute(customers_query)
             customers = customers_result.scalars().all()
 
@@ -1737,7 +1737,7 @@ class LoyaltyAI:
 
             training_results = {}
 
-            # 1. Train Profile Segmentation Model
+            # 1. Train User Segmentation Model
             try:
                 self.ml_models["customer_segmentation"].fit(X_pca)
                 clusters = self.ml_models["customer_segmentation"].labels_
@@ -1895,12 +1895,12 @@ class LoyaltyAI:
                 return {"error": "Churn prediction model not trained"}
 
             # Get customer features
-            customer_query = select(Profile).where(Profile.id == customer_id)
+            customer_query = select(User).where(User.id == customer_id)
             customer_result = await self.db.execute(customer_query)
             customer = customer_result.scalar_one_or_none()
 
             if not customer:
-                return {"error": "Profile not found"}
+                return {"error": "User not found"}
 
             features = await self._extract_customer_features(customer)
             if len(features) == 0:
@@ -1948,12 +1948,12 @@ class LoyaltyAI:
                 return {"error": "Lifetime value model not trained"}
 
             # Get customer features
-            customer_query = select(Profile).where(Profile.id == customer_id)
+            customer_query = select(User).where(User.id == customer_id)
             customer_result = await self.db.execute(customer_query)
             customer = customer_result.scalar_one_or_none()
 
             if not customer:
-                return {"error": "Profile not found"}
+                return {"error": "User not found"}
 
             features = await self._extract_customer_features(customer)
             if len(features) == 0:

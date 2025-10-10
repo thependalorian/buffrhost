@@ -1,5 +1,5 @@
 /**
- * Booking Form Component for The Shandi Frontend
+ * Booking Form Component for Buffr Host Frontend
  *
  * Form component for creating and managing bookings.
  */
@@ -7,17 +7,18 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { useBooking, BookingData } from "@/hooks/useBooking";
+} from "@/src/components/ui/card";
+import { useBooking, BookingData } from "@/src/hooks/useBooking";
+import { cn } from "@/src/lib/utils";
 
 interface BookingFormProps {
   propertyId: string;

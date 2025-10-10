@@ -87,7 +87,7 @@ const DisbursementsPage: React.FC = () => {
               setEditingTransaction(null);
               setShowForm(true);
             }}
-            variant="primary"
+            variant="default"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Disbursement
@@ -96,7 +96,7 @@ const DisbursementsPage: React.FC = () => {
       />
 
       <div className="container mx-auto px-4 py-8">
-        {alert && <Alert type={alert.type} message={alert.message} className="mb-4" />}
+        {alert && <Alert variant={alert.type} description={alert.message} className="mb-4" />}
 
         {/* Search */}
         <div className="mb-6">

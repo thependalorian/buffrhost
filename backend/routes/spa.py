@@ -1,5 +1,5 @@
 """
-Spa service routes for The Shandi Hospitality Ecosystem Management Platform
+Spa service routes for Buffr Host Hospitality Ecosystem Management Platform
 Provides API endpoints for spa service management.
 """
 

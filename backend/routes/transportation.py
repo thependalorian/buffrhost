@@ -1,5 +1,5 @@
 """
-Transportation service routes for The Shandi Hospitality Ecosystem Management Platform
+Transportation service routes for Buffr Host Hospitality Ecosystem Management Platform
 Provides API endpoints for transportation service management.
 """
 

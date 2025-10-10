@@ -1,3 +1,4 @@
+"use client";
 'use client';
 
 import { SignUpForm } from "@/src/components/auth/SignUpForm";
@@ -67,7 +68,7 @@ export default function RegisterPage() {
   );
 }
 /**
- * Register Page for The Shandi Frontend
+ * Register Page for Buffr Host Frontend
  *
  * Registration page with signup form and social authentication options.
  */

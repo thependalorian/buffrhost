@@ -1,256 +1,173 @@
 """
-Buffr Host Auth Service - Microservice
-Handles authentication, authorization, and user management for Buffr Host hospitality platform
+Buffr Host Auth Service
+Comprehensive authentication, authorization, and user management for Buffr Host platform
 """
 
 import os
-import logging
 import uuid
+import hashlib
+import secrets
 from datetime import datetime, timedelta
-from typing import Optional, Dict, Any, List
-from enum import Enum
-
-import redis.asyncio as redis
-from fastapi import FastAPI, HTTPException, status, Depends, Query
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, EmailStr
-from sqlalchemy import Column, String, Integer, DateTime, Boolean, Text, JSON, create_engine, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session, relationship
-import jwt
-import bcrypt
+from typing import Dict, List, Optional, Any
 from contextlib import asynccontextmanager
 
-# Configure logging
+from fastapi import FastAPI, HTTPException, Depends, status, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from pydantic import BaseModel, Field, validator, EmailStr
+import jwt
+import bcrypt
+from supabase import create_client, Client
+import logging
+
+# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Database setup
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/buffr_host_auth")
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-# Redis setup
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
-redis_client = None
-
-# Security
+# Global variables
+supabase_client: Optional[Client] = None
 security = HTTPBearer()
 
 # JWT Configuration
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key")
+JWT_ACCESS_SECRET = os.getenv("JWT_ACCESS_SECRET", "buffr-host-access-secret-key-change-in-production")
+JWT_REFRESH_SECRET = os.getenv("JWT_REFRESH_SECRET", "buffr-host-refresh-secret-key-change-in-production")
 JWT_ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
-REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
+JWT_ACCESS_EXPIRY = "15m"  # 15 minutes
+JWT_REFRESH_EXPIRY = "7d"  # 7 days
 
-# Service configuration
-SERVICE_NAME = "auth-service"
-SERVICE_VERSION = "1.0.0"
-SERVICE_PORT = int(os.getenv("SERVICE_PORT", 8001))
+# Password Configuration
+BCRYPT_ROUNDS = 12
 
-# Enums
-class UserRole(str, Enum):
-    SUPER_ADMIN = "super_admin"
-    ADMIN = "admin"
-    MANAGER = "manager"
-    STAFF = "staff"
-    CUSTOMER = "customer"
-
-class UserStatus(str, Enum):
-    ACTIVE = "active"
-    INACTIVE = "inactive"
-    SUSPENDED = "suspended"
-    PENDING = "pending"
-
-class UserType(str, Enum):
-    INDIVIDUAL = "individual"
-    BUSINESS = "business"
-    CORPORATE = "corporate"
-
-# Database Models
-class User(Base):
-    __tablename__ = "users"
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan manager"""
+    global supabase_client
     
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    email = Column(String, unique=True, nullable=False, index=True)
-    phone = Column(String, unique=True, nullable=True, index=True)
-    password_hash = Column(String, nullable=False)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    role = Column(String, default=UserRole.CUSTOMER)
-    user_type = Column(String, default=UserType.INDIVIDUAL)
-    status = Column(String, default=UserStatus.ACTIVE)
-    email_verified = Column(Boolean, default=False)
-    phone_verified = Column(Boolean, default=False)
-    last_login = Column(DateTime)
-    login_attempts = Column(Integer, default=0)
-    locked_until = Column(DateTime)
-    preferences = Column(JSON, default=dict)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-class UserSession(Base):
-    __tablename__ = "user_sessions"
+    # Startup
+    logger.info("Starting Buffr Host Auth Service...")
     
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
-    session_token = Column(String, unique=True, nullable=False, index=True)
-    refresh_token = Column(String, unique=True, nullable=False, index=True)
-    expires_at = Column(DateTime, nullable=False)
-    refresh_expires_at = Column(DateTime, nullable=False)
-    ip_address = Column(String)
-    user_agent = Column(Text)
-    device_info = Column(JSON, default=dict)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-class UserPermission(Base):
-    __tablename__ = "user_permissions"
+    try:
+        # Initialize Supabase client
+        supabase_url = os.getenv("SUPABASE_URL")
+        supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+        
+        if not supabase_url or not supabase_key:
+            raise ValueError("Missing Supabase configuration")
+        
+        supabase_client = create_client(supabase_url, supabase_key)
+        
+        # Run database migrations
+        try:
+            from shared.supabase_migrations.supabase_migration_runner import AuthServiceSupabaseMigrationRunner
+            database_url = os.getenv("DATABASE_URL")
+            if database_url:
+                migration_runner = AuthServiceSupabaseMigrationRunner(database_url)
+                migration_success = await migration_runner.run_migrations()
+                if migration_success:
+                    logger.info("Database migrations completed successfully")
+                else:
+                    logger.warning("Database migrations failed - continuing anyway")
+            else:
+                logger.warning("No DATABASE_URL provided - skipping migrations")
+        except Exception as migration_error:
+            logger.error(f"Migration error: {migration_error} - continuing anyway")
+        
+        logger.info("Auth Service initialized successfully")
+        
+    except Exception as e:
+        logger.error(f"Failed to initialize Auth Service: {e}")
+        raise
     
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
-    permission = Column(String, nullable=False, index=True)
-    resource = Column(String, nullable=True)
-    granted_by = Column(String, nullable=False)
-    granted_at = Column(DateTime, default=datetime.utcnow)
-    expires_at = Column(DateTime, nullable=True)
-
-class AuthLog(Base):
-    __tablename__ = "auth_logs"
+    yield
     
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, nullable=True, index=True)
-    action = Column(String, nullable=False, index=True)
-    ip_address = Column(String)
-    user_agent = Column(Text)
-    success = Column(Boolean, default=True)
-    details = Column(JSON, default=dict)
-    timestamp = Column(DateTime, default=datetime.utcnow, index=True)
+    # Shutdown
+    logger.info("Shutting down Auth Service...")
+
+# Create FastAPI app
+app = FastAPI(
+    title="Buffr Host Auth Service",
+    description="Authentication, authorization, and user management for Buffr Host platform",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# Add middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Configure appropriately for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"]  # Configure appropriately for production
+)
 
 # Pydantic Models
-class UserCreate(BaseModel):
+class UserRegistration(BaseModel):
     email: EmailStr
-    phone: Optional[str] = None
-    password: str
-    first_name: str
-    last_name: str
-    role: UserRole = UserRole.CUSTOMER
-    user_type: UserType = UserType.INDIVIDUAL
+    password: str = Field(..., min_length=8, max_length=128)
+    first_name: str = Field(..., min_length=1, max_length=50)
+    last_name: str = Field(..., min_length=1, max_length=50)
+    phone: Optional[str] = Field(None, pattern=r'^\+?[1-9]\d{1,14}
 
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
-    remember_me: bool = False
-
-class UserUpdate(BaseModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    phone: Optional[str] = None
-    role: Optional[UserRole] = None
-    user_type: Optional[UserType] = None
-    status: Optional[UserStatus] = None
-    preferences: Optional[Dict[str, Any]] = None
-
-class PasswordChange(BaseModel):
-    current_password: str
-    new_password: str
-
-class PasswordReset(BaseModel):
-    email: EmailStr
-
-class PasswordResetConfirm(BaseModel):
-    token: str
-    new_password: str
-
-class UserResponse(BaseModel):
-    id: str
-    email: str
-    phone: Optional[str]
-    first_name: str
-    last_name: str
-    role: str
-    user_type: str
-    status: str
-    email_verified: bool
-    phone_verified: bool
-    last_login: Optional[datetime]
-    preferences: Dict[str, Any]
-    created_at: datetime
-
-class TokenResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-    expires_in: int
-
-class RefreshTokenRequest(BaseModel):
-    refresh_token: str
-
-class AuthResponse(BaseModel):
-    total_users: int
-    active_users: int
-    suspended_users: int
-    pending_users: int
-    total_sessions: int
-    active_sessions: int
-    failed_logins_today: int
-    last_login: Optional[datetime]
-
-# Database dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# Redis connection
-async def connect_redis():
-    global redis_client
-    try:
-        redis_client = redis.from_url(REDIS_URL)
-        await redis_client.ping()
-        logger.info("✅ Redis connected for auth service")
-    except Exception as e:
-        logger.warning(f"⚠️ Redis not available: {e}")
-        redis_client = None
-
-# Utility functions
+# Utility Functions
 def hash_password(password: str) -> str:
     """Hash password using bcrypt"""
-    salt = bcrypt.gensalt()
+    salt = bcrypt.gensalt(rounds=BCRYPT_ROUNDS)
     return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
 
-def verify_password(password: str, hashed_password: str) -> bool:
+def verify_password(password: str, hashed: str) -> bool:
     """Verify password against hash"""
-    return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
+    return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_jwt_token(user_id: str, email: str, role: str, expires_delta: Optional[timedelta] = None) -> str:
     """Create JWT access token"""
-    to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.utcnow() + timedelta(minutes=15)  # 15 minutes default
     
-    to_encode.update({"exp": expire, "type": "access"})
-    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
-    return encoded_jwt
+    payload = {
+        "sub": user_id,
+        "email": email,
+        "role": role,
+        "exp": expire,
+        "iat": datetime.utcnow(),
+        "type": "access"
+    }
+    
+    return jwt.encode(payload, JWT_ACCESS_SECRET, algorithm=JWT_ALGORITHM)
 
-def create_refresh_token(data: dict):
+def create_refresh_token(user_id: str) -> str:
     """Create JWT refresh token"""
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    to_encode.update({"exp": expire, "type": "refresh"})
-    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
-    return encoded_jwt
+    expire = datetime.utcnow() + timedelta(days=7)  # 7 days
+    
+    payload = {
+        "sub": user_id,
+        "exp": expire,
+        "iat": datetime.utcnow(),
+        "type": "refresh"
+    }
+    
+    return jwt.encode(payload, JWT_REFRESH_SECRET, algorithm=JWT_ALGORITHM)
 
-def verify_token(token: str) -> dict:
+def verify_jwt_token(token: str, token_type: str = "access") -> Dict[str, Any]:
     """Verify and decode JWT token"""
     try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        secret = JWT_ACCESS_SECRET if token_type == "access" else JWT_REFRESH_SECRET
+        payload = jwt.decode(token, secret, algorithms=[JWT_ALGORITHM])
+        
+        # Verify token type
+        if payload.get("type") != token_type:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type"
+            )
+        
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(
@@ -263,626 +180,1961 @@ def verify_token(token: str) -> dict:
             detail="Invalid token"
         )
 
-# Authentication dependency
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)) -> dict:
-    """Get current user from JWT token"""
+def generate_reset_token() -> str:
+    """Generate password reset token"""
+    return secrets.token_urlsafe(32)
+
+# Authentication Dependencies
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
+    """Get current authenticated user"""
     token = credentials.credentials
-    payload = verify_token(token)
-    
-    if payload.get("type") != "access":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token type"
-        )
-    
-    user_id = payload.get("sub")
-    if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload"
-        )
-    
-    # Check if session is active in Redis
-    if redis_client:
-        session_key = f"session:{user_id}"
-        session_data = await redis_client.get(session_key)
-        if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Session expired"
-            )
+    payload = verify_jwt_token(token)
     
     # Get user from database
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
+    result = supabase_client.table("users").select("*").eq("id", payload["sub"]).execute()
+    
+    if not result.data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found"
         )
     
-    if user.status != UserStatus.ACTIVE:
+    user = result.data[0]
+    
+    if not user["is_active"]:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User account is inactive"
+            detail="User account is deactivated"
         )
     
-    # Check if account is locked
-    if user.locked_until and user.locked_until > datetime.utcnow():
-        raise HTTPException(
-            status_code=status.HTTP_423_LOCKED,
-            detail="Account is temporarily locked"
-        )
-    
-    return {
-        "user_id": user.id,
-        "email": user.email,
-        "role": user.role,
-        "first_name": user.first_name,
-        "last_name": user.last_name,
-        "user_type": user.user_type
-    }
+    return user
 
-# Permission check
-def require_permission(permission: str):
-    def permission_checker(current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
-        # Check if user has permission
-        user_permission = db.query(UserPermission).filter(
-            UserPermission.user_id == current_user["user_id"],
-            UserPermission.permission == permission,
-            UserPermission.expires_at > datetime.utcnow()
-        ).first()
+async def require_role(required_role: str):
+    """Require specific role for endpoint access"""
+    def role_checker(current_user: Dict[str, Any] = Depends(get_current_user)):
+        user_role = current_user["role"]
         
-        if not user_permission:
+        # Role hierarchy: admin > manager > staff > customer
+        role_hierarchy = {"admin": 4, "manager": 3, "staff": 2, "customer": 1}
+        
+        if role_hierarchy.get(user_role, 0) < role_hierarchy.get(required_role, 0):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Permission '{permission}' required"
+                detail=f"Required role: {required_role}"
             )
+        
         return current_user
-    return permission_checker
-
-# Application lifespan
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    logger.info(f"🚀 Starting {SERVICE_NAME} v{SERVICE_VERSION}")
-    await connect_redis()
     
-    # Create database tables
-    Base.metadata.create_all(bind=engine)
-    logger.info("✅ Database tables created/verified")
-    
-    yield
-    
-    # Shutdown
-    if redis_client:
-        await redis_client.close()
-    logger.info(f"🛑 {SERVICE_NAME} shutdown complete")
-
-# FastAPI app
-app = FastAPI(
-    title=f"{SERVICE_NAME.title()}",
-    description="Authentication and authorization microservice for Buffr Host",
-    version=SERVICE_VERSION,
-    lifespan=lifespan
-)
+    return role_checker
 
 # API Endpoints
+@app.post("/register", response_model=TokenResponse)
+async def register_user(user_data: UserRegistration):
+    """Register a new user"""
+    try:
+        # Check if user already exists
+        existing_user = supabase_client.table("users").select("id").eq("email", user_data.email).execute()
+        
+        if existing_user.data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this email already exists"
+            )
+        
+        # Hash password
+        hashed_password = hash_password(user_data.password)
+        
+        # Create user
+        user_id = str(uuid.uuid4())
+        user_record = {
+            "id": user_id,
+            "email": user_data.email,
+            "password_hash": hashed_password,
+            "first_name": user_data.first_name,
+            "last_name": user_data.last_name,
+            "phone": user_data.phone,
+            "role": user_data.role,
+            "property_id": user_data.property_id,
+            "is_active": True,
+            "email_verified": False,
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        result = supabase_client.table("users").insert(user_record).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create user"
+            )
+        
+        # Create tokens
+        access_token = create_jwt_token(user_id, user_data.email, user_data.role)
+        refresh_token = create_refresh_token(user_id)
+        
+        # Return user data without password
+        user_response = UserResponse(**{k: v for k, v in user_record.items() if k != "password_hash"})
+        
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=900,  # 15 minutes in seconds
+            user=user_response
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Registration error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Registration failed"
+        )
+
+@app.post("/login", response_model=TokenResponse)
+async def login_user(login_data: UserLogin):
+    """Authenticate user and return tokens"""
+    try:
+        # Get user by email
+        result = supabase_client.table("users").select("*").eq("email", login_data.email).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
+            )
+        
+        user = result.data[0]
+        
+        # Check if user is active
+        if not user["is_active"]:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User account is deactivated"
+            )
+        
+        # Verify password
+        if not verify_password(login_data.password, user["password_hash"]):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
+            )
+        
+        # Create tokens
+        access_token = create_jwt_token(user["id"], user["email"], user["role"])
+        refresh_token = create_refresh_token(user["id"])
+        
+        # Update last login
+        supabase_client.table("users").update({
+            "last_login": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user["id"]).execute()
+        
+        # Return user data without password
+        user_response = UserResponse(**{k: v for k, v in user.items() if k != "password_hash"})
+        
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=900,  # 15 minutes in seconds
+            user=user_response
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Login failed"
+        )
+
+@app.post("/refresh", response_model=TokenResponse)
+async def refresh_token(refresh_token: str):
+    """Refresh access token using refresh token"""
+    try:
+        payload = verify_jwt_token(refresh_token)
+        
+        if payload.get("type") != "refresh":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type"
+            )
+        
+        user_id = payload["sub"]
+        
+        # Get user
+        result = supabase_client.table("users").select("*").eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found"
+            )
+        
+        user = result.data[0]
+        
+        if not user["is_active"]:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User account is deactivated"
+            )
+        
+        # Create new tokens
+        access_token = create_jwt_token(user["id"], user["email"], user["role"])
+        new_refresh_token = create_refresh_token(user["id"])
+        
+        # Return user data without password
+        user_response = UserResponse(**{k: v for k, v in user.items() if k != "password_hash"})
+        
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=new_refresh_token,
+            expires_in=JWT_EXPIRATION_HOURS * 3600,
+            user=user_response
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Token refresh error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Token refresh failed"
+        )
+
+@app.get("/me", response_model=UserResponse)
+async def get_current_user_info(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Get current user information"""
+    return UserResponse(**{k: v for k, v in current_user.items() if k != "password_hash"})
+
+@app.put("/me", response_model=UserResponse)
+async def update_current_user(
+    user_update: UserUpdate,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Update current user information"""
+    try:
+        update_data = {k: v for k, v in user_update.dict().items() if v is not None}
+        update_data["updated_at"] = datetime.utcnow().isoformat()
+        
+        result = supabase_client.table("users").update(update_data).eq("id", current_user["id"]).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update user"
+            )
+        
+        updated_user = result.data[0]
+        return UserResponse(**{k: v for k, v in updated_user.items() if k != "password_hash"})
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"User update error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="User update failed"
+        )
+
+@app.post("/change-password")
+async def change_password(
+    current_password: str,
+    new_password: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Change user password"""
+    try:
+        # Verify current password
+        if not verify_password(current_password, current_user["password_hash"]):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is incorrect"
+            )
+        
+        # Validate new password
+        if len(new_password) < 8:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="New password must be at least 8 characters long"
+            )
+        
+        # Hash new password
+        hashed_password = hash_password(new_password)
+        
+        # Update password
+        result = supabase_client.table("users").update({
+            "password_hash": hashed_password,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", current_user["id"]).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update password"
+            )
+        
+        return {"message": "Password updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Password change error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password change failed"
+        )
+
+@app.post("/forgot-password")
+async def forgot_password(reset_request: PasswordResetRequest):
+    """Request password reset"""
+    try:
+        # Get user by email
+        result = supabase_client.table("users").select("id, first_name").eq("email", reset_request.email).execute()
+        
+        if not result.data:
+            # Don't reveal if email exists
+            return {"message": "If the email exists, a reset link has been sent"}
+        
+        user = result.data[0]
+        user_id = user["id"]
+        user_name = user["first_name"]
+        
+        # Generate reset token
+        reset_token = generate_reset_token()
+        token_expiry = datetime.utcnow() + timedelta(hours=1)
+        
+        # Store reset token
+        supabase_client.table("password_reset_tokens").insert({
+            "user_id": user_id,
+            "token": reset_token,
+            "expires_at": token_expiry.isoformat(),
+            "used": False,
+            "created_at": datetime.utcnow().isoformat()
+        }).execute()
+        
+        # Send email with reset link
+        await email_service.send_password_reset_email(
+            user_email=reset_request.email,
+            user_name=user_name,
+            reset_token=reset_token
+        )
+        
+        return {"message": "If the email exists, a reset link has been sent"}
+        
+    except Exception as e:
+        logger.error(f"Forgot password error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password reset request failed"
+        )
+
+@app.post("/reset-password")
+async def reset_password(reset_data: PasswordReset):
+    """Reset password using reset token"""
+    try:
+        # Get reset token
+        result = supabase_client.table("password_reset_tokens").select("*").eq("token", reset_data.token).eq("used", False).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token"
+            )
+        
+        token_record = result.data[0]
+        
+        # Check if token is expired
+        if datetime.fromisoformat(token_record["expires_at"]) < datetime.utcnow():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Reset token has expired"
+            )
+        
+        # Hash new password
+        hashed_password = hash_password(reset_data.new_password)
+        
+        # Update user password
+        supabase_client.table("users").update({
+            "password_hash": hashed_password,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", token_record["user_id"]).execute()
+        
+        # Mark token as used
+        supabase_client.table("password_reset_tokens").update({
+            "used": True,
+            "used_at": datetime.utcnow().isoformat()
+        }).eq("id", token_record["id"]).execute()
+        
+        return {"message": "Password reset successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Password reset error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password reset failed"
+        )
+
+@app.get("/users", response_model=List[UserResponse])
+async def list_users(
+    skip: int = 0,
+    limit: int = 100,
+    role: Optional[str] = None,
+    property_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(require_role("manager"))
+):
+    """List users (admin/manager only)"""
+    try:
+        query = supabase_client.table("users").select("*")
+        
+        if role:
+            query = query.eq("role", role)
+        
+        if property_id:
+            query = query.eq("property_id", property_id)
+        
+        result = query.range(skip, skip + limit - 1).execute()
+        
+        users = []
+        for user in result.data:
+            users.append(UserResponse(**{k: v for k, v in user.items() if k != "password_hash"}))
+        
+        return users
+        
+    except Exception as e:
+        logger.error(f"List users error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to list users"
+        )
+
+@app.get("/users/{user_id}", response_model=UserResponse)
+async def get_user(
+    user_id: str,
+    current_user: Dict[str, Any] = Depends(require_role("manager"))
+):
+    """Get user by ID (admin/manager only)"""
+    try:
+        result = supabase_client.table("users").select("*").eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        user = result.data[0]
+        return UserResponse(**{k: v for k, v in user.items() if k != "password_hash"})
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Get user error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get user"
+        )
+
+@app.put("/users/{user_id}/role", response_model=UserResponse)
+async def update_user_role(
+    user_id: str,
+    role_update: RoleUpdate,
+    current_user: Dict[str, Any] = Depends(require_role("admin"))
+):
+    """Update user role (admin only)"""
+    try:
+        result = supabase_client.table("users").update({
+            "role": role_update.role,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        updated_user = result.data[0]
+        return UserResponse(**{k: v for k, v in updated_user.items() if k != "password_hash"})
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Update user role error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update user role"
+        )
+
+@app.put("/users/{user_id}/activate")
+async def activate_user(
+    user_id: str,
+    current_user: Dict[str, Any] = Depends(require_role("admin"))
+):
+    """Activate user account (admin only)"""
+    try:
+        result = supabase_client.table("users").update({
+            "is_active": True,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        return {"message": "User activated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Activate user error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to activate user"
+        )
+
+@app.put("/users/{user_id}/deactivate")
+async def deactivate_user(
+    user_id: str,
+    current_user: Dict[str, Any] = Depends(require_role("admin"))
+):
+    """Deactivate user account (admin only)"""
+    try:
+        result = supabase_client.table("users").update({
+            "is_active": False,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        return {"message": "User deactivated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Deactivate user error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to deactivate user"
+        )
+
+@app.post("/logout")
+async def logout_user(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Logout user (invalidate tokens)"""
+    try:
+        # Update last logout
+        supabase_client.table("users").update({
+            "last_logout": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", current_user["id"]).execute()
+        
+        return {"message": "Logged out successfully"}
+        
+    except Exception as e:
+        logger.error(f"Logout error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Logout failed"
+        )
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
     return {
-        "service": SERVICE_NAME,
-        "version": SERVICE_VERSION,
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat()
+        "service": "auth-service",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0"
     }
-
-@app.get("/")
-async def root():
-    """Root endpoint"""
-    return {
-        "service": SERVICE_NAME,
-        "version": SERVICE_VERSION,
-        "description": "Authentication and authorization microservice",
-        "endpoints": {
-            "health": "/health",
-            "register": "/api/auth/register",
-            "login": "/api/auth/login",
-            "refresh": "/api/auth/refresh",
-            "logout": "/api/auth/logout",
-            "profile": "/api/auth/profile",
-            "users": "/api/auth/users",
-            "metrics": "/api/auth/metrics"
-        }
-    }
-
-@app.post("/api/auth/register", response_model=UserResponse)
-async def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
-    """Register a new user"""
-    # Check if user already exists
-    existing_user = db.query(User).filter(User.email == user_data.email).first()
-    if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-        )
-    
-    # Check phone if provided
-    if user_data.phone:
-        existing_phone = db.query(User).filter(User.phone == user_data.phone).first()
-        if existing_phone:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Phone number already registered"
-            )
-    
-    # Create new user
-    hashed_password = hash_password(user_data.password)
-    new_user = User(
-        email=user_data.email,
-        phone=user_data.phone,
-        password_hash=hashed_password,
-        first_name=user_data.first_name,
-        last_name=user_data.last_name,
-        role=user_data.role,
-        user_type=user_data.user_type
-    )
-    
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    
-    # Log registration
-    auth_log = AuthLog(
-        user_id=new_user.id,
-        action="register",
-        success=True,
-        details={"email": new_user.email, "role": new_user.role}
-    )
-    db.add(auth_log)
-    db.commit()
-    
-    logger.info(f"✅ New user registered: {new_user.email}")
-    
-    return UserResponse(
-        id=new_user.id,
-        email=new_user.email,
-        phone=new_user.phone,
-        first_name=new_user.first_name,
-        last_name=new_user.last_name,
-        role=new_user.role,
-        user_type=new_user.user_type,
-        status=new_user.status,
-        email_verified=new_user.email_verified,
-        phone_verified=new_user.phone_verified,
-        last_login=new_user.last_login,
-        preferences=new_user.preferences,
-        created_at=new_user.created_at
-    )
-
-@app.post("/api/auth/login", response_model=TokenResponse)
-async def login_user(
-    login_data: UserLogin, 
-    request: Request,
-    db: Session = Depends(get_db)
-):
-    """Authenticate user and return tokens"""
-    # Find user by email
-    user = db.query(User).filter(User.email == login_data.email).first()
-    if not user:
-        # Log failed login attempt
-        auth_log = AuthLog(
-            action="login",
-            success=False,
-            ip_address=request.client.host if request.client else None,
-            user_agent=request.headers.get("user-agent"),
-            details={"email": login_data.email, "reason": "user_not_found"}
-        )
-        db.add(auth_log)
-        db.commit()
-        
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials"
-        )
-    
-    # Check if account is locked
-    if user.locked_until and user.locked_until > datetime.utcnow():
-        auth_log = AuthLog(
-            user_id=user.id,
-            action="login",
-            success=False,
-            ip_address=request.client.host if request.client else None,
-            user_agent=request.headers.get("user-agent"),
-            details={"reason": "account_locked"}
-        )
-        db.add(auth_log)
-        db.commit()
-        
-        raise HTTPException(
-            status_code=status.HTTP_423_LOCKED,
-            detail="Account is temporarily locked"
-        )
-    
-    # Verify password
-    if not verify_password(login_data.password, user.password_hash):
-        # Increment login attempts
-        user.login_attempts += 1
-        if user.login_attempts >= 5:
-            user.locked_until = datetime.utcnow() + timedelta(minutes=30)
-        
-        db.commit()
-        
-        # Log failed login attempt
-        auth_log = AuthLog(
-            user_id=user.id,
-            action="login",
-            success=False,
-            ip_address=request.client.host if request.client else None,
-            user_agent=request.headers.get("user-agent"),
-            details={"reason": "invalid_password", "attempts": user.login_attempts}
-        )
-        db.add(auth_log)
-        db.commit()
-        
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials"
-        )
-    
-    # Check user status
-    if user.status != UserStatus.ACTIVE:
-        auth_log = AuthLog(
-            user_id=user.id,
-            action="login",
-            success=False,
-            ip_address=request.client.host if request.client else None,
-            user_agent=request.headers.get("user-agent"),
-            details={"reason": "account_inactive", "status": user.status}
-        )
-        db.add(auth_log)
-        db.commit()
-        
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User account is inactive"
-        )
-    
-    # Reset login attempts on successful login
-    user.login_attempts = 0
-    user.locked_until = None
-    user.last_login = datetime.utcnow()
-    db.commit()
-    
-    # Create tokens
-    access_token = create_access_token(data={"sub": user.id, "email": user.email, "role": user.role})
-    refresh_token = create_refresh_token(data={"sub": user.id, "email": user.email, "role": user.role})
-    
-    # Store session in database
-    session = UserSession(
-        user_id=user.id,
-        session_token=access_token,
-        refresh_token=refresh_token,
-        expires_at=datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
-        refresh_expires_at=datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
-        ip_address=request.client.host if request.client else None,
-        user_agent=request.headers.get("user-agent"),
-        device_info={"remember_me": login_data.remember_me}
-    )
-    
-    db.add(session)
-    db.commit()
-    
-    # Store session in Redis for fast access
-    if redis_client:
-        session_key = f"session:{user.id}"
-        session_data = {
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-            "expires_at": session.expires_at.isoformat(),
-            "refresh_expires_at": session.refresh_expires_at.isoformat()
-        }
-        await redis_client.setex(session_key, ACCESS_TOKEN_EXPIRE_MINUTES * 60, str(session_data))
-    
-    # Log successful login
-    auth_log = AuthLog(
-        user_id=user.id,
-        action="login",
-        success=True,
-        ip_address=request.client.host if request.client else None,
-        user_agent=request.headers.get("user-agent"),
-        details={"remember_me": login_data.remember_me}
-    )
-    db.add(auth_log)
-    db.commit()
-    
-    logger.info(f"✅ User logged in: {user.email}")
-    
-    return TokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-
-@app.post("/api/auth/refresh", response_model=TokenResponse)
-async def refresh_token(
-    refresh_data: RefreshTokenRequest,
-    db: Session = Depends(get_db)
-):
-    """Refresh access token using refresh token"""
-    # Verify refresh token
-    payload = verify_token(refresh_data.refresh_token)
-    
-    if payload.get("type") != "refresh":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token type"
-        )
-    
-    user_id = payload.get("sub")
-    if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload"
-        )
-    
-    # Check if refresh token exists in database
-    session = db.query(UserSession).filter(
-        UserSession.user_id == user_id,
-        UserSession.refresh_token == refresh_data.refresh_token,
-        UserSession.is_active == True
-    ).first()
-    
-    if not session:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token"
-        )
-    
-    # Check if refresh token is expired
-    if session.refresh_expires_at < datetime.utcnow():
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Refresh token expired"
-        )
-    
-    # Get user
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user or user.status != UserStatus.ACTIVE:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or inactive"
-        )
-    
-    # Create new tokens
-    new_access_token = create_access_token(data={"sub": user.id, "email": user.email, "role": user.role})
-    new_refresh_token = create_refresh_token(data={"sub": user.id, "email": user.email, "role": user.role})
-    
-    # Update session
-    session.session_token = new_access_token
-    session.refresh_token = new_refresh_token
-    session.expires_at = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    session.refresh_expires_at = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    session.updated_at = datetime.utcnow()
-    
-    db.commit()
-    
-    # Update Redis session
-    if redis_client:
-        session_key = f"session:{user.id}"
-        session_data = {
-            "access_token": new_access_token,
-            "refresh_token": new_refresh_token,
-            "expires_at": session.expires_at.isoformat(),
-            "refresh_expires_at": session.refresh_expires_at.isoformat()
-        }
-        await redis_client.setex(session_key, ACCESS_TOKEN_EXPIRE_MINUTES * 60, str(session_data))
-    
-    logger.info(f"✅ Token refreshed for user: {user.email}")
-    
-    return TokenResponse(
-        access_token=new_access_token,
-        refresh_token=new_refresh_token,
-        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-
-@app.post("/api/auth/logout")
-async def logout_user(
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Logout user and invalidate session"""
-    user_id = current_user["user_id"]
-    
-    # Deactivate all sessions for user
-    sessions = db.query(UserSession).filter(
-        UserSession.user_id == user_id,
-        UserSession.is_active == True
-    ).all()
-    
-    for session in sessions:
-        session.is_active = False
-        session.updated_at = datetime.utcnow()
-    
-    db.commit()
-    
-    # Remove session from Redis
-    if redis_client:
-        session_key = f"session:{user_id}"
-        await redis_client.delete(session_key)
-    
-    # Log logout
-    auth_log = AuthLog(
-        user_id=user_id,
-        action="logout",
-        success=True
-    )
-    db.add(auth_log)
-    db.commit()
-    
-    logger.info(f"✅ User logged out: {current_user['email']}")
-    
-    return {"message": "Successfully logged out"}
-
-@app.get("/api/auth/profile", response_model=UserResponse)
-async def get_user_profile(
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Get current user profile"""
-    user = db.query(User).filter(User.id == current_user["user_id"]).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    
-    return UserResponse(
-        id=user.id,
-        email=user.email,
-        phone=user.phone,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        role=user.role,
-        user_type=user.user_type,
-        status=user.status,
-        email_verified=user.email_verified,
-        phone_verified=user.phone_verified,
-        last_login=user.last_login,
-        preferences=user.preferences,
-        created_at=user.created_at
-    )
-
-@app.put("/api/auth/profile", response_model=UserResponse)
-async def update_user_profile(
-    user_data: UserUpdate,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Update current user profile"""
-    user = db.query(User).filter(User.id == current_user["user_id"]).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    
-    # Update fields
-    if user_data.first_name is not None:
-        user.first_name = user_data.first_name
-    if user_data.last_name is not None:
-        user.last_name = user_data.last_name
-    if user_data.phone is not None:
-        user.phone = user_data.phone
-    if user_data.preferences is not None:
-        user.preferences = user_data.preferences
-    
-    user.updated_at = datetime.utcnow()
-    db.commit()
-    db.refresh(user)
-    
-    logger.info(f"✅ User profile updated: {user.email}")
-    
-    return UserResponse(
-        id=user.id,
-        email=user.email,
-        phone=user.phone,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        role=user.role,
-        user_type=user.user_type,
-        status=user.status,
-        email_verified=user.email_verified,
-        phone_verified=user.phone_verified,
-        last_login=user.last_login,
-        preferences=user.preferences,
-        created_at=user.created_at
-    )
-
-@app.get("/api/auth/users", response_model=List[UserResponse])
-async def get_users(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
-    role: Optional[UserRole] = None,
-    status: Optional[UserStatus] = None,
-    user_type: Optional[UserType] = None,
-    current_user: dict = Depends(require_permission("users.read")),
-    db: Session = Depends(get_db)
-):
-    """Get all users with filtering (admin only)"""
-    query = db.query(User)
-    
-    if role:
-        query = query.filter(User.role == role)
-    if status:
-        query = query.filter(User.status == status)
-    if user_type:
-        query = query.filter(User.user_type == user_type)
-    
-    users = query.offset(skip).limit(limit).all()
-    
-    return [
-        UserResponse(
-            id=user.id,
-            email=user.email,
-            phone=user.phone,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            role=user.role,
-            user_type=user.user_type,
-            status=user.status,
-            email_verified=user.email_verified,
-            phone_verified=user.phone_verified,
-            last_login=user.last_login,
-            preferences=user.preferences,
-            created_at=user.created_at
-        )
-        for user in users
-    ]
-
-@app.get("/api/auth/metrics", response_model=AuthResponse)
-async def get_auth_metrics(
-    current_user: dict = Depends(require_permission("auth.metrics")),
-    db: Session = Depends(get_db)
-):
-    """Get authentication metrics (admin only)"""
-    # Get user counts
-    total_users = db.query(User).count()
-    active_users = db.query(User).filter(User.status == UserStatus.ACTIVE).count()
-    suspended_users = db.query(User).filter(User.status == UserStatus.SUSPENDED).count()
-    pending_users = db.query(User).filter(User.status == UserStatus.PENDING).count()
-    
-    # Get session counts
-    total_sessions = db.query(UserSession).count()
-    active_sessions = db.query(UserSession).filter(UserSession.is_active == True).count()
-    
-    # Get failed logins today
-    today = datetime.utcnow().date()
-    failed_logins_today = db.query(AuthLog).filter(
-        AuthLog.action == "login",
-        AuthLog.success == False,
-        db.func.date(AuthLog.timestamp) == today
-    ).count()
-    
-    # Get last login
-    last_login = db.query(User).filter(User.last_login.isnot(None)).order_by(User.last_login.desc()).first()
-    
-    return AuthResponse(
-        total_users=total_users,
-        active_users=active_users,
-        suspended_users=suspended_users,
-        pending_users=pending_users,
-        total_sessions=total_sessions,
-        active_sessions=active_sessions,
-        failed_logins_today=failed_logins_today,
-        last_login=last_login.last_login if last_login else None
-    )
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=SERVICE_PORT,
-        reload=True
+        port=8001,
+        reload=True,
+        log_level="info"
+    ))
+    role: str = Field(default="customer", pattern="^(admin|manager|staff|customer)$")
+    property_id: Optional[str] = None
+    
+    @validator('password')
+    def validate_password(cls, v):
+        if not any(c.isupper() for c in v):
+            raise ValueError('Password must contain at least one uppercase letter')
+        if not any(c.islower() for c in v):
+            raise ValueError('Password must contain at least one lowercase letter')
+        if not any(c.isdigit() for c in v):
+            raise ValueError('Password must contain at least one digit')
+        if not any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in v):
+            raise ValueError('Password must contain at least one special character')
+        return v
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    first_name: str
+    last_name: str
+    phone: Optional[str]
+    role: str
+    property_id: Optional[str]
+    is_active: bool
+    email_verified: bool
+    created_at: str
+    updated_at: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int
+    user: UserResponse
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+class PasswordReset(BaseModel):
+    token: str
+    new_password: str = Field(..., min_length=8, max_length=128)
+    
+    @validator('new_password')
+    def validate_password(cls, v):
+        if not any(c.isupper() for c in v):
+            raise ValueError('Password must contain at least one uppercase letter')
+        if not any(c.islower() for c in v):
+            raise ValueError('Password must contain at least one lowercase letter')
+        if not any(c.isdigit() for c in v):
+            raise ValueError('Password must contain at least one digit')
+        if not any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in v):
+            raise ValueError('Password must contain at least one special character')
+        return v
+
+class UserUpdate(BaseModel):
+    first_name: Optional[str] = Field(None, min_length=1, max_length=50)
+    last_name: Optional[str] = Field(None, min_length=1, max_length=50)
+    phone: Optional[str] = Field(None, pattern=r'^\+?[1-9]\d{1,14}
+
+# Utility Functions
+def hash_password(password: str) -> str:
+    """Hash password using bcrypt"""
+    salt = bcrypt.gensalt(rounds=BCRYPT_ROUNDS)
+    return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
+
+def verify_password(password: str, hashed: str) -> bool:
+    """Verify password against hash"""
+    return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+
+def create_jwt_token(user_id: str, email: str, role: str, expires_delta: Optional[timedelta] = None) -> str:
+    """Create JWT access token"""
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)  # 15 minutes default
+    
+    payload = {
+        "sub": user_id,
+        "email": email,
+        "role": role,
+        "exp": expire,
+        "iat": datetime.utcnow(),
+        "type": "access"
+    }
+    
+    return jwt.encode(payload, JWT_ACCESS_SECRET, algorithm=JWT_ALGORITHM)
+
+def create_refresh_token(user_id: str) -> str:
+    """Create JWT refresh token"""
+    expire = datetime.utcnow() + timedelta(days=7)  # 7 days
+    
+    payload = {
+        "sub": user_id,
+        "exp": expire,
+        "iat": datetime.utcnow(),
+        "type": "refresh"
+    }
+    
+    return jwt.encode(payload, JWT_REFRESH_SECRET, algorithm=JWT_ALGORITHM)
+
+def verify_jwt_token(token: str, token_type: str = "access") -> Dict[str, Any]:
+    """Verify and decode JWT token"""
+    try:
+        secret = JWT_ACCESS_SECRET if token_type == "access" else JWT_REFRESH_SECRET
+        payload = jwt.decode(token, secret, algorithms=[JWT_ALGORITHM])
+        
+        # Verify token type
+        if payload.get("type") != token_type:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type"
+            )
+        
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired"
+        )
+    except jwt.JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+
+def generate_reset_token() -> str:
+    """Generate password reset token"""
+    return secrets.token_urlsafe(32)
+
+# Authentication Dependencies
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
+    """Get current authenticated user"""
+    token = credentials.credentials
+    payload = verify_jwt_token(token)
+    
+    # Get user from database
+    result = supabase_client.table("users").select("*").eq("id", payload["sub"]).execute()
+    
+    if not result.data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
+    
+    user = result.data[0]
+    
+    if not user["is_active"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is deactivated"
+        )
+    
+    return user
+
+async def require_role(required_role: str):
+    """Require specific role for endpoint access"""
+    def role_checker(current_user: Dict[str, Any] = Depends(get_current_user)):
+        user_role = current_user["role"]
+        
+        # Role hierarchy: admin > manager > staff > customer
+        role_hierarchy = {"admin": 4, "manager": 3, "staff": 2, "customer": 1}
+        
+        if role_hierarchy.get(user_role, 0) < role_hierarchy.get(required_role, 0):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Required role: {required_role}"
+            )
+        
+        return current_user
+    
+    return role_checker
+
+# API Endpoints
+@app.post("/register", response_model=TokenResponse)
+async def register_user(user_data: UserRegistration):
+    """Register a new user"""
+    try:
+        # Check if user already exists
+        existing_user = supabase_client.table("users").select("id").eq("email", user_data.email).execute()
+        
+        if existing_user.data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this email already exists"
+            )
+        
+        # Hash password
+        hashed_password = hash_password(user_data.password)
+        
+        # Create user
+        user_id = str(uuid.uuid4())
+        user_record = {
+            "id": user_id,
+            "email": user_data.email,
+            "password_hash": hashed_password,
+            "first_name": user_data.first_name,
+            "last_name": user_data.last_name,
+            "phone": user_data.phone,
+            "role": user_data.role,
+            "property_id": user_data.property_id,
+            "is_active": True,
+            "email_verified": False,
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        result = supabase_client.table("users").insert(user_record).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create user"
+            )
+        
+        # Create tokens
+        access_token = create_jwt_token(user_id, user_data.email, user_data.role)
+        refresh_token = create_refresh_token(user_id)
+        
+        # Return user data without password
+        user_response = UserResponse(**{k: v for k, v in user_record.items() if k != "password_hash"})
+        
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=900,  # 15 minutes in seconds
+            user=user_response
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Registration error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Registration failed"
+        )
+
+@app.post("/login", response_model=TokenResponse)
+async def login_user(login_data: UserLogin):
+    """Authenticate user and return tokens"""
+    try:
+        # Get user by email
+        result = supabase_client.table("users").select("*").eq("email", login_data.email).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
+            )
+        
+        user = result.data[0]
+        
+        # Check if user is active
+        if not user["is_active"]:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User account is deactivated"
+            )
+        
+        # Verify password
+        if not verify_password(login_data.password, user["password_hash"]):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
+            )
+        
+        # Create tokens
+        access_token = create_jwt_token(user["id"], user["email"], user["role"])
+        refresh_token = create_refresh_token(user["id"])
+        
+        # Update last login
+        supabase_client.table("users").update({
+            "last_login": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user["id"]).execute()
+        
+        # Return user data without password
+        user_response = UserResponse(**{k: v for k, v in user.items() if k != "password_hash"})
+        
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=900,  # 15 minutes in seconds
+            user=user_response
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Login failed"
+        )
+
+@app.post("/refresh", response_model=TokenResponse)
+async def refresh_token(refresh_token: str):
+    """Refresh access token using refresh token"""
+    try:
+        payload = verify_jwt_token(refresh_token)
+        
+        if payload.get("type") != "refresh":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type"
+            )
+        
+        user_id = payload["sub"]
+        
+        # Get user
+        result = supabase_client.table("users").select("*").eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found"
+            )
+        
+        user = result.data[0]
+        
+        if not user["is_active"]:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User account is deactivated"
+            )
+        
+        # Create new tokens
+        access_token = create_jwt_token(user["id"], user["email"], user["role"])
+        new_refresh_token = create_refresh_token(user["id"])
+        
+        # Return user data without password
+        user_response = UserResponse(**{k: v for k, v in user.items() if k != "password_hash"})
+        
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=new_refresh_token,
+            expires_in=JWT_EXPIRATION_HOURS * 3600,
+            user=user_response
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Token refresh error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Token refresh failed"
+        )
+
+@app.get("/me", response_model=UserResponse)
+async def get_current_user_info(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Get current user information"""
+    return UserResponse(**{k: v for k, v in current_user.items() if k != "password_hash"})
+
+@app.put("/me", response_model=UserResponse)
+async def update_current_user(
+    user_update: UserUpdate,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Update current user information"""
+    try:
+        update_data = {k: v for k, v in user_update.dict().items() if v is not None}
+        update_data["updated_at"] = datetime.utcnow().isoformat()
+        
+        result = supabase_client.table("users").update(update_data).eq("id", current_user["id"]).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update user"
+            )
+        
+        updated_user = result.data[0]
+        return UserResponse(**{k: v for k, v in updated_user.items() if k != "password_hash"})
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"User update error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="User update failed"
+        )
+
+@app.post("/change-password")
+async def change_password(
+    current_password: str,
+    new_password: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Change user password"""
+    try:
+        # Verify current password
+        if not verify_password(current_password, current_user["password_hash"]):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is incorrect"
+            )
+        
+        # Validate new password
+        if len(new_password) < 8:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="New password must be at least 8 characters long"
+            )
+        
+        # Hash new password
+        hashed_password = hash_password(new_password)
+        
+        # Update password
+        result = supabase_client.table("users").update({
+            "password_hash": hashed_password,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", current_user["id"]).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update password"
+            )
+        
+        return {"message": "Password updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Password change error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password change failed"
+        )
+
+@app.post("/forgot-password")
+async def forgot_password(reset_request: PasswordResetRequest):
+    """Request password reset"""
+    try:
+        # Get user by email
+        result = supabase_client.table("users").select("id, first_name").eq("email", reset_request.email).execute()
+        
+        if not result.data:
+            # Don't reveal if email exists
+            return {"message": "If the email exists, a reset link has been sent"}
+        
+        user = result.data[0]
+        user_id = user["id"]
+        user_name = user["first_name"]
+        
+        # Generate reset token
+        reset_token = generate_reset_token()
+        token_expiry = datetime.utcnow() + timedelta(hours=1)
+        
+        # Store reset token
+        supabase_client.table("password_reset_tokens").insert({
+            "user_id": user_id,
+            "token": reset_token,
+            "expires_at": token_expiry.isoformat(),
+            "used": False,
+            "created_at": datetime.utcnow().isoformat()
+        }).execute()
+        
+        # Send email with reset link
+        await email_service.send_password_reset_email(
+            user_email=reset_request.email,
+            user_name=user_name,
+            reset_token=reset_token
+        )
+        
+        return {"message": "If the email exists, a reset link has been sent"}
+        
+    except Exception as e:
+        logger.error(f"Forgot password error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password reset request failed"
+        )
+
+@app.post("/reset-password")
+async def reset_password(reset_data: PasswordReset):
+    """Reset password using reset token"""
+    try:
+        # Get reset token
+        result = supabase_client.table("password_reset_tokens").select("*").eq("token", reset_data.token).eq("used", False).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token"
+            )
+        
+        token_record = result.data[0]
+        
+        # Check if token is expired
+        if datetime.fromisoformat(token_record["expires_at"]) < datetime.utcnow():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Reset token has expired"
+            )
+        
+        # Hash new password
+        hashed_password = hash_password(reset_data.new_password)
+        
+        # Update user password
+        supabase_client.table("users").update({
+            "password_hash": hashed_password,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", token_record["user_id"]).execute()
+        
+        # Mark token as used
+        supabase_client.table("password_reset_tokens").update({
+            "used": True,
+            "used_at": datetime.utcnow().isoformat()
+        }).eq("id", token_record["id"]).execute()
+        
+        return {"message": "Password reset successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Password reset error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password reset failed"
+        )
+
+@app.get("/users", response_model=List[UserResponse])
+async def list_users(
+    skip: int = 0,
+    limit: int = 100,
+    role: Optional[str] = None,
+    property_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(require_role("manager"))
+):
+    """List users (admin/manager only)"""
+    try:
+        query = supabase_client.table("users").select("*")
+        
+        if role:
+            query = query.eq("role", role)
+        
+        if property_id:
+            query = query.eq("property_id", property_id)
+        
+        result = query.range(skip, skip + limit - 1).execute()
+        
+        users = []
+        for user in result.data:
+            users.append(UserResponse(**{k: v for k, v in user.items() if k != "password_hash"}))
+        
+        return users
+        
+    except Exception as e:
+        logger.error(f"List users error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to list users"
+        )
+
+@app.get("/users/{user_id}", response_model=UserResponse)
+async def get_user(
+    user_id: str,
+    current_user: Dict[str, Any] = Depends(require_role("manager"))
+):
+    """Get user by ID (admin/manager only)"""
+    try:
+        result = supabase_client.table("users").select("*").eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        user = result.data[0]
+        return UserResponse(**{k: v for k, v in user.items() if k != "password_hash"})
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Get user error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get user"
+        )
+
+@app.put("/users/{user_id}/role", response_model=UserResponse)
+async def update_user_role(
+    user_id: str,
+    role_update: RoleUpdate,
+    current_user: Dict[str, Any] = Depends(require_role("admin"))
+):
+    """Update user role (admin only)"""
+    try:
+        result = supabase_client.table("users").update({
+            "role": role_update.role,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        updated_user = result.data[0]
+        return UserResponse(**{k: v for k, v in updated_user.items() if k != "password_hash"})
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Update user role error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update user role"
+        )
+
+@app.put("/users/{user_id}/activate")
+async def activate_user(
+    user_id: str,
+    current_user: Dict[str, Any] = Depends(require_role("admin"))
+):
+    """Activate user account (admin only)"""
+    try:
+        result = supabase_client.table("users").update({
+            "is_active": True,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        return {"message": "User activated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Activate user error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to activate user"
+        )
+
+@app.put("/users/{user_id}/deactivate")
+async def deactivate_user(
+    user_id: str,
+    current_user: Dict[str, Any] = Depends(require_role("admin"))
+):
+    """Deactivate user account (admin only)"""
+    try:
+        result = supabase_client.table("users").update({
+            "is_active": False,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        return {"message": "User deactivated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Deactivate user error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to deactivate user"
+        )
+
+@app.post("/logout")
+async def logout_user(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Logout user (invalidate tokens)"""
+    try:
+        # Update last logout
+        supabase_client.table("users").update({
+            "last_logout": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", current_user["id"]).execute()
+        
+        return {"message": "Logged out successfully"}
+        
+    except Exception as e:
+        logger.error(f"Logout error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Logout failed"
+        )
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "service": "auth-service",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0"
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8001,
+        reload=True,
+        log_level="info"
+    ))
+    property_id: Optional[str] = None
+
+class RoleUpdate(BaseModel):
+    role: str = Field(..., pattern="^(admin|manager|staff|customer)$")
+
+# Utility Functions
+def hash_password(password: str) -> str:
+    """Hash password using bcrypt"""
+    salt = bcrypt.gensalt(rounds=BCRYPT_ROUNDS)
+    return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
+
+def verify_password(password: str, hashed: str) -> bool:
+    """Verify password against hash"""
+    return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+
+def create_jwt_token(user_id: str, email: str, role: str, expires_delta: Optional[timedelta] = None) -> str:
+    """Create JWT access token"""
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)  # 15 minutes default
+    
+    payload = {
+        "sub": user_id,
+        "email": email,
+        "role": role,
+        "exp": expire,
+        "iat": datetime.utcnow(),
+        "type": "access"
+    }
+    
+    return jwt.encode(payload, JWT_ACCESS_SECRET, algorithm=JWT_ALGORITHM)
+
+def create_refresh_token(user_id: str) -> str:
+    """Create JWT refresh token"""
+    expire = datetime.utcnow() + timedelta(days=7)  # 7 days
+    
+    payload = {
+        "sub": user_id,
+        "exp": expire,
+        "iat": datetime.utcnow(),
+        "type": "refresh"
+    }
+    
+    return jwt.encode(payload, JWT_REFRESH_SECRET, algorithm=JWT_ALGORITHM)
+
+def verify_jwt_token(token: str, token_type: str = "access") -> Dict[str, Any]:
+    """Verify and decode JWT token"""
+    try:
+        secret = JWT_ACCESS_SECRET if token_type == "access" else JWT_REFRESH_SECRET
+        payload = jwt.decode(token, secret, algorithms=[JWT_ALGORITHM])
+        
+        # Verify token type
+        if payload.get("type") != token_type:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type"
+            )
+        
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired"
+        )
+    except jwt.JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+
+def generate_reset_token() -> str:
+    """Generate password reset token"""
+    return secrets.token_urlsafe(32)
+
+# Authentication Dependencies
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
+    """Get current authenticated user"""
+    token = credentials.credentials
+    payload = verify_jwt_token(token)
+    
+    # Get user from database
+    result = supabase_client.table("users").select("*").eq("id", payload["sub"]).execute()
+    
+    if not result.data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
+    
+    user = result.data[0]
+    
+    if not user["is_active"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is deactivated"
+        )
+    
+    return user
+
+async def require_role(required_role: str):
+    """Require specific role for endpoint access"""
+    def role_checker(current_user: Dict[str, Any] = Depends(get_current_user)):
+        user_role = current_user["role"]
+        
+        # Role hierarchy: admin > manager > staff > customer
+        role_hierarchy = {"admin": 4, "manager": 3, "staff": 2, "customer": 1}
+        
+        if role_hierarchy.get(user_role, 0) < role_hierarchy.get(required_role, 0):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Required role: {required_role}"
+            )
+        
+        return current_user
+    
+    return role_checker
+
+# API Endpoints
+@app.post("/register", response_model=TokenResponse)
+async def register_user(user_data: UserRegistration):
+    """Register a new user"""
+    try:
+        # Check if user already exists
+        existing_user = supabase_client.table("users").select("id").eq("email", user_data.email).execute()
+        
+        if existing_user.data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this email already exists"
+            )
+        
+        # Hash password
+        hashed_password = hash_password(user_data.password)
+        
+        # Create user
+        user_id = str(uuid.uuid4())
+        user_record = {
+            "id": user_id,
+            "email": user_data.email,
+            "password_hash": hashed_password,
+            "first_name": user_data.first_name,
+            "last_name": user_data.last_name,
+            "phone": user_data.phone,
+            "role": user_data.role,
+            "property_id": user_data.property_id,
+            "is_active": True,
+            "email_verified": False,
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        result = supabase_client.table("users").insert(user_record).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create user"
+            )
+        
+        # Create tokens
+        access_token = create_jwt_token(user_id, user_data.email, user_data.role)
+        refresh_token = create_refresh_token(user_id)
+        
+        # Return user data without password
+        user_response = UserResponse(**{k: v for k, v in user_record.items() if k != "password_hash"})
+        
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=900,  # 15 minutes in seconds
+            user=user_response
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Registration error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Registration failed"
+        )
+
+@app.post("/login", response_model=TokenResponse)
+async def login_user(login_data: UserLogin):
+    """Authenticate user and return tokens"""
+    try:
+        # Get user by email
+        result = supabase_client.table("users").select("*").eq("email", login_data.email).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
+            )
+        
+        user = result.data[0]
+        
+        # Check if user is active
+        if not user["is_active"]:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User account is deactivated"
+            )
+        
+        # Verify password
+        if not verify_password(login_data.password, user["password_hash"]):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
+            )
+        
+        # Create tokens
+        access_token = create_jwt_token(user["id"], user["email"], user["role"])
+        refresh_token = create_refresh_token(user["id"])
+        
+        # Update last login
+        supabase_client.table("users").update({
+            "last_login": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user["id"]).execute()
+        
+        # Return user data without password
+        user_response = UserResponse(**{k: v for k, v in user.items() if k != "password_hash"})
+        
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=900,  # 15 minutes in seconds
+            user=user_response
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Login failed"
+        )
+
+@app.post("/refresh", response_model=TokenResponse)
+async def refresh_token(refresh_token: str):
+    """Refresh access token using refresh token"""
+    try:
+        payload = verify_jwt_token(refresh_token)
+        
+        if payload.get("type") != "refresh":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type"
+            )
+        
+        user_id = payload["sub"]
+        
+        # Get user
+        result = supabase_client.table("users").select("*").eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found"
+            )
+        
+        user = result.data[0]
+        
+        if not user["is_active"]:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User account is deactivated"
+            )
+        
+        # Create new tokens
+        access_token = create_jwt_token(user["id"], user["email"], user["role"])
+        new_refresh_token = create_refresh_token(user["id"])
+        
+        # Return user data without password
+        user_response = UserResponse(**{k: v for k, v in user.items() if k != "password_hash"})
+        
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=new_refresh_token,
+            expires_in=JWT_EXPIRATION_HOURS * 3600,
+            user=user_response
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Token refresh error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Token refresh failed"
+        )
+
+@app.get("/me", response_model=UserResponse)
+async def get_current_user_info(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Get current user information"""
+    return UserResponse(**{k: v for k, v in current_user.items() if k != "password_hash"})
+
+@app.put("/me", response_model=UserResponse)
+async def update_current_user(
+    user_update: UserUpdate,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Update current user information"""
+    try:
+        update_data = {k: v for k, v in user_update.dict().items() if v is not None}
+        update_data["updated_at"] = datetime.utcnow().isoformat()
+        
+        result = supabase_client.table("users").update(update_data).eq("id", current_user["id"]).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update user"
+            )
+        
+        updated_user = result.data[0]
+        return UserResponse(**{k: v for k, v in updated_user.items() if k != "password_hash"})
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"User update error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="User update failed"
+        )
+
+@app.post("/change-password")
+async def change_password(
+    current_password: str,
+    new_password: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Change user password"""
+    try:
+        # Verify current password
+        if not verify_password(current_password, current_user["password_hash"]):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is incorrect"
+            )
+        
+        # Validate new password
+        if len(new_password) < 8:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="New password must be at least 8 characters long"
+            )
+        
+        # Hash new password
+        hashed_password = hash_password(new_password)
+        
+        # Update password
+        result = supabase_client.table("users").update({
+            "password_hash": hashed_password,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", current_user["id"]).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update password"
+            )
+        
+        return {"message": "Password updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Password change error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password change failed"
+        )
+
+@app.post("/forgot-password")
+async def forgot_password(reset_request: PasswordResetRequest):
+    """Request password reset"""
+    try:
+        # Get user by email
+        result = supabase_client.table("users").select("id, first_name").eq("email", reset_request.email).execute()
+        
+        if not result.data:
+            # Don't reveal if email exists
+            return {"message": "If the email exists, a reset link has been sent"}
+        
+        user = result.data[0]
+        user_id = user["id"]
+        user_name = user["first_name"]
+        
+        # Generate reset token
+        reset_token = generate_reset_token()
+        token_expiry = datetime.utcnow() + timedelta(hours=1)
+        
+        # Store reset token
+        supabase_client.table("password_reset_tokens").insert({
+            "user_id": user_id,
+            "token": reset_token,
+            "expires_at": token_expiry.isoformat(),
+            "used": False,
+            "created_at": datetime.utcnow().isoformat()
+        }).execute()
+        
+        # Send email with reset link
+        await email_service.send_password_reset_email(
+            user_email=reset_request.email,
+            user_name=user_name,
+            reset_token=reset_token
+        )
+        
+        return {"message": "If the email exists, a reset link has been sent"}
+        
+    except Exception as e:
+        logger.error(f"Forgot password error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password reset request failed"
+        )
+
+@app.post("/reset-password")
+async def reset_password(reset_data: PasswordReset):
+    """Reset password using reset token"""
+    try:
+        # Get reset token
+        result = supabase_client.table("password_reset_tokens").select("*").eq("token", reset_data.token).eq("used", False).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token"
+            )
+        
+        token_record = result.data[0]
+        
+        # Check if token is expired
+        if datetime.fromisoformat(token_record["expires_at"]) < datetime.utcnow():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Reset token has expired"
+            )
+        
+        # Hash new password
+        hashed_password = hash_password(reset_data.new_password)
+        
+        # Update user password
+        supabase_client.table("users").update({
+            "password_hash": hashed_password,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", token_record["user_id"]).execute()
+        
+        # Mark token as used
+        supabase_client.table("password_reset_tokens").update({
+            "used": True,
+            "used_at": datetime.utcnow().isoformat()
+        }).eq("id", token_record["id"]).execute()
+        
+        return {"message": "Password reset successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Password reset error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password reset failed"
+        )
+
+@app.get("/users", response_model=List[UserResponse])
+async def list_users(
+    skip: int = 0,
+    limit: int = 100,
+    role: Optional[str] = None,
+    property_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(require_role("manager"))
+):
+    """List users (admin/manager only)"""
+    try:
+        query = supabase_client.table("users").select("*")
+        
+        if role:
+            query = query.eq("role", role)
+        
+        if property_id:
+            query = query.eq("property_id", property_id)
+        
+        result = query.range(skip, skip + limit - 1).execute()
+        
+        users = []
+        for user in result.data:
+            users.append(UserResponse(**{k: v for k, v in user.items() if k != "password_hash"}))
+        
+        return users
+        
+    except Exception as e:
+        logger.error(f"List users error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to list users"
+        )
+
+@app.get("/users/{user_id}", response_model=UserResponse)
+async def get_user(
+    user_id: str,
+    current_user: Dict[str, Any] = Depends(require_role("manager"))
+):
+    """Get user by ID (admin/manager only)"""
+    try:
+        result = supabase_client.table("users").select("*").eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        user = result.data[0]
+        return UserResponse(**{k: v for k, v in user.items() if k != "password_hash"})
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Get user error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get user"
+        )
+
+@app.put("/users/{user_id}/role", response_model=UserResponse)
+async def update_user_role(
+    user_id: str,
+    role_update: RoleUpdate,
+    current_user: Dict[str, Any] = Depends(require_role("admin"))
+):
+    """Update user role (admin only)"""
+    try:
+        result = supabase_client.table("users").update({
+            "role": role_update.role,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        updated_user = result.data[0]
+        return UserResponse(**{k: v for k, v in updated_user.items() if k != "password_hash"})
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Update user role error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update user role"
+        )
+
+@app.put("/users/{user_id}/activate")
+async def activate_user(
+    user_id: str,
+    current_user: Dict[str, Any] = Depends(require_role("admin"))
+):
+    """Activate user account (admin only)"""
+    try:
+        result = supabase_client.table("users").update({
+            "is_active": True,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        return {"message": "User activated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Activate user error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to activate user"
+        )
+
+@app.put("/users/{user_id}/deactivate")
+async def deactivate_user(
+    user_id: str,
+    current_user: Dict[str, Any] = Depends(require_role("admin"))
+):
+    """Deactivate user account (admin only)"""
+    try:
+        result = supabase_client.table("users").update({
+            "is_active": False,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", user_id).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        return {"message": "User deactivated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Deactivate user error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to deactivate user"
+        )
+
+@app.post("/logout")
+async def logout_user(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Logout user (invalidate tokens)"""
+    try:
+        # Update last logout
+        supabase_client.table("users").update({
+            "last_logout": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", current_user["id"]).execute()
+        
+        return {"message": "Logged out successfully"}
+        
+    except Exception as e:
+        logger.error(f"Logout error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Logout failed"
+        )
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "service": "auth-service",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0"
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8001,
+        reload=True,
+        log_level="info"
     )

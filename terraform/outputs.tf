@@ -1,4 +1,4 @@
-# The Shandi Terraform Outputs
+# Buffr Host Terraform Outputs
 
 output "backend_url" {
   description = "Backend API URL"

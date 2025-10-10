@@ -1,5 +1,5 @@
 """
-Hospitality property management routes for The Shandi platform.
+Hospitality property management routes for Buffr Host platform.
 """
 from typing import List
 
@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth.rbac import Permission
 from database import get_db
 from models.hospitality_property import HospitalityProperty
-from models.user import Profile, User
+from models.user import User
 from routes.auth import (get_current_user, require_permission,
                          require_property_access)
 from schemas.hospitality_property import (PropertyCreate, PropertyResponse,

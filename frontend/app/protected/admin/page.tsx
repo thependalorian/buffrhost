@@ -1,3 +1,4 @@
+"use client";
 'use client';
 
 import React from 'react';
@@ -108,7 +109,7 @@ export default function AdminDashboardPage() {
         actions={
           <ActionButton
             onClick={() => window.location.href = '/protected/admin/email'}
-            variant="primary"
+            variant="default"
           >
             <Settings className="w-4 h-4 mr-2" />
             System Settings

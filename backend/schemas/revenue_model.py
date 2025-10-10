@@ -106,3 +106,47 @@ class InvoiceResponse(InvoiceBase):
 
     class Config:
         from_attributes = True
+
+
+class CommissionStructureBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+    commission_type: str  # percentage or fixed
+    commission_value: float
+    applies_to: Optional[str] = None
+    is_active: Optional[bool] = True
+
+
+class CommissionStructureCreate(CommissionStructureBase):
+    pass
+
+
+class CommissionStructureUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    commission_type: Optional[str] = None
+    commission_value: Optional[float] = None
+    applies_to: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class CommissionStructureResponse(CommissionStructureBase):
+    id: UUID
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# Generic Create and Update classes for backward compatibility
+class Create(BaseModel):
+    pass
+
+
+class Update(BaseModel):
+    pass
+
+
+class Response(BaseModel):
+    pass

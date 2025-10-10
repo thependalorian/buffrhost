@@ -20,7 +20,7 @@ def test_imports():
 
         print("✅ HospitalityProperty imported")
 
-        from models.user import Profile, User
+        from models.user import User
 
         print("✅ Customer imported")
 

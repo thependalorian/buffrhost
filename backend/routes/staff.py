@@ -1,5 +1,5 @@
 """
-Staff management API routes for The Shandi platform.
+Staff management API routes for Buffr Host platform.
 """
 from datetime import date
 from typing import List, Optional

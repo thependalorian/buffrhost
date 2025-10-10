@@ -128,7 +128,7 @@ export default function EtunaDashboardPage() {
         <div className="container mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold">{property.name}</h1>
+              <h1 className="text-3xl font-bold">{property.property_name}</h1>
               <p className="text-primary-content/80">
                 Your House Away From Home
               </p>

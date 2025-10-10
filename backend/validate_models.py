@@ -117,7 +117,7 @@ def check_model_structure():
 
 def main():
     """Main validation function."""
-    print("🔍 The Shandi Model Validation")
+    print("🔍 Buffr Host Model Validation")
     print("=" * 50)
 
     # Check file structure

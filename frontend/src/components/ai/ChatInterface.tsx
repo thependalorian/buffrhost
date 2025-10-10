@@ -51,7 +51,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     const welcomeMessage: Message = {
       id: "welcome",
       content:
-        "Welcome to The Shandi! I'm your AI assistant. How can I help you today?",
+        "Welcome to Buffr Host! I'm your AI assistant. How can I help you today?",
       role: "assistant",
       timestamp: new Date().toISOString(),
       intent: "greeting",
@@ -213,7 +213,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             <h3 className="text-lg font-semibold text-gray-900">
               AI Assistant
             </h3>
-            <p className="text-sm text-gray-500">The Shandi Hospitality</p>
+            <p className="text-sm text-gray-500">Buffr Host Hospitality</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">

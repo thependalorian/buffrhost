@@ -1,5 +1,5 @@
 """
-Inventory management routes for The Shandi platform.
+Inventory management routes for Buffr Host platform.
 """
 from typing import List, Optional
 

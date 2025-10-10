@@ -1,5 +1,5 @@
 """
-Loyalty Service for The Shandi Hospitality Ecosystem Management Platform
+Loyalty Service for Buffr Host Hospitality Ecosystem Management Platform
 Provides business logic for cross-business loyalty operations.
 """
 
@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from models.hospitality_property import HospitalityProperty
 from models.loyalty import LoyaltyCampaign, LoyaltyTransaction
 from models.order import Order
-from models.user import Profile, User
+from models.user import User
 from schemas.loyalty import LoyaltyCampaignCreate
 
 
@@ -182,10 +182,10 @@ class LoyaltyService:
         return result.scalars().all()
 
     # Helper Methods
-    def _get_customer(self, customer_id: uuid.UUID) -> Optional[Profile]:
+    def _get_customer(self, customer_id: uuid.UUID) -> Optional[User]:
         """Get customer by ID"""
         result = self.db.execute(
-            select(Profile).where(Profile.customer_id == customer_id)
+            select(User).where(User.customer_id == customer_id)
         )
         return result.scalar_one_or_none()
 

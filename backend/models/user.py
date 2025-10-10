@@ -1,207 +1,257 @@
 """
-User models for The Shandi (Unified Schema)
-
-Defines SQLAlchemy models for users, profiles, and preferences, aligning with the unified schema.
-Uses standardized SQL types from the unified database schema.
+User Model
+SQLAlchemy model for user management with authentication and authorization
 """
-import enum
 
-from sqlalchemy import ARRAY, Boolean, Column, DateTime
-from sqlalchemy import Enum as SQLAlchemyEnum
-from sqlalchemy import ForeignKey, Integer, String, Text
-from sqlalchemy.dialects.postgresql import INET, JSONB, UUID
+from sqlalchemy import Column, String, Boolean, DateTime, Text, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+from datetime import datetime
+import uuid
 
 from database import Base
 
-
-# Enums from the unified schema - matching SQL types exactly
-class UserRoleEnum(enum.Enum):
-    INDIVIDUAL = "individual"
-    SME_USER = "sme_user"
-    ENTERPRISE_USER = "enterprise_user"
-    ADMIN = "admin"
-    HOSPITALITY_STAFF = "hospitality_staff"
-    CUSTOMER = "customer"
-    CORPORATE_CUSTOMER = "corporate_customer"
-
-
-class UserStatusEnum(enum.Enum):
-    ACTIVE = "active"
-    INACTIVE = "inactive"
-    SUSPENDED = "suspended"
-    PENDING_VERIFICATION = "pending_verification"
-    ARCHIVED = "archived"
-
-
-# Unified User and Profile Models - matching SQL schema exactly
 class User(Base):
+    """User model for authentication and authorization"""
+    
     __tablename__ = "users"
+    
+    # Primary key
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    
+    # Authentication
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    
+    # Profile information
+    full_name = Column(String, nullable=False)
+    phone = Column(String, nullable=True)
+    
+    # Role and permissions
+    role = Column(String, default="guest", nullable=False)
+    tenant_id = Column(String, ForeignKey("tenant_profiles.id"), nullable=True)
+    
+    # Account status
+    is_active = Column(Boolean, default=True, nullable=False)
+    email_verified = Column(Boolean, default=False, nullable=False)
+    phone_verified = Column(Boolean, default=False, nullable=False)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    last_login = Column(DateTime, nullable=True)
+    
+    # Additional profile fields
+    avatar_url = Column(String, nullable=True)
+    bio = Column(Text, nullable=True)
+    timezone = Column(String, default="UTC", nullable=False)
+    language = Column(String, default="en", nullable=False)
+    
+    # Preferences
+    preferences = Column(Text, nullable=True)  # JSON string for user preferences
+    notification_settings = Column(Text, nullable=True)  # JSON string for notification settings
+    
+    # Security
+    failed_login_attempts = Column(String, default="0", nullable=False)
+    locked_until = Column(DateTime, nullable=True)
+    password_changed_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    tenant = relationship("TenantProfile", back_populates="users")
+    
+    def __repr__(self):
+        return f"<User(id='{self.id}', email='{self.email}', role='{self.role}')>"
+    
+    def to_dict(self):
+        """Convert user to dictionary"""
+        return {
+            "id": self.id,
+            "email": self.email,
+            "full_name": self.full_name,
+            "phone": self.phone,
+            "role": self.role,
+            "tenant_id": self.tenant_id,
+            "is_active": self.is_active,
+            "email_verified": self.email_verified,
+            "phone_verified": self.phone_verified,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "last_login": self.last_login.isoformat() if self.last_login else None,
+            "avatar_url": self.avatar_url,
+            "bio": self.bio,
+            "timezone": self.timezone,
+            "language": self.language
+        }
+    
+    def is_locked(self) -> bool:
+        """Check if user account is locked"""
+        if not self.locked_until:
+            return False
+        return datetime.utcnow() < self.locked_until
+    
+    def get_failed_login_attempts(self) -> int:
+        """Get number of failed login attempts"""
+        try:
+            return int(self.failed_login_attempts)
+        except (ValueError, TypeError):
+            return 0
+    
+    def increment_failed_login_attempts(self):
+        """Increment failed login attempts"""
+        current_attempts = self.get_failed_login_attempts()
+        self.failed_login_attempts = str(current_attempts + 1)
+        
+        # Lock account after 5 failed attempts
+        if current_attempts >= 4:
+            self.locked_until = datetime.utcnow() + timedelta(minutes=30)
+    
+    def reset_failed_login_attempts(self):
+        """Reset failed login attempts"""
+        self.failed_login_attempts = "0"
+        self.locked_until = None
 
-    id = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        index=True,
-        server_default=func.gen_random_uuid(),
-    )
-    email = Column(String(255), unique=True, nullable=False, index=True)
-    phone = Column(String(50), unique=True)
-    role = Column(
-        SQLAlchemyEnum(UserRoleEnum), nullable=False, default=UserRoleEnum.INDIVIDUAL
-    )
-    status = Column(
-        SQLAlchemyEnum(UserStatusEnum),
-        nullable=False,
-        default=UserStatusEnum.PENDING_VERIFICATION,
-    )
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+class UserRoleAssignment(Base):
+    """User role assignment history"""
+    
+    __tablename__ = "user_role_assignments"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    role = Column(String, nullable=False)
+    assigned_by = Column(String, ForeignKey("users.id"), nullable=False)
+    assigned_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    reason = Column(Text, nullable=True)
+    
+    # Relationships
+    user = relationship("User", foreign_keys=[user_id])
+    assigner = relationship("User", foreign_keys=[assigned_by])
 
-    # ADD MISSING AUTHENTICATION FIELDS:
-    owner_id = Column(String(255), unique=True, index=True)  # For auth compatibility
-    password = Column(String(255))  # For authentication
-    is_active = Column(Boolean, default=True)  # For user status
-    property_id = Column(Integer)  # For hospitality context
-    name = Column(String(255))  # For user display
+class UserSession(Base):
+    """User session management"""
+    
+    __tablename__ = "user_sessions"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    access_token = Column(String, unique=True, nullable=False)
+    refresh_token = Column(String, unique=True, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    last_activity = Column(DateTime, default=datetime.utcnow, nullable=False)
+    ip_address = Column(String, nullable=True)
+    user_agent = Column(Text, nullable=True)
+    is_active = Column(Boolean, default=True, nullable=False)
+    
+    # Relationships
+    user = relationship("User")
 
-    profile = relationship("Profile", back_populates="user", uselist=False)
-    preferences = relationship("UserPreferences", back_populates="user", uselist=False)
+class UserActivity(Base):
+    """User activity log"""
+    
+    __tablename__ = "user_activities"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    action = Column(String, nullable=False)
+    details = Column(Text, nullable=True)  # JSON string
+    ip_address = Column(String, nullable=True)
+    user_agent = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    user = relationship("User")
 
+class UserAudit(Base):
+    """User audit trail"""
+    
+    __tablename__ = "user_audits"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    action = Column(String, nullable=False)
+    old_values = Column(Text, nullable=True)  # JSON string
+    new_values = Column(Text, nullable=True)  # JSON string
+    changed_by = Column(String, ForeignKey("users.id"), nullable=False)
+    changed_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    ip_address = Column(String, nullable=True)
+    reason = Column(Text, nullable=True)
+    
+    # Relationships
+    user = relationship("User", foreign_keys=[user_id])
+    changer = relationship("User", foreign_keys=[changed_by])
 
-class Profile(Base):
-    __tablename__ = "profiles"
+class CustomRole(Base):
+    """Custom roles for fine-grained permissions"""
+    
+    __tablename__ = "custom_roles"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = Column(String, unique=True, nullable=False)
+    description = Column(Text, nullable=True)
+    permissions = Column(Text, nullable=False)  # JSON string
+    tenant_id = Column(String, ForeignKey("tenant_profiles.id"), nullable=True)
+    created_by = Column(String, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    
+    # Relationships
+    tenant = relationship("TenantProfile")
+    creator = relationship("User")
 
-    id = Column(UUID(as_uuid=True), ForeignKey("users.id"), primary_key=True)
-    email = Column(Text, unique=True, nullable=False)
-    full_name = Column(Text)
-    phone_number = Column(Text)
-    company_name = Column(Text)
-    user_role = Column(SQLAlchemyEnum(UserRoleEnum), default=UserRoleEnum.INDIVIDUAL)
-    plan_type = Column(Text, default="free")
-    status = Column(Text, default="active")
-    is_verified = Column(Boolean, default=False)
-    last_login_at = Column(DateTime(timezone=True))
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now())
+class UserPermission(Base):
+    """User-specific permissions"""
+    
+    __tablename__ = "user_permissions"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    permission = Column(String, nullable=False)
+    granted = Column(Boolean, default=True, nullable=False)
+    granted_by = Column(String, ForeignKey("users.id"), nullable=False)
+    granted_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    expires_at = Column(DateTime, nullable=True)
+    reason = Column(Text, nullable=True)
+    source = Column(String, nullable=True)  # ADDED: Missing field from Pydantic
+    
+    # Relationships
+    user = relationship("User", foreign_keys=[user_id])
+    granter = relationship("User", foreign_keys=[granted_by])
 
-    # Additional fields from unified schema
-    preferences = Column(JSONB, default={})
-    biometric_data = Column(JSONB, default=[])
-    behavioral_metrics = Column(JSONB, default={})
-    subscription_expires_at = Column(DateTime(timezone=True))
-    first_name = Column(Text)
-    last_name = Column(Text)
-    property_id = Column(Integer)  # Link to hospitality_property if applicable
-    user_type_id = Column(Integer)  # Link to user_type if applicable
-    permissions = Column(ARRAY(Text), default=[])
+class UserNotification(Base):
+    """User notifications"""
+    
+    __tablename__ = "user_notifications"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    title = Column(String, nullable=False)
+    message = Column(Text, nullable=False)
+    type = Column(String, default="info", nullable=False)  # info, warning, error, success
+    is_read = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    read_at = Column(DateTime, nullable=True)
+    action_url = Column(String, nullable=True)
+    notification_metadata = Column(Text, nullable=True)  # JSON string
+    
+    # Relationships
+    user = relationship("User")
 
-    # KYC Information
-    country_code = Column(Text)
-    national_id_number = Column(Text)
-    national_id_type = Column(Text)
-    id_document_url = Column(Text)
-    kyc_status = Column(Text, default="pending")
-    consent_given = Column(Boolean, default=False)
-    legal_basis = Column(Text)
-    retention_period = Column(Integer)  # in days
-
-    user = relationship("User", back_populates="profile")
-
-
-class UserPreferences(Base):
+class UserPreference(Base):
+    """User preferences and settings"""
+    
     __tablename__ = "user_preferences"
-
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), primary_key=True)
-    email_notifications = Column(Boolean, default=True)
-    sms_notifications = Column(Boolean, default=False)
-    push_notifications = Column(Boolean, default=True)
-    two_factor_enabled = Column(Boolean, default=False)
-    privacy_level = Column(String(50), default="standard")
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-    user = relationship("User", back_populates="preferences")
-
-
-# Password Reset Models
-class PasswordResetToken(Base):
-    __tablename__ = "password_reset_tokens"
-
-    token_id = Column(
-        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    category = Column(String, nullable=False)  # notifications, display, privacy, etc.
+    key = Column(String, nullable=False)
+    value = Column(Text, nullable=False)  # JSON string
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    user = relationship("User")
+    
+    # Unique constraint on user_id, category, key
+    __table_args__ = (
+        {"extend_existing": True}
     )
-    user_id = Column(UUID(as_uuid=True), ForeignKey("profiles.id"), nullable=False)
-    email = Column(String(255), nullable=False)
-
-    # Token Details
-    reset_token = Column(String(255), unique=True, nullable=False)
-    token_hash = Column(String(255), nullable=False)
-
-    # Token Status
-    is_used = Column(Boolean, default=False)
-    is_expired = Column(Boolean, default=False)
-
-    # Token Lifecycle
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    expires_at = Column(DateTime(timezone=True), nullable=False)
-    used_at = Column(DateTime(timezone=True))
-
-    # Security Details
-    ip_address = Column(INET)
-    user_agent = Column(Text)
-    request_source = Column(String(50), default="web")
-
-    # Additional Metadata
-    extra_data = Column(JSONB, default={})
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-
-class PasswordResetAttempt(Base):
-    __tablename__ = "password_reset_attempts"
-
-    attempt_id = Column(
-        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
-    )
-    email = Column(String(255), nullable=False)
-    ip_address = Column(INET, nullable=False)
-
-    # Attempt Details
-    attempt_type = Column(String(50), nullable=False)  # 'request', 'verify', 'reset'
-    success = Column(Boolean, nullable=False)
-    failure_reason = Column(String(255))
-
-    # Security Details
-    user_agent = Column(Text)
-    request_source = Column(String(50), default="web")
-
-    # Timestamps
-    attempted_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    # Additional Metadata
-    extra_data = Column(JSONB, default={})
-
-
-class PasswordHistory(Base):
-    __tablename__ = "password_history"
-
-    history_id = Column(
-        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
-    )
-    user_id = Column(UUID(as_uuid=True), ForeignKey("profiles.id"), nullable=False)
-
-    # Password Details
-    password_hash = Column(String(255), nullable=False)
-    password_salt = Column(String(255), nullable=False)
-
-    # Change Details
-    changed_by = Column(UUID(as_uuid=True), ForeignKey("profiles.id"))
-    change_reason = Column(
-        String(50), default="user_request"
-    )  # 'user_request', 'admin_reset', 'password_reset'
-    change_source = Column(String(50), default="web")  # 'web', 'mobile', 'api'
-
-    # Timestamps
-    changed_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    # Additional Metadata
-    extra_data = Column(JSONB, default={})

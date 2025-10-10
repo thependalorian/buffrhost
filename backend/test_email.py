@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 
 # Add the backend directory to the Python path
-sys.path.append("/Users/georgenekwaya/ai-agent-mastery/the-shandi/backend")
+sys.path.append("/Users/georgenekwaya/ai-agent-mastery/buffr-host/backend")
 
 from services.email_service import BuffrHostEmailService
 

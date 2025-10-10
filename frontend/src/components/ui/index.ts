@@ -1,5 +1,5 @@
 /**
- * Universal UI Components Index for The Shandi Platform
+ * Universal UI Components Index for Buffr Host Platform
  *
  * Centralized export of all reusable UI components for the entire application.
  * This ensures consistent imports and makes components easily discoverable.
@@ -21,6 +21,21 @@ export { Checkbox } from "./checkbox";
 export { Separator } from "./separator";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 export { Toast } from "./toast";
+
+// Emotional Design System Components
+export { KPICard } from "./kpi-card";
+export { StatusBadge } from "./status-badge";
+export {
+  LoadingSpinner,
+  LoadingSkeleton,
+  LoadingOverlay,
+  CardSkeleton,
+  TableSkeleton,
+  ButtonLoading,
+} from "./loading-states";
+export { EmotionalInput } from "./emotional-input";
+export { EmotionalDataTable } from "./emotional-data-table";
+export { EmotionalModal } from "./emotional-modal";
 
 // Dialog and Modal Components
 export {
@@ -49,14 +64,6 @@ export { StatCard } from "./stat-card";
 
 // Feedback Components
 export { Alert } from "./alert";
-export {
-  LoadingSpinner,
-  LoadingSkeleton,
-  LoadingOverlay,
-  CardSkeleton,
-  TableSkeleton,
-  ButtonLoading,
-} from "./loading";
 
 // Action Components
 export {
@@ -68,6 +75,9 @@ export {
 // Layout Components
 export { PageHeader } from "../layout/page-header";
 export { Breadcrumb } from "../navigation/breadcrumb";
+
+// Landing Page Components
+export * from "../landing";
 
 // Re-export types for convenience
 export type { Column, DataTableProps } from "./data-table";

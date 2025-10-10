@@ -9,7 +9,7 @@ import pytest
 from ai.recommendation_engine import RecommendationEngine
 from models.menu import Menu
 from models.order import Order
-from models.user import Profile, User
+from models.user import User
 
 
 class TestRecommendationEngine:

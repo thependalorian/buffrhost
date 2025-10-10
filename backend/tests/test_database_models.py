@@ -9,7 +9,7 @@ from models.menu import Menu, MenuCategory
 from models.order import Order, OrderItem
 from models.room import (Room, RoomAmenity, RoomRate, RoomReservation,
                          RoomServiceOrder, RoomType)
-from models.user import Profile, User
+from models.user import User
 from models.user_type import UserType
 
 

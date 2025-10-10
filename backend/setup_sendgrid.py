@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 
 # Add the backend directory to the Python path
-sys.path.append("/Users/georgenekwaya/ai-agent-mastery/the-shandi/backend")
+sys.path.append("/Users/georgenekwaya/ai-agent-mastery/buffr-host/backend")
 
 
 def setup_sendgrid_key():
@@ -19,7 +19,7 @@ def setup_sendgrid_key():
     print("=" * 50)
 
     # Check current API key
-    env_file = "/Users/georgenekwaya/ai-agent-mastery/the-shandi/.env.local"
+    env_file = "/Users/georgenekwaya/ai-agent-mastery/buffr-host/.env.local"
 
     print("📋 Current SendGrid API Key Status:")
     try:

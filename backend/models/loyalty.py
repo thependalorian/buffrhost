@@ -59,3 +59,29 @@ class LoyaltyCampaign(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # ADDED: Missing fields from Pydantic LoyaltyCampaign
+    success_probability = Column(String, nullable=True)
+    target_segment = Column(String, nullable=True)
+    customer_count = Column(Integer, nullable=True)
+    reward_type = Column(String, nullable=True)
+    avg_frequency = Column(String, nullable=True)
+    expected_roi = Column(String, nullable=True)
+    success_metrics = Column(Text, nullable=True)  # JSON string
+    churn_risk = Column(String, nullable=True)
+    segment = Column(String, nullable=True)
+    reward_value = Column(String, nullable=True)
+    loyalty_score = Column(String, nullable=True)
+    expected_participation = Column(String, nullable=True)
+    name = Column(String, nullable=True)
+    campaign_type = Column(String, nullable=True)
+    suggested_budget = Column(String, nullable=True)
+    key_metrics = Column(Text, nullable=True)  # JSON string
+    growth_potential = Column(String, nullable=True)
+    performance_data = Column(Text, nullable=True)  # JSON string
+    budget = Column(String, nullable=True)
+    recommended_campaigns = Column(Text, nullable=True)  # JSON string
+    status = Column(String, nullable=True)
+    avg_spending = Column(String, nullable=True)
+    reasoning = Column(Text, nullable=True)
+    campaign_duration = Column(Integer, nullable=True)

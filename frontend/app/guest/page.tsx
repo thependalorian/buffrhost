@@ -1,402 +1,297 @@
-import { Metadata } from "next";
+'use client'
 
-export const metadata: Metadata = {
-  title: "Guest Portal - Buffr Host",
-  description: "Guest services and information portal",
-};
+import { useState } from 'react'
+import { Card } from '@/src/components/ui/card'
+import { Button } from '@/src/components/ui/button'
+import { EmotionalInput } from '@/src/components/ui/emotional-input'
+import { 
+  Search, 
+  Calendar, 
+  Users, 
+  MapPin, 
+  Star, 
+  Wifi, 
+  Car, 
+  Utensils,
+  Bed,
+  CheckCircle,
+  Clock,
+  Heart
+} from 'lucide-react'
+import Link from 'next/link'
 
 export default function GuestPortalPage() {
+  const [searchParams, setSearchParams] = useState({
+    checkIn: '',
+    checkOut: '',
+    guests: 2,
+    rooms: 1
+  })
+
+  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+
+  const handleSearch = async () => {
+    setIsSearching(true)
+    // Simulate search delay
+    setTimeout(() => {
+      setSearchResults([
+        {
+          id: '1',
+          name: 'Deluxe Suite',
+          type: 'Suite',
+          price: 1200,
+          capacity: 4,
+          amenities: ['Wifi', 'AC', 'Mini Bar', 'Ocean View'],
+          rating: 4.8,
+          reviews: 156,
+          image: 'https://images.unsplash.com/photo-1562790351-3e9355219858?q=80&w=2940&auto=format&fit=crop'
+        },
+        {
+          id: '2',
+          name: 'Standard Room',
+          type: 'Room',
+          price: 800,
+          capacity: 2,
+          amenities: ['Wifi', 'AC', 'City View'],
+          rating: 4.6,
+          reviews: 89,
+          image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2940&auto=format&fit=crop'
+        },
+        {
+          id: '3',
+          name: 'Family Room',
+          type: 'Room',
+          price: 1500,
+          capacity: 6,
+          amenities: ['Wifi', 'AC', 'Kitchenette', 'Balcony'],
+          rating: 4.9,
+          reviews: 234,
+          image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2940&auto=format&fit=crop'
+        }
+      ])
+      setIsSearching(false)
+    }, 1000)
+  }
+
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-base-content">
-          Welcome to Buffr Host
-        </h1>
-        <p className="text-base-content/70 mt-2">
-          Your comprehensive hospitality experience portal
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"
-                />
-              </svg>
-              Hotel Services
-            </h2>
-            <p>Book rooms, manage reservations, and access hotel amenities</p>
-            <div className="card-actions justify-end">
-              <button className="btn btn-primary">Book Now</button>
+    <div className="min-h-screen bg-gradient-to-br from-nude-50 to-nude-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="container-nude py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 bg-gradient-to-br from-nude-800 to-black rounded-lg flex items-center justify-center shadow-md">
+                <span className="text-white font-bold text-xl">H</span>
+              </div>
+              <span className="text-2xl font-bold text-nude-900">Buffr Host</span>
             </div>
+            <nav className="hidden md:flex items-center space-x-6">
+              <Link href="/guest" className="text-nude-600 hover:text-nude-800">Home</Link>
+              <Link href="/guest/booking" className="text-nude-600 hover:text-nude-800">Book Now</Link>
+              <Link href="/guest/menu" className="text-nude-600 hover:text-nude-800">Menu</Link>
+              <Link href="/guest/checkin" className="text-nude-600 hover:text-nude-800">Check-in</Link>
+            </nav>
           </div>
         </div>
+      </header>
 
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+      {/* Hero Section */}
+      <section className="py-16">
+        <div className="container-nude text-center">
+          <h1 className="text-4xl md:text-6xl font-display font-bold text-nude-900 mb-6">
+            Welcome to Etuna Guesthouse
+          </h1>
+          <p className="text-xl text-nude-600 mb-8 max-w-3xl mx-auto">
+            Experience luxury hospitality in the heart of Windhoek. Book your stay, explore our amenities, and enjoy world-class service.
+          </p>
+          
+          {/* Quick Search */}
+          <Card className="max-w-4xl mx-auto p-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="form-label-emotional">Check In</label>
+                <EmotionalInput 
+                  type="date" 
+                  value={searchParams.checkIn}
+                  onChange={(e) => setSearchParams({...searchParams, checkIn: e.target.value})}
                 />
-              </svg>
-              Restaurant Menu
-            </h2>
-            <p>Browse our digital menu, place orders, and enjoy fine dining</p>
-            <div className="card-actions justify-end">
-              <button className="btn btn-primary">View Menu</button>
-            </div>
-          </div>
-        </div>
-
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              </div>
+              <div>
+                <label className="form-label-emotional">Check Out</label>
+                <EmotionalInput 
+                  type="date" 
+                  value={searchParams.checkOut}
+                  onChange={(e) => setSearchParams({...searchParams, checkOut: e.target.value})}
                 />
-              </svg>
-              Spa & Wellness
-            </h2>
-            <p>Relax and rejuvenate with our premium spa treatments</p>
-            <div className="card-actions justify-end">
-              <button className="btn btn-primary">Book Treatment</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Quick Services</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <button className="btn btn-outline">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+              </div>
+              <div>
+                <label className="form-label-emotional">Guests</label>
+                <select 
+                  className="form-input-emotional w-full"
+                  value={searchParams.guests}
+                  onChange={(e) => setSearchParams({...searchParams, guests: parseInt(e.target.value)})}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  />
-                </svg>
-                Room Service
-              </button>
-              <button className="btn btn-outline">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                  <option value={1}>1 Guest</option>
+                  <option value={2}>2 Guests</option>
+                  <option value={3}>3 Guests</option>
+                  <option value={4}>4+ Guests</option>
+                </select>
+              </div>
+              <div className="flex items-end">
+                <Button 
+                  variant="primary" 
+                  className="w-full"
+                  onClick={handleSearch}
+                  disabled={isSearching}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                Concierge
-              </button>
-              <button className="btn btn-outline">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                Local Info
-              </button>
-              <button className="btn btn-outline">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                Events
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">AI Assistant</h2>
-            <p>Get instant help with our AI-powered concierge service</p>
-            <div className="chat chat-start">
-              <div className="chat-bubble chat-bubble-primary">
-                Hi! I&apos;m your AI assistant. How can I help you today?
+                  {isSearching ? (
+                    <>
+                      <Clock className="w-4 h-4 mr-2 animate-spin" />
+                      Searching...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4 mr-2" />
+                      Search Rooms
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
-            <div className="form-control mt-4">
-              <div className="input-group">
-                <input
-                  type="text"
-                  placeholder="Ask me anything..."
-                  className="input input-bordered flex-1"
-                />
-                <button className="btn btn-primary">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+          </Card>
+        </div>
+      </section>
+
+      {/* Search Results */}
+      {searchResults.length > 0 && (
+        <section className="py-12">
+          <div className="container-nude">
+            <h2 className="text-3xl font-display font-bold text-nude-900 mb-8 text-center">
+              Available Rooms
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {searchResults.map((room) => (
+                <Card key={room.id} className="overflow-hidden hover:shadow-xl transition-shadow">
+                  <div className="aspect-video overflow-hidden">
+                    <img 
+                      src={room.image} 
+                      alt={room.name}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform"
                     />
-                  </svg>
-                </button>
-              </div>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="text-xl font-semibold text-nude-900">{room.name}</h3>
+                        <p className="text-nude-600">{room.type} • {room.capacity} guests</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-nude-900">N$ {room.price}</div>
+                        <div className="text-sm text-nude-500">per night</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-1 mb-4">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      <span className="font-semibold">{room.rating}</span>
+                      <span className="text-sm text-nude-500">({room.reviews} reviews)</span>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {room.amenities.map((amenity, index) => (
+                        <span key={index} className="badge badge-outline badge-sm">
+                          {amenity}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <Button variant="primary" className="w-full">
+                      Book Now
+                    </Button>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Property Information</h2>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                <span>123 Hospitality Street, Windhoek</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  />
-                </svg>
-                <span>+264 61 123 456</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-                <span>info@buffrhost.ai</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Amenities</h2>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-success"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span>Free WiFi</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-success"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span>Swimming Pool</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-success"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span>Fitness Center</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-success"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span>Business Center</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-success"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span>Parking</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Weather</h2>
+      {/* Features Section */}
+      <section className="py-16 bg-white">
+        <div className="container-nude">
+          <h2 className="text-3xl font-display font-bold text-nude-900 mb-12 text-center">
+            Why Choose Etuna Guesthouse?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-4xl mb-2">Sun</div>
-              <div className="text-2xl font-bold">28°C</div>
-              <div className="text-sm text-base-content/70">
-                Windhoek, Namibia
+              <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Wifi className="w-8 h-8 text-nude-600" />
               </div>
-              <div className="text-sm text-base-content/70">Partly Cloudy</div>
+              <h3 className="text-xl font-semibold text-nude-900 mb-2">Free WiFi</h3>
+              <p className="text-nude-600">High-speed internet throughout the property</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Utensils className="w-8 h-8 text-nude-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-nude-900 mb-2">Restaurant</h3>
+              <p className="text-nude-600">Fine dining with local and international cuisine</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Car className="w-8 h-8 text-nude-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-nude-900 mb-2">Tours</h3>
+              <p className="text-nude-600">Guided tours to Namibia's most beautiful locations</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-nude-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="w-8 h-8 text-nude-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-nude-900 mb-2">Service</h3>
+              <p className="text-nude-600">24/7 concierge and exceptional hospitality</p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-nude-900 text-white py-12">
+        <div className="container-nude">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Etuna Guesthouse</h3>
+              <p className="text-nude-300 mb-4">
+                Your gateway to luxury hospitality in Windhoek, Namibia.
+              </p>
+              <div className="flex items-center space-x-2">
+                <MapPin className="w-4 h-4" />
+                <span className="text-sm">123 Independence Avenue, Windhoek</span>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
+              <div className="space-y-2">
+                <Link href="/guest/booking" className="block text-nude-300 hover:text-white">Book Now</Link>
+                <Link href="/guest/menu" className="block text-nude-300 hover:text-white">Restaurant Menu</Link>
+                <Link href="/guest/checkin" className="block text-nude-300 hover:text-white">Check-in</Link>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Contact</h3>
+              <div className="space-y-2 text-nude-300">
+                <p>Phone: +264 61 123 4567</p>
+                <p>Email: info@etunahotel.com</p>
+                <p>24/7 Concierge Service</p>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-nude-700 mt-8 pt-8 text-center text-nude-300">
+            <p>&copy; 2024 Etuna Guesthouse. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
-  );
+  )
 }

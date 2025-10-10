@@ -1,5 +1,5 @@
 """
-QR Code Loyalty routes for The Shandi Hospitality Ecosystem Management Platform
+QR Code Loyalty routes for Buffr Host Hospitality Ecosystem Management Platform
 Provides API endpoints for QR code loyalty operations.
 """
 

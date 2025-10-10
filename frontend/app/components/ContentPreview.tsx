@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { Eye, Smartphone, Monitor, Tablet, X, RefreshCw } from "lucide-react";
 

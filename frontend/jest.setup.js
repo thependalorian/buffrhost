@@ -1,5 +1,8 @@
 import "@testing-library/jest-dom";
 
+// Set NODE_ENV to test for React Testing Library
+process.env.NODE_ENV = "test";
+
 // Mock Next.js router
 jest.mock("next/router", () => ({
   useRouter() {

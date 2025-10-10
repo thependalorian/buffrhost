@@ -1,5 +1,5 @@
 /**
- * Universal Data Table Component for The Shandi Platform
+ * Universal Data Table Component for Buffr Host Platform
  *
  * A comprehensive data table component with sorting, filtering, pagination,
  * and responsive design for displaying data across the entire application.

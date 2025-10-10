@@ -3,7 +3,7 @@ Database models for Buffr Host comprehensive hospitality ecosystem platform.
 """
 
 from .hospitality_property import HospitalityProperty
-from .user import User, Profile, UserPreferences
+from .user import User, UserPreference
 from .user_type import UserType
 from .menu import MenuCategory, Menu, MenuMedia
 from .modifiers import Modifiers, OptionValue, MenuModifiers
@@ -89,6 +89,7 @@ from .recommendation_model import (
     RecommendationEngine,
     RecommendationFeedback,
 )
+from .restaurant import Restaurant
 
 
 __all__ = [

@@ -1,5 +1,5 @@
 """
-Conference service routes for The Shandi Hospitality Ecosystem Management Platform
+Conference service routes for Buffr Host Hospitality Ecosystem Management Platform
 Provides API endpoints for conference facility management.
 """
 

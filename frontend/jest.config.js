@@ -11,11 +11,12 @@ const customJestConfig = {
   testEnvironment: "jsdom",
   testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
-    "^@/components/(.*)$": "<rootDir>/src/components/$1",
-    "^@/lib/(.*)$": "<rootDir>/src/lib/$1",
-    "^@/app/(.*)$": "<rootDir>/app/$1",
-    "^@/hooks/(.*)$": "<rootDir>/src/hooks/$1",
+    "^@/(.*)$": "<rootDir>/$1",
+    "^react$": "<rootDir>/node_modules/react/index.js",
+  },
+  // Force React to use development mode for testing
+  globals: {
+    "process.env.NODE_ENV": "test",
   },
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}",

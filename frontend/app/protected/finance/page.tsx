@@ -1,3 +1,4 @@
+"use client";
 'use client';
 
 import React from 'react';
@@ -53,7 +54,7 @@ export default function FinanceDashboardPage() {
         actions={
           <ActionButton
             onClick={() => window.location.href = '/protected/finance/transactions'}
-            variant="primary"
+            variant="default"
           >
             <BarChart3 className="w-4 h-4 mr-2" />
             View Reports

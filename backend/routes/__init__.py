@@ -1,3 +1,3 @@
 """
-API routes package for The Shandi platform.
+API routes package for Buffr Host platform.
 """

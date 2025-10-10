@@ -1,40 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  html {
-    @apply scroll-smooth;
-  }
-  body {
-    @apply bg-base-100 text-base-content font-sans antialiased;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-display font-semibold tracking-tight;
-    text-wrap: balance;
-  }
-  h1 {
-    @apply text-5xl md:text-7xl font-extrabold;
-  }
-  h2 {
-    @apply text-4xl md:text-5xl font-bold;
-  }
-  h3 {
-    @apply text-2xl md:text-3xl font-bold;
-  }
-}
-
-@layer components {
-  /* Nude color CSS variables for consistent theming */
   :root {
-    /* Base nude palette */
+    /* CSS Custom Properties for Dynamic Theming */
     --nude-50: #fef7f0;
     --nude-100: #fceee0;
     --nude-200: #f8dcc0;
@@ -46,162 +18,409 @@
     --nude-800: #7d452e;
     --nude-900: #5d3322;
     --nude-950: #3d1f15;
-
-    /* MAC-inspired shades */
-    --mac-velvet-teddy: #c49b7b;
-    --mac-honey-love: #d4a574;
-    --mac-mocha: #8b5a3c;
-    --mac-taupe: #a67c68;
-    --mac-whirl: #8b6f47;
-    --mac-persistence: #9d6a43;
-
-    /* Charlotte Tilbury-inspired shades */
-    --charlotte-pillow-talk: #d4a574;
-    --charlotte-very-victoria: #b8704a;
-    --charlotte-penelope-pink: #f2c49f;
-    --charlotte-bond-girl: #8b5a3c;
-
-    /* Fenty Beauty-inspired shades */
-    --fenty-spanked: #c49b7b;
-    --fenty-shawty: #8b5a3c;
-    --fenty-freckle-fiesta: #d4a574;
-    --fenty-unbutton: #a67c68;
-
-    /* Universal nude tones */
-    --universal-light: #f5e1da;
-    --universal-medium: #d8b4a0;
-    --universal-deep: #a67c68;
-    --universal-rich: #8b5a3c;
-    --universal-warm: #d4a574;
-    --universal-cool: #c49b7b;
+    
+    /* Luxury Accent Colors */
+    --luxury-champagne: #f7e7ce;
+    --luxury-rose: #e8b4a0;
+    --luxury-bronze: #cd853f;
+    --luxury-charlotte: #d4a574;
+    
+    /* Semantic Colors */
+    --semantic-success: #10b981;
+    --semantic-warning: #f59e0b;
+    --semantic-error: #ef4444;
+    --semantic-info: #3b82f6;
   }
 
-  /* Nude-themed component classes */
-  .nude-card {
-    @apply bg-white border border-nude-200 rounded-lg shadow-sm;
+  html {
+    @apply scroll-smooth;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  
+  body {
+    @apply bg-nude-50 text-nude-800 font-primary antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-variant-ligatures: common-ligatures;
   }
 
-  .nude-button {
-    @apply bg-nude-600 hover:bg-nude-700 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+  /* Focus Management for Accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-nude-600 ring-offset-2 ring-offset-nude-50;
   }
 
-  .nude-button-light {
-    @apply bg-nude-200 hover:bg-nude-300 text-nude-800 font-medium px-4 py-2 rounded-lg transition-colors;
+  /* Selection Styling */
+  ::selection {
+    @apply bg-nude-200 text-nude-900;
   }
 
-  .nude-accent {
-    @apply bg-charlotte-pillow-talk text-white;
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
   }
 
-  .nude-accent-hover {
-    @apply hover:bg-charlotte-very-victoria;
+  ::-webkit-scrollbar-track {
+    @apply bg-nude-100;
   }
 
-  /* MAC-inspired components */
-  .mac-velvet-teddy {
-    @apply bg-mac-velvet-teddy text-white;
+  ::-webkit-scrollbar-thumb {
+    @apply bg-nude-400 rounded-full;
   }
 
-  .mac-honey-love {
-    @apply bg-mac-honey-love text-white;
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-nude-500;
   }
 
-  .mac-mocha {
-    @apply bg-mac-mocha text-white;
+  /* Emotional Typography Hierarchy */
+  h1 {
+    @apply font-display font-bold text-nude-900 text-4xl md:text-5xl lg:text-hero;
+    text-wrap: balance;
+  }
+  
+  h2 {
+    @apply font-display font-semibold text-nude-800 text-3xl md:text-4xl;
+    text-wrap: balance;
+  }
+  
+  h3 {
+    @apply font-display font-semibold text-nude-800 text-2xl md:text-3xl;
+  }
+  
+  h4 {
+    @apply font-primary font-semibold text-nude-800 text-xl md:text-2xl;
+  }
+  
+  h5 {
+    @apply font-primary font-semibold text-nude-700 text-lg md:text-xl;
+  }
+  
+  h6 {
+    @apply font-primary font-medium text-nude-700 text-base md:text-lg;
+  }
+  
+  p {
+    @apply text-nude-700 leading-relaxed;
+  }
+  
+  a {
+    @apply text-nude-600 hover:text-nude-700 transition-colors duration-200;
+  }
+}
+
+@layer components {
+  /* === EMOTIONAL BUTTON SYSTEM === */
+  .btn-emotional-primary {
+    @apply bg-gradient-to-r from-nude-600 to-nude-700 text-white font-semibold px-6 py-3 rounded-xl;
+    @apply shadow-nude-medium hover:shadow-nude-strong transition-all duration-300;
+    @apply hover:from-nude-700 hover:to-nude-800 hover:-translate-y-0.5;
+    @apply focus:outline-none focus:ring-2 focus:ring-nude-600 focus:ring-offset-2;
+    position: relative;
+    overflow: hidden;
   }
 
-  /* Charlotte Tilbury-inspired components */
-  .charlotte-pillow-talk {
-    @apply bg-charlotte-pillow-talk text-white;
+  .btn-emotional-primary::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent;
+    transform: translateX(-100%);
+    transition: transform 0.6s;
   }
 
-  .charlotte-very-victoria {
-    @apply bg-charlotte-very-victoria text-white;
+  .btn-emotional-primary:hover::before {
+    transform: translateX(100%);
   }
 
-  .charlotte-penelope-pink {
-    @apply bg-charlotte-penelope-pink text-nude-800;
+  .btn-emotional-secondary {
+    @apply bg-white text-nude-700 font-semibold px-6 py-3 rounded-xl border-2 border-nude-400;
+    @apply hover:bg-nude-50 hover:border-nude-600 hover:text-nude-800 transition-all duration-300;
+    @apply hover:-translate-y-0.5 hover:shadow-nude-medium;
+    @apply focus:outline-none focus:ring-2 focus:ring-nude-400 focus:ring-offset-2;
   }
 
-  /* Fenty Beauty-inspired components */
-  .fenty-spanked {
-    @apply bg-fenty-spanked text-white;
+  .btn-emotional-accent {
+    @apply bg-gradient-to-r from-luxury-champagne to-luxury-rose text-nude-800 font-semibold px-6 py-3 rounded-xl;
+    @apply hover:from-luxury-rose hover:to-luxury-bronze hover:text-white transition-all duration-300;
+    @apply hover:-translate-y-0.5 hover:shadow-nude-glow;
+    @apply focus:outline-none focus:ring-2 focus:ring-luxury-charlotte focus:ring-offset-2;
   }
 
-  .fenty-shawty {
-    @apply bg-fenty-shawty text-white;
+  /* === HOSPITALITY CARDS === */
+  .hospitality-card {
+    @apply bg-white border border-nude-200 rounded-2xl shadow-nude-soft overflow-hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Universal nude components */
-  .nude-light {
-    @apply bg-universal-light text-nude-800;
+  .hospitality-card:hover {
+    @apply transform -translate-y-1 shadow-nude-medium border-nude-300;
   }
 
-  .nude-medium {
-    @apply bg-universal-medium text-nude-800;
+  .hospitality-card-luxury {
+    @apply hospitality-card bg-gradient-to-br from-luxury-champagne/20 to-white border-luxury-bronze/30;
   }
 
-  .nude-deep {
-    @apply bg-universal-deep text-white;
+  .hospitality-card-spa {
+    @apply hospitality-card bg-gradient-to-br from-nude-50 to-nude-100/50 border-nude-300;
   }
 
-  .nude-rich {
-    @apply bg-universal-rich text-white;
+  /* === FORM ELEMENTS WITH EMOTIONAL DESIGN === */
+  .form-input-emotional {
+    @apply bg-nude-50 border-2 border-nude-200 rounded-xl px-4 py-3 text-nude-800 placeholder-nude-400;
+    @apply focus:border-nude-600 focus:bg-white focus:shadow-nude-soft transition-all duration-200;
+    @apply focus:transform focus:-translate-y-0.5;
+    @apply hover:border-nude-300;
   }
 
-  .nude-warm {
-    @apply bg-universal-warm text-nude-800;
+  .form-label-emotional {
+    @apply text-nude-800 font-semibold mb-2 block text-sm;
   }
 
-  .nude-cool {
-    @apply bg-universal-cool text-white;
+  .form-error-emotional {
+    @apply text-semantic-error text-sm mt-1 flex items-center gap-1;
   }
 
-  /* Nude gradient backgrounds */
-  .nude-gradient-light {
-    background: linear-gradient(135deg, var(--nude-100), var(--nude-200));
+  /* === NAVIGATION WITH WARMTH === */
+  .nav-link-emotional {
+    @apply text-nude-700 hover:text-nude-600 font-medium px-4 py-2 rounded-lg transition-all duration-200;
+    @apply hover:bg-nude-100;
   }
 
-  .nude-gradient-medium {
-    background: linear-gradient(135deg, var(--nude-300), var(--nude-400));
+  .nav-link-emotional-active {
+    @apply text-nude-600 bg-nude-200 font-semibold;
   }
 
-  .nude-gradient-deep {
-    background: linear-gradient(135deg, var(--nude-600), var(--nude-700));
+  /* === LOADING STATES THAT FEEL LUXURIOUS === */
+  .nude-wave-loader {
+    @apply bg-gradient-nude-wave bg-[length:400%_400%] animate-nude-wave rounded-lg;
+    height: 3px;
   }
 
-  /* Nude text colors */
-  .text-nude-primary {
-    color: var(--nude-600);
+  .warm-glow-loader {
+    @apply animate-warm-glow rounded-full bg-nude-600;
+    width: 40px;
+    height: 40px;
   }
 
-  .text-nude-secondary {
-    color: var(--nude-500);
+  /* === INTERACTIVE ELEMENTS === */
+  .warm-glow-hover {
+    @apply relative transition-all duration-300 ease-out;
   }
 
-  .text-nude-accent {
-    color: var(--charlotte-pillow-talk);
+  .warm-glow-hover::before {
+    content: '';
+    @apply absolute -inset-2 bg-gradient-to-r from-luxury-champagne via-nude-600 to-luxury-rose rounded-2xl;
+    @apply opacity-0 -z-10 transition-opacity duration-300 blur-md;
   }
 
-  /* Nude border utilities */
-  .border-nude {
-    border-color: var(--nude-300);
+  .warm-glow-hover:hover::before {
+    @apply opacity-30;
   }
 
-  .border-nude-accent {
-    border-color: var(--charlotte-pillow-talk);
+  .warm-glow-hover:hover {
+    @apply -translate-y-1 shadow-nude-glow;
   }
 
-  /* Nude shadow utilities */
-  .shadow-nude {
-    box-shadow:
-      0 4px 6px -1px rgba(212, 165, 116, 0.1),
-      0 2px 4px -1px rgba(212, 165, 116, 0.06);
+  /* === LAYERED CARD INTERACTIONS === */
+  .layered-nude-card {
+    @apply relative bg-white rounded-2xl transition-all duration-500 ease-out overflow-hidden;
+    transform-style: preserve-3d;
   }
 
-  .shadow-nude-lg {
-    box-shadow:
-      0 10px 15px -3px rgba(212, 165, 116, 0.1),
-      0 4px 6px -2px rgba(212, 165, 116, 0.05);
+  .layered-nude-card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-transparent via-nude-200/5 to-transparent;
+    @apply opacity-0 transition-opacity duration-500;
+    transform: translateZ(-1px);
+  }
+
+  .layered-nude-card:hover {
+    @apply -translate-y-2 scale-[1.02] shadow-nude-strong;
+  }
+
+  .layered-nude-card:hover::before {
+    @apply opacity-100;
+  }
+
+  /* === ACCESSIBILITY FIRST === */
+  .focus-visible-emotional {
+    @apply focus:outline-none focus:ring-2 focus:ring-nude-600 focus:ring-offset-2;
+  }
+
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+  }
+
+  /* === RESPONSIVE CONTAINERS === */
+  .container-emotional {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* === STATUS INDICATORS === */
+  .status-indicator-success {
+    @apply bg-semantic-success/20 text-semantic-success px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .status-indicator-warning {
+    @apply bg-semantic-warning/20 text-semantic-warning px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .status-indicator-error {
+    @apply bg-semantic-error/20 text-semantic-error px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .status-indicator-info {
+    @apply bg-semantic-info/20 text-semantic-info px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  /* === DASHBOARD COMPONENTS === */
+  .dashboard-card-emotional {
+    @apply bg-white border border-nude-200 rounded-2xl p-6 shadow-nude-soft;
+    @apply hover:shadow-nude-medium transition-all duration-300;
+  }
+
+  .kpi-card-emotional {
+    @apply dashboard-card-emotional text-center p-4;
+  }
+
+  .kpi-value-emotional {
+    @apply text-3xl font-bold text-nude-900 mb-1;
+  }
+
+  .kpi-label-emotional {
+    @apply text-nude-600 text-sm font-medium;
+  }
+
+  .kpi-trend-emotional {
+    @apply text-semantic-success text-sm flex items-center justify-center gap-1;
+  }
+
+  /* === DATA VISUALIZATION === */
+  .data-table-emotional {
+    @apply bg-white border border-nude-200 rounded-2xl overflow-hidden shadow-nude-soft;
+  }
+
+  .data-table-emotional th {
+    @apply bg-nude-100 text-nude-800 font-semibold px-6 py-4 text-left border-b border-nude-200;
+  }
+
+  .data-table-emotional td {
+    @apply px-6 py-4 text-nude-700 border-b border-nude-100;
+  }
+
+  .data-table-emotional tr:hover {
+    @apply bg-nude-50;
+  }
+
+  /* === MODAL SYSTEM === */
+  .modal-overlay-emotional {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4;
+  }
+
+  .modal-content-emotional {
+    @apply bg-white border border-nude-200 rounded-2xl shadow-nude-strong max-w-lg w-full p-6;
+    animation: smoothAppear 0.3s ease-out;
+  }
+
+  /* === TOAST NOTIFICATIONS === */
+  .toast-emotional-success {
+    @apply bg-semantic-success/10 border border-semantic-success/20 text-semantic-success rounded-xl p-4 shadow-nude-medium;
+  }
+
+  .toast-emotional-error {
+    @apply bg-semantic-error/10 border border-semantic-error/20 text-semantic-error rounded-xl p-4 shadow-nude-medium;
+  }
+
+  .toast-emotional-warning {
+    @apply bg-semantic-warning/10 border border-semantic-warning/20 text-semantic-warning rounded-xl p-4 shadow-nude-medium;
+  }
+
+  .toast-emotional-info {
+    @apply bg-semantic-info/10 border border-semantic-info/20 text-semantic-info rounded-xl p-4 shadow-nude-medium;
+  }
+}
+
+@layer utilities {
+  /* === ANIMATION UTILITIES === */
+  .animate-hospitality-bounce {
+    animation: hospitalityBounce 2s ease-in-out infinite;
+  }
+
+  .animate-smooth-appear {
+    animation: smoothAppear 0.6s ease-out;
+  }
+
+  /* === GRADIENT TEXT === */
+  .text-gradient-nude {
+    @apply bg-gradient-to-r from-nude-600 to-nude-800 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-luxury {
+    @apply bg-gradient-to-r from-luxury-bronze to-luxury-rose bg-clip-text text-transparent;
+  }
+
+  /* === BACKGROUND PATTERNS === */
+  .bg-nude-pattern {
+    background-image: radial-gradient(circle at 1px 1px, rgba(184, 112, 74, 0.15) 1px, transparent 0);
+    background-size: 20px 20px;
+  }
+
+  /* === SCROLLBAR STYLING === */
+  .scrollbar-nude {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.nude.400') theme('colors.nude.100');
+  }
+
+  .scrollbar-nude::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-nude::-webkit-scrollbar-track {
+    @apply bg-nude-100 rounded-full;
+  }
+
+  .scrollbar-nude::-webkit-scrollbar-thumb {
+    @apply bg-nude-400 rounded-full;
+  }
+
+  .scrollbar-nude::-webkit-scrollbar-thumb:hover {
+    @apply bg-nude-600;
+  }
+}
+
+/* === HIGH CONTRAST MODE SUPPORT === */
+@media (prefers-contrast: high) {
+  .hospitality-card {
+    border: 2px solid #000000;
+  }
+  
+  .btn-emotional-primary {
+    background: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+  }
+}
+
+/* === REDUCED MOTION SUPPORT === */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === DARK MODE SUPPORT === */
+@media (prefers-color-scheme: dark) {
+  .auto-dark {
+    --nude-50: #1a1a1a;
+    --nude-100: #2a2a2a;
+    --nude-200: #3a3a3a;
+    --nude-300: #4a4a4a;
+    --nude-400: #5a5a5a;
+    --nude-500: #6a6a6a;
+    --nude-600: #7a7a7a;
+    --nude-700: #8a8a8a;
+    --nude-800: #9a9a9a;
+    --nude-900: #ffffff;
   }
 }

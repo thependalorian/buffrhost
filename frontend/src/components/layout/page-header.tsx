@@ -1,5 +1,5 @@
 /**
- * Universal Page Header Component for The Shandi Platform
+ * Universal Page Header Component for Buffr Host Platform
  *
  * A reusable page header component with breadcrumbs, actions, and responsive design.
  * Used across all pages in the application for consistent navigation.
@@ -12,6 +12,7 @@ import { cn } from "../../lib/utils";
 import { ChevronRight, Home } from "lucide-react";
 
 export interface BreadcrumbItem {
+  id?: string;
   label: string;
   href?: string;
   current?: boolean;
@@ -22,6 +23,7 @@ export interface PageHeaderProps {
   description?: string;
   breadcrumbs?: BreadcrumbItem[];
   actions?: React.ReactNode;
+  icon?: React.ReactNode;
   className?: string;
   showHomeBreadcrumb?: boolean;
 }
@@ -31,6 +33,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   description,
   breadcrumbs = [],
   actions,
+  icon,
   className,
   showHomeBreadcrumb = true,
 }) => {
@@ -77,9 +80,12 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         {/* Header Content */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              {title}
-            </h1>
+            <div className="flex items-center gap-3">
+              {icon && <div className="text-muted-foreground">{icon}</div>}
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+                {title}
+              </h1>
+            </div>
             {description && (
               <p className="text-muted-foreground text-sm sm:text-base">
                 {description}

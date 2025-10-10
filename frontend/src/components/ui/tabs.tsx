@@ -1,5 +1,5 @@
 /**
- * Tabs Components for The Shandi Frontend
+ * Tabs Components for Buffr Host Frontend
  *
  * Reusable tab components for organizing content.
  */

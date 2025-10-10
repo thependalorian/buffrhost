@@ -1,5 +1,5 @@
 """
-Staff management service for The Shandi platform.
+Staff management service for Buffr Host platform.
 """
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session, joinedload
 from models.hospitality_property import HospitalityProperty
 from models.staff import (StaffAttendance, StaffCommunication, StaffDepartment,
                           StaffLeaveRequest, StaffPerformance, StaffPosition,
-                          StaffProfile, StaffSchedule, StaffTask)
+                          StaffUser, StaffSchedule, StaffTask)
 from models.user import User
 from schemas.staff import (StaffAttendanceCreate, StaffAttendanceUpdate,
                            StaffCommunicationCreate, StaffCommunicationUpdate,
@@ -19,7 +19,7 @@ from schemas.staff import (StaffAttendanceCreate, StaffAttendanceUpdate,
                            StaffLeaveRequestCreate, StaffLeaveRequestUpdate,
                            StaffPerformanceCreate, StaffPerformanceUpdate,
                            StaffPositionCreate, StaffPositionUpdate,
-                           StaffProfileCreate, StaffProfileUpdate,
+                           StaffUserCreate, StaffUserUpdate,
                            StaffScheduleCreate, StaffScheduleUpdate,
                            StaffTaskCreate, StaffTaskUpdate)
 
@@ -157,10 +157,10 @@ class StaffService:
         self.db.commit()
         return True
 
-    # Staff Profile Management
-    def create_staff_profile(self, profile_data: StaffProfileCreate) -> StaffProfile:
+    # Staff User Management
+    def create_staff_profile(self, profile_data: StaffUserCreate) -> StaffUser:
         """Create a new staff profile."""
-        profile = StaffProfile(**profile_data.dict())
+        profile = StaffUser(**profile_data.dict())
         self.db.add(profile)
         self.db.commit()
         self.db.refresh(profile)
@@ -173,47 +173,47 @@ class StaffService:
         employment_status: Optional[str] = None,
         skip: int = 0,
         limit: int = 100,
-    ) -> List[StaffProfile]:
+    ) -> List[StaffUser]:
         """Get all staff profiles for a property with optional filters."""
         query = (
-            self.db.query(StaffProfile)
+            self.db.query(StaffUser)
             .options(
-                joinedload(StaffProfile.department),
-                joinedload(StaffProfile.position),
-                joinedload(StaffProfile.user),
+                joinedload(StaffUser.department),
+                joinedload(StaffUser.position),
+                joinedload(StaffUser.user),
             )
             .filter(
                 and_(
-                    StaffProfile.property_id == property_id,
-                    StaffProfile.is_active == True,
+                    StaffUser.property_id == property_id,
+                    StaffUser.is_active == True,
                 )
             )
         )
 
         if department_id:
-            query = query.filter(StaffProfile.department_id == department_id)
+            query = query.filter(StaffUser.department_id == department_id)
 
         if employment_status:
-            query = query.filter(StaffProfile.employment_status == employment_status)
+            query = query.filter(StaffUser.employment_status == employment_status)
 
         return query.offset(skip).limit(limit).all()
 
-    def get_staff_profile(self, staff_id: str) -> Optional[StaffProfile]:
+    def get_staff_profile(self, staff_id: str) -> Optional[StaffUser]:
         """Get a specific staff profile by ID."""
         return (
-            self.db.query(StaffProfile)
+            self.db.query(StaffUser)
             .options(
-                joinedload(StaffProfile.department),
-                joinedload(StaffProfile.position),
-                joinedload(StaffProfile.user),
+                joinedload(StaffUser.department),
+                joinedload(StaffUser.position),
+                joinedload(StaffUser.user),
             )
-            .filter(StaffProfile.staff_id == staff_id)
+            .filter(StaffUser.staff_id == staff_id)
             .first()
         )
 
     def update_staff_profile(
-        self, staff_id: str, profile_data: StaffProfileUpdate
-    ) -> Optional[StaffProfile]:
+        self, staff_id: str, profile_data: StaffUserUpdate
+    ) -> Optional[StaffUser]:
         """Update a staff profile."""
         profile = self.get_staff_profile(staff_id)
         if not profile:
@@ -753,11 +753,11 @@ class StaffService:
         """Get staff analytics and metrics."""
         # Total staff count
         total_staff = (
-            self.db.query(StaffProfile)
+            self.db.query(StaffUser)
             .filter(
                 and_(
-                    StaffProfile.property_id == property_id,
-                    StaffProfile.is_active == True,
+                    StaffUser.property_id == property_id,
+                    StaffUser.is_active == True,
                 )
             )
             .count()
@@ -765,12 +765,12 @@ class StaffService:
 
         # Active staff count
         active_staff = (
-            self.db.query(StaffProfile)
+            self.db.query(StaffUser)
             .filter(
                 and_(
-                    StaffProfile.property_id == property_id,
-                    StaffProfile.is_active == True,
-                    StaffProfile.employment_status == "active",
+                    StaffUser.property_id == property_id,
+                    StaffUser.is_active == True,
+                    StaffUser.employment_status == "active",
                 )
             )
             .count()
@@ -780,16 +780,16 @@ class StaffService:
         department_stats = (
             self.db.query(
                 StaffDepartment.department_name,
-                func.count(StaffProfile.staff_id).label("staff_count"),
+                func.count(StaffUser.staff_id).label("staff_count"),
             )
             .join(
-                StaffProfile,
-                StaffDepartment.department_id == StaffProfile.department_id,
+                StaffUser,
+                StaffDepartment.department_id == StaffUser.department_id,
             )
             .filter(
                 and_(
                     StaffDepartment.property_id == property_id,
-                    StaffProfile.is_active == True,
+                    StaffUser.is_active == True,
                 )
             )
             .group_by(StaffDepartment.department_name)

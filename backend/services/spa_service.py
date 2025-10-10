@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from models.services import ServiceBooking, SpaService
-from models.staff import StaffPosition, StaffProfile
+from models.staff import StaffPosition, StaffUser
 from schemas.spa import SpaAppointment as SpaAppointmentSchema
 from schemas.spa import SpaAppointmentCreate
 from schemas.spa import SpaService as SpaServiceSchema
@@ -65,10 +65,10 @@ class SpaServiceClass:
     ) -> List[SpaTherapistSchema]:
         """Get spa therapists for a property."""
         query = (
-            select(StaffProfile)
+            select(StaffUser)
             .join(StaffPosition)
             .where(
-                StaffProfile.property_id == property_id,
+                StaffUser.property_id == property_id,
                 StaffPosition.department_id == 1,  # Assuming department 1 is Spa
             )
             .offset(skip)

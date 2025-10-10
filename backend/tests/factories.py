@@ -13,7 +13,7 @@ from models.inventory import InventoryItem
 from models.menu import Menu, MenuCategory
 from models.order import Order, OrderItem
 from models.staff import StaffDepartment, StaffPosition, StaffProfile
-from models.user import Profile, User
+from models.user import User
 
 
 class HospitalityPropertyFactory(factory.alchemy.SQLAlchemyModelFactory):

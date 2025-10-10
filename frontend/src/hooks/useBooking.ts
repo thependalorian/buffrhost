@@ -1,5 +1,5 @@
 /**
- * Booking Hook for The Shandi Frontend
+ * Booking Hook for Buffr Host Frontend
  *
  * Custom hook for managing booking operations.
  */

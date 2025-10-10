@@ -33,7 +33,7 @@ export default function EtunaPropertyPage() {
   return (
     <div className="container mx-auto p-6">
       <PageHeader
-        title={property.name}
+        title={property.property_name}
         description={`Your House Away From Home - mixed property`}
       />
 
@@ -42,7 +42,7 @@ export default function EtunaPropertyPage() {
         <figure className="relative h-96">
           <Image
             src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop"
-            alt={property.name}
+            alt={property.property_name}
             width={1200}
             height={400}
             className="w-full h-full object-cover"
@@ -50,7 +50,7 @@ export default function EtunaPropertyPage() {
           <div className="absolute inset-0 bg-black bg-opacity-30"></div>
           <div className="absolute bottom-6 left-6 text-white">
             <h2 className="text-2xl font-bold mb-2">
-              {property.name}
+              {property.property_name}
             </h2>
             <p className="text-lg opacity-90">
               Your House Away From Home - Etuna means &quot;He is taking care of

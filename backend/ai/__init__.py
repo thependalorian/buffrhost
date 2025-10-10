@@ -9,7 +9,7 @@
 from .conversational_ai import ConversationalAI
 from .loyalty_ai import LoyaltyAI
 from .rag_system import RAGSystem
-from .recommendation_engine import (GuestProfile, Recommendation,
+from .recommendation_engine import (GuestUser, Recommendation,
                                     RecommendationEngine,
                                     RecommendationRequest,
                                     RecommendationResponse, RecommendationType,
@@ -22,7 +22,7 @@ __all__ = [
     "RecommendationRequest",
     "RecommendationResponse",
     "Recommendation",
-    "GuestProfile",
+    "GuestUser",
     "RecommendationType",
     "ServiceCategory",
     "LoyaltyAI",

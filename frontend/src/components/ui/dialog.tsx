@@ -1,5 +1,5 @@
 /**
- * Dialog Components for The Shandi Frontend
+ * Dialog Components for Buffr Host Frontend
  *
  * Reusable dialog components for modals and popups.
  */

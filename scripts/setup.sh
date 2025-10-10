@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# The Shandi Development Setup Script
-# This script sets up the development environment for The Shandi platform
+# Buffr Host Development Setup Script
+# This script sets up the development environment for Buffr Host platform
 
 set -e  # Exit on any error
 
-echo "Setting up The Shandi development environment..."
+echo "Setting up Buffr Host development environment..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -215,7 +215,7 @@ create_scripts() {
     # Create start script
     cat > start.sh << 'EOF'
 #!/bin/bash
-echo "Starting The Shandi development environment..."
+echo "Starting Buffr Host development environment..."
 
 # Start Docker services
 docker-compose up -d
@@ -250,7 +250,7 @@ EOF
     # Create stop script
     cat > stop.sh << 'EOF'
 #!/bin/bash
-echo "🛑 Stopping The Shandi development environment..."
+echo "🛑 Stopping Buffr Host development environment..."
 
 # Stop Docker services
 docker-compose down
@@ -267,7 +267,7 @@ EOF
     # Create test script
     cat > test.sh << 'EOF'
 #!/bin/bash
-echo "Running The Shandi tests..."
+echo "Running Buffr Host tests..."
 
 # Backend tests
 echo "Running backend tests..."
@@ -292,7 +292,7 @@ EOF
 
 # Main setup function
 main() {
-    echo "The Shandi Development Setup"
+    echo "Buffr Host Development Setup"
     echo "================================"
     echo ""
     

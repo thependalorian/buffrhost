@@ -1,5 +1,5 @@
 /**
- * Universal Breadcrumb Component for The Shandi Platform
+ * Universal Breadcrumb Component for Buffr Host Platform
  *
  * A reusable breadcrumb component with responsive design and accessibility
  * for navigation across the entire application.

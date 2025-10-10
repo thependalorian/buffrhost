@@ -1,5 +1,5 @@
 /**
- * Menu Item Component for The Shandi Frontend
+ * Menu Item Component for Buffr Host Frontend
  *
  * Displays individual menu items with pricing, descriptions, and actions.
  */

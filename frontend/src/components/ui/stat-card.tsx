@@ -1,5 +1,5 @@
 /**
- * Universal Stat Card Component for The Shandi Platform
+ * Universal Stat Card Component for Buffr Host Platform
  *
  * A reusable stat card component for displaying metrics, KPIs, and statistics
  * across dashboards and analytics pages throughout the application.

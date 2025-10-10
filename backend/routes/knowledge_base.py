@@ -1,5 +1,5 @@
 """
-Knowledge Base API Routes for The Shandi Hospitality Platform
+Knowledge Base API Routes for Buffr Host Hospitality Platform
 
 This module provides API endpoints for managing the knowledge base,
 including document upload, search, and AI agent interactions.

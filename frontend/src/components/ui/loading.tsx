@@ -1,5 +1,5 @@
 /**
- * Universal Loading Components for The Shandi Platform
+ * Universal Loading Components for Buffr Host Platform
  *
  * Comprehensive loading components with multiple variants and animations
  * for displaying loading states across the entire application.

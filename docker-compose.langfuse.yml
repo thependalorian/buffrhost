@@ -78,9 +78,9 @@ services:
   postgres:
     image: postgres:15
     environment:
-      - POSTGRES_DB=theshandi
-      - POSTGRES_USER=theshandi_user
-      - POSTGRES_PASSWORD=theshandi_password
+      - POSTGRES_DB=buffrhost
+      - POSTGRES_USER=buffrhost_user
+      - POSTGRES_PASSWORD=buffrhost_password
     ports:
       - "5432:5432"
     volumes:

@@ -1,4 +1,4 @@
-# Testing dependencies for The Shandi Hospitality Platform
+# Testing dependencies for Buffr Host Hospitality Platform
 pytest>=7.4.0
 pytest-asyncio>=0.21.0
 pytest-cov>=4.1.0

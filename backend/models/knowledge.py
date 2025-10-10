@@ -12,6 +12,8 @@ from database import Base
 class KnowledgeDocument(Base):
     __tablename__ = "knowledgedocument"
     document_id = Column(String, primary_key=True)
+    id = Column(String, nullable=True)  # ADDED: Missing field from Pydantic
+    category = Column(String, nullable=True)  # ADDED: Missing field from Pydantic
     property_id = Column(Integer, ForeignKey("hospitality_property.property_id"))
     title = Column(String, nullable=False)
     content = Column(Text, nullable=False)

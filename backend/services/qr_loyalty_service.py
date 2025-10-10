@@ -1,5 +1,5 @@
 """
-QR Code Loyalty Integration Service for The Shandi Hospitality Ecosystem Management Platform
+QR Code Loyalty Integration Service for Buffr Host Hospitality Ecosystem Management Platform
 Provides QR code generation and scanning for loyalty enrollment and redemption.
 """
 
@@ -14,7 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from models.hospitality_property import HospitalityProperty
-from models.user import Profile, User
+from models.user import User
 from services.loyalty_service import LoyaltyService
 
 
@@ -64,7 +64,7 @@ class QRLoyaltyService:
         """Generate QR code for cross-business redemption"""
         customer = self._get_customer(customer_id)
         if not customer:
-            return {"success": False, "error": "Profile not found"}
+            return {"success": False, "error": "User not found"}
 
         # Check if customer has sufficient points
         if customer.loyalty_points < points:
@@ -210,7 +210,7 @@ class QRLoyaltyService:
             return {
                 "success": True,
                 "action": "enrollment_required",
-                "message": "Profile needs to enroll in loyalty program",
+                "message": "User needs to enroll in loyalty program",
                 "enrollment_url": f"https://shandi.app/loyalty/enroll/{property_id}",
             }
 
@@ -220,7 +220,7 @@ class QRLoyaltyService:
             return {
                 "success": True,
                 "action": "already_enrolled",
-                "message": "Profile is already enrolled in loyalty program",
+                "message": "User is already enrolled in loyalty program",
                 "loyalty_summary": self.loyalty_service.get_customer_loyalty_summary(
                     customer_id
                 ),
@@ -229,7 +229,7 @@ class QRLoyaltyService:
         return {
             "success": True,
             "action": "enrollment_ready",
-            "message": "Profile can enroll in loyalty program",
+            "message": "User can enroll in loyalty program",
             "customer_id": customer_id,
         }
 
@@ -272,10 +272,10 @@ class QRLoyaltyService:
 
         return response
 
-    def _get_customer(self, customer_id: uuid.UUID) -> Optional[Profile]:
+    def _get_customer(self, customer_id: uuid.UUID) -> Optional[User]:
         """Get customer by ID"""
         result = self.db.execute(
-            select(Profile).where(Profile.customer_id == customer_id)
+            select(User).where(User.customer_id == customer_id)
         )
         return result.scalar_one_or_none()
 

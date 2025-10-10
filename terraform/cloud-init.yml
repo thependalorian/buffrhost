@@ -150,7 +150,7 @@ write_files:
       cd /opt/buffrhost
       
       # Clone repository (replace with actual repo)
-      # git clone https://github.com/your-org/the-shandi.git .
+      # git clone https://github.com/your-org/buffr-host.git .
       
       # Copy deployment files
       # cp -r /tmp/buffrhost-deployment/* .

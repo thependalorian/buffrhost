@@ -1,3 +1,4 @@
+"use client";
 'use client';
 
 import React from 'react';
@@ -80,7 +81,7 @@ export default function HRDashboardPage() {
         actions={
           <ActionButton
             onClick={() => window.location.href = '/protected/hr/employees'}
-            variant="primary"
+            variant="default"
           >
             <UserPlus className="w-4 h-4 mr-2" />
             Add Employee

@@ -1,5 +1,5 @@
 /**
- * Reusable Form Components for The Shandi Frontend
+ * Reusable Form Components for Buffr Host Frontend
  *
  * Comprehensive form components with consistent styling, validation, and accessibility.
  * Includes FormField, FormSelect, FormTextarea, and FormCheckbox components.

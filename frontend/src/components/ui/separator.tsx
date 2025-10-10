@@ -1,5 +1,5 @@
 /**
- * Separator Component for The Shandi Frontend
+ * Separator Component for Buffr Host Frontend
  *
  * A reusable separator component for visual separation.
  */

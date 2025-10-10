@@ -1,5 +1,5 @@
 """
-Authentication routes for The Shandi platform.
+Authentication routes for Buffr Host platform.
 """
 import uuid
 from datetime import datetime, timedelta
@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth.rbac import Permission, Role, rbac_manager
 from config import settings
 from database import get_db
-from models.user import Profile, User
+from models.user import User
 from schemas.user import (PasswordChange, PasswordReset, PasswordResetConfirm,
                           ProfileCreate, ProfileResponse, ProfileUpdate,
                           UserCreate, UserLogin, UserLoginResponse,

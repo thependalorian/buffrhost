@@ -1,7 +1,7 @@
 """
 Buffr Host Email Routes
 
-API routes for email functionality in The Shandi (Buffr Host)
+API routes for email functionality in Buffr Host (Buffr Host)
 Founder: George Nekwaya (george@mail.buffr.ai +12065308433)
 """
 
@@ -11,7 +11,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 
-from ..services.email_service import EmailResponse, email_service
+from services.email_service import EmailResponse, email_service
 
 router = APIRouter(prefix="/api/email", tags=["email"])
 
@@ -27,7 +27,7 @@ class BookingConfirmationRequest(BaseModel):
     room_type: str
     total_amount: float
     currency: str = "NAD"
-    hotel_name: str = "The Shandi"
+    hotel_name: str = "Buffr Host"
 
 
 class PaymentConfirmationRequest(BaseModel):

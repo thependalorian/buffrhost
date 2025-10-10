@@ -1,5 +1,5 @@
 """
-Menu management routes for The Shandi platform.
+Menu management routes for Buffr Host platform.
 """
 from typing import List, Optional
 
@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models.menu import Menu, MenuCategory, MenuMedia
-from models.user import Profile, User
+from models.user import User
 from routes.auth import get_current_user
 from schemas.menu import (MenuCategoryCreate, MenuCategoryResponse,
                           MenuCategoryUpdate, MenuItemCreate, MenuItemResponse,

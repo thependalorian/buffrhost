@@ -1,73 +1,42 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   images: {
-    domains: ["localhost", "theshandi.com", "cdn.theshandi.com"],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
-      },
-    ],
+    domains: ['localhost', 'your-project.supabase.co', 'images.unsplash.com'],
   },
   env: {
-    NEXT_PUBLIC_API_URL:
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/v1",
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   },
   async rewrites() {
-    const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/v1";
-    // Ensure apiUrl is properly formatted
-    if (!apiUrl || apiUrl === "undefined") {
-      return [];
-    }
+    const signatureServiceUrl = process.env.NEXT_PUBLIC_SIGNATURE_SERVICE_URL || 'http://localhost:8001';
+    const documentServiceUrl = process.env.NEXT_PUBLIC_DOCUMENT_SERVICE_URL || 'http://localhost:8002';
+    const templateServiceUrl = process.env.NEXT_PUBLIC_TEMPLATE_SERVICE_URL || 'http://localhost:8003';
+    
     return [
       {
-        source: "/api/:path*",
-        destination: `${apiUrl}/:path*`,
+        source: '/api/signature/:path*',
+        destination: `${signatureServiceUrl}/:path*`,
+      },
+      {
+        source: '/api/document/:path*',
+        destination: `${documentServiceUrl}/:path*`,
+      },
+      {
+        source: '/api/template/:path*',
+        destination: `${templateServiceUrl}/:path*`,
       },
     ];
   },
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
-          {
-            key: "X-DNS-Prefetch-Control",
-            value: "on",
-          },
-        ],
-      },
-    ];
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+    };
+    return config;
   },
-  // Enable experimental features for better performance
-  experimental: {
-    optimizePackageImports: ["@heroicons/react", "lucide-react"],
-  },
-  // Compiler optimizations
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
-  },
-  // Output configuration for Vercel
-  // output: 'standalone', // Commented out for Vercel compatibility
-  // Enable SWC minification
-  swcMinify: true,
 };
 
 module.exports = nextConfig;

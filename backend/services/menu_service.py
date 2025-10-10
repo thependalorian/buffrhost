@@ -1,5 +1,5 @@
 """
-Menu Service for The Shandi Hospitality Ecosystem Management Platform
+Menu Service for Buffr Host Hospitality Ecosystem Management Platform
 Provides business logic for menu operations.
 """
 

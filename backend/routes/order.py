@@ -1,5 +1,5 @@
 """
-Order management routes for The Shandi platform.
+Order management routes for Buffr Host platform.
 """
 from datetime import datetime
 from typing import List, Optional
@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from models.menu import Menu, MenuOptionValue
 from models.order import Order, OrderItem, OrderItemOption
-from models.user import Profile, User
+from models.user import User
 from routes.auth import get_current_user
 from schemas.order import (OrderCreate, OrderResponse, OrderSearch,
                            OrderStatusUpdate, OrderSummary, OrderUpdate)

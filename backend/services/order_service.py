@@ -1,5 +1,5 @@
 """
-Order Service for The Shandi Hospitality Ecosystem Management Platform
+Order Service for Buffr Host Hospitality Ecosystem Management Platform
 Provides business logic for order operations.
 """
 
@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from models.hospitality_property import HospitalityProperty
 from models.order import Order, OrderItem, OrderItemOption
-from models.user import Profile, User
+from models.user import User
 
 
 class OrderService:

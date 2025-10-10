@@ -1,5 +1,5 @@
 """
-CMS API Routes for The Shandi Hospitality Ecosystem Management Platform
+CMS API Routes for Buffr Host Hospitality Ecosystem Management Platform
 Provides RESTful endpoints for content management operations.
 """
 

@@ -4,7 +4,7 @@
 
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/components/ui/button";
 
 describe("Button Component", () => {
   it("renders button with default props", () => {
@@ -12,15 +12,15 @@ describe("Button Component", () => {
 
     const button = screen.getByRole("button", { name: /click me/i });
     expect(button).toBeInTheDocument();
-    expect(button).toHaveClass("bg-primary");
+    expect(button).toHaveClass("bg-nude-600");
   });
 
   it("renders button with different variants", () => {
     const { rerender } = render(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole("button")).toHaveClass("bg-secondary");
+    expect(screen.getByRole("button")).toHaveClass("bg-nude-100");
 
     rerender(<Button variant="destructive">Destructive</Button>);
-    expect(screen.getByRole("button")).toHaveClass("bg-destructive");
+    expect(screen.getByRole("button")).toHaveClass("bg-semantic-error");
 
     rerender(<Button variant="outline">Outline</Button>);
     expect(screen.getByRole("button")).toHaveClass("border");
@@ -31,7 +31,7 @@ describe("Button Component", () => {
     expect(screen.getByRole("button")).toHaveClass("h-9");
 
     rerender(<Button size="lg">Large</Button>);
-    expect(screen.getByRole("button")).toHaveClass("h-11");
+    expect(screen.getByRole("button")).toHaveClass("h-12");
 
     rerender(<Button size="icon">Icon</Button>);
     expect(screen.getByRole("button")).toHaveClass("h-10");

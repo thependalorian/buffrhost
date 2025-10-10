@@ -1,5 +1,5 @@
 /**
- * Menu Category Card Component for The Shandi Frontend
+ * Menu Category Card Component for Buffr Host Frontend
  *
  * Displays menu categories with items and navigation.
  */

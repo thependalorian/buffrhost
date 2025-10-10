@@ -1,4 +1,4 @@
-# The Shandi Terraform Variables Example
+# Buffr Host Terraform Variables Example
 # Copy this file to terraform.tfvars and fill in your values
 
 # Google Cloud Configuration
@@ -24,7 +24,7 @@ create_image_storage = true
 # Backend Environment Variables
 backend_env = {
   APP_ENV                = "production"
-  DATABASE_URL          = "postgresql://shandi_user:your-password@/the_shandi?host=/cloudsql/your-project:us-central1:the-shandi-db"
+  DATABASE_URL          = "postgresql://shandi_user:your-password@/buffr_host?host=/cloudsql/your-project:us-central1:buffr-host-db"
   REDIS_URL             = "redis://your-redis-host:6379"
   JWT_SECRET_KEY        = "your-jwt-secret-key"
   CORS_ORIGINS          = "https://app.theshandi.ai,https://www.app.theshandi.ai"

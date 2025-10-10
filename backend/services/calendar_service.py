@@ -1,5 +1,5 @@
 """
-Calendar Service for The Shandi Hospitality Ecosystem Management Platform.
+Calendar Service for Buffr Host Hospitality Ecosystem Management Platform.
 Handles availability checks, booking management, and scheduling for rooms and services.
 """
 
@@ -17,7 +17,7 @@ from models.room import Room, RoomReservation, RoomType
 from models.services import (ConferenceRoom, RecreationService, ServiceBooking,
                              SpaService, SpecializedService,
                              TransportationService)
-from models.user import Profile, User
+from models.user import User
 
 
 class CalendarService:

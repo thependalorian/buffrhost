@@ -59,3 +59,17 @@ class Invoice(Base):
     payment_details = Column(JSONB)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class CommissionStructure(Base):
+    __tablename__ = "commission_structures"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String, nullable=False)
+    description = Column(String)
+    commission_type = Column(String, nullable=False)  # percentage or fixed
+    commission_value = Column(Float, nullable=False)
+    applies_to = Column(String)  # e.g., booking, payment, transaction
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

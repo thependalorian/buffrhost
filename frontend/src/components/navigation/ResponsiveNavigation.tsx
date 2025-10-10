@@ -1,5 +1,5 @@
 /**
- * Responsive Navigation Component for The Shandi Frontend
+ * Responsive Navigation Component for Buffr Host Frontend
  *
  * Provides responsive navigation with mobile menu support.
  */

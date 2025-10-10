@@ -1,4 +1,4 @@
-# The Shandi Terraform Infrastructure
+# Buffr Host Terraform Infrastructure
 # Google Cloud Platform deployment with Cloud Run
 
 terraform {
@@ -29,19 +29,19 @@ provider "google-beta" {
 ################  Artifact Registry  ################
 resource "google_artifact_registry_repository" "docker" {
   location      = var.region
-  repository_id = "the-shandi-docker"
+  repository_id = "buffr-host-docker"
   format        = "DOCKER"
 }
 
 ################  Cloud Run Backend Service #####
 resource "google_cloud_run_v2_service" "backend" {
-  name     = "the-shandi-backend"
+  name     = "buffr-host-backend"
   location = var.region
   ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker.repository_id}/the-shandi-backend:latest"
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker.repository_id}/buffr-host-backend:latest"
       ports {
         container_port = 8003
       }
@@ -123,13 +123,13 @@ resource "google_storage_bucket_iam_member" "backend_bucket_legacy" {
 }
 
 resource "google_compute_managed_ssl_certificate" "frontend_ssl" {
-  name    = "the-shandi-frontend-ssl"
+  name    = "buffr-host-frontend-ssl"
   managed { domains = [var.frontend_domain] }
 }
 
 # Backend bucket with CDN
 resource "google_compute_backend_bucket" "frontend" {
-  name        = "the-shandi-frontend-backend-bucket"
+  name        = "buffr-host-frontend-backend-bucket"
   bucket_name = google_storage_bucket.frontend.name
   enable_cdn  = true
   
@@ -144,27 +144,27 @@ resource "google_compute_backend_bucket" "frontend" {
 
 # URL map
 resource "google_compute_url_map" "frontend" {
-  name            = "the-shandi-frontend-lb"
+  name            = "buffr-host-frontend-lb"
   default_service = google_compute_backend_bucket.frontend.self_link
 }
 
 # HTTPS proxy
 resource "google_compute_target_https_proxy" "frontend" {
-  name             = "the-shandi-frontend-https-proxy"
+  name             = "buffr-host-frontend-https-proxy"
   url_map          = google_compute_url_map.frontend.self_link
   ssl_certificates = [google_compute_managed_ssl_certificate.frontend_ssl.self_link]
 }
 
 # Global forwarding rule
 resource "google_compute_global_forwarding_rule" "frontend" {
-  name       = "the-shandi-frontend-lb-forwarding-rule"
+  name       = "buffr-host-frontend-lb-forwarding-rule"
   target     = google_compute_target_https_proxy.frontend.self_link
   port_range = "443"
 }
 
 # HTTP to HTTPS redirect
 resource "google_compute_url_map" "https_redirect" {
-  name = "the-shandi-frontend-https-redirect"
+  name = "buffr-host-frontend-https-redirect"
   default_url_redirect {
     https_redirect = true
     strip_query    = false
@@ -172,12 +172,12 @@ resource "google_compute_url_map" "https_redirect" {
 }
 
 resource "google_compute_target_http_proxy" "https_redirect" {
-  name    = "the-shandi-frontend-http-proxy"
+  name    = "buffr-host-frontend-http-proxy"
   url_map = google_compute_url_map.https_redirect.self_link
 }
 
 resource "google_compute_global_forwarding_rule" "https_redirect" {
-  name       = "the-shandi-frontend-http-forwarding-rule"
+  name       = "buffr-host-frontend-http-forwarding-rule"
   target     = google_compute_target_http_proxy.https_redirect.self_link
   port_range = "80"
 }
@@ -193,7 +193,7 @@ resource "google_cloud_run_domain_mapping" "api_domain" {
 ################  Cloud SQL Database  ##############
 resource "google_sql_database_instance" "main" {
   count            = var.create_database ? 1 : 0
-  name             = "the-shandi-db"
+  name             = "buffr-host-db"
   database_version = "POSTGRES_15"
   region           = var.region
 
@@ -218,7 +218,7 @@ resource "google_sql_database_instance" "main" {
 
 resource "google_sql_database" "database" {
   count     = var.create_database ? 1 : 0
-  name      = "the_shandi"
+  name      = "buffr_host"
   instance  = google_sql_database_instance.main[0].name
 }
 
@@ -232,7 +232,7 @@ resource "google_sql_user" "users" {
 ################  Redis Memorystore  ##############
 resource "google_redis_instance" "cache" {
   count          = var.create_redis ? 1 : 0
-  name           = "the-shandi-redis"
+  name           = "buffr-host-redis"
   tier           = "STANDARD_HA"
   memory_size_gb = 2
   region         = var.region
@@ -241,7 +241,7 @@ resource "google_redis_instance" "cache" {
 ################  Cloud Storage for Hospitality Data  ##############
 resource "google_storage_bucket" "hospitality_data" {
   count         = var.create_hospitality_storage ? 1 : 0
-  name          = "${var.project_id}-the-shandi-hospitality-data"
+  name          = "${var.project_id}-buffr-host-hospitality-data"
   location      = var.region
   force_destroy = false
 
@@ -267,7 +267,7 @@ resource "google_storage_bucket" "hospitality_data" {
 ################  Cloud Storage for Property Images  ##############
 resource "google_storage_bucket" "property_images" {
   count         = var.create_image_storage ? 1 : 0
-  name          = "${var.project_id}-the-shandi-property-images"
+  name          = "${var.project_id}-buffr-host-property-images"
   location      = var.region
   force_destroy = false
 
