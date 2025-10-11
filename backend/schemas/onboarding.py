@@ -73,7 +73,7 @@ class TenantCreationRequest(BaseModel):
     contact_email: str = Field(..., pattern=r'^[^@]+@[^@]+\.[^@]+$')
     contact_phone: str = Field(..., min_length=10, max_length=20)
     timezone: str = Field(default="UTC", max_length=50)
-    base_currency: str = Field(default="USD", max_length=3)
+    base_currency: str = Field(default="NAD", max_length=3)
     website: Optional[str] = Field(None, max_length=200)
     tax_id: Optional[str] = Field(None, max_length=50)
     

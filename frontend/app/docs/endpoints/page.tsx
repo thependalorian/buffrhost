@@ -1,4 +1,3 @@
-"use client";
 'use client';
 
 import React, { useState } from 'react';
@@ -37,7 +36,7 @@ import {
   Code,
   Layers,
   Filter as FilterIcon,
-  //  // Icon not available in lucide-react
+  // Compress, // Icon not available in lucide-react
   Archive,
   Fingerprint,
   EyeOff,
@@ -324,7 +323,7 @@ export default function EndpointsDocumentationPage() {
           properties: {
             booking_id: { type: 'string', description: 'Booking identifier' },
             amount: { type: 'number', format: 'decimal', description: 'Payment amount' },
-            currency: { type: 'string', default: 'USD', description: 'Payment currency' },
+            currency: { type: 'string', default: 'NAD', description: 'Payment currency (Namibian Dollars)' },
             payment_method: { type: 'string', enum: ['card', 'bank_transfer', 'cash'], description: 'Payment method' },
             card_details: {
               type: 'object',
@@ -356,7 +355,7 @@ export default function EndpointsDocumentationPage() {
           request: {
             booking_id: 'booking_123',
             amount: 500.00,
-            currency: 'USD',
+            currency: 'NAD',
             payment_method: 'card',
             card_details: {
               number: '4111111111111111',
@@ -369,7 +368,7 @@ export default function EndpointsDocumentationPage() {
             id: 'payment_456',
             booking_id: 'booking_123',
             amount: 500.00,
-            currency: 'USD',
+            currency: 'NAD',
             status: 'completed',
             payment_method: 'card',
             transaction_id: 'txn_789',

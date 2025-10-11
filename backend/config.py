@@ -134,7 +134,7 @@ class Settings(BaseSettings):
     ONBOARDING_AI_RECOMMENDATIONS: bool = True
     
     # Business Logic
-    DEFAULT_CURRENCY: str = "USD"
+    DEFAULT_CURRENCY: str = "NAD"
     DEFAULT_TIMEZONE: str = "UTC"
     DEFAULT_LANGUAGE: str = "en"
     

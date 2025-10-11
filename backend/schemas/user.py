@@ -267,7 +267,7 @@ class UserSettings(BaseModel):
     language: str = "en"
     date_format: str = "YYYY-MM-DD"
     time_format: str = "24h"
-    currency: str = "USD"
+    currency: str = "NAD"
     theme: str = "light"  # light, dark, auto
     notifications: UserNotificationPreferences
 

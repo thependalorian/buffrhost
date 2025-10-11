@@ -65,7 +65,7 @@ class Hotel(Base):
     # Business details
     business_license = Column(String(100))
     tax_id = Column(String(100))
-    currency = Column(String(3), default="USD")
+    currency = Column(String(3), default="NAD")
     timezone = Column(String(50), default="UTC")
     
     # Configuration
@@ -108,7 +108,7 @@ class Room(Base):
     
     # Pricing
     base_rate = Column(Float, nullable=False)
-    currency = Column(String(3), default="USD")
+    currency = Column(String(3), default="NAD")
     
     # Status
     is_active = Column(Boolean, default=True)
@@ -136,7 +136,7 @@ class HotelService(Base):
     
     # Pricing
     base_price = Column(Float)
-    currency = Column(String(3), default="USD")
+    currency = Column(String(3), default="NAD")
     pricing_type = Column(String(50))  # Fixed, per_hour, per_person, etc.
     
     # Availability
@@ -214,7 +214,7 @@ class MenuItem(Base):
     
     # Pricing
     price = Column(Float, nullable=False)
-    currency = Column(String(3), default="USD")
+    currency = Column(String(3), default="NAD")
     
     # Availability
     is_available = Column(Boolean, default=True)
@@ -253,7 +253,7 @@ class Booking(Base):
     
     # Pricing
     total_amount = Column(Float, nullable=False)
-    currency = Column(String(3), default="USD")
+    currency = Column(String(3), default="NAD")
     
     # Status
     status = Column(String(50), default="confirmed")  # confirmed, checked_in, checked_out, cancelled
@@ -289,7 +289,7 @@ class ServiceBooking(Base):
     
     # Pricing
     total_amount = Column(Float, nullable=False)
-    currency = Column(String(3), default="USD")
+    currency = Column(String(3), default="NAD")
     
     # Status
     status = Column(String(50), default="confirmed")
@@ -324,7 +324,7 @@ class RestaurantBooking(Base):
     
     # Pricing
     total_amount = Column(Float, default=0.0)
-    currency = Column(String(3), default="USD")
+    currency = Column(String(3), default="NAD")
     
     # Status
     status = Column(String(50), default="confirmed")

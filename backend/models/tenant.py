@@ -72,7 +72,7 @@ class TenantProfile(Base):
     subdomain = Column(String, unique=True, nullable=False)
     custom_domain = Column(String)
     timezone = Column(String, default='UTC')
-    base_currency = Column(String, default='USD')
+    base_currency = Column(String, default='NAD')
     locale = Column(String, default='en-US')
     
     # Onboarding Progress

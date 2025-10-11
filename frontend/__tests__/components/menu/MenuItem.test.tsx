@@ -11,7 +11,7 @@ const mockMenuItem = {
   name: "Test Item",
   description: "A delicious test item",
   price: 15.99,
-  currency: "USD",
+  currency: "NAD",
   category: "Main Course",
   image_url: "https://example.com/image.jpg",
   is_available: true,

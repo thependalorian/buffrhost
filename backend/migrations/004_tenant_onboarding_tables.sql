@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS tenant_profiles (
     contact_email VARCHAR(255) NOT NULL,
     contact_phone VARCHAR(20) NOT NULL,
     timezone VARCHAR(50) DEFAULT 'UTC',
-    base_currency VARCHAR(3) DEFAULT 'USD',
+    base_currency VARCHAR(3) DEFAULT 'NAD',
     website VARCHAR(200),
     tax_id VARCHAR(50),
     address_line1 VARCHAR(255),
