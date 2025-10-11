@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
-import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { Badge } from "../ui/badge";
 
 interface Event {
   id: string;
@@ -11,89 +11,85 @@ interface Event {
   description: string;
   startTime: string;
   endTime: string;
-  location: string;
+  status: "scheduled" | "in-progress" | "completed" | "cancelled";
   attendees: number;
-  status: 'upcoming' | 'ongoing' | 'completed';
 }
 
 interface EventListProps {
   events: Event[];
   onEdit?: (event: Event) => void;
-  onDelete?: (event: Event) => void;
-  onView?: (event: Event) => void;
+  onDelete?: (eventId: string) => void;
+  onStatusChange?: (eventId: string, status: Event["status"]) => void;
 }
 
-export function EventList({ events, onEdit, onDelete, onView }: EventListProps) {
+export default function EventList({ events, onEdit, onDelete, onStatusChange }: EventListProps) {
+  const getStatusColor = (status: Event["status"]) => {
+    switch (status) {
+      case "scheduled":
+        return "bg-blue-100 text-blue-800";
+      case "in-progress":
+        return "bg-yellow-100 text-yellow-800";
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
   return (
     <div className="space-y-4">
-      {events.map((event) => (
-        <Card key={event.id} className="hover:shadow-luxury-medium transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-nude-900 mb-2">{event.title}</h3>
-                <p className="text-nude-600 mb-4">{event.description}</p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4 text-nude-600" />
-                    <span className="text-nude-700">
-                      {event.startTime} - {event.endTime}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="w-4 h-4 text-nude-600" />
-                    <span className="text-nude-700">{event.location}</span>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4 text-nude-600" />
-                    <span className="text-nude-700">{event.attendees} attendees</span>
-                  </div>
+      {events.length === 0 ? (
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p className="text-gray-500">No events scheduled</p>
+          </CardContent>
+        </Card>
+      ) : (
+        events.map((event) => (
+          <Card key={event.id} className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{event.title}</CardTitle>
+                  <p className="text-sm text-gray-600 mt-1">{event.description}</p>
                 </div>
+                <Badge className={getStatusColor(event.status)}>
+                  {event.status.replace("-", " ")}
+                </Badge>
               </div>
-              
-              <div className="flex items-center space-x-2 ml-4">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  event.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
-                  event.status === 'ongoing' ? 'bg-green-100 text-green-800' :
-                  'bg-gray-100 text-gray-800'
-                }`}>
-                  {event.status}
-                </span>
-                
-                <div className="flex space-x-1">
-                  {onView && (
-                    <Button variant="ghost" size="sm" onClick={() => onView(event)}>
-                      View
-                    </Button>
-                  )}
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-500">
+                  <p>{event.startTime} - {event.endTime}</p>
+                  <p>{event.attendees} attendees</p>
+                </div>
+                <div className="flex space-x-2">
                   {onEdit && (
-                    <Button variant="ghost" size="sm" onClick={() => onEdit(event)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onEdit(event)}
+                    >
                       Edit
                     </Button>
                   )}
                   {onDelete && (
-                    <Button variant="ghost" size="sm" onClick={() => onDelete(event)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onDelete(event.id)}
+                    >
                       Delete
                     </Button>
                   )}
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-      
-      {events.length === 0 && (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <Calendar className="w-12 h-12 text-nude-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-nude-900 mb-2">No Events Found</h3>
-            <p className="text-nude-600">Create your first event to get started.</p>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ))
       )}
     </div>
   );

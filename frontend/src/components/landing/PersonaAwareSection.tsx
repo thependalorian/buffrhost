@@ -64,7 +64,21 @@ const personas = {
       "VIP Guest Tracking",
       "Exclusive Service Delivery"
     ],
-    color: "luxury-champagne"
+    color: "nude-700"
+  },
+  airbnb: {
+    name: "Airbnb Host",
+    pain: "Manual guest communication, pricing guesswork, cleaning coordination",
+    hook: "Host Like a Pro, Scale Like a Business",
+    features: [
+      "Automated Guest Communication",
+      "Dynamic Pricing Optimization",
+      "Cleaning & Maintenance Scheduling",
+      "Multi-Platform Listing Management",
+      "Guest Experience Analytics",
+      "Revenue Maximization Tools"
+    ],
+    color: "nude-500"
   }
 };
 
@@ -87,21 +101,21 @@ export default function PersonaAwareSection({ className = "" }: PersonaAwareSect
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Auto-rotate personas when section is visible
-  useEffect(() => {
-    if (!isVisible) return;
+  // Auto-rotation disabled - users must click to change personas
+  // useEffect(() => {
+  //   if (!isVisible) return;
 
-    const interval = setInterval(() => {
-      setActivePersona((prev) => {
-        const personaKeys = Object.keys(personas) as Array<keyof typeof personas>;
-        const currentIndex = personaKeys.indexOf(prev);
-        const nextIndex = (currentIndex + 1) % personaKeys.length;
-        return personaKeys[nextIndex];
-      });
-    }, 4000);
+  //   const interval = setInterval(() => {
+  //     setActivePersona((prev) => {
+  //       const personaKeys = Object.keys(personas) as Array<keyof typeof personas>;
+  //       const currentIndex = personaKeys.indexOf(prev);
+  //       const nextIndex = (currentIndex + 1) % personaKeys.length;
+  //       return personaKeys[nextIndex];
+  //     });
+  //   }, 4000);
 
-    return () => clearInterval(interval);
-  }, [isVisible]);
+  //   return () => clearInterval(interval);
+  // }, [isVisible]);
 
   const currentPersona = personas[activePersona];
 
@@ -113,7 +127,7 @@ export default function PersonaAwareSection({ className = "" }: PersonaAwareSect
           <h2 className="text-3xl md:text-5xl font-display font-bold mb-6 text-nude-900">
             Built for Every Hospitality Professional
           </h2>
-          <p className="max-w-3xl mx-auto text-lg text-nude-700 leading-relaxed mb-8">
+          <p className="max-w-3xl mx-auto text-lg text-nude-800 leading-relaxed mb-8">
             Discover how Buffr Host transforms operations for different types of hospitality businesses
           </p>
           
@@ -122,11 +136,12 @@ export default function PersonaAwareSection({ className = "" }: PersonaAwareSect
             {Object.entries(personas).map(([key, persona]) => (
               <button
                 key={key}
+                type="button"
                 onClick={() => setActivePersona(key as keyof typeof personas)}
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                   activePersona === key
-                    ? `bg-${persona.color} text-white shadow-luxury-soft`
-                    : "bg-nude-100 text-nude-700 hover:bg-nude-200"
+                    ? `bg-nude-600 text-white shadow-luxury-soft`
+                    : "bg-nude-100 text-nude-800 hover:bg-nude-200 border border-nude-200"
                 }`}
               >
                 {persona.name}
@@ -142,7 +157,7 @@ export default function PersonaAwareSection({ className = "" }: PersonaAwareSect
             <h3 className="text-2xl font-display font-bold text-nude-900 mb-4">
               {currentPersona.hook}
             </h3>
-            <p className="text-lg text-nude-600 max-w-2xl mx-auto">
+            <p className="text-lg text-nude-800 max-w-2xl mx-auto">
               {currentPersona.pain}
             </p>
           </div>
@@ -177,10 +192,13 @@ export default function PersonaAwareSection({ className = "" }: PersonaAwareSect
             <h3 className="text-2xl font-display font-bold text-nude-900 mb-4">
               Ready to Transform Your {currentPersona.name === "Multi-Venue Operator" ? "Properties" : "Operations"}?
             </h3>
-            <p className="text-lg text-nude-600 mb-6 max-w-2xl mx-auto">
+            <p className="text-lg text-nude-800 mb-6 max-w-2xl mx-auto">
               Join thousands of hospitality professionals who have revolutionized their business with Buffr Host
             </p>
-            <button className="bg-nude-600 hover:bg-nude-700 text-white px-8 py-4 text-lg font-semibold rounded-full shadow-luxury-soft hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1">
+            <button 
+              type="button"
+              className="bg-nude-600 hover:bg-nude-700 text-white px-8 py-4 text-lg font-semibold rounded-full shadow-luxury-soft hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1"
+            >
               Start Your 3-Month Free Trial
             </button>
           </div>

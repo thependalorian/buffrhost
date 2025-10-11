@@ -9,6 +9,36 @@ from pydantic import BaseModel, Field, validator
 
 
 # Base schemas
+class StaffUserBase(BaseModel):
+    """Base schema for staff user"""
+    user_id: str
+    employee_id: str
+    department_id: Optional[str] = None
+    position_id: Optional[str] = None
+    hire_date: datetime
+    salary: Optional[Decimal] = None
+    is_active: bool = True
+
+class StaffUserCreate(StaffUserBase):
+    """Schema for creating staff user"""
+    pass
+
+class StaffUserUpdate(BaseModel):
+    """Schema for updating staff user"""
+    department_id: Optional[str] = None
+    position_id: Optional[str] = None
+    salary: Optional[Decimal] = None
+    is_active: Optional[bool] = None
+
+class StaffUserResponse(StaffUserBase):
+    """Schema for staff user response"""
+    id: str
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+
 class StaffDepartmentBase(BaseModel):
     department_name: str = Field(..., max_length=100)
     description: Optional[str] = None

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 interface OperationsFlowProps {
-  type: "hotel" | "restaurant" | "multi-venue" | "boutique";
+  type: "hotel" | "restaurant" | "multi-venue" | "boutique" | "airbnb";
   steps: string[];
   className?: string;
 }
@@ -139,6 +139,42 @@ const flowConfig = {
         title: "Premium Billing",
         description: "Luxury billing with premium service options",
         details: ["Premium billing", "Service packages", "Exclusive offers"]
+      }
+    ]
+  },
+  airbnb: {
+    title: "Airbnb Host Workflow",
+    color: "nude-500",
+    steps: [
+      {
+        icon: Smartphone,
+        title: "Guest Inquiry",
+        description: "Automated guest communication and booking",
+        details: ["Instant responses", "Availability check", "Pricing quotes"]
+      },
+      {
+        icon: CheckCircle,
+        title: "Booking Confirmation",
+        description: "Seamless booking process with all details",
+        details: ["Booking confirmation", "Payment processing", "Guest details"]
+      },
+      {
+        icon: Clock,
+        title: "Pre-Arrival Setup",
+        description: "Automated preparation and communication",
+        details: ["Cleaning schedule", "Key access", "Welcome instructions"]
+      },
+      {
+        icon: Users,
+        title: "Guest Experience",
+        description: "Ongoing support during stay",
+        details: ["24/7 support", "Local recommendations", "Issue resolution"]
+      },
+      {
+        icon: Receipt,
+        title: "Checkout & Review",
+        description: "Automated checkout and review process",
+        details: ["Checkout instructions", "Review requests", "Future booking offers"]
       }
     ]
   }

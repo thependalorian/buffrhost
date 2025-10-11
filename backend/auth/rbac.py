@@ -11,6 +11,73 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+class Permission(str, Enum):
+    """Available permissions in the system"""
+    # User management
+    USERS_READ = "users:read"
+    USERS_WRITE = "users:write"
+    USERS_DELETE = "users:delete"
+    USERS_MANAGE = "users:manage"
+    
+    # Role management
+    ROLES_READ = "roles:read"
+    ROLES_WRITE = "roles:write"
+    ROLES_DELETE = "roles:delete"
+    ROLES_MANAGE = "roles:manage"
+    
+    # Permission management
+    PERMISSIONS_READ = "permissions:read"
+    PERMISSIONS_WRITE = "permissions:write"
+    PERMISSIONS_MANAGE = "permissions:manage"
+    
+    # Tenant management
+    TENANTS_READ = "tenants:read"
+    TENANTS_WRITE = "tenants:write"
+    TENANTS_DELETE = "tenants:delete"
+    TENANTS_MANAGE = "tenants:manage"
+    
+    # Property management
+    PROPERTIES_READ = "properties:read"
+    PROPERTIES_WRITE = "properties:write"
+    PROPERTIES_DELETE = "properties:delete"
+    PROPERTIES_MANAGE = "properties:manage"
+    
+    # Hotel configuration
+    HOTEL_CONFIG_READ = "hotel_configuration:read"
+    HOTEL_CONFIG_WRITE = "hotel_configuration:write"
+    HOTEL_CONFIG_DELETE = "hotel_configuration:delete"
+    HOTEL_CONFIG_MANAGE = "hotel_configuration:manage"
+    
+    # Booking management
+    BOOKINGS_READ = "bookings:read"
+    BOOKINGS_WRITE = "bookings:write"
+    BOOKINGS_DELETE = "bookings:delete"
+    BOOKINGS_MANAGE = "bookings:manage"
+    
+    # Financial management
+    FINANCIAL_READ = "financial:read"
+    FINANCIAL_WRITE = "financial:write"
+    FINANCIAL_DELETE = "financial:delete"
+    FINANCIAL_MANAGE = "financial:manage"
+    
+    # System management
+    SETTINGS_READ = "settings:read"
+    SETTINGS_WRITE = "settings:write"
+    SETTINGS_MANAGE = "settings:manage"
+    
+    # Analytics
+    ANALYTICS_READ = "analytics:read"
+    ANALYTICS_WRITE = "analytics:write"
+    ANALYTICS_MANAGE = "analytics:manage"
+
+class Role(str, Enum):
+    """Available roles in the system"""
+    SUPER_ADMIN = "super_admin"
+    ADMIN = "admin"
+    MANAGER = "manager"
+    STAFF = "staff"
+    GUEST = "guest"
+
 class UserRole(str, Enum):
     """Available user roles in the system"""
     SUPER_ADMIN = "super_admin"
@@ -270,7 +337,7 @@ class RBACService:
             return user.tenant_id == resource_id
         
         # Check property access
-        if permission.startswith("properties:") or permission.startswith("rooms:"):
+        if permission.startswith("properties:") or permission.startswith("rooms:") or permission.startswith("hotel_configuration:"):
             from models.hospitality_property import HospitalityProperty
             property = self.db.query(HospitalityProperty).filter(
                 HospitalityProperty.id == resource_id
@@ -360,3 +427,15 @@ class RBACService:
         except Exception as e:
             logger.error(f"Failed to get audit log: {str(e)}")
             return []
+
+# Global RBAC manager instance
+rbac_manager = None
+
+def get_rbac_manager(db: Session) -> RBACService:
+    """
+    Get RBAC manager instance
+    """
+    global rbac_manager
+    if rbac_manager is None:
+        rbac_manager = RBACService(db)
+    return rbac_manager

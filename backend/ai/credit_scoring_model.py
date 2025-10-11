@@ -28,6 +28,433 @@ import json
 from pathlib import Path
 
 # Core ML libraries
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.pipeline import Pipeline
+try:
+    import xgboost as xgb
+    XGBOOST_AVAILABLE = True
+except ImportError:
+    XGBOOST_AVAILABLE = False
+    print("Warning: XGBoost not available. XGBoost features will be disabled.")
+
+# Fairness and bias detection
+try:
+    from aif360.datasets import BinaryLabelDataset
+    from aif360.metrics import BinaryLabelDatasetMetric, ClassificationMetric
+    from aif360.algorithms.preprocessing import Reweighing
+    from aif360.algorithms.inprocessing import AdversarialDebiasing
+    from aif360.algorithms.postprocessing import CalibratedEqualizedOdds
+    AIF360_AVAILABLE = True
+except ImportError:
+    AIF360_AVAILABLE = False
+    print("Warning: AIF360 not available. Fairness features will be disabled.")
+
+# Model interpretability
+try:
+    import shap
+    SHAP_AVAILABLE = True
+except ImportError:
+    SHAP_AVAILABLE = False
+    print("Warning: SHAP not available. Model interpretability features will be disabled.")
+
+try:
+    import lime
+    import lime.lime_tabular
+    LIME_AVAILABLE = True
+except ImportError:
+    LIME_AVAILABLE = False
+    print("Warning: LIME not available. Model interpretability features will be disabled.")
+
+# Statistical analysis
+import scipy.stats as stats
+from scipy import optimize
+
+# Database and caching
+import sqlite3
+import redis
+import pickle
+
+# Configuration
+import os
+from config import settings
+
+logger = logging.getLogger(__name__)
+
+class CreditScoringModel:
+    """
+    Comprehensive Credit Scoring Model for Hospitality Businesses
+    
+    This class implements a multi-faceted credit scoring system that evaluates
+    hospitality businesses based on various financial, operational, and market factors.
+    """
+    
+    def __init__(self, model_type: str = "ensemble", fairness_enabled: bool = True):
+        """
+        Initialize the credit scoring model
+        
+        Args:
+            model_type: Type of model to use ('logistic', 'random_forest', 'xgboost', 'ensemble')
+            fairness_enabled: Whether to enable fairness-aware modeling
+        """
+        self.model_type = model_type
+        self.fairness_enabled = fairness_enabled and AIF360_AVAILABLE
+        self.model = None
+        self.scaler = StandardScaler()
+        self.label_encoder = LabelEncoder()
+        self.feature_names = []
+        self.feature_importance = {}
+        self.fairness_metrics = {}
+        
+        # Initialize model based on type
+        self._initialize_model()
+        
+        # Setup database connection
+        self.db_path = "credit_scoring.db"
+        self._setup_database()
+        
+        # Setup Redis for caching
+        try:
+            self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
+            self.redis_available = True
+        except:
+            self.redis_available = False
+            logger.warning("Redis not available. Caching disabled.")
+    
+    def _initialize_model(self):
+        """Initialize the ML model based on the specified type"""
+        if self.model_type == "logistic":
+            self.model = LogisticRegression(random_state=42, max_iter=1000)
+        elif self.model_type == "random_forest":
+            self.model = RandomForestClassifier(n_estimators=100, random_state=42)
+        elif self.model_type == "xgboost":
+            if XGBOOST_AVAILABLE:
+                self.model = xgb.XGBClassifier(random_state=42, eval_metric='logloss')
+            else:
+                raise ValueError("XGBoost not available. Please install xgboost or use a different model type.")
+        elif self.model_type == "ensemble":
+            # Use multiple models and combine predictions
+            self.models = {
+                'logistic': LogisticRegression(random_state=42, max_iter=1000),
+                'random_forest': RandomForestClassifier(n_estimators=100, random_state=42)
+            }
+            if XGBOOST_AVAILABLE:
+                self.models['xgboost'] = xgb.XGBClassifier(random_state=42, eval_metric='logloss')
+        else:
+            raise ValueError(f"Unknown model type: {self.model_type}")
+    
+    def _setup_database(self):
+        """Setup SQLite database for storing model data and predictions"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Create tables for storing model data
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS credit_scores (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                business_id TEXT UNIQUE,
+                score REAL,
+                risk_level TEXT,
+                features TEXT,
+                prediction_date TIMESTAMP,
+                model_version TEXT
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS model_performance (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                model_version TEXT,
+                accuracy REAL,
+                precision REAL,
+                recall REAL,
+                f1_score REAL,
+                auc_score REAL,
+                fairness_metrics TEXT,
+                evaluation_date TIMESTAMP
+            )
+        ''')
+        
+        conn.commit()
+        conn.close()
+    
+    def train(self, X: np.ndarray, y: np.ndarray, protected_attributes: Optional[List[str]] = None):
+        """
+        Train the credit scoring model
+        
+        Args:
+            X: Feature matrix
+            y: Target labels (0: low risk, 1: high risk)
+            protected_attributes: List of protected attribute names for fairness
+        """
+        logger.info(f"Training {self.model_type} credit scoring model...")
+        
+        # Split data
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y
+        )
+        
+        # Scale features
+        X_train_scaled = self.scaler.fit_transform(X_train)
+        X_test_scaled = self.scaler.transform(X_test)
+        
+        # Store feature names
+        self.feature_names = [f"feature_{i}" for i in range(X.shape[1])]
+        
+        # Train model(s)
+        if self.model_type == "ensemble":
+            for name, model in self.models.items():
+                logger.info(f"Training {name} model...")
+                model.fit(X_train_scaled, y_train)
+                
+                # Evaluate
+                y_pred = model.predict(X_test_scaled)
+                accuracy = model.score(X_test_scaled, y_test)
+                logger.info(f"{name} accuracy: {accuracy:.4f}")
+        else:
+            self.model.fit(X_train_scaled, y_train)
+            
+            # Evaluate
+            y_pred = self.model.predict(X_test_scaled)
+            accuracy = self.model.score(X_test_scaled, y_test)
+            logger.info(f"Model accuracy: {accuracy:.4f}")
+        
+        # Fairness evaluation if enabled
+        if self.fairness_enabled and protected_attributes:
+            self._evaluate_fairness(X_test_scaled, y_test, y_pred, protected_attributes)
+        
+        # Store performance metrics
+        self._store_performance_metrics(X_test_scaled, y_test, y_pred)
+        
+        logger.info("Model training completed successfully")
+    
+    def predict(self, X: np.ndarray) -> Dict[str, Any]:
+        """
+        Make credit score predictions
+        
+        Args:
+            X: Feature matrix
+            
+        Returns:
+            Dictionary containing predictions and confidence scores
+        """
+        # Scale features
+        X_scaled = self.scaler.transform(X)
+        
+        if self.model_type == "ensemble":
+            # Get predictions from all models
+            predictions = {}
+            probabilities = {}
+            
+            for name, model in self.models.items():
+                pred = model.predict(X_scaled)
+                prob = model.predict_proba(X_scaled)
+                predictions[name] = pred
+                probabilities[name] = prob
+            
+            # Combine predictions (simple average)
+            final_pred = np.mean([pred for pred in predictions.values()], axis=0)
+            final_prob = np.mean([prob for prob in probabilities.values()], axis=0)
+            
+            return {
+                'predictions': final_pred,
+                'probabilities': final_prob,
+                'individual_predictions': predictions,
+                'individual_probabilities': probabilities
+            }
+        else:
+            pred = self.model.predict(X_scaled)
+            prob = self.model.predict_proba(X_scaled)
+            
+            return {
+                'predictions': pred,
+                'probabilities': prob
+            }
+    
+    def _evaluate_fairness(self, X_test: np.ndarray, y_test: np.ndarray, 
+                          y_pred: np.ndarray, protected_attributes: List[str]):
+        """Evaluate fairness metrics using AIF360"""
+        if not AIF360_AVAILABLE:
+            return
+        
+        try:
+            # Create dataset for fairness evaluation
+            # This is a simplified example - in practice, you'd need to map
+            # your features to the AIF360 format
+            dataset = BinaryLabelDataset(
+                df=pd.DataFrame(X_test),
+                label_names=['credit_risk'],
+                protected_attribute_names=protected_attributes
+            )
+            
+            # Calculate fairness metrics
+            metric = BinaryLabelDatasetMetric(dataset, 
+                                            unprivileged_groups=[{attr: 0 for attr in protected_attributes}],
+                                            privileged_groups=[{attr: 1 for attr in protected_attributes}])
+            
+            self.fairness_metrics = {
+                'statistical_parity_difference': metric.statistical_parity_difference(),
+                'equal_opportunity_difference': metric.equal_opportunity_difference(),
+                'average_odds_difference': metric.average_odds_difference()
+            }
+            
+            logger.info(f"Fairness metrics: {self.fairness_metrics}")
+            
+        except Exception as e:
+            logger.error(f"Error evaluating fairness: {e}")
+    
+    def _store_performance_metrics(self, X_test: np.ndarray, y_test: np.ndarray, y_pred: np.ndarray):
+        """Store model performance metrics in database"""
+        from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+        
+        accuracy = accuracy_score(y_test, y_pred)
+        precision = precision_score(y_test, y_pred, average='weighted')
+        recall = recall_score(y_test, y_pred, average='weighted')
+        f1 = f1_score(y_test, y_pred, average='weighted')
+        auc = roc_auc_score(y_test, y_pred)
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT INTO model_performance 
+            (model_version, accuracy, precision, recall, f1_score, auc_score, fairness_metrics, evaluation_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            self.model_type,
+            accuracy,
+            precision,
+            recall,
+            f1,
+            auc,
+            json.dumps(self.fairness_metrics),
+            datetime.now()
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def save_model(self, filepath: str):
+        """Save the trained model to disk"""
+        model_data = {
+            'model_type': self.model_type,
+            'scaler': self.scaler,
+            'label_encoder': self.label_encoder,
+            'feature_names': self.feature_names,
+            'feature_importance': self.feature_importance,
+            'fairness_metrics': self.fairness_metrics
+        }
+        
+        if self.model_type == "ensemble":
+            model_data['models'] = self.models
+        else:
+            model_data['model'] = self.model
+        
+        with open(filepath, 'wb') as f:
+            pickle.dump(model_data, f)
+        
+        logger.info(f"Model saved to {filepath}")
+    
+    def load_model(self, filepath: str):
+        """Load a trained model from disk"""
+        with open(filepath, 'rb') as f:
+            model_data = pickle.load(f)
+        
+        self.model_type = model_data['model_type']
+        self.scaler = model_data['scaler']
+        self.label_encoder = model_data['label_encoder']
+        self.feature_names = model_data['feature_names']
+        self.feature_importance = model_data['feature_importance']
+        self.fairness_metrics = model_data['fairness_metrics']
+        
+        if self.model_type == "ensemble":
+            self.models = model_data['models']
+        else:
+            self.model = model_data['model']
+        
+        logger.info(f"Model loaded from {filepath}")
+    
+    def get_feature_importance(self) -> Dict[str, float]:
+        """Get feature importance scores"""
+        if self.model_type == "ensemble":
+            # Average importance across all models
+            importance = {}
+            for name, model in self.models.items():
+                if hasattr(model, 'feature_importances_'):
+                    for i, imp in enumerate(model.feature_importances_):
+                        feature_name = self.feature_names[i] if i < len(self.feature_names) else f"feature_{i}"
+                        if feature_name not in importance:
+                            importance[feature_name] = []
+                        importance[feature_name].append(imp)
+            
+            # Average the importance scores
+            for feature_name in importance:
+                importance[feature_name] = np.mean(importance[feature_name])
+            
+            return importance
+        else:
+            if hasattr(self.model, 'feature_importances_'):
+                return dict(zip(self.feature_names, self.model.feature_importances_))
+            else:
+                return {}
+    
+    def explain_prediction(self, X: np.ndarray, instance_idx: int = 0) -> Dict[str, Any]:
+        """Explain a specific prediction using SHAP and LIME"""
+        X_scaled = self.scaler.transform(X)
+        
+        explanations = {}
+        
+        # SHAP explanation
+        if SHAP_AVAILABLE:
+            try:
+                if self.model_type == "ensemble":
+                    # Use the first model for explanation
+                    model = list(self.models.values())[0]
+                else:
+                    model = self.model
+                
+                explainer = shap.TreeExplainer(model)
+                shap_values = explainer.shap_values(X_scaled[instance_idx:instance_idx+1])
+                explanations['shap'] = {
+                    'values': shap_values[0].tolist() if isinstance(shap_values, list) else shap_values.tolist(),
+                    'feature_names': self.feature_names
+                }
+            except Exception as e:
+                logger.error(f"SHAP explanation failed: {e}")
+                explanations['shap'] = None
+        else:
+            explanations['shap'] = None
+        
+        # LIME explanation
+        if LIME_AVAILABLE:
+            try:
+                explainer = lime.lime_tabular.LimeTabularExplainer(
+                    X_scaled,
+                    feature_names=self.feature_names,
+                    class_names=['Low Risk', 'High Risk'],
+                    mode='classification'
+                )
+                
+                explanation = explainer.explain_instance(
+                    X_scaled[instance_idx],
+                    model.predict_proba,
+                    num_features=len(self.feature_names)
+                )
+                
+                explanations['lime'] = {
+                    'explanation': explanation.as_list(),
+                    'score': explanation.score
+                }
+            except Exception as e:
+                logger.error(f"LIME explanation failed: {e}")
+                explanations['lime'] = None
+        else:
+            explanations['lime'] = None
+        
+        return explanations
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier

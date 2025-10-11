@@ -5,9 +5,9 @@ FastAPI routes for Yango ride-hailing integration
 
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import Optional, List
-from ..services.yango_service import YangoService, YangoTripInfo, YangoZoneInfo, create_yango_service
-from ..auth.dependencies import get_current_user
-from ..models.user import User
+from services.yango_service import YangoService, YangoTripInfo, YangoZoneInfo, create_yango_service
+from auth.dependencies import get_current_user
+from models.user import User
 import logging
 
 logger = logging.getLogger(__name__)

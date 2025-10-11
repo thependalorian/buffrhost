@@ -1,6 +1,7 @@
 """
 Staff management models for Buffr Host platform.
 """
+import uuid
 from sqlalchemy import (Boolean, CheckConstraint, Column, Date, DateTime,
                         ForeignKey, Integer, Numeric, String, Text, Time)
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -9,6 +10,26 @@ from sqlalchemy.sql import func
 
 from database import Base
 
+
+class StaffUser(Base):
+    """Staff user model - links users to staff roles"""
+    __tablename__ = "staff_users"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, unique=True)
+    employee_id = Column(String(50), unique=True, nullable=False)
+    department_id = Column(String, ForeignKey("staff_departments.id"))
+    position_id = Column(String, ForeignKey("staff_positions.id"))
+    hire_date = Column(DateTime(timezone=True), nullable=False)
+    salary = Column(Numeric(10, 2))
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    user = relationship("User", foreign_keys=[user_id])
+    department = relationship("StaffDepartment", foreign_keys=[department_id])
+    position = relationship("StaffPosition", foreign_keys=[position_id])
 
 class StaffDepartment(Base):
     __tablename__ = "staff_department"

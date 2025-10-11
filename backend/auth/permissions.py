@@ -9,6 +9,49 @@ from typing import List, Callable, Optional
 from models.user import User
 from .dependencies import get_current_user
 
+class HospitalityPermissions:
+    """Hospitality-specific permissions"""
+    # Property management
+    PROPERTIES_READ = "properties:read"
+    PROPERTIES_WRITE = "properties:write"
+    PROPERTIES_DELETE = "properties:delete"
+    PROPERTIES_MANAGE = "properties:manage"
+    
+    # Hotel configuration
+    HOTEL_CONFIG_READ = "hotel_configuration:read"
+    HOTEL_CONFIG_WRITE = "hotel_configuration:write"
+    HOTEL_CONFIG_DELETE = "hotel_configuration:delete"
+    HOTEL_CONFIG_MANAGE = "hotel_configuration:manage"
+    
+    # Booking management
+    BOOKINGS_READ = "bookings:read"
+    BOOKINGS_WRITE = "bookings:write"
+    BOOKINGS_DELETE = "bookings:delete"
+    BOOKINGS_MANAGE = "bookings:manage"
+    
+    # Guest services
+    GUESTS_READ = "guests:read"
+    GUESTS_WRITE = "guests:write"
+    GUESTS_DELETE = "guests:delete"
+    GUESTS_MANAGE = "guests:manage"
+    
+    # Staff management
+    STAFF_READ = "staff:read"
+    STAFF_WRITE = "staff:write"
+    STAFF_DELETE = "staff:delete"
+    STAFF_MANAGE = "staff:manage"
+    
+    # Financial management
+    FINANCIAL_READ = "financial:read"
+    FINANCIAL_WRITE = "financial:write"
+    FINANCIAL_DELETE = "financial:delete"
+    FINANCIAL_MANAGE = "financial:manage"
+    
+    # Analytics
+    ANALYTICS_READ = "analytics:read"
+    ANALYTICS_WRITE = "analytics:write"
+    ANALYTICS_MANAGE = "analytics:manage"
+
 def require_permission(permission: str):
     """
     Decorator to require specific permission for endpoint access
@@ -165,6 +208,7 @@ PERMISSIONS_MAP = {
         "properties:*",
         "rooms:*",
         "amenities:*",
+        "hotel_configuration:*",
         
         # Booking management
         "bookings:*",
@@ -228,6 +272,7 @@ PERMISSIONS_MAP = {
         "properties:*",
         "rooms:*",
         "amenities:*",
+        "hotel_configuration:*",
         
         # Booking management
         "bookings:*",
@@ -286,6 +331,8 @@ PERMISSIONS_MAP = {
         "rooms:write",
         "amenities:read",
         "amenities:write",
+        "hotel_configuration:read",
+        "hotel_configuration:write",
         
         # Booking management
         "bookings:*",
@@ -341,6 +388,7 @@ PERMISSIONS_MAP = {
         "properties:read",
         "rooms:read",
         "amenities:read",
+        "hotel_configuration:read",
         
         # Booking management (limited)
         "bookings:read",

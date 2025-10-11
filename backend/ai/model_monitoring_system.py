@@ -28,6 +28,456 @@ import threading
 import time
 from pathlib import Path
 from enum import Enum
+
+class ModelMonitoringSystem:
+    """
+    Model Monitoring System for Hospitality Platform
+    
+    This class implements comprehensive model monitoring including performance tracking,
+    data drift detection, model degradation alerts, and automated retraining triggers
+    to ensure ML models maintain high performance in production.
+    """
+    
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        """
+        Initialize the model monitoring system
+        
+        Args:
+            config: Configuration dictionary for the system
+        """
+        self.config = config or {}
+        self.models = {}
+        self.monitoring_rules = {}
+        self.alert_thresholds = self.config.get('alert_thresholds', {
+            'accuracy_drop': 0.05,
+            'data_drift': 0.1,
+            'prediction_drift': 0.15
+        })
+        
+        # Initialize logging
+        self.logger = logging.getLogger(__name__)
+        
+        # Setup database connection
+        self.db_path = "model_monitoring.db"
+        self._setup_database()
+        
+        # Initialize monitoring
+        self._initialize_monitoring()
+    
+    def _setup_database(self):
+        """Setup SQLite database for storing monitoring data"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Create tables for model monitoring
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS model_performance (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                model_name TEXT,
+                model_version TEXT,
+                accuracy REAL,
+                precision_score REAL,
+                recall_score REAL,
+                f1_score REAL,
+                auc_score REAL,
+                prediction_count INTEGER,
+                monitoring_date TIMESTAMP,
+                created_at TIMESTAMP
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS data_drift_alerts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                model_name TEXT,
+                feature_name TEXT,
+                drift_score REAL,
+                threshold REAL,
+                alert_level TEXT,
+                created_at TIMESTAMP
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS model_alerts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                model_name TEXT,
+                alert_type TEXT,
+                alert_message TEXT,
+                severity TEXT,
+                resolved BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP,
+                resolved_at TIMESTAMP
+            )
+        ''')
+        
+        conn.commit()
+        conn.close()
+    
+    def _initialize_monitoring(self):
+        """Initialize model monitoring components"""
+        try:
+            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+            from sklearn.preprocessing import StandardScaler
+            from sklearn.decomposition import PCA
+            
+            # Initialize monitoring models
+            self.models['drift_detector'] = StandardScaler()
+            self.models['pca'] = PCA(n_components=0.95)
+            
+            self.logger.info("Model monitoring system initialized successfully")
+            
+        except ImportError as e:
+            self.logger.error(f"Failed to initialize monitoring: {e}")
+            raise
+    
+    def monitor_model_performance(self, model_name: str, y_true: List[Any], 
+                                y_pred: List[Any], y_prob: List[float] = None) -> Dict[str, Any]:
+        """
+        Monitor model performance and detect issues
+        
+        Args:
+            model_name: Name of the model being monitored
+            y_true: True labels
+            y_pred: Predicted labels
+            y_prob: Prediction probabilities (optional)
+            
+        Returns:
+            Dictionary containing monitoring results
+        """
+        try:
+            # Calculate performance metrics
+            accuracy = accuracy_score(y_true, y_pred)
+            precision = precision_score(y_true, y_pred, average='weighted')
+            recall = recall_score(y_true, y_pred, average='weighted')
+            f1 = f1_score(y_true, y_pred, average='weighted')
+            
+            # Calculate AUC if probabilities available
+            auc = None
+            if y_prob is not None:
+                try:
+                    auc = roc_auc_score(y_true, y_prob)
+                except:
+                    auc = None
+            
+            # Store performance data
+            self._store_performance_data(
+                model_name, accuracy, precision, recall, f1, auc, len(y_true)
+            )
+            
+            # Check for performance degradation
+            alerts = self._check_performance_degradation(model_name, accuracy)
+            
+            # Check for data drift
+            drift_alerts = self._check_data_drift(model_name, y_pred)
+            
+            return {
+                'model_name': model_name,
+                'accuracy': accuracy,
+                'precision': precision,
+                'recall': recall,
+                'f1_score': f1,
+                'auc_score': auc,
+                'prediction_count': len(y_true),
+                'alerts': alerts,
+                'drift_alerts': drift_alerts,
+                'monitoring_date': datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error monitoring model performance: {e}")
+            return {
+                'model_name': model_name,
+                'error': str(e),
+                'alerts': [],
+                'drift_alerts': []
+            }
+    
+    def _store_performance_data(self, model_name: str, accuracy: float, precision: float,
+                               recall: float, f1: float, auc: float, prediction_count: int):
+        """Store model performance data in database"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT INTO model_performance 
+            (model_name, model_version, accuracy, precision_score, recall_score, 
+             f1_score, auc_score, prediction_count, monitoring_date, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            model_name,
+            '1.0',  # Default version
+            accuracy,
+            precision,
+            recall,
+            f1,
+            auc,
+            prediction_count,
+            datetime.now(),
+            datetime.now()
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def _check_performance_degradation(self, model_name: str, current_accuracy: float) -> List[Dict[str, Any]]:
+        """Check for model performance degradation"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Get historical accuracy data
+        cursor.execute('''
+            SELECT accuracy FROM model_performance 
+            WHERE model_name = ? 
+            ORDER BY monitoring_date DESC LIMIT 10
+        ''', (model_name,))
+        
+        historical_accuracies = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        
+        alerts = []
+        
+        if len(historical_accuracies) >= 3:
+            # Calculate average historical accuracy
+            avg_historical_accuracy = np.mean(historical_accuracies[1:])  # Exclude current
+            
+            # Check for significant drop
+            accuracy_drop = avg_historical_accuracy - current_accuracy
+            
+            if accuracy_drop > self.alert_thresholds['accuracy_drop']:
+                alert = {
+                    'type': 'performance_degradation',
+                    'severity': 'high' if accuracy_drop > 0.1 else 'medium',
+                    'message': f'Model accuracy dropped by {accuracy_drop:.3f}',
+                    'current_accuracy': current_accuracy,
+                    'historical_accuracy': avg_historical_accuracy,
+                    'drop_percentage': (accuracy_drop / avg_historical_accuracy) * 100
+                }
+                alerts.append(alert)
+                
+                # Store alert
+                self._store_alert(model_name, 'performance_degradation', 
+                                alert['message'], alert['severity'])
+        
+        return alerts
+    
+    def _check_data_drift(self, model_name: str, predictions: List[Any]) -> List[Dict[str, Any]]:
+        """Check for data drift in model predictions"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Get historical predictions
+        cursor.execute('''
+            SELECT prediction_count FROM model_performance 
+            WHERE model_name = ? 
+            ORDER BY monitoring_date DESC LIMIT 5
+        ''', (model_name,))
+        
+        historical_counts = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        
+        alerts = []
+        
+        if len(historical_counts) >= 2:
+            # Calculate prediction count drift
+            current_count = len(predictions)
+            avg_historical_count = np.mean(historical_counts[1:])  # Exclude current
+            
+            # Check for significant change in prediction volume
+            count_change = abs(current_count - avg_historical_count) / avg_historical_count
+            
+            if count_change > self.alert_thresholds['data_drift']:
+                alert = {
+                    'type': 'data_drift',
+                    'severity': 'high' if count_change > 0.5 else 'medium',
+                    'message': f'Prediction volume changed by {count_change:.1%}',
+                    'current_count': current_count,
+                    'historical_count': avg_historical_count,
+                    'change_percentage': count_change * 100
+                }
+                alerts.append(alert)
+                
+                # Store alert
+                self._store_alert(model_name, 'data_drift', 
+                                alert['message'], alert['severity'])
+        
+        return alerts
+    
+    def _store_alert(self, model_name: str, alert_type: str, message: str, severity: str):
+        """Store model alert in database"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT INTO model_alerts 
+            (model_name, alert_type, alert_message, severity, created_at)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (model_name, alert_type, message, severity, datetime.now()))
+        
+        conn.commit()
+        conn.close()
+    
+    def get_model_health_status(self, model_name: str) -> Dict[str, Any]:
+        """Get overall health status of a model"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Get recent performance data
+        cursor.execute('''
+            SELECT * FROM model_performance 
+            WHERE model_name = ? 
+            ORDER BY monitoring_date DESC LIMIT 10
+        ''', (model_name,))
+        
+        performance_data = cursor.fetchall()
+        
+        # Get active alerts
+        cursor.execute('''
+            SELECT * FROM model_alerts 
+            WHERE model_name = ? AND resolved = FALSE
+            ORDER BY created_at DESC
+        ''', (model_name,))
+        
+        active_alerts = cursor.fetchall()
+        
+        # Get drift alerts
+        cursor.execute('''
+            SELECT * FROM data_drift_alerts 
+            WHERE model_name = ? 
+            ORDER BY created_at DESC LIMIT 5
+        ''', (model_name,))
+        
+        drift_alerts = cursor.fetchall()
+        
+        conn.close()
+        
+        if not performance_data:
+            return {
+                'model_name': model_name,
+                'status': 'unknown',
+                'message': 'No performance data available'
+            }
+        
+        # Calculate health metrics
+        recent_accuracy = performance_data[0][3]  # accuracy column
+        avg_accuracy = np.mean([row[3] for row in performance_data])
+        
+        # Determine health status
+        if recent_accuracy > 0.9:
+            status = 'excellent'
+        elif recent_accuracy > 0.8:
+            status = 'good'
+        elif recent_accuracy > 0.7:
+            status = 'fair'
+        else:
+            status = 'poor'
+        
+        # Check for critical alerts
+        critical_alerts = [alert for alert in active_alerts if alert[4] == 'high']  # severity column
+        
+        if critical_alerts:
+            status = 'critical'
+        
+        return {
+            'model_name': model_name,
+            'status': status,
+            'recent_accuracy': recent_accuracy,
+            'avg_accuracy': avg_accuracy,
+            'active_alerts': len(active_alerts),
+            'critical_alerts': len(critical_alerts),
+            'drift_alerts': len(drift_alerts),
+            'last_monitoring': performance_data[0][9].isoformat() if performance_data[0][9] else None
+        }
+    
+    def get_monitoring_dashboard(self) -> Dict[str, Any]:
+        """Get comprehensive monitoring dashboard data"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Get all models
+        cursor.execute('SELECT DISTINCT model_name FROM model_performance')
+        models = [row[0] for row in cursor.fetchall()]
+        
+        # Get overall statistics
+        cursor.execute('SELECT COUNT(*) FROM model_performance')
+        total_monitoring_events = cursor.fetchone()[0]
+        
+        cursor.execute('SELECT COUNT(*) FROM model_alerts WHERE resolved = FALSE')
+        active_alerts = cursor.fetchone()[0]
+        
+        cursor.execute('SELECT COUNT(*) FROM data_drift_alerts')
+        drift_alerts = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        # Get health status for each model
+        model_health = {}
+        for model in models:
+            model_health[model] = self.get_model_health_status(model)
+        
+        return {
+            'total_models': len(models),
+            'total_monitoring_events': total_monitoring_events,
+            'active_alerts': active_alerts,
+            'drift_alerts': drift_alerts,
+            'model_health': model_health,
+            'overall_health': 'good' if active_alerts == 0 else 'warning' if active_alerts < 5 else 'critical'
+        }
+    
+    def resolve_alert(self, alert_id: int):
+        """Resolve a model alert"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            UPDATE model_alerts 
+            SET resolved = TRUE, resolved_at = ? 
+            WHERE id = ?
+        ''', (datetime.now(), alert_id))
+        
+        conn.commit()
+        conn.close()
+    
+    def get_model_recommendations(self, model_name: str) -> List[str]:
+        """Get recommendations for improving model performance"""
+        health_status = self.get_model_health_status(model_name)
+        recommendations = []
+        
+        if health_status['status'] == 'critical':
+            recommendations.append("Immediate model retraining required")
+            recommendations.append("Review data quality and feature engineering")
+            recommendations.append("Consider model architecture changes")
+        elif health_status['status'] == 'poor':
+            recommendations.append("Model retraining recommended")
+            recommendations.append("Check for data drift and concept drift")
+            recommendations.append("Review hyperparameters")
+        elif health_status['status'] == 'fair':
+            recommendations.append("Monitor model performance closely")
+            recommendations.append("Consider incremental improvements")
+        elif health_status['status'] == 'good':
+            recommendations.append("Model performing well")
+            recommendations.append("Continue regular monitoring")
+        else:
+            recommendations.append("Model performing excellently")
+            recommendations.append("Maintain current monitoring schedule")
+        
+        return recommendations
 import warnings
 warnings.filterwarnings('ignore')
 

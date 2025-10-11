@@ -1,640 +1,376 @@
-/**
- * Nude Design System Components
- * Drop-in replacements for DaisyUI components with nude theming
- */
+"use client";
 
-import React from 'react';
-import { 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle, 
-  Info, 
-  TrendingUp, 
-  TrendingDown,
-  ArrowUp,
-  ArrowDown,
-  Star,
-  Heart,
-  Share2,
-  Eye,
-  EyeOff,
-  Plus,
-  Minus,
-  Edit,
-  Trash2,
-  Settings,
-  User,
-  Calendar,
-  Clock,
-  MapPin,
-  Phone,
-  Mail,
-  CreditCard,
-  Shield,
-  Lock,
-  Unlock,
-  Bell,
-  BellOff,
-  Search,
-  Filter,
-  SortAsc,
-  SortDesc,
-  ChevronDown,
-  ChevronUp,
-  ChevronLeft,
-  ChevronRight,
-  MoreHorizontal,
-  MoreVertical
-} from 'lucide-react';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { Button } from "./button";
+import { Input } from "./input";
+import { Label } from "./label";
+import { Badge } from "./badge";
 
-// ============================================================================
-// CARD COMPONENTS
-// ============================================================================
-
-interface NudeCardProps {
-  children: React.ReactNode;
-  className?: string;
-  variant?: 'default' | 'luxury' | 'spa' | 'elevated';
-  hover?: boolean;
+// Button Components
+export function ButtonPrimary({ children, className = "", ...props }: any) {
+  return (
+    <Button className={`bg-nude-600 hover:bg-nude-700 text-white ${className}`} {...props}>
+      {children}
+    </Button>
+  );
 }
 
-export const NudeCard: React.FC<NudeCardProps> = ({
-  children,
-  className = '',
-  variant = 'default',
-  hover = false
-}) => {
-  const baseClasses = 'hospitality-card p-6 transition-all duration-300';
-  const variantClasses = {
-    default: '',
-    luxury: 'hospitality-card-luxury',
-    spa: 'hospitality-card-spa',
-    elevated: 'shadow-nude-strong'
-  };
-  const hoverClasses = hover ? 'hover:shadow-nude-medium hover:-translate-y-1' : '';
-
+export function ButtonSecondary({ children, className = "", ...props }: any) {
   return (
-    <div className={`${baseClasses} ${variantClasses[variant]} ${hoverClasses} ${className}`}>
+    <Button variant="outline" className={`border-nude-300 text-nude-700 hover:bg-nude-50 ${className}`} {...props}>
+      {children}
+    </Button>
+  );
+}
+
+export function ButtonAccent({ children, className = "", ...props }: any) {
+  return (
+    <Button className={`bg-nude-500 hover:bg-nude-600 text-white ${className}`} {...props}>
+      {children}
+    </Button>
+  );
+}
+
+// Card Components
+export function HospitalityCard({ children, className = "", ...props }: any) {
+  return (
+    <Card className={`bg-white border-nude-200 shadow-sm hover:shadow-md transition-shadow ${className}`} {...props}>
+      {children}
+    </Card>
+  );
+}
+
+export function LayeredNudeCard({ children, className = "", ...props }: any) {
+  return (
+    <Card className={`bg-gradient-to-br from-nude-50 to-nude-100 border-nude-200 ${className}`} {...props}>
+      {children}
+    </Card>
+  );
+}
+
+export function DashboardCard({ children, className = "", ...props }: any) {
+  return (
+    <Card className={`bg-white border-nude-200 shadow-sm ${className}`} {...props}>
+      {children}
+    </Card>
+  );
+}
+
+// Form Components
+export function FormInput({ label, className = "", ...props }: any) {
+  return (
+    <div className="space-y-2">
+      {label && <Label className="text-nude-700 font-medium">{label}</Label>}
+      <Input className={`border-nude-300 focus:border-nude-600 focus:ring-nude-600 ${className}`} {...props} />
+    </div>
+  );
+}
+
+// Navigation Components
+export function NavLink({ href, children, active = false, className = "", ...props }: any) {
+  return (
+    <a
+      href={href}
+      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+        active 
+          ? 'bg-nude-100 text-nude-900' 
+          : 'text-nude-600 hover:text-nude-900 hover:bg-nude-50'
+      } ${className}`}
+      {...props}
+    >
+      {children}
+    </a>
+  );
+}
+
+// Data Table Component
+export function DataTable({ data, headers, className = "", ...props }: any) {
+  return (
+    <div className={`overflow-x-auto ${className}`} {...props}>
+      <table className="min-w-full divide-y divide-nude-200">
+        <thead className="bg-nude-50">
+          <tr>
+            {headers.map((header: string, index: number) => (
+              <th key={index} className="px-6 py-3 text-left text-xs font-medium text-nude-500 uppercase tracking-wider">
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-nude-200">
+          {data.map((row: any[], rowIndex: number) => (
+            <tr key={rowIndex}>
+              {row.map((cell: any, cellIndex: number) => (
+                <td key={cellIndex} className="px-6 py-4 whitespace-nowrap text-sm text-nude-900">
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// Loading Components
+export function NudeWaveLoader({ className = "", ...props }: any) {
+  return (
+    <div className={`flex justify-center items-center ${className}`} {...props}>
+      <div className="animate-pulse flex space-x-1">
+        <div className="w-2 h-2 bg-nude-400 rounded-full"></div>
+        <div className="w-2 h-2 bg-nude-500 rounded-full"></div>
+        <div className="w-2 h-2 bg-nude-600 rounded-full"></div>
+      </div>
+    </div>
+  );
+}
+
+export function WarmGlowLoader({ className = "", ...props }: any) {
+  return (
+    <div className={`flex justify-center items-center ${className}`} {...props}>
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-nude-600"></div>
+    </div>
+  );
+}
+
+// Hover Effects
+export function WarmGlowHover({ children, className = "", ...props }: any) {
+  return (
+    <div className={`transition-all duration-300 hover:shadow-lg hover:shadow-nude-200 ${className}`} {...props}>
       {children}
     </div>
   );
-};
-
-interface NudeCardBodyProps {
-  children: React.ReactNode;
-  className?: string;
 }
 
-export const NudeCardBody: React.FC<NudeCardBodyProps> = ({
-  children,
-  className = ''
-}) => (
-  <div className={`space-y-4 ${className}`}>
-    {children}
-  </div>
-);
-
-interface NudeCardTitleProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-export const NudeCardTitle: React.FC<NudeCardTitleProps> = ({
-  children,
-  className = ''
-}) => (
-  <h2 className={`text-xl font-display font-semibold text-nude-800 ${className}`}>
-    {children}
-  </h2>
-);
-
-interface NudeCardActionsProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-export const NudeCardActions: React.FC<NudeCardActionsProps> = ({
-  children,
-  className = ''
-}) => (
-  <div className={`flex items-center space-x-3 ${className}`}>
-    {children}
-  </div>
-);
-
-// ============================================================================
-// BUTTON COMPONENTS
-// ============================================================================
-
-interface NudeButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
-  variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost' | 'link';
-  size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
-  loading?: boolean;
-  className?: string;
-}
-
-export const NudeButton: React.FC<NudeButtonProps> = ({
-  children,
-  onClick,
-  type = 'button',
-  variant = 'primary',
-  size = 'md',
-  disabled = false,
-  loading = false,
-  className = ''
-}) => {
-  const baseClasses = 'font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-nude-600 focus:ring-offset-2';
-  
-  const variantClasses = {
-    primary: 'btn-primary',
-    secondary: 'btn-secondary',
-    accent: 'btn-accent',
-    outline: 'bg-transparent border-2 border-nude-300 text-nude-700 hover:bg-nude-100 hover:border-nude-400',
-    ghost: 'bg-transparent text-nude-700 hover:bg-nude-100',
-    link: 'bg-transparent text-nude-600 hover:text-nude-800 underline'
-  };
-
-  const sizeClasses = {
-    sm: 'px-3 py-2 text-sm',
-    md: 'px-6 py-3 text-base',
-    lg: 'px-8 py-4 text-lg'
-  };
-
-  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
-
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled || loading}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${disabledClasses} ${className}`}
-    >
-      {loading ? (
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          <span>Loading...</span>
-        </div>
-      ) : (
-        children
-      )}
-    </button>
-  );
-};
-
-// ============================================================================
-// BADGE COMPONENTS
-// ============================================================================
-
-interface NudeBadgeProps {
-  children: React.ReactNode;
-  variant?: 'success' | 'warning' | 'error' | 'info' | 'nude' | 'default';
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-}
-
-export const NudeBadge: React.FC<NudeBadgeProps> = ({
-  children,
-  variant = 'default',
-  size = 'md',
-  className = ''
-}) => {
-  const baseClasses = 'inline-flex items-center font-medium rounded-full';
-  
-  const variantClasses = {
-    success: 'badge-success',
-    warning: 'badge-warning',
-    error: 'badge-error',
-    info: 'badge-info',
-    nude: 'badge-nude',
-    default: 'bg-nude-200 text-nude-800'
-  };
-
-  const sizeClasses = {
-    sm: 'px-2 py-1 text-xs',
-    md: 'px-3 py-1 text-sm',
-    lg: 'px-4 py-2 text-base'
-  };
-
-  return (
-    <span className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}>
-      {children}
-    </span>
-  );
-};
-
-// ============================================================================
-// STAT CARD COMPONENTS
-// ============================================================================
-
-interface NudeStatCardProps {
-  title: string;
-  value: string | number;
-  description?: string;
-  icon?: React.ReactNode;
-  trend?: {
-    value: number;
-    label: string;
-    direction: 'up' | 'down';
-  };
-  variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
-  className?: string;
-}
-
-export const NudeStatCard: React.FC<NudeStatCardProps> = ({
-  title,
-  value,
-  description,
-  icon,
-  trend,
-  variant = 'default',
-  className = ''
-}) => {
-  const variantClasses = {
-    default: 'border-nude-200',
-    success: 'border-green-200 bg-green-50',
-    warning: 'border-yellow-200 bg-yellow-50',
-    error: 'border-red-200 bg-red-50',
-    info: 'border-blue-200 bg-blue-50'
-  };
-
-  return (
-    <NudeCard className={`${variantClasses[variant]} ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          {icon && (
-            <div className="w-10 h-10 bg-nude-100 rounded-lg flex items-center justify-center">
-              <div className="text-nude-600">{icon}</div>
-            </div>
-          )}
-          <div>
-            <h3 className="text-sm font-medium text-nude-600">{title}</h3>
-            {description && (
-              <p className="text-xs text-nude-500">{description}</p>
-            )}
-          </div>
-        </div>
-        {trend && (
-          <div className={`flex items-center space-x-1 text-sm ${
-            trend.direction === 'up' ? 'text-green-600' : 'text-red-600'
-          }`}>
-            {trend.direction === 'up' ? (
-              <TrendingUp className="w-4 h-4" />
-            ) : (
-              <TrendingDown className="w-4 h-4" />
-            )}
-            <span>{trend.value}%</span>
-          </div>
-        )}
-      </div>
-      <div className="text-2xl font-bold text-nude-800">{value}</div>
-      {trend && (
-        <div className="text-xs text-nude-500 mt-1">{trend.label}</div>
-      )}
-    </NudeCard>
-  );
-};
-
-// ============================================================================
-// INPUT COMPONENTS
-// ============================================================================
-
-interface NudeInputProps {
-  type?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  label?: string;
-  error?: string;
-  disabled?: boolean;
-  required?: boolean;
-  className?: string;
-}
-
-export const NudeInput: React.FC<NudeInputProps> = ({
-  type = 'text',
-  placeholder,
-  value,
-  onChange,
-  label,
-  error,
-  disabled = false,
-  required = false,
-  className = ''
-}) => (
-  <div className={className}>
-    {label && (
-      <label className="form-label">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-    )}
-    <input
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-      required={required}
-      className="form-input w-full"
-    />
-    {error && <div className="form-error">{error}</div>}
-  </div>
-);
-
-// ============================================================================
-// SELECT COMPONENTS
-// ============================================================================
-
-interface NudeSelectProps {
-  options: Array<{ value: string; label: string }>;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  label?: string;
-  placeholder?: string;
-  error?: string;
-  disabled?: boolean;
-  required?: boolean;
-  className?: string;
-}
-
-export const NudeSelect: React.FC<NudeSelectProps> = ({
-  options,
-  value,
-  onChange,
-  label,
-  placeholder,
-  error,
-  disabled = false,
-  required = false,
-  className = ''
-}) => (
-  <div className={className}>
-    {label && (
-      <label className="form-label">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-    )}
-    <select
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-      required={required}
-      className="form-input w-full"
-    >
-      {placeholder && <option value="">{placeholder}</option>}
-      {options.map(option => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-    {error && <div className="form-error">{error}</div>}
-  </div>
-);
-
-// ============================================================================
-// TEXTAREA COMPONENTS
-// ============================================================================
-
-interface NudeTextareaProps {
-  placeholder?: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  label?: string;
-  error?: string;
-  disabled?: boolean;
-  required?: boolean;
-  rows?: number;
-  className?: string;
-}
-
-export const NudeTextarea: React.FC<NudeTextareaProps> = ({
-  placeholder,
-  value,
-  onChange,
-  label,
-  error,
-  disabled = false,
-  required = false,
-  rows = 4,
-  className = ''
-}) => (
-  <div className={className}>
-    {label && (
-      <label className="form-label">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-    )}
-    <textarea
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-      required={required}
-      rows={rows}
-      className="form-input w-full resize-none"
-    />
-    {error && <div className="form-error">{error}</div>}
-  </div>
-);
-
-// ============================================================================
-// MODAL COMPONENTS
-// ============================================================================
-
-interface NudeModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  className?: string;
-}
-
-export const NudeModal: React.FC<NudeModalProps> = ({
-  isOpen,
-  onClose,
-  title,
-  children,
-  size = 'md',
-  className = ''
-}) => {
+// Modal Component
+export function Modal({ isOpen, onClose, children, className = "", ...props }: any) {
   if (!isOpen) return null;
 
-  const sizeClasses = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl'
-  };
-
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div 
-        className={`modal-content ${sizeClasses[size]} ${className}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {title && (
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-display font-semibold text-nude-800">{title}</h3>
-            <button 
-              onClick={onClose}
-              className="p-2 hover:bg-nude-100 rounded-lg transition-colors"
-            >
-              <XCircle className="w-5 h-5 text-nude-600" />
-            </button>
-          </div>
-        )}
-        {children}
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="fixed inset-0 transition-opacity" onClick={onClose}>
+          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <div className={`inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full ${className}`} {...props}>
+          {children}
+        </div>
       </div>
     </div>
   );
-};
-
-// ============================================================================
-// TOAST COMPONENTS
-// ============================================================================
-
-interface NudeToastProps {
-  children: React.ReactNode;
-  variant?: 'success' | 'error' | 'warning' | 'info';
-  isVisible: boolean;
-  onClose?: () => void;
-  className?: string;
 }
 
-export const NudeToast: React.FC<NudeToastProps> = ({
-  children,
-  variant = 'info',
-  isVisible,
-  onClose,
-  className = ''
-}) => {
-  if (!isVisible) return null;
-
-  const variantClasses = {
-    success: 'toast-success',
-    error: 'toast-error',
-    warning: 'toast-warning',
-    info: 'toast-info'
+// Toast Component
+export function Toast({ message, type = "info", onClose, className = "", ...props }: any) {
+  const typeClasses = {
+    info: "bg-blue-100 text-blue-800",
+    success: "bg-green-100 text-green-800",
+    warning: "bg-yellow-100 text-yellow-800",
+    error: "bg-red-100 text-red-800"
   };
 
   return (
-    <div className={`fixed top-4 right-4 z-50 ${variantClasses[variant]} ${className}`}>
+    <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${typeClasses[type]} ${className}`} {...props}>
       <div className="flex items-center justify-between">
-        <span>{children}</span>
+        <span>{message}</span>
         {onClose && (
-          <button 
-            onClick={onClose}
-            className="ml-4 hover:opacity-70 transition-opacity"
-          >
-            <XCircle className="w-4 h-4" />
+          <button onClick={onClose} className="ml-4 text-current hover:opacity-75">
+            ×
           </button>
         )}
       </div>
     </div>
   );
-};
-
-// ============================================================================
-// LOADING COMPONENTS
-// ============================================================================
-
-interface NudeSpinnerProps {
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
 }
 
-export const NudeSpinner: React.FC<NudeSpinnerProps> = ({
-  size = 'md',
-  className = ''
-}) => {
-  const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-6 h-6',
-    lg: 'w-8 h-8'
-  };
-
+// Additional Nude Components
+export function NudeButton({ children, className = "", ...props }: any) {
   return (
-    <div className={`${sizeClasses[size]} border-2 border-nude-200 border-t-nude-600 rounded-full animate-spin ${className}`} />
+    <Button className={`bg-nude-600 hover:bg-nude-700 text-white ${className}`} {...props}>
+      {children}
+    </Button>
   );
-};
-
-// ============================================================================
-// DIVIDER COMPONENTS
-// ============================================================================
-
-interface NudeDividerProps {
-  className?: string;
 }
 
-export const NudeDivider: React.FC<NudeDividerProps> = ({
-  className = ''
-}) => (
-  <hr className={`border-nude-200 ${className}`} />
-);
-
-// ============================================================================
-// ALERT COMPONENTS
-// ============================================================================
-
-interface NudeAlertProps {
-  children: React.ReactNode;
-  variant?: 'success' | 'warning' | 'error' | 'info';
-  icon?: React.ReactNode;
-  className?: string;
-}
-
-export const NudeAlert: React.FC<NudeAlertProps> = ({
-  children,
-  variant = 'info',
-  icon,
-  className = ''
-}) => {
-  const variantClasses = {
-    success: 'bg-green-50 border-green-200 text-green-800',
-    warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-    error: 'bg-red-50 border-red-200 text-red-800',
-    info: 'bg-blue-50 border-blue-200 text-blue-800'
-  };
-
-  const defaultIcons = {
-    success: <CheckCircle className="w-5 h-5" />,
-    warning: <AlertCircle className="w-5 h-5" />,
-    error: <XCircle className="w-5 h-5" />,
-    info: <Info className="w-5 h-5" />
-  };
-
+export function NudeCard({ children, className = "", ...props }: any) {
   return (
-    <div className={`p-4 rounded-lg border ${variantClasses[variant]} ${className}`}>
-      <div className="flex items-center space-x-3">
-        {icon || defaultIcons[variant]}
-        <div className="flex-1">{children}</div>
-      </div>
+    <Card className={`bg-white border-nude-200 shadow-sm ${className}`} {...props}>
+      {children}
+    </Card>
+  );
+}
+
+export function NudeCardTitle({ children, className = "", ...props }: any) {
+  return (
+    <CardTitle className={`text-nude-900 ${className}`} {...props}>
+      {children}
+    </CardTitle>
+  );
+}
+
+export function NudeCardBody({ children, className = "", ...props }: any) {
+  return (
+    <CardContent className={`text-nude-700 ${className}`} {...props}>
+      {children}
+    </CardContent>
+  );
+}
+
+export function NudeCardActions({ children, className = "", ...props }: any) {
+  return (
+    <div className={`flex justify-end space-x-2 ${className}`} {...props}>
+      {children}
     </div>
   );
-};
+}
 
-export default {
-  NudeCard,
-  NudeCardBody,
-  NudeCardTitle,
-  NudeCardActions,
-  NudeButton,
-  NudeBadge,
-  NudeStatCard,
-  NudeInput,
-  NudeSelect,
-  NudeTextarea,
-  NudeModal,
-  NudeToast,
-  NudeSpinner,
-  NudeDivider,
-  NudeAlert,
-};
+export function NudeBadge({ children, variant = "default", className = "", ...props }: any) {
+  const variantClasses = {
+    default: "bg-nude-100 text-nude-800",
+    success: "bg-green-100 text-green-800",
+    warning: "bg-yellow-100 text-yellow-800",
+    error: "bg-red-100 text-red-800",
+    info: "bg-blue-100 text-blue-800"
+  };
+
+  return (
+    <Badge className={`${variantClasses[variant]} ${className}`} {...props}>
+      {children}
+    </Badge>
+  );
+}
+
+export function NudeStatCard({ title, value, change, changeType, icon, className = "", ...props }: any) {
+  const changeColor = changeType === "positive" ? "text-green-600" : changeType === "negative" ? "text-red-600" : "text-gray-600";
+  
+  return (
+    <Card className={`bg-white border-nude-200 shadow-sm ${className}`} {...props}>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-nude-600">{title}</p>
+            <p className="text-2xl font-bold text-nude-900">{value}</p>
+            {change && (
+              <p className={`text-sm ${changeColor}`}>
+                {changeType === "positive" ? "+" : changeType === "negative" ? "-" : ""}{change}
+              </p>
+            )}
+          </div>
+          {icon && (
+            <div className="text-nude-400">
+              {icon}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Main Design System Component
+export function NudeDesignSystem() {
+  return (
+    <div className="space-y-8 p-8">
+      <div className="text-center">
+        <h1 className="text-4xl font-display font-bold text-nude-900 mb-4">
+          Nude Design System
+        </h1>
+        <p className="text-lg text-nude-600">
+          A comprehensive design system for luxury hospitality applications
+        </p>
+      </div>
+
+      {/* Color Palette */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Color Palette</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {[
+              { name: "Nude 50", class: "bg-nude-50", text: "text-nude-900" },
+              { name: "Nude 100", class: "bg-nude-100", text: "text-nude-900" },
+              { name: "Nude 200", class: "bg-nude-200", text: "text-nude-900" },
+              { name: "Nude 300", class: "bg-nude-300", text: "text-nude-900" },
+              { name: "Nude 400", class: "bg-nude-400", text: "text-white" },
+              { name: "Nude 500", class: "bg-nude-500", text: "text-white" },
+              { name: "Nude 600", class: "bg-nude-600", text: "text-white" },
+              { name: "Nude 700", class: "bg-nude-700", text: "text-white" },
+              { name: "Nude 800", class: "bg-nude-800", text: "text-white" },
+              { name: "Nude 900", class: "bg-nude-900", text: "text-white" },
+            ].map((color) => (
+              <div key={color.name} className="text-center">
+                <div className={`w-20 h-20 rounded-lg ${color.class} ${color.text} flex items-center justify-center mb-2`}>
+                  {color.name}
+                </div>
+                <div className="text-sm text-nude-600">{color.name}</div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Typography */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Typography</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h1 className="text-4xl font-display font-bold text-nude-900">Display Heading</h1>
+            <p className="text-sm text-nude-600">font-display text-4xl font-bold</p>
+          </div>
+          <div>
+            <h2 className="text-2xl font-display font-semibold text-nude-800">Section Heading</h2>
+            <p className="text-sm text-nude-600">font-display text-2xl font-semibold</p>
+          </div>
+          <div>
+            <h3 className="text-xl font-primary font-semibold text-nude-800">Card Heading</h3>
+            <p className="text-sm text-nude-600">font-primary text-xl font-semibold</p>
+          </div>
+          <div>
+            <p className="text-base text-nude-700">Body text for regular content and descriptions.</p>
+            <p className="text-sm text-nude-600">font-primary text-base text-nude-700</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Buttons */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Buttons</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-4">
+            <ButtonPrimary>Primary Button</ButtonPrimary>
+            <ButtonSecondary>Secondary Button</ButtonSecondary>
+            <ButtonAccent>Accent Button</ButtonAccent>
+            <Button variant="outline">Outline Button</Button>
+            <Button variant="ghost">Ghost Button</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Forms */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Form Elements</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <FormInput label="Example Input" placeholder="Enter text here" />
+          <div>
+            <Label htmlFor="example-textarea">Example Textarea</Label>
+            <textarea 
+              id="example-textarea" 
+              className="w-full p-3 border border-nude-300 rounded-lg focus:ring-2 focus:ring-nude-600 focus:border-nude-600"
+              placeholder="Enter longer text here"
+              rows={3}
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

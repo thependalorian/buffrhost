@@ -187,16 +187,15 @@ export default function DesignSystemPage() {
         ],
         actions: (
           <div className="flex items-center gap-3">
-            <Button variant="secondary" emotional={true}>
+            <Button variant="secondary">
               Export
             </Button>
-            <Button variant="primary" emotional={true}>
+            <Button variant="default">
               Add New
             </Button>
           </div>
         ),
       }}
-      emotional={true}
     >
       <div className="space-y-8">
         {/* KPI Cards Section */}
@@ -214,7 +213,6 @@ export default function DesignSystemPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                 </svg>
               }
-              emotional={true}
             />
             <KPICard
               title="Occupancy Rate"
@@ -225,7 +223,6 @@ export default function DesignSystemPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
                 </svg>
               }
-              emotional={true}
             />
             <KPICard
               title="Guest Satisfaction"
@@ -236,7 +233,6 @@ export default function DesignSystemPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
               }
-              emotional={true}
             />
             <KPICard
               title="Staff Performance"
@@ -247,7 +243,6 @@ export default function DesignSystemPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                 </svg>
               }
-              emotional={true}
             />
           </div>
         </section>
@@ -286,33 +281,33 @@ export default function DesignSystemPage() {
           </h2>
           <div className="space-y-4">
             <div className="flex flex-wrap gap-4">
-              <Button variant="primary" emotional={true}>
+              <Button variant="default">
                 Primary Button
               </Button>
-              <Button variant="secondary" emotional={true}>
+              <Button variant="secondary">
                 Secondary Button
               </Button>
-              <Button variant="accent" emotional={true}>
-                Accent Button
+              <Button variant="outline">
+                Outline Button
               </Button>
-              <Button variant="ghost" emotional={true}>
+              <Button variant="ghost">
                 Ghost Button
               </Button>
-              <Button variant="danger" emotional={true}>
+              <Button variant="destructive">
                 Danger Button
               </Button>
-              <Button variant="link" emotional={true}>
+              <Button variant="link">
                 Link Button
               </Button>
             </div>
             <div className="flex flex-wrap gap-4">
-              <Button size="sm" emotional={true}>
+              <Button size="sm">
                 Small
               </Button>
-              <Button size="md" emotional={true}>
-                Medium
+              <Button size="default">
+                Default
               </Button>
-              <Button size="lg" emotional={true}>
+              <Button size="lg">
                 Large
               </Button>
             </div>
@@ -329,7 +324,6 @@ export default function DesignSystemPage() {
               <EmotionalInput
                 label="Email Address"
                 placeholder="Enter your email"
-                emotional={true}
                 icon={
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
@@ -358,13 +352,11 @@ export default function DesignSystemPage() {
               <EmotionalInput
                 label="Phone Number"
                 placeholder="Enter phone number"
-                emotional={true}
                 error="Phone number is required"
               />
               <EmotionalInput
                 label="Check-in Date"
                 type="date"
-                emotional={true}
                 helperText="Select your preferred check-in date"
               />
             </div>
@@ -377,31 +369,31 @@ export default function DesignSystemPage() {
             Cards
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card variant="default" emotional={true}>
-              <CardHeader emotional={true}>
-                <CardTitle emotional={true}>Default Card</CardTitle>
+            <Card>
+              <CardHeader>
+                <CardTitle>Default Card</CardTitle>
               </CardHeader>
-              <CardContent emotional={true}>
+              <CardContent>
                 <p className="text-nude-600">
                   This is a default hospitality card with emotional design principles.
                 </p>
               </CardContent>
             </Card>
-            <Card variant="luxury" emotional={true}>
-              <CardHeader emotional={true}>
-                <CardTitle emotional={true}>Luxury Card</CardTitle>
+            <Card>
+              <CardHeader>
+                <CardTitle>Luxury Card</CardTitle>
               </CardHeader>
-              <CardContent emotional={true}>
+              <CardContent>
                 <p className="text-nude-600">
                   This is a luxury card with premium styling and gold accents.
                 </p>
               </CardContent>
             </Card>
-            <Card variant="spa" emotional={true}>
-              <CardHeader emotional={true}>
-                <CardTitle emotional={true}>Spa Card</CardTitle>
+            <Card>
+              <CardHeader>
+                <CardTitle>Spa Card</CardTitle>
               </CardHeader>
-              <CardContent emotional={true}>
+              <CardContent>
                 <p className="text-nude-600">
                   This is a spa card with serene colors and calming design.
                 </p>
@@ -434,15 +426,14 @@ export default function DesignSystemPage() {
             }}
             actions={
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" emotional={true}>
+                <Button variant="ghost" size="sm">
                   Export
                 </Button>
-                <Button variant="primary" size="sm" emotional={true}>
+                <Button variant="default" size="sm">
                   Add Guest
                 </Button>
               </div>
             }
-            emotional={true}
           />
         </section>
 
@@ -453,25 +444,24 @@ export default function DesignSystemPage() {
           </h2>
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <LoadingSpinner size="sm" emotional={true} />
-              <LoadingSpinner size="md" emotional={true} />
-              <LoadingSpinner size="lg" emotional={true} />
+              <LoadingSpinner size="sm" />
+              <LoadingSpinner size="md" />
+              <LoadingSpinner size="lg" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <CardSkeleton emotional={true} />
-              <TableSkeleton emotional={true} />
+              <CardSkeleton />
+              <TableSkeleton />
             </div>
             <div className="space-y-4">
               <ButtonLoading
                 isLoading={isLoading}
-                emotional={true}
                 onClick={handleLoadingDemo}
               >
                 {isLoading ? "Loading..." : "Click to Load"}
               </ButtonLoading>
-              <LoadingOverlay isLoading={isLoading} emotional={true}>
-                <Card emotional={true}>
-                  <CardContent emotional={true} className="p-6">
+              <LoadingOverlay isLoading={isLoading}>
+                <Card>
+                  <CardContent className="p-6">
                     <p>This content will be hidden when loading.</p>
                   </CardContent>
                 </Card>
@@ -487,15 +477,13 @@ export default function DesignSystemPage() {
           </h2>
           <div className="flex gap-4">
             <Button
-              variant="primary"
-              emotional={true}
+              variant="default"
               onClick={() => setIsModalOpen(true)}
             >
               Open Modal
             </Button>
             <Button
-              variant="danger"
-              emotional={true}
+              variant="destructive"
               onClick={() => setIsConfirmModalOpen(true)}
             >
               Open Confirm Modal
@@ -511,13 +499,12 @@ export default function DesignSystemPage() {
         title="Sample Modal"
         description="This is a sample modal with emotional design principles."
         size="md"
-        emotional={true}
         actions={
           <div className="flex items-center gap-3">
-            <Button variant="ghost" emotional={true} onClick={() => setIsModalOpen(false)}>
+            <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>
-            <Button variant="primary" emotional={true} onClick={() => setIsModalOpen(false)}>
+            <Button variant="default" onClick={() => setIsModalOpen(false)}>
               Confirm
             </Button>
           </div>
@@ -531,7 +518,6 @@ export default function DesignSystemPage() {
           <EmotionalInput
             label="Sample Input"
             placeholder="Enter some text"
-            emotional={true}
           />
         </div>
       </EmotionalModal>

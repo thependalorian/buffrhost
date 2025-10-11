@@ -4,7 +4,7 @@
 ## 🚀 **GETTING STARTED**
 
 ### **Welcome to Buffr Host**
-Buffr Host is a comprehensive hospitality management platform designed to streamline operations for hotels, restaurants, and multi-venue properties. This guide will help you navigate and utilize all the features effectively.
+Buffr Host is a comprehensive hotel-centric hospitality management platform designed to streamline operations for all accommodation types (hotels, resorts, vacation rentals, guest houses) and restaurant businesses. This guide will help you navigate and utilize all the features effectively.
 
 ### **System Requirements**
 - **Web Browser**: Chrome, Firefox, Safari, or Edge (latest versions)

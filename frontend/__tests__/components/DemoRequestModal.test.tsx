@@ -14,20 +14,20 @@ describe("DemoRequestModal", () => {
   it("renders modal when isOpen is true", () => {
     render(<DemoRequestModal isOpen={true} onClose={mockOnClose} />);
 
-    expect(screen.getByText(/request a demo/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /join the waitlist/i })).toBeInTheDocument();
   });
 
   it("does not render modal when isOpen is false", () => {
     render(<DemoRequestModal isOpen={false} onClose={mockOnClose} />);
 
-    expect(screen.queryByText(/request a demo/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /join the waitlist/i })).not.toBeInTheDocument();
   });
 
   it("calls onClose when close button is clicked", async () => {
     const user = userEvent.setup();
     render(<DemoRequestModal isOpen={true} onClose={mockOnClose} />);
 
-    const closeButton = screen.getByRole("button", { name: /close/i });
+    const closeButton = screen.getByRole("button", { name: /close modal/i });
     await user.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -78,12 +78,12 @@ describe("DemoRequestModal", () => {
     await user.selectOptions(screen.getByLabelText(/business type/i), "hotel");
     await user.type(screen.getByLabelText(/location/i), "Windhoek, Namibia");
 
-    const submitButton = screen.getByRole("button", { name: /request demo/i });
+    const submitButton = screen.getByRole("button", { name: /join the waitlist/i });
     await user.click(submitButton);
 
     await waitFor(() => {
       expect(
-        screen.getByText(/thank you for your interest/i),
+        screen.getByText(/welcome to the waitlist/i),
       ).toBeInTheDocument();
     });
   });
@@ -110,12 +110,12 @@ describe("DemoRequestModal", () => {
     await user.selectOptions(screen.getByLabelText(/business type/i), "hotel");
     await user.type(screen.getByLabelText(/location/i), "Windhoek, Namibia");
 
-    const submitButton = screen.getByRole("button", { name: /request demo/i });
+    const submitButton = screen.getByRole("button", { name: /join the waitlist/i });
     await user.click(submitButton);
 
     await waitFor(() => {
       expect(
-        screen.getByText(/failed to submit demo request/i),
+        screen.getByText(/failed to join waitlist/i),
       ).toBeInTheDocument();
     });
   });

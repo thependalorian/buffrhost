@@ -11,11 +11,99 @@ from sqlalchemy.pool import StaticPool
 
 # Import only what we need for testing
 try:
-    from database import Base
-    # Import all models to ensure they're registered with Base
-    from models import *
+    from database import Base, get_db
+    # Import specific models we need for testing
+    from models.hospitality_property import HospitalityProperty
+    from models.user import User, UserPreference
+    from models.user_type import UserType
+    from models.menu import MenuCategory, Menu, MenuMedia
+    from models.modifiers import Modifiers, OptionValue, MenuModifiers
+    from models.inventory import (
+        UnitOfMeasurement,
+        InventoryItem,
+        MenuItemRawMaterial,
+        Ingredient,
+        OptionValueIngredient,
+        OptionValueIngredientMultiplier,
+    )
+    from models.order import Order, OrderItem, OrderItemOption
+    from models.room import (
+        RoomType,
+        Room,
+        RoomAmenity,
+        RoomTypeAmenity,
+        RoomReservation,
+        RoomRate,
+        RoomServiceOrder,
+        RoomServiceItem,
+    )
+    from models.cms import (
+        CMSContent,
+        ContentVersion,
+        ContentTemplate,
+        MediaLibrary,
+        ContentCollection,
+        CollectionContent,
+        ContentWorkflow,
+    )
+    from models.services import (
+        SpaService,
+        ConferenceRoom,
+        TransportationService,
+        RecreationService,
+        SpecializedService,
+        ServiceBooking,
+    )
+    from models.loyalty import CrossBusinessLoyalty, LoyaltyTransaction
+    from models.corporate import (
+        CorporateCustomer,
+        CorporateBooking,
+        CorporateBookingItem,
+        QuotationItem,
+        InvoiceItem,
+    )
+    from models.compliance import KYCKYBDocument
+    from models.ai_knowledge import (
+        KnowledgeBase,
+        AIAgentSession,
+        AIAgentMessage,
+        AIAgentWorkflow,
+        AIAgentExecution,
+    )
+    from models.documents import DocumentManagement, DocumentAccessLog
+    from models.staff import (
+        StaffDepartment,
+        StaffPosition,
+        StaffProfile,
+        StaffSchedule,
+        StaffAttendance,
+        StaffTask,
+        StaffPerformance,
+        StaffCommunication,
+        StaffLeaveRequest,
+    )
+    from models.voice_models import VoiceModel, VoiceInteraction, AudioFile
+    from models.document_processing import (
+        SitePage,
+        DocumentProcessingLog,
+        WebCrawlLog,
+        KnowledgeVector,
+    )
+    from models.recommendation_model import (
+        UserPreference as RecUserPreference,
+        RecommendationCache,
+        UserBehaviorAnalytics,
+        BookingInquiry,
+        UserFavorite,
+        RecommendationEngine,
+        RecommendationFeedback,
+    )
+    from models.restaurant import Restaurant
+    from models.customer import Customer  # For backward compatibility
+    from models.tenant import TenantProfile
 
-    app = None  # We'll create a minimal app for testing
+    # Import main app for testing
+    from main import app
 except ImportError as e:
     print(f"Warning: Could not import backend modules: {e}")
     # Create minimal test setup

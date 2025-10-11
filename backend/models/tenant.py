@@ -3,12 +3,49 @@ Enhanced Tenant Models for Multi-Tenant Onboarding System
 Integrates with existing backend structure
 """
 
-from sqlalchemy import Column, String, Integer, Boolean, DateTime, JSON, Float, Text
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, JSON, Float, Text, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from datetime import datetime, timedelta
 import uuid
 
 Base = declarative_base()
+
+class TenantUser(Base):
+    """Tenant user model - links users to tenants"""
+    __tablename__ = "tenant_users"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id = Column(String, ForeignKey("tenant_profiles.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    role = Column(String(50), nullable=False, default="member")
+    is_active = Column(Boolean, default=True)
+    joined_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    tenant = relationship("TenantProfile", foreign_keys=[tenant_id])
+    user = relationship("User", foreign_keys=[user_id])
+
+class OnboardingProgress(Base):
+    """Onboarding progress tracking model"""
+    __tablename__ = "onboarding_progress"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id = Column(String, ForeignKey("tenant_profiles.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    step_name = Column(String(100), nullable=False)
+    step_status = Column(String(50), nullable=False, default="pending")  # pending, in_progress, completed, failed
+    step_data = Column(JSON, nullable=True)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    tenant = relationship("TenantProfile", foreign_keys=[tenant_id])
+    user = relationship("User", foreign_keys=[user_id])
 
 class TenantProfile(Base):
     __tablename__ = "tenant_profiles"
@@ -60,23 +97,6 @@ class TenantProfile(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_active = Column(Boolean, default=False)
-
-class OnboardingProgress(Base):
-    __tablename__ = "onboarding_progress"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    tenant_id = Column(String, nullable=False)
-    current_step = Column(String, nullable=False)
-    completed_steps = Column(JSON, default=[])
-    progress_percentage = Column(Float, default=0.0)
-    last_activity_at = Column(DateTime, default=datetime.utcnow)
-    estimated_completion_date = Column(DateTime)
-    
-    # Step-specific data
-    step_data = Column(JSON, default={})
-    
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class TenantBranding(Base):
     __tablename__ = "tenant_branding"

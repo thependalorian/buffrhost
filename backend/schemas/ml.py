@@ -19,7 +19,7 @@ class MLRecommendationItem(BaseModel):
     title: str
     description: str
     confidence: float = Field(ge=0.0, le=1.0)
-    priority: str = Field(..., regex="^(low|medium|high)$")
+    priority: str = Field(..., pattern="^(low|medium|high)$")
     icon: Optional[str] = None
     action_url: Optional[str] = None
 
@@ -50,7 +50,7 @@ class MLInsightResponse(BaseModel):
 
 class MLPredictionRequest(BaseModel):
     """Request model for ML predictions"""
-    type: str = Field(..., regex="^(demand|pricing|churn|general)$")
+    type: str = Field(..., pattern="^(demand|pricing|churn|general)$")
     data: Dict[str, Any]
     property_id: Optional[str] = None
 
@@ -65,9 +65,9 @@ class FraudAlertResponse(BaseModel):
     id: str
     title: str
     description: str
-    severity: str = Field(..., regex="^(low|medium|high|critical)$")
+    severity: str = Field(..., pattern="^(low|medium|high|critical)$")
     timestamp: datetime
-    status: str = Field(..., regex="^(active|investigating|resolved|false_positive)$")
+    status: str = Field(..., pattern="^(active|investigating|resolved|false_positive)$")
 
 class ModelPerformanceMetrics(BaseModel):
     """Model performance metrics"""
@@ -92,7 +92,7 @@ class ChurnPredictionResponse(BaseModel):
     """Response model for churn prediction"""
     customer_id: str
     churn_probability: float = Field(ge=0.0, le=1.0)
-    risk_level: str = Field(..., regex="^(low|medium|high)$")
+    risk_level: str = Field(..., pattern="^(low|medium|high)$")
     recommendations: List[str] = []
     confidence: float = Field(ge=0.0, le=1.0)
 
@@ -101,7 +101,7 @@ class DynamicPricingRequest(BaseModel):
     property_id: str
     base_price: float = Field(gt=0)
     demand_factor: float = Field(ge=0.0, le=2.0)
-    seasonality: str = Field(..., regex="^(low|normal|high|peak)$")
+    seasonality: str = Field(..., pattern="^(low|normal|high|peak)$")
     competitor_prices: List[float] = []
     date_range: Optional[Dict[str, str]] = None
 
@@ -116,7 +116,7 @@ class DynamicPricingResponse(BaseModel):
 
 class MLHealthCheck(BaseModel):
     """ML service health check response"""
-    status: str = Field(..., regex="^(healthy|unhealthy|degraded)$")
+    status: str = Field(..., pattern="^(healthy|unhealthy|degraded)$")
     services: Dict[str, str]
     timestamp: datetime
     error: Optional[str] = None

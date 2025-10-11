@@ -97,6 +97,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
       <div className="flex min-h-screen items-center justify-center p-4">
         <div
           className="fixed inset-0 bg-black bg-opacity-50"
+          data-testid="modal-backdrop"
           onClick={handleClose}
         ></div>
 
@@ -109,6 +110,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
             <button
               onClick={handleClose}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              aria-label="Close modal"
             >
               <X className="w-6 h-6" />
             </button>

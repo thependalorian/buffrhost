@@ -10,29 +10,27 @@ interface ResourceFormProps {
   resource?: {
     id: string;
     name: string;
-    type: 'room' | 'equipment' | 'service';
+    type: string;
     capacity: number;
+    status: "available" | "occupied" | "maintenance" | "out-of-order";
     location: string;
     amenities: string[];
-    status: 'available' | 'occupied' | 'maintenance';
-    hourlyRate?: number;
   };
   onSubmit: (resource: any) => void;
   onCancel: () => void;
 }
 
-export function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps) {
+export default function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps) {
   const [formData, setFormData] = useState({
-    name: resource?.name || '',
-    type: resource?.type || 'room',
+    name: resource?.name || "",
+    type: resource?.type || "",
     capacity: resource?.capacity || 0,
-    location: resource?.location || '',
+    status: resource?.status || "available",
+    location: resource?.location || "",
     amenities: resource?.amenities || [],
-    status: resource?.status || 'available',
-    hourlyRate: resource?.hourlyRate || 0,
   });
 
-  const [newAmenity, setNewAmenity] = useState('');
+  const [newAmenity, setNewAmenity] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +44,7 @@ export function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'capacity' || name === 'hourlyRate' ? parseInt(value) || 0 : value,
+      [name]: name === "capacity" ? parseInt(value) || 0 : value,
     }));
   };
 
@@ -56,7 +54,7 @@ export function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps
         ...prev,
         amenities: [...prev.amenities, newAmenity.trim()],
       }));
-      setNewAmenity('');
+      setNewAmenity("");
     }
   };
 
@@ -70,7 +68,7 @@ export function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{resource ? 'Edit Resource' : 'Create New Resource'}</CardTitle>
+        <CardTitle>{resource ? "Edit Resource" : "Create New Resource"}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -82,26 +80,20 @@ export function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Enter resource name"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="type">Resource Type</Label>
-              <select
+              <Input
                 id="type"
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                className="w-full p-3 border border-nude-300 rounded-lg focus:ring-2 focus:ring-nude-600 focus:border-nude-600"
-              >
-                <option value="room">Room</option>
-                <option value="equipment">Equipment</option>
-                <option value="service">Service</option>
-              </select>
+                required
+              />
             </div>
-
             <div>
               <Label htmlFor="capacity">Capacity</Label>
               <Input
@@ -111,7 +103,7 @@ export function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps
                 value={formData.capacity}
                 onChange={handleChange}
                 min="0"
-                placeholder="Enter capacity"
+                required
               />
             </div>
           </div>
@@ -123,7 +115,7 @@ export function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps
               name="location"
               value={formData.location}
               onChange={handleChange}
-              placeholder="Enter location"
+              required
             />
           </div>
 
@@ -134,66 +126,55 @@ export function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full p-3 border border-nude-300 rounded-lg focus:ring-2 focus:ring-nude-600 focus:border-nude-600"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
             >
               <option value="available">Available</option>
               <option value="occupied">Occupied</option>
               <option value="maintenance">Maintenance</option>
+              <option value="out-of-order">Out of Order</option>
             </select>
           </div>
 
           <div>
-            <Label htmlFor="hourlyRate">Hourly Rate (Optional)</Label>
-            <Input
-              id="hourlyRate"
-              name="hourlyRate"
-              type="number"
-              value={formData.hourlyRate}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-              placeholder="Enter hourly rate"
-            />
-          </div>
-
-          <div>
             <Label>Amenities</Label>
-            <div className="flex space-x-2 mb-2">
-              <Input
-                value={newAmenity}
-                onChange={(e) => setNewAmenity(e.target.value)}
-                placeholder="Add amenity"
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addAmenity())}
-              />
-              <Button type="button" onClick={addAmenity}>
-                Add
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {formData.amenities.map((amenity, index) => (
-                <span
-                  key={index}
-                  className="px-2 py-1 bg-nude-100 text-nude-700 rounded-full text-sm flex items-center space-x-1"
-                >
-                  <span>{amenity}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeAmenity(amenity)}
-                    className="ml-1 text-nude-500 hover:text-nude-700"
+            <div className="space-y-2">
+              <div className="flex space-x-2">
+                <Input
+                  value={newAmenity}
+                  onChange={(e) => setNewAmenity(e.target.value)}
+                  placeholder="Add amenity"
+                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addAmenity())}
+                />
+                <Button type="button" onClick={addAmenity}>
+                  Add
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {formData.amenities.map((amenity, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center space-x-1 bg-gray-100 px-2 py-1 rounded text-sm"
                   >
-                    ×
-                  </button>
-                </span>
-              ))}
+                    <span>{amenity}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeAmenity(amenity)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="flex justify-end space-x-4 pt-4">
+          <div className="flex justify-end space-x-2">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
             </Button>
             <Button type="submit">
-              {resource ? 'Update Resource' : 'Create Resource'}
+              {resource ? "Update Resource" : "Create Resource"}
             </Button>
           </div>
         </form>

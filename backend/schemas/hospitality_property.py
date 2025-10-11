@@ -271,6 +271,19 @@ class PropertyCompliance(BaseModel):
     violations: List[str] = []
 
 # API response schemas
+class PropertySummary(BaseModel):
+    """Schema for property summary (minimal property info)"""
+    id: str
+    name: str
+    property_type: str
+    status: str
+    location: str
+    rating: Optional[float] = None
+    price_range: Optional[str] = None
+    image_url: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
 class PropertyListResponse(BaseModel):
     """Schema for property list response"""
     properties: List[PropertyResponse]

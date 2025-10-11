@@ -13,20 +13,20 @@ interface EventFormProps {
     description: string;
     startTime: string;
     endTime: string;
-    location: string;
+    status: "scheduled" | "in-progress" | "completed" | "cancelled";
     attendees: number;
   };
   onSubmit: (event: any) => void;
   onCancel: () => void;
 }
 
-export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
+export default function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
   const [formData, setFormData] = useState({
-    title: event?.title || '',
-    description: event?.description || '',
-    startTime: event?.startTime || '',
-    endTime: event?.endTime || '',
-    location: event?.location || '',
+    title: event?.title || "",
+    description: event?.description || "",
+    startTime: event?.startTime || "",
+    endTime: event?.endTime || "",
+    status: event?.status || "scheduled",
     attendees: event?.attendees || 0,
   });
 
@@ -38,18 +38,18 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
     });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'attendees' ? parseInt(value) || 0 : value,
+      [name]: name === "attendees" ? parseInt(value) || 0 : value,
     }));
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{event ? 'Edit Event' : 'Create New Event'}</CardTitle>
+        <CardTitle>{event ? "Edit Event" : "Create New Event"}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -61,7 +61,6 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
               value={formData.title}
               onChange={handleChange}
               required
-              placeholder="Enter event title"
             />
           </div>
 
@@ -72,13 +71,12 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="w-full p-3 border border-nude-300 rounded-lg focus:ring-2 focus:ring-nude-600 focus:border-nude-600"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
               rows={3}
-              placeholder="Enter event description"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="startTime">Start Time</Label>
               <Input
@@ -90,7 +88,6 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
                 required
               />
             </div>
-
             <div>
               <Label htmlFor="endTime">End Time</Label>
               <Input
@@ -104,36 +101,41 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="Enter event location"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+              >
+                <option value="scheduled">Scheduled</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="attendees">Expected Attendees</Label>
+              <Input
+                id="attendees"
+                name="attendees"
+                type="number"
+                value={formData.attendees}
+                onChange={handleChange}
+                min="0"
+              />
+            </div>
           </div>
 
-          <div>
-            <Label htmlFor="attendees">Expected Attendees</Label>
-            <Input
-              id="attendees"
-              name="attendees"
-              type="number"
-              value={formData.attendees}
-              onChange={handleChange}
-              min="0"
-              placeholder="Enter expected number of attendees"
-            />
-          </div>
-
-          <div className="flex justify-end space-x-4 pt-4">
+          <div className="flex justify-end space-x-2">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
             </Button>
             <Button type="submit">
-              {event ? 'Update Event' : 'Create Event'}
+              {event ? "Update Event" : "Create Event"}
             </Button>
           </div>
         </form>

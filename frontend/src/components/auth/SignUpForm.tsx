@@ -348,3 +348,5 @@ export function SignUpForm({
     </Card>
   );
 }
+
+export default SignUpForm;

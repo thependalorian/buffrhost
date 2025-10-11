@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import HotelConfigurationWizard from "./HotelConfigurationWizard";
 import { 
   Building2, 
   Utensils, 
@@ -13,7 +14,8 @@ import {
   Star,
   ArrowRight,
   CheckCircle,
-  X
+  X,
+  Settings
 } from "lucide-react";
 
 interface SmartWaitlistProps {
@@ -115,6 +117,8 @@ export default function SmartWaitlist({ isOpen, onClose }: SmartWaitlistProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfigurationWizard, setShowConfigurationWizard] = useState(false);
+  const [hotelConfiguration, setHotelConfiguration] = useState<any>(null);
 
   const selectedBusinessType = formData.businessType as keyof typeof businessTypes;
   const businessConfig = selectedBusinessType ? businessTypes[selectedBusinessType] : null;
@@ -180,10 +184,43 @@ export default function SmartWaitlist({ isOpen, onClose }: SmartWaitlistProps) {
 
   const handleClose = () => {
     resetForm();
+    setShowConfigurationWizard(false);
+    setHotelConfiguration(null);
     onClose();
   };
 
+  const handleConfigurationComplete = (configuration: any) => {
+    setHotelConfiguration(configuration);
+    setShowConfigurationWizard(false);
+    // Continue with form submission
+    handleSubmit(new Event('submit') as any);
+  };
+
+  const handleConfigurationCancel = () => {
+    setShowConfigurationWizard(false);
+  };
+
   if (!isOpen) return null;
+
+  // Show configuration wizard if needed
+  if (showConfigurationWizard) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="flex min-h-screen items-center justify-center p-4">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50"
+            onClick={handleConfigurationCancel}
+          ></div>
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <HotelConfigurationWizard
+              onComplete={handleConfigurationComplete}
+              onCancel={handleConfigurationCancel}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -433,6 +470,17 @@ export default function SmartWaitlist({ isOpen, onClose }: SmartWaitlistProps) {
                         {isSubmitting ? "Joining Waitlist..." : "Join Waitlist"}
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
+                      {formData.businessType && (
+                        <Button
+                          type="button"
+                          onClick={() => setShowConfigurationWizard(true)}
+                          variant="outline"
+                          className="flex items-center space-x-2"
+                        >
+                          <Settings className="w-4 h-4" />
+                          <span>Configure Services</span>
+                        </Button>
+                      )}
                       <Button
                         type="button"
                         onClick={handleClose}

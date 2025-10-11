@@ -204,9 +204,9 @@ describe("MenuPreview", () => {
       />,
     );
 
-    // Check for dark theme classes
-    const previewContent = screen.getByText("Test Restaurant").closest("div");
-    expect(previewContent).toHaveClass("bg-gray-900");
+    // Check for dark theme classes - look for the outermost container
+    const previewContainer = screen.getByText("Test Restaurant").closest(".min-h-screen");
+    expect(previewContainer).toHaveClass("bg-gray-900");
   });
 
   it("applies colorful theme correctly", () => {
@@ -221,9 +221,9 @@ describe("MenuPreview", () => {
       />,
     );
 
-    // Check for colorful theme classes
-    const previewContent = screen.getByText("Test Restaurant").closest("div");
-    expect(previewContent).toHaveClass("bg-gradient-to-br");
+    // Check for colorful theme classes - look for the outermost container
+    const previewContainer = screen.getByText("Test Restaurant").closest(".min-h-screen");
+    expect(previewContainer).toHaveClass("bg-gradient-to-br");
   });
 
   it("hides prices when showPrices is false", () => {

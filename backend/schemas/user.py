@@ -332,3 +332,26 @@ class UserErrorResponse(BaseModel):
     success: bool = False
     error: UserError
     validation_errors: Optional[List[ValidationError]] = None
+
+class ProfileCreate(BaseModel):
+    """Schema for creating user profile"""
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    preferences: Optional[Dict[str, Any]] = None
+
+class ProfileResponse(BaseModel):
+    """Schema for profile response"""
+    user_id: str
+    email: str
+    full_name: str
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    preferences: Optional[Dict[str, Any]] = None
+    created_at: datetime
+    updated_at: datetime
+
+class ProfileUpdate(BaseModel):
+    """Schema for updating user profile"""
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    preferences: Optional[Dict[str, Any]] = None

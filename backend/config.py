@@ -138,6 +138,11 @@ class Settings(BaseSettings):
     DEFAULT_TIMEZONE: str = "UTC"
     DEFAULT_LANGUAGE: str = "en"
     
+    # Hotel Configuration
+    HOTEL_CONFIGURATION_ENABLED: bool = True
+    HOTEL_TYPES_CACHE_TTL: int = 3600
+    HOTEL_SERVICES_CACHE_TTL: int = 3600
+    
     # Booking Engine
     BOOKING_ADVANCE_DAYS: int = 365
     BOOKING_CANCELLATION_HOURS: int = 24

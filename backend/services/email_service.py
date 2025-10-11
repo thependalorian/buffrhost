@@ -29,7 +29,8 @@ class BuffrHostEmailService:
     def __init__(self):
         self.api_key = os.getenv("SENDGRID_API_KEY")
         if not self.api_key:
-            raise ValueError("SENDGRID_API_KEY environment variable is required")
+            print("Warning: SENDGRID_API_KEY not set, email service will be disabled")
+            self.api_key = None
         self.base_url = "https://api.sendgrid.com/v3"
         self.from_email = "noreply@mail.buffr.ai"
         self.from_name = "Buffr Host"

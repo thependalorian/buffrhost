@@ -28,6 +28,283 @@ import json
 from pathlib import Path
 from enum import Enum
 
+class FraudDetectionSystem:
+    """
+    Comprehensive Fraud Detection System for Hospitality Platform
+    
+    This class implements a multi-layered fraud detection system that combines
+    various machine learning techniques to identify fraudulent activities in
+    hospitality operations including bookings, payments, and user behaviors.
+    """
+    
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        """
+        Initialize the fraud detection system
+        
+        Args:
+            config: Configuration dictionary for the system
+        """
+        self.config = config or {}
+        self.models = {}
+        self.scalers = {}
+        self.feature_names = []
+        self.fraud_threshold = self.config.get('fraud_threshold', 0.5)
+        self.alert_threshold = self.config.get('alert_threshold', 0.7)
+        
+        # Initialize logging
+        self.logger = logging.getLogger(__name__)
+        
+        # Setup database connection
+        self.db_path = "fraud_detection.db"
+        self._setup_database()
+        
+        # Initialize models
+        self._initialize_models()
+    
+    def _setup_database(self):
+        """Setup SQLite database for storing fraud detection data"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Create tables for fraud detection
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS fraud_alerts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                transaction_id TEXT,
+                user_id TEXT,
+                fraud_score REAL,
+                risk_level TEXT,
+                detection_method TEXT,
+                features TEXT,
+                created_at TIMESTAMP,
+                status TEXT DEFAULT 'active'
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS fraud_patterns (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                pattern_type TEXT,
+                pattern_data TEXT,
+                confidence REAL,
+                created_at TIMESTAMP,
+                is_active BOOLEAN DEFAULT TRUE
+            )
+        ''')
+        
+        conn.commit()
+        conn.close()
+    
+    def _initialize_models(self):
+        """Initialize fraud detection models"""
+        try:
+            from sklearn.ensemble import IsolationForest
+            from sklearn.svm import OneClassSVM
+            from sklearn.preprocessing import StandardScaler
+            
+            # Isolation Forest for anomaly detection
+            self.models['isolation_forest'] = IsolationForest(
+                contamination=0.1,
+                random_state=42
+            )
+            
+            # One-Class SVM for outlier detection
+            self.models['one_class_svm'] = OneClassSVM(
+                nu=0.1,
+                kernel='rbf'
+            )
+            
+            # Standard scaler for feature normalization
+            self.scalers['standard'] = StandardScaler()
+            
+            self.logger.info("Fraud detection models initialized successfully")
+            
+        except ImportError as e:
+            self.logger.error(f"Failed to initialize models: {e}")
+            raise
+    
+    def detect_fraud(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Detect fraud in the given data
+        
+        Args:
+            data: Dictionary containing transaction/user data
+            
+        Returns:
+            Dictionary containing fraud detection results
+        """
+        try:
+            # Extract features
+            features = self._extract_features(data)
+            
+            # Normalize features
+            features_scaled = self.scalers['standard'].fit_transform([features])
+            
+            # Get fraud scores from different models
+            scores = {}
+            
+            # Isolation Forest score (lower = more anomalous)
+            if_score = self.models['isolation_forest'].decision_function(features_scaled)[0]
+            scores['isolation_forest'] = 1 - (if_score + 1) / 2  # Normalize to 0-1
+            
+            # One-Class SVM score (lower = more anomalous)
+            svm_score = self.models['one_class_svm'].decision_function(features_scaled)[0]
+            scores['one_class_svm'] = 1 - (svm_score + 1) / 2  # Normalize to 0-1
+            
+            # Combined score
+            combined_score = np.mean(list(scores.values()))
+            
+            # Determine risk level
+            if combined_score >= self.alert_threshold:
+                risk_level = "HIGH"
+            elif combined_score >= self.fraud_threshold:
+                risk_level = "MEDIUM"
+            else:
+                risk_level = "LOW"
+            
+            # Create result
+            result = {
+                'fraud_score': combined_score,
+                'risk_level': risk_level,
+                'individual_scores': scores,
+                'is_fraud': combined_score >= self.fraud_threshold,
+                'requires_alert': combined_score >= self.alert_threshold,
+                'detection_methods': list(scores.keys()),
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            # Store alert if high risk
+            if result['requires_alert']:
+                self._store_fraud_alert(data, result)
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Error in fraud detection: {e}")
+            return {
+                'fraud_score': 0.0,
+                'risk_level': 'UNKNOWN',
+                'is_fraud': False,
+                'requires_alert': False,
+                'error': str(e)
+            }
+    
+    def _extract_features(self, data: Dict[str, Any]) -> List[float]:
+        """Extract features from the input data"""
+        features = []
+        
+        # Transaction amount (normalized)
+        amount = data.get('amount', 0)
+        features.append(amount / 1000.0)  # Normalize to thousands
+        
+        # Time-based features
+        hour = data.get('hour', 12)
+        features.append(hour / 24.0)  # Normalize to 0-1
+        
+        day_of_week = data.get('day_of_week', 1)
+        features.append(day_of_week / 7.0)  # Normalize to 0-1
+        
+        # User behavior features
+        user_age_days = data.get('user_age_days', 30)
+        features.append(min(user_age_days / 365.0, 1.0))  # Cap at 1 year
+        
+        # Location features
+        distance_from_home = data.get('distance_from_home', 0)
+        features.append(min(distance_from_home / 1000.0, 1.0))  # Cap at 1000km
+        
+        # Device features
+        is_mobile = data.get('is_mobile', 0)
+        features.append(float(is_mobile))
+        
+        # Payment method features
+        payment_method_risk = data.get('payment_method_risk', 0.5)
+        features.append(payment_method_risk)
+        
+        return features
+    
+    def _store_fraud_alert(self, data: Dict[str, Any], result: Dict[str, Any]):
+        """Store fraud alert in database"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT INTO fraud_alerts 
+            (transaction_id, user_id, fraud_score, risk_level, detection_method, features, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            data.get('transaction_id', ''),
+            data.get('user_id', ''),
+            result['fraud_score'],
+            result['risk_level'],
+            ','.join(result['detection_methods']),
+            json.dumps(data),
+            datetime.now()
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def train_models(self, training_data: List[Dict[str, Any]]):
+        """
+        Train fraud detection models on historical data
+        
+        Args:
+            training_data: List of historical transaction data
+        """
+        try:
+            # Extract features from training data
+            X = np.array([self._extract_features(data) for data in training_data])
+            
+            # Fit scaler
+            self.scalers['standard'].fit(X)
+            X_scaled = self.scalers['standard'].transform(X)
+            
+            # Train models
+            self.models['isolation_forest'].fit(X_scaled)
+            self.models['one_class_svm'].fit(X_scaled)
+            
+            self.logger.info("Fraud detection models trained successfully")
+            
+        except Exception as e:
+            self.logger.error(f"Error training models: {e}")
+            raise
+    
+    def get_fraud_statistics(self) -> Dict[str, Any]:
+        """Get fraud detection statistics"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Get total alerts
+        cursor.execute("SELECT COUNT(*) FROM fraud_alerts")
+        total_alerts = cursor.fetchone()[0]
+        
+        # Get alerts by risk level
+        cursor.execute("SELECT risk_level, COUNT(*) FROM fraud_alerts GROUP BY risk_level")
+        alerts_by_level = dict(cursor.fetchall())
+        
+        # Get recent alerts (last 24 hours)
+        cursor.execute("""
+            SELECT COUNT(*) FROM fraud_alerts 
+            WHERE created_at >= datetime('now', '-1 day')
+        """)
+        recent_alerts = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        return {
+            'total_alerts': total_alerts,
+            'alerts_by_level': alerts_by_level,
+            'recent_alerts_24h': recent_alerts,
+            'fraud_threshold': self.fraud_threshold,
+            'alert_threshold': self.alert_threshold
+        }
+
 # Core ML libraries
 from sklearn.ensemble import IsolationForest, RandomForestClassifier
 from sklearn.svm import OneClassSVM

@@ -19,7 +19,7 @@ import uuid # Added for unique ID generation
 
 from config import settings
 from database import create_tables, close_db, check_database_connection
-from routes import auth, hospitality_property, menu, inventory, customer, order, analytics, cms, knowledge_base, spa, conference, transportation, loyalty, qr_loyalty, staff, ai_knowledge, calendar, arcade, payment, demo_requests, buffr_agent, preview, financial, etuna_demo_ai, etuna_demo, waitlist, restaurant, onboarding, ml_routes, yango_routes
+from routes import auth, hospitality_property, menu, inventory, customer, order, analytics, cms, knowledge_base, spa, conference, transportation, loyalty, qr_loyalty, staff, ai_knowledge, calendar, arcade, payment, demo_requests, buffr_agent, preview, financial, etuna_demo_ai, etuna_demo, waitlist, restaurant, onboarding, ml_routes, yango_routes, hotel_configuration
 from routes import email_send_route, email_analytics_route, email_preferences_route, email_templates_route, email_queue_route, email_blacklist_route, email_booking_confirmation_route, email_check_in_reminder_route, email_check_out_reminder_route, email_property_update_route, email_booking_cancellation_route, email_host_summary_route, email_webhook_sendgrid_route, email_webhook_resend_route, email_webhook_ses_route
 
 # Import new systems
@@ -160,6 +160,12 @@ app.include_router(booking_routes.router, prefix="/api/v1/bookings", tags=["book
 
 # Include ML/AI router
 app.include_router(ml_routes.router, prefix="/api/v1/ml", tags=["ml-ai"])
+
+# Include Yango integration router
+app.include_router(yango_routes.router, prefix="/api/v1/yango", tags=["yango"])
+
+# Hotel configuration routes
+app.include_router(hotel_configuration.router, tags=["hotel-configuration"])
 
 # ✅ ADD PUBLIC ROUTES FOR GUEST PORTAL
 from routes import public

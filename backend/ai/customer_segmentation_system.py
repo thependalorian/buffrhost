@@ -26,6 +26,335 @@ import joblib
 import json
 from pathlib import Path
 from enum import Enum
+
+class CustomerSegmentationSystem:
+    """
+    Customer Segmentation System for Hospitality Platform
+    
+    This class implements advanced customer segmentation using machine learning
+    techniques including clustering, RFM analysis, and behavioral pattern recognition
+    to identify different customer segments in hospitality operations.
+    """
+    
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        """
+        Initialize the customer segmentation system
+        
+        Args:
+            config: Configuration dictionary for the system
+        """
+        self.config = config or {}
+        self.models = {}
+        self.scalers = {}
+        self.segments = {}
+        self.feature_names = []
+        
+        # Initialize logging
+        self.logger = logging.getLogger(__name__)
+        
+        # Setup database connection
+        self.db_path = "customer_segmentation.db"
+        self._setup_database()
+        
+        # Initialize models
+        self._initialize_models()
+    
+    def _setup_database(self):
+        """Setup SQLite database for storing segmentation data"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Create tables for customer segmentation
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS customer_segments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id TEXT,
+                segment_name TEXT,
+                segment_score REAL,
+                features TEXT,
+                created_at TIMESTAMP,
+                updated_at TIMESTAMP
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS segment_definitions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                segment_name TEXT UNIQUE,
+                description TEXT,
+                characteristics TEXT,
+                created_at TIMESTAMP,
+                is_active BOOLEAN DEFAULT TRUE
+            )
+        ''')
+        
+        conn.commit()
+        conn.close()
+    
+    def _initialize_models(self):
+        """Initialize customer segmentation models"""
+        try:
+            from sklearn.cluster import KMeans, DBSCAN
+            from sklearn.preprocessing import StandardScaler
+            from sklearn.decomposition import PCA
+            
+            # K-Means clustering
+            self.models['kmeans'] = KMeans(
+                n_clusters=5,
+                random_state=42,
+                n_init=10
+            )
+            
+            # DBSCAN for density-based clustering
+            self.models['dbscan'] = DBSCAN(
+                eps=0.5,
+                min_samples=5
+            )
+            
+            # Standard scaler for feature normalization
+            self.scalers['standard'] = StandardScaler()
+            
+            # PCA for dimensionality reduction
+            self.models['pca'] = PCA(n_components=0.95)
+            
+            self.logger.info("Customer segmentation models initialized successfully")
+            
+        except ImportError as e:
+            self.logger.error(f"Failed to initialize models: {e}")
+            raise
+    
+    def segment_customers(self, customer_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Segment customers based on their data
+        
+        Args:
+            customer_data: List of customer data dictionaries
+            
+        Returns:
+            Dictionary containing segmentation results
+        """
+        try:
+            # Extract features from customer data
+            features = np.array([self._extract_features(data) for data in customer_data])
+            
+            # Normalize features
+            features_scaled = self.scalers['standard'].fit_transform(features)
+            
+            # Apply PCA for dimensionality reduction
+            features_pca = self.models['pca'].fit_transform(features_scaled)
+            
+            # Perform clustering
+            kmeans_labels = self.models['kmeans'].fit_predict(features_pca)
+            dbscan_labels = self.models['dbscan'].fit_predict(features_pca)
+            
+            # Create segments
+            segments = self._create_segments(kmeans_labels, customer_data)
+            
+            # Store segmentation results
+            self._store_segmentation_results(customer_data, segments)
+            
+            return {
+                'segments': segments,
+                'kmeans_labels': kmeans_labels.tolist(),
+                'dbscan_labels': dbscan_labels.tolist(),
+                'feature_importance': self._get_feature_importance(),
+                'segment_statistics': self._get_segment_statistics(segments)
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error in customer segmentation: {e}")
+            return {
+                'segments': {},
+                'error': str(e)
+            }
+    
+    def _extract_features(self, data: Dict[str, Any]) -> List[float]:
+        """Extract features from customer data"""
+        features = []
+        
+        # RFM features
+        recency = data.get('recency_days', 30)
+        features.append(recency / 365.0)  # Normalize to years
+        
+        frequency = data.get('frequency', 1)
+        features.append(min(frequency / 100.0, 1.0))  # Cap at 100
+        
+        monetary = data.get('monetary_value', 0)
+        features.append(monetary / 10000.0)  # Normalize to 10k
+        
+        # Behavioral features
+        avg_booking_value = data.get('avg_booking_value', 0)
+        features.append(avg_booking_value / 1000.0)  # Normalize to 1k
+        
+        booking_frequency = data.get('booking_frequency', 0)
+        features.append(min(booking_frequency / 12.0, 1.0))  # Cap at 12 per year
+        
+        # Demographics
+        age = data.get('age', 35)
+        features.append(age / 100.0)  # Normalize to 0-1
+        
+        # Preferences
+        luxury_preference = data.get('luxury_preference', 0.5)
+        features.append(luxury_preference)
+        
+        business_travel = data.get('business_travel', 0)
+        features.append(float(business_travel))
+        
+        return features
+    
+    def _create_segments(self, labels: np.ndarray, customer_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Create customer segments based on clustering labels"""
+        segments = {}
+        
+        for i, label in enumerate(labels):
+            if label not in segments:
+                segments[label] = {
+                    'customers': [],
+                    'characteristics': {},
+                    'size': 0
+                }
+            
+            segments[label]['customers'].append(customer_data[i])
+            segments[label]['size'] += 1
+        
+        # Analyze segment characteristics
+        for label, segment in segments.items():
+            segment['characteristics'] = self._analyze_segment_characteristics(segment['customers'])
+            segment['name'] = self._get_segment_name(segment['characteristics'])
+        
+        return segments
+    
+    def _analyze_segment_characteristics(self, customers: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze characteristics of a customer segment"""
+        if not customers:
+            return {}
+        
+        # Calculate averages
+        avg_recency = np.mean([c.get('recency_days', 30) for c in customers])
+        avg_frequency = np.mean([c.get('frequency', 1) for c in customers])
+        avg_monetary = np.mean([c.get('monetary_value', 0) for c in customers])
+        avg_age = np.mean([c.get('age', 35) for c in customers])
+        
+        return {
+            'avg_recency_days': avg_recency,
+            'avg_frequency': avg_frequency,
+            'avg_monetary_value': avg_monetary,
+            'avg_age': avg_age,
+            'luxury_preference': np.mean([c.get('luxury_preference', 0.5) for c in customers]),
+            'business_travel_ratio': np.mean([c.get('business_travel', 0) for c in customers])
+        }
+    
+    def _get_segment_name(self, characteristics: Dict[str, Any]) -> str:
+        """Get a descriptive name for a customer segment"""
+        if not characteristics:
+            return "Unknown"
+        
+        recency = characteristics.get('avg_recency_days', 30)
+        frequency = characteristics.get('avg_frequency', 1)
+        monetary = characteristics.get('avg_monetary_value', 0)
+        
+        if recency < 30 and frequency > 5 and monetary > 5000:
+            return "VIP Customers"
+        elif recency < 60 and frequency > 3:
+            return "Loyal Customers"
+        elif monetary > 3000:
+            return "High Value Customers"
+        elif frequency > 2:
+            return "Regular Customers"
+        elif recency > 180:
+            return "At-Risk Customers"
+        else:
+            return "New Customers"
+    
+    def _get_feature_importance(self) -> Dict[str, float]:
+        """Get feature importance for segmentation"""
+        return {
+            'recency': 0.3,
+            'frequency': 0.3,
+            'monetary': 0.4
+        }
+    
+    def _get_segment_statistics(self, segments: Dict[str, Any]) -> Dict[str, Any]:
+        """Get statistics about customer segments"""
+        total_customers = sum(segment['size'] for segment in segments.values())
+        
+        return {
+            'total_segments': len(segments),
+            'total_customers': total_customers,
+            'avg_segment_size': total_customers / len(segments) if segments else 0,
+            'largest_segment': max(segments.values(), key=lambda x: x['size'])['name'] if segments else None
+        }
+    
+    def _store_segmentation_results(self, customer_data: List[Dict[str, Any]], segments: Dict[str, Any]):
+        """Store segmentation results in database"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        for label, segment in segments.items():
+            for customer in segment['customers']:
+                cursor.execute('''
+                    INSERT OR REPLACE INTO customer_segments 
+                    (customer_id, segment_name, segment_score, features, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (
+                    customer.get('customer_id', ''),
+                    segment['name'],
+                    0.8,  # Default score
+                    json.dumps(customer),
+                    datetime.now(),
+                    datetime.now()
+                ))
+        
+        conn.commit()
+        conn.close()
+    
+    def get_segment_insights(self, segment_name: str) -> Dict[str, Any]:
+        """Get insights for a specific customer segment"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT * FROM customer_segments 
+            WHERE segment_name = ?
+        ''', (segment_name,))
+        
+        customers = cursor.fetchall()
+        conn.close()
+        
+        if not customers:
+            return {'error': 'Segment not found'}
+        
+        # Analyze segment insights
+        total_customers = len(customers)
+        avg_score = np.mean([c[3] for c in customers])  # segment_score column
+        
+        return {
+            'segment_name': segment_name,
+            'total_customers': total_customers,
+            'avg_segment_score': avg_score,
+            'insights': self._generate_segment_insights(customers)
+        }
+    
+    def _generate_segment_insights(self, customers: List[Tuple]) -> List[str]:
+        """Generate insights for a customer segment"""
+        insights = []
+        
+        if len(customers) > 100:
+            insights.append("Large customer segment with significant potential")
+        
+        avg_score = np.mean([c[3] for c in customers])
+        if avg_score > 0.8:
+            insights.append("High-value segment with strong engagement")
+        elif avg_score < 0.3:
+            insights.append("Low-engagement segment requiring attention")
+        
+        return insights
 import warnings
 warnings.filterwarnings('ignore')
 

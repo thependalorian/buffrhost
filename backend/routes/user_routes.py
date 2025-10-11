@@ -9,7 +9,8 @@ from typing import List, Optional
 import logging
 
 from database import get_db
-from auth.dependencies import get_current_user, require_permission
+from auth.dependencies import get_current_user
+from auth.permissions import require_permission
 from services.user_service import UserService
 from schemas.user import (
     UserCreate,

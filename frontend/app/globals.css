@@ -50,6 +50,58 @@
     @apply outline-none ring-2 ring-nude-600 ring-offset-2 ring-offset-nude-50;
   }
 
+  /* Hero Section Animations */
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in-delayed {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    50% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+  }
+
+  .animate-fade-in-delayed {
+    animation: fade-in-delayed 3s ease-out forwards;
+  }
+
+  /* Josh Yolk Emotional Design Classes */
+  .btn-emotional-primary {
+    @apply bg-gradient-to-r from-nude-600 to-nude-700 text-white hover:from-nude-700 hover:to-nude-800 shadow-luxury-soft hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .btn-emotional-secondary {
+    @apply bg-white/90 hover:bg-white text-nude-700 border border-nude-300 shadow-luxury-soft hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .hover-lift-emotional {
+    @apply hover:-translate-y-1 hover:shadow-luxury-medium transition-all duration-300;
+  }
+
+  .container-emotional {
+    @apply container mx-auto px-6;
+  }
+
   /* Selection Styling */
   ::selection {
     @apply bg-nude-200 text-nude-900;

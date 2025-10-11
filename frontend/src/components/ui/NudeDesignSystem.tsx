@@ -5,6 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
+import { Badge } from "./badge";
+
+// Re-export all components from NudeComponents
+export * from "./NudeComponents";
+
+// Re-export Badge from the UI components
+export { Badge } from "./badge";
 
 export function NudeDesignSystem() {
   return (

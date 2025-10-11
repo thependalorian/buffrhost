@@ -24,8 +24,8 @@ logger = logging.getLogger(__name__)
 class MLService:
     """Service class for ML operations"""
     
-    def __init__(self):
-        self.recommendation_engine = RecommendationEngine()
+    def __init__(self, db_session=None):
+        # Initialize ML systems (some require db_session, others don't)
         self.credit_scoring = CreditScoringModel()
         self.fraud_detection = FraudDetectionSystem()
         self.customer_segmentation = CustomerSegmentationSystem()
@@ -33,6 +33,12 @@ class MLService:
         self.dynamic_pricing = DynamicPricingSystem()
         self.churn_prediction = ChurnPredictionSystem()
         self.model_monitoring = ModelMonitoringSystem()
+        
+        # Initialize recommendation engine only if db_session is available
+        if db_session:
+            self.recommendation_engine = RecommendationEngine(db_session)
+        else:
+            self.recommendation_engine = None
     
     async def get_recommendations(self, user_id: str, db: Session) -> Dict[str, Any]:
         """Get personalized recommendations for a user"""

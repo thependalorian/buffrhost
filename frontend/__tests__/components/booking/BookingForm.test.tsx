@@ -161,4 +161,78 @@ describe("BookingForm", () => {
       expect(screen.getByLabelText(/number of guests/i)).toHaveValue(1);
     });
   });
+
+  describe("Airbnb-specific booking scenarios", () => {
+    it("handles Airbnb property booking with special requirements", async () => {
+      mockCreateBooking.mockResolvedValue({ id: "airbnb-123" });
+
+      renderWithProviders(<BookingForm propertyId="airbnb-property" />);
+
+      const checkInInput = screen.getByLabelText(/check in/i);
+      const checkOutInput = screen.getByLabelText(/check out/i);
+      const guestsInput = screen.getByLabelText(/number of guests/i);
+      const specialRequestsInput = screen.getByLabelText(/special requests/i);
+
+      fireEvent.change(checkInInput, { target: { value: "2024-01-15" } });
+      fireEvent.change(checkOutInput, { target: { value: "2024-01-17" } });
+      fireEvent.change(guestsInput, { target: { value: "4" } });
+      fireEvent.change(specialRequestsInput, { 
+        target: { value: "Late checkout, pet-friendly accommodation needed" } 
+      });
+
+      const submitButton = screen.getByRole("button", { name: /create booking/i });
+      fireEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockCreateBooking).toHaveBeenCalledWith({
+          property_id: "airbnb-property",
+          check_in: "2024-01-15",
+          check_out: "2024-01-17",
+          guests: 4,
+          special_requests: "Late checkout, pet-friendly accommodation needed",
+        });
+      });
+    });
+
+    it("validates guest count limits for Airbnb properties", async () => {
+      renderWithProviders(<BookingForm propertyId="airbnb-property" />);
+
+      const guestsInput = screen.getByLabelText(/number of guests/i);
+      const submitButton = screen.getByRole("button", { name: /create booking/i });
+
+      // Test maximum guest limit
+      fireEvent.change(guestsInput, { target: { value: "20" } });
+      fireEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/maximum guests exceeded/i)).toBeInTheDocument();
+      });
+    });
+
+    it("handles Airbnb instant booking confirmation", async () => {
+      mockCreateBooking.mockResolvedValue({ 
+        id: "airbnb-123",
+        instant_booking: true,
+        confirmation_code: "ABC123"
+      });
+
+      renderWithProviders(<BookingForm propertyId="airbnb-property" />);
+
+      const checkInInput = screen.getByLabelText(/check in/i);
+      const checkOutInput = screen.getByLabelText(/check out/i);
+      const guestsInput = screen.getByLabelText(/number of guests/i);
+
+      fireEvent.change(checkInInput, { target: { value: "2024-01-15" } });
+      fireEvent.change(checkOutInput, { target: { value: "2024-01-17" } });
+      fireEvent.change(guestsInput, { target: { value: "2" } });
+
+      const submitButton = screen.getByRole("button", { name: /create booking/i });
+      fireEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/booking confirmed/i)).toBeInTheDocument();
+        expect(screen.getByText(/confirmation code: ABC123/i)).toBeInTheDocument();
+      });
+    });
+  });
 });

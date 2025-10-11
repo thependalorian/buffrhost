@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useAnalytics, useRealTimeMetrics } from "../../../hooks/use-analytics";
 import { 
   Building2, 
   Utensils, 
@@ -70,6 +71,40 @@ const venueConfig = {
 };
 
 export default function PropertyGrid({ venues, metrics, className = "" }: PropertyGridProps) {
+  // Use real analytics data
+  const { data: analyticsData, isLoading: analyticsLoading } = useAnalytics("demo-property");
+  const { data: realTimeData, isLoading: realTimeLoading } = useRealTimeMetrics("demo-property");
+
+  // Get real metrics or fallback to config defaults
+  const getUnifiedMetrics = () => {
+    if (analyticsLoading || realTimeLoading) {
+      return {
+        totalRevenue: "Loading...",
+        totalGuests: "Loading...",
+        avgRating: "Loading...",
+        growthRate: "Loading..."
+      };
+    }
+    
+    if (analyticsData && realTimeData) {
+      return {
+        totalRevenue: `N$ ${(analyticsData.totalRevenue || 0).toLocaleString()}`,
+        totalGuests: (analyticsData.totalGuests || 0).toString(),
+        avgRating: `${analyticsData.avgRating || 0}/5`,
+        growthRate: `${analyticsData.growthRate || 0}%`
+      };
+    }
+    
+    return {
+      totalRevenue: "N$ 82,100",
+      totalGuests: "312",
+      avgRating: "4.7/5",
+      growthRate: "23%"
+    };
+  };
+
+  const unifiedMetrics = getUnifiedMetrics();
+
   return (
     <div className={`space-y-8 ${className}`}>
       <div className="text-center">
@@ -150,33 +185,33 @@ export default function PropertyGrid({ venues, metrics, className = "" }: Proper
               <div className="w-12 h-12 bg-nude-600 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <DollarSign className="w-6 h-6 text-white" />
               </div>
-              <div className="text-2xl font-bold text-nude-900 mb-1">N$ 82,100</div>
+              <div className="text-2xl font-bold text-nude-900 mb-1">{unifiedMetrics.totalRevenue}</div>
               <div className="text-sm text-nude-600">Total Revenue</div>
-              <div className="text-xs text-semantic-success">+18.5% vs last month</div>
+              <div className="text-xs text-semantic-success">+{analyticsData?.revenueTrend || 18.5}% vs last month</div>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-nude-500 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <Users className="w-6 h-6 text-white" />
               </div>
-              <div className="text-2xl font-bold text-nude-900 mb-1">312</div>
+              <div className="text-2xl font-bold text-nude-900 mb-1">{unifiedMetrics.totalGuests}</div>
               <div className="text-sm text-nude-600">Total Guests</div>
-              <div className="text-xs text-semantic-success">+12.3% vs last month</div>
+              <div className="text-xs text-semantic-success">+{analyticsData?.guestTrend || 12.3}% vs last month</div>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-nude-400 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <Star className="w-6 h-6 text-white" />
               </div>
-              <div className="text-2xl font-bold text-nude-900 mb-1">4.7/5</div>
+              <div className="text-2xl font-bold text-nude-900 mb-1">{unifiedMetrics.avgRating}</div>
               <div className="text-sm text-nude-600">Avg Rating</div>
-              <div className="text-xs text-semantic-success">+0.2 vs last month</div>
+              <div className="text-xs text-semantic-success">+{analyticsData?.ratingTrend || 0.2} vs last month</div>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-nude-700 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
-              <div className="text-2xl font-bold text-nude-900 mb-1">23%</div>
+              <div className="text-2xl font-bold text-nude-900 mb-1">{unifiedMetrics.growthRate}</div>
               <div className="text-sm text-nude-600">Growth Rate</div>
-              <div className="text-xs text-semantic-success">+5.2% vs last month</div>
+              <div className="text-xs text-semantic-success">+{analyticsData?.growthTrend || 5.2}% vs last month</div>
             </div>
           </div>
         </CardContent>

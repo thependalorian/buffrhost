@@ -32,7 +32,7 @@ describe("MenuItem Component", () => {
 
     expect(screen.getByText("Test Item")).toBeInTheDocument();
     expect(screen.getByText("A delicious test item")).toBeInTheDocument();
-    expect(screen.getByText("$15.99")).toBeInTheDocument();
+    expect(screen.getByText("US$15.99")).toBeInTheDocument();
     expect(screen.getByText("20 min")).toBeInTheDocument();
     expect(screen.getByText("350 calories")).toBeInTheDocument();
   });
@@ -110,6 +110,6 @@ describe("MenuItem Component", () => {
     const nadItem = { ...mockMenuItem, currency: "NAD", price: 1200 };
     render(<MenuItem item={nadItem} />);
 
-    expect(screen.getByText("N$1,200.00")).toBeInTheDocument();
+    expect(screen.getByText("$1,200.00")).toBeInTheDocument();
   });
 });

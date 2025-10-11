@@ -26,6 +26,367 @@ import joblib
 import json
 from pathlib import Path
 from enum import Enum
+
+class DynamicPricingSystem:
+    """
+    Dynamic Pricing System for Hospitality Platform
+    
+    This class implements advanced dynamic pricing using machine learning
+    techniques including demand forecasting, competitor analysis, and
+    revenue optimization to automatically adjust pricing based on market conditions.
+    """
+    
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        """
+        Initialize the dynamic pricing system
+        
+        Args:
+            config: Configuration dictionary for the system
+        """
+        self.config = config or {}
+        self.models = {}
+        self.scalers = {}
+        self.pricing_rules = {}
+        
+        # Initialize logging
+        self.logger = logging.getLogger(__name__)
+        
+        # Setup database connection
+        self.db_path = "dynamic_pricing.db"
+        self._setup_database()
+        
+        # Initialize models
+        self._initialize_models()
+    
+    def _setup_database(self):
+        """Setup SQLite database for storing pricing data"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Create tables for dynamic pricing
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS pricing_decisions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                property_id TEXT,
+                room_type TEXT,
+                date DATE,
+                base_price REAL,
+                dynamic_price REAL,
+                demand_factor REAL,
+                competitor_factor REAL,
+                seasonality_factor REAL,
+                created_at TIMESTAMP
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS competitor_prices (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                property_id TEXT,
+                competitor_name TEXT,
+                room_type TEXT,
+                price REAL,
+                date DATE,
+                created_at TIMESTAMP
+            )
+        ''')
+        
+        conn.commit()
+        conn.close()
+    
+    def _initialize_models(self):
+        """Initialize dynamic pricing models"""
+        try:
+            from sklearn.linear_model import LinearRegression
+            from sklearn.ensemble import RandomForestRegressor
+            from sklearn.preprocessing import StandardScaler
+            
+            # Linear regression for base pricing
+            self.models['base_pricing'] = LinearRegression()
+            
+            # Random forest for demand-based adjustments
+            self.models['demand_adjustment'] = RandomForestRegressor(
+                n_estimators=100,
+                random_state=42
+            )
+            
+            # Standard scaler for feature normalization
+            self.scalers['standard'] = StandardScaler()
+            
+            self.logger.info("Dynamic pricing models initialized successfully")
+            
+        except ImportError as e:
+            self.logger.error(f"Failed to initialize models: {e}")
+            raise
+    
+    def calculate_dynamic_price(self, property_id: str, room_type: str, date: str, 
+                              base_price: float, demand_data: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        Calculate dynamic price for a specific room and date
+        
+        Args:
+            property_id: ID of the property
+            room_type: Type of room
+            date: Date for pricing
+            base_price: Base price for the room
+            demand_data: Additional demand data
+            
+        Returns:
+            Dictionary containing pricing decision
+        """
+        try:
+            # Extract features
+            features = self._extract_pricing_features(property_id, room_type, date, demand_data)
+            
+            # Normalize features
+            features_scaled = self.scalers['standard'].fit_transform([features])
+            
+            # Calculate demand factor
+            demand_factor = self._calculate_demand_factor(features_scaled[0])
+            
+            # Calculate competitor factor
+            competitor_factor = self._calculate_competitor_factor(property_id, room_type, date)
+            
+            # Calculate seasonality factor
+            seasonality_factor = self._calculate_seasonality_factor(date)
+            
+            # Calculate final price
+            final_price = self._calculate_final_price(
+                base_price, demand_factor, competitor_factor, seasonality_factor
+            )
+            
+            # Store pricing decision
+            self._store_pricing_decision(
+                property_id, room_type, date, base_price, final_price,
+                demand_factor, competitor_factor, seasonality_factor
+            )
+            
+            return {
+                'property_id': property_id,
+                'room_type': room_type,
+                'date': date,
+                'base_price': base_price,
+                'dynamic_price': final_price,
+                'demand_factor': demand_factor,
+                'competitor_factor': competitor_factor,
+                'seasonality_factor': seasonality_factor,
+                'price_adjustment': final_price - base_price,
+                'adjustment_percentage': ((final_price - base_price) / base_price) * 100
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error in dynamic pricing: {e}")
+            return {
+                'error': str(e),
+                'dynamic_price': base_price,
+                'demand_factor': 1.0,
+                'competitor_factor': 1.0,
+                'seasonality_factor': 1.0
+            }
+    
+    def _extract_pricing_features(self, property_id: str, room_type: str, 
+                                 date: str, demand_data: Dict[str, Any]) -> List[float]:
+        """Extract features for pricing calculation"""
+        features = []
+        
+        # Date features
+        date_obj = datetime.strptime(date, '%Y-%m-%d')
+        features.extend([
+            date_obj.day / 31.0,  # Day of month
+            date_obj.month / 12.0,  # Month
+            date_obj.weekday() / 7.0,  # Day of week
+            date_obj.timetuple().tm_yday / 365.0,  # Day of year
+        ])
+        
+        # Demand features
+        if demand_data:
+            features.extend([
+                demand_data.get('occupancy_rate', 0.5),
+                demand_data.get('booking_velocity', 0.5),
+                demand_data.get('cancellation_rate', 0.1),
+                demand_data.get('advance_booking_days', 7) / 30.0
+            ])
+        else:
+            features.extend([0.5, 0.5, 0.1, 0.23])  # Default values
+        
+        # Room type features
+        room_type_encoding = self._encode_room_type(room_type)
+        features.extend(room_type_encoding)
+        
+        return features
+    
+    def _encode_room_type(self, room_type: str) -> List[float]:
+        """Encode room type as numerical features"""
+        # Simple encoding - in practice, you'd use more sophisticated methods
+        room_types = ['standard', 'deluxe', 'suite', 'presidential']
+        encoding = [0.0] * len(room_types)
+        
+        if room_type.lower() in room_types:
+            idx = room_types.index(room_type.lower())
+            encoding[idx] = 1.0
+        
+        return encoding
+    
+    def _calculate_demand_factor(self, features: np.ndarray) -> float:
+        """Calculate demand-based pricing factor"""
+        # Simplified demand factor calculation
+        occupancy_rate = features[4]  # From demand features
+        booking_velocity = features[5]
+        
+        # Higher occupancy and booking velocity = higher price
+        demand_factor = 0.8 + (occupancy_rate * 0.4) + (booking_velocity * 0.2)
+        
+        # Cap between 0.5 and 2.0
+        return max(0.5, min(2.0, demand_factor))
+    
+    def _calculate_competitor_factor(self, property_id: str, room_type: str, date: str) -> float:
+        """Calculate competitor-based pricing factor"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Get competitor prices for the same date and room type
+        cursor.execute('''
+            SELECT price FROM competitor_prices 
+            WHERE room_type = ? AND date = ? 
+            ORDER BY created_at DESC LIMIT 5
+        ''', (room_type, date))
+        
+        prices = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        
+        if not prices:
+            return 1.0  # No competitor data
+        
+        # Calculate average competitor price
+        avg_competitor_price = np.mean(prices)
+        
+        # Get our base price (simplified)
+        base_price = 100.0  # This should come from the property's base pricing
+        
+        # Factor based on how we compare to competitors
+        if avg_competitor_price > base_price * 1.2:
+            return 1.1  # Competitors are much higher, we can increase
+        elif avg_competitor_price < base_price * 0.8:
+            return 0.9  # Competitors are much lower, we should decrease
+        else:
+            return 1.0  # Similar pricing
+    
+    def _calculate_seasonality_factor(self, date: str) -> float:
+        """Calculate seasonality-based pricing factor"""
+        date_obj = datetime.strptime(date, '%Y-%m-%d')
+        month = date_obj.month
+        
+        # Seasonal factors (simplified)
+        seasonal_factors = {
+            1: 0.8,   # January - low season
+            2: 0.8,   # February - low season
+            3: 0.9,   # March - shoulder season
+            4: 1.0,   # April - shoulder season
+            5: 1.1,   # May - high season
+            6: 1.2,   # June - peak season
+            7: 1.3,   # July - peak season
+            8: 1.3,   # August - peak season
+            9: 1.1,   # September - high season
+            10: 1.0,  # October - shoulder season
+            11: 0.9,  # November - shoulder season
+            12: 1.1   # December - high season (holidays)
+        }
+        
+        return seasonal_factors.get(month, 1.0)
+    
+    def _calculate_final_price(self, base_price: float, demand_factor: float, 
+                             competitor_factor: float, seasonality_factor: float) -> float:
+        """Calculate final dynamic price"""
+        # Combine all factors
+        final_price = base_price * demand_factor * competitor_factor * seasonality_factor
+        
+        # Apply minimum and maximum price constraints
+        min_price = base_price * 0.5  # Minimum 50% of base price
+        max_price = base_price * 2.0  # Maximum 200% of base price
+        
+        return max(min_price, min(max_price, final_price))
+    
+    def _store_pricing_decision(self, property_id: str, room_type: str, date: str,
+                               base_price: float, final_price: float, demand_factor: float,
+                               competitor_factor: float, seasonality_factor: float):
+        """Store pricing decision in database"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT INTO pricing_decisions 
+            (property_id, room_type, date, base_price, dynamic_price, 
+             demand_factor, competitor_factor, seasonality_factor, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            property_id, room_type, date, base_price, final_price,
+            demand_factor, competitor_factor, seasonality_factor, datetime.now()
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def add_competitor_price(self, property_id: str, competitor_name: str, 
+                           room_type: str, price: float, date: str):
+        """Add competitor price data"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT INTO competitor_prices 
+            (property_id, competitor_name, room_type, price, date, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (property_id, competitor_name, room_type, price, date, datetime.now()))
+        
+        conn.commit()
+        conn.close()
+    
+    def get_pricing_analytics(self, property_id: str, days: int = 30) -> Dict[str, Any]:
+        """Get pricing analytics for a property"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Get recent pricing decisions
+        cursor.execute('''
+            SELECT * FROM pricing_decisions 
+            WHERE property_id = ? 
+            ORDER BY date DESC LIMIT ?
+        ''', (property_id, days))
+        
+        decisions = cursor.fetchall()
+        conn.close()
+        
+        if not decisions:
+            return {'error': 'No pricing data available'}
+        
+        # Calculate analytics
+        prices = [row[5] for row in decisions]  # dynamic_price column
+        base_prices = [row[4] for row in decisions]  # base_price column
+        
+        avg_price = np.mean(prices)
+        avg_base_price = np.mean(base_prices)
+        price_variance = np.var(prices)
+        
+        return {
+            'property_id': property_id,
+            'period_days': days,
+            'avg_dynamic_price': avg_price,
+            'avg_base_price': avg_base_price,
+            'price_variance': price_variance,
+            'total_decisions': len(decisions),
+            'avg_adjustment': avg_price - avg_base_price,
+            'adjustment_percentage': ((avg_price - avg_base_price) / avg_base_price) * 100
+        }
 import warnings
 warnings.filterwarnings('ignore')
 

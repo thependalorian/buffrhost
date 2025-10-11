@@ -26,6 +26,376 @@ import joblib
 import json
 from pathlib import Path
 from enum import Enum
+
+class ChurnPredictionSystem:
+    """
+    Churn Prediction System for Hospitality Platform
+    
+    This class implements advanced churn prediction using machine learning
+    techniques including survival analysis, behavioral pattern recognition,
+    and early warning systems to identify customers at risk of churning.
+    """
+    
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        """
+        Initialize the churn prediction system
+        
+        Args:
+            config: Configuration dictionary for the system
+        """
+        self.config = config or {}
+        self.models = {}
+        self.scalers = {}
+        self.churn_threshold = self.config.get('churn_threshold', 0.5)
+        
+        # Initialize logging
+        self.logger = logging.getLogger(__name__)
+        
+        # Setup database connection
+        self.db_path = "churn_prediction.db"
+        self._setup_database()
+        
+        # Initialize models
+        self._initialize_models()
+    
+    def _setup_database(self):
+        """Setup SQLite database for storing churn prediction data"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Create tables for churn prediction
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS churn_predictions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id TEXT,
+                churn_probability REAL,
+                risk_level TEXT,
+                features TEXT,
+                prediction_date TIMESTAMP,
+                model_version TEXT
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS churn_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id TEXT,
+                churn_date DATE,
+                churn_reason TEXT,
+                features TEXT,
+                created_at TIMESTAMP
+            )
+        ''')
+        
+        conn.commit()
+        conn.close()
+    
+    def _initialize_models(self):
+        """Initialize churn prediction models"""
+        try:
+            from sklearn.ensemble import RandomForestClassifier
+            from sklearn.linear_model import LogisticRegression
+            from sklearn.preprocessing import StandardScaler
+            from sklearn.metrics import classification_report, roc_auc_score
+            
+            # Random forest for churn prediction
+            self.models['random_forest'] = RandomForestClassifier(
+                n_estimators=100,
+                random_state=42
+            )
+            
+            # Logistic regression for baseline
+            self.models['logistic'] = LogisticRegression(
+                random_state=42,
+                max_iter=1000
+            )
+            
+            # Standard scaler for feature normalization
+            self.scalers['standard'] = StandardScaler()
+            
+            self.logger.info("Churn prediction models initialized successfully")
+            
+        except ImportError as e:
+            self.logger.error(f"Failed to initialize models: {e}")
+            raise
+    
+    def predict_churn(self, customer_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Predict churn probability for a customer
+        
+        Args:
+            customer_data: Dictionary containing customer data
+            
+        Returns:
+            Dictionary containing churn prediction results
+        """
+        try:
+            # Extract features
+            features = self._extract_features(customer_data)
+            
+            # Normalize features
+            features_scaled = self.scalers['standard'].fit_transform([features])
+            
+            # Get predictions from both models
+            rf_pred = self.models['random_forest'].predict_proba(features_scaled)[0]
+            logistic_pred = self.models['logistic'].predict_proba(features_scaled)[0]
+            
+            # Combine predictions (simple average)
+            churn_probability = (rf_pred[1] + logistic_pred[1]) / 2
+            
+            # Determine risk level
+            if churn_probability >= 0.8:
+                risk_level = "HIGH"
+            elif churn_probability >= 0.6:
+                risk_level = "MEDIUM"
+            elif churn_probability >= 0.4:
+                risk_level = "LOW"
+            else:
+                risk_level = "VERY_LOW"
+            
+            # Create result
+            result = {
+                'customer_id': customer_data.get('customer_id', ''),
+                'churn_probability': churn_probability,
+                'risk_level': risk_level,
+                'is_at_risk': churn_probability >= self.churn_threshold,
+                'individual_predictions': {
+                    'random_forest': rf_pred[1],
+                    'logistic': logistic_pred[1]
+                },
+                'prediction_date': datetime.now().isoformat()
+            }
+            
+            # Store prediction
+            self._store_churn_prediction(customer_data, result)
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Error in churn prediction: {e}")
+            return {
+                'customer_id': customer_data.get('customer_id', ''),
+                'churn_probability': 0.0,
+                'risk_level': 'UNKNOWN',
+                'is_at_risk': False,
+                'error': str(e)
+            }
+    
+    def _extract_features(self, data: Dict[str, Any]) -> List[float]:
+        """Extract features from customer data"""
+        features = []
+        
+        # RFM features
+        recency = data.get('recency_days', 30)
+        features.append(recency / 365.0)  # Normalize to years
+        
+        frequency = data.get('frequency', 1)
+        features.append(min(frequency / 100.0, 1.0))  # Cap at 100
+        
+        monetary = data.get('monetary_value', 0)
+        features.append(monetary / 10000.0)  # Normalize to 10k
+        
+        # Behavioral features
+        avg_booking_value = data.get('avg_booking_value', 0)
+        features.append(avg_booking_value / 1000.0)  # Normalize to 1k
+        
+        booking_frequency = data.get('booking_frequency', 0)
+        features.append(min(booking_frequency / 12.0, 1.0))  # Cap at 12 per year
+        
+        # Engagement features
+        last_login_days = data.get('last_login_days', 30)
+        features.append(last_login_days / 365.0)  # Normalize to years
+        
+        email_opens = data.get('email_opens', 0)
+        features.append(min(email_opens / 100.0, 1.0))  # Cap at 100
+        
+        # Service usage features
+        support_tickets = data.get('support_tickets', 0)
+        features.append(min(support_tickets / 10.0, 1.0))  # Cap at 10
+        
+        # Demographics
+        age = data.get('age', 35)
+        features.append(age / 100.0)  # Normalize to 0-1
+        
+        # Preferences
+        luxury_preference = data.get('luxury_preference', 0.5)
+        features.append(luxury_preference)
+        
+        return features
+    
+    def _store_churn_prediction(self, customer_data: Dict[str, Any], result: Dict[str, Any]):
+        """Store churn prediction in database"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT INTO churn_predictions 
+            (customer_id, churn_probability, risk_level, features, prediction_date, model_version)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (
+            result['customer_id'],
+            result['churn_probability'],
+            result['risk_level'],
+            json.dumps(customer_data),
+            datetime.now(),
+            'combined'
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def train_models(self, training_data: List[Dict[str, Any]]):
+        """
+        Train churn prediction models on historical data
+        
+        Args:
+            training_data: List of historical customer data with churn labels
+        """
+        try:
+            # Extract features and labels
+            features = []
+            labels = []
+            
+            for data in training_data:
+                features.append(self._extract_features(data))
+                labels.append(data.get('churned', 0))  # 0: not churned, 1: churned
+            
+            X = np.array(features)
+            y = np.array(labels)
+            
+            # Scale features
+            X_scaled = self.scalers['standard'].fit_transform(X)
+            
+            # Train models
+            self.models['random_forest'].fit(X_scaled, y)
+            self.models['logistic'].fit(X_scaled, y)
+            
+            # Evaluate models
+            rf_pred = self.models['random_forest'].predict(X_scaled)
+            logistic_pred = self.models['logistic'].predict(X_scaled)
+            
+            self.logger.info("Churn prediction models trained successfully")
+            
+        except Exception as e:
+            self.logger.error(f"Error training models: {e}")
+            raise
+    
+    def get_churn_statistics(self) -> Dict[str, Any]:
+        """Get churn prediction statistics"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Get total predictions
+        cursor.execute("SELECT COUNT(*) FROM churn_predictions")
+        total_predictions = cursor.fetchone()[0]
+        
+        # Get predictions by risk level
+        cursor.execute("SELECT risk_level, COUNT(*) FROM churn_predictions GROUP BY risk_level")
+        predictions_by_level = dict(cursor.fetchall())
+        
+        # Get recent predictions (last 24 hours)
+        cursor.execute("""
+            SELECT COUNT(*) FROM churn_predictions 
+            WHERE prediction_date >= datetime('now', '-1 day')
+        """)
+        recent_predictions = cursor.fetchone()[0]
+        
+        # Get actual churn events
+        cursor.execute("SELECT COUNT(*) FROM churn_events")
+        total_churn_events = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        return {
+            'total_predictions': total_predictions,
+            'predictions_by_level': predictions_by_level,
+            'recent_predictions_24h': recent_predictions,
+            'total_churn_events': total_churn_events,
+            'churn_threshold': self.churn_threshold
+        }
+    
+    def add_churn_event(self, customer_id: str, churn_date: str, churn_reason: str, features: Dict[str, Any]):
+        """Add actual churn event to the database"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT INTO churn_events 
+            (customer_id, churn_date, churn_reason, features, created_at)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (
+            customer_id,
+            churn_date,
+            churn_reason,
+            json.dumps(features),
+            datetime.now()
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def get_churn_insights(self, customer_id: str) -> Dict[str, Any]:
+        """Get churn insights for a specific customer"""
+        import sqlite3
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Get customer's prediction history
+        cursor.execute('''
+            SELECT * FROM churn_predictions 
+            WHERE customer_id = ? 
+            ORDER BY prediction_date DESC
+        ''', (customer_id,))
+        
+        predictions = cursor.fetchall()
+        
+        # Get churn events
+        cursor.execute('''
+            SELECT * FROM churn_events 
+            WHERE customer_id = ?
+        ''', (customer_id,))
+        
+        churn_events = cursor.fetchall()
+        conn.close()
+        
+        if not predictions:
+            return {'error': 'No prediction data available for customer'}
+        
+        # Analyze prediction trends
+        recent_predictions = predictions[:5]  # Last 5 predictions
+        avg_probability = np.mean([p[2] for p in recent_predictions])  # churn_probability column
+        
+        # Generate insights
+        insights = []
+        if avg_probability > 0.7:
+            insights.append("High churn risk - immediate attention required")
+        elif avg_probability > 0.5:
+            insights.append("Medium churn risk - monitor closely")
+        elif avg_probability > 0.3:
+            insights.append("Low churn risk - standard monitoring")
+        else:
+            insights.append("Very low churn risk - customer appears stable")
+        
+        if churn_events:
+            insights.append(f"Customer has churned {len(churn_events)} time(s)")
+        
+        return {
+            'customer_id': customer_id,
+            'avg_churn_probability': avg_probability,
+            'total_predictions': len(predictions),
+            'churn_events': len(churn_events),
+            'insights': insights,
+            'recent_predictions': recent_predictions
+        }
 import warnings
 warnings.filterwarnings('ignore')
 
