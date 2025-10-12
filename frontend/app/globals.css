@@ -1,478 +1,304 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Dancing+Script:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    /* CSS Custom Properties for Dynamic Theming */
-    --nude-50: #fef7f0;
-    --nude-100: #fceee0;
-    --nude-200: #f8dcc0;
-    --nude-300: #f2c49f;
-    --nude-400: #e8a87a;
-    --nude-500: #d18b5c;
-    --nude-600: #b8704a;
-    --nude-700: #9d5a3a;
-    --nude-800: #7d452e;
-    --nude-900: #5d3322;
-    --nude-950: #3d1f15;
-    
-    /* Luxury Accent Colors */
-    --luxury-champagne: #f7e7ce;
-    --luxury-rose: #e8b4a0;
-    --luxury-bronze: #cd853f;
-    --luxury-charlotte: #d4a574;
-    
-    /* Semantic Colors */
-    --semantic-success: #10b981;
-    --semantic-warning: #f59e0b;
-    --semantic-error: #ef4444;
-    --semantic-info: #3b82f6;
-  }
+:root {
+  /* Buffr Host Nude Color Palette */
+  --nude-50: #fef7f0;
+  --nude-100: #fceee0;
+  --nude-200: #f8dcc0;
+  --nude-300: #f2c49f;
+  --nude-400: #e8a87a;
+  --nude-500: #d18b5c;
+  --nude-600: #b8704a;
+  --nude-700: #9d5a3a;
+  --nude-800: #7d452e;
+  --nude-900: #5d3322;
+  --nude-950: #3d1f15;
 
+  /* Charlotte Pillow Talk Collection */
+  --luxury-charlotte: #d4a574;
+  --luxury-champagne: #f7e7ce;
+  --luxury-rose: #e8b4a0;
+  --luxury-bronze: #cd853f;
+
+  /* Semantic Colors */
+  --semantic-success: #10b981;
+  --semantic-warning: #f59e0b;
+  --semantic-error: #ef4444;
+  --semantic-info: #3b82f6;
+}
+
+@layer base {
   html {
-    @apply scroll-smooth;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-family: 'Inter', sans-serif;
   }
   
-  body {
-    @apply bg-nude-50 text-nude-800 font-primary antialiased;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-    font-variant-ligatures: common-ligatures;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
   }
-
-  /* Focus Management for Accessibility */
-  *:focus-visible {
-    @apply outline-none ring-2 ring-nude-600 ring-offset-2 ring-offset-nude-50;
+  
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
   }
-
-  /* Hero Section Animations */
-  @keyframes fade-in {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  
+  .signature {
+    font-family: 'Dancing Script', cursive;
   }
+}
 
-  @keyframes fade-in-delayed {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    50% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 1s ease-out forwards;
-  }
-
-  .animate-fade-in-delayed {
-    animation: fade-in-delayed 3s ease-out forwards;
-  }
-
-  /* Josh Yolk Emotional Design Classes */
-  .btn-emotional-primary {
-    @apply bg-gradient-to-r from-nude-600 to-nude-700 text-white hover:from-nude-700 hover:to-nude-800 shadow-luxury-soft hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1;
-  }
-
-  .btn-emotional-secondary {
-    @apply bg-white/90 hover:bg-white text-nude-700 border border-nude-300 shadow-luxury-soft hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1;
+@layer components {
+  /* Emotional Design Patterns */
+  .warm-glow {
+    box-shadow: 0 0 20px rgba(184, 112, 74, 0.2);
+    animation: warmGlow 2s ease-in-out infinite;
   }
 
   .hover-lift-emotional {
     @apply hover:-translate-y-1 hover:shadow-luxury-medium transition-all duration-300;
   }
 
-  .container-emotional {
-    @apply container mx-auto px-6;
+  .smooth-appear {
+    animation: smoothAppear 0.6s ease-out;
   }
 
-  /* Selection Styling */
-  ::selection {
-    @apply bg-nude-200 text-nude-900;
+  .nude-wave {
+    animation: nudeWave 3s ease-in-out infinite;
   }
 
-  /* Scrollbar Styling */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-nude-100;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-nude-400 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-nude-500;
-  }
-
-  /* Emotional Typography Hierarchy */
-  h1 {
-    @apply font-display font-bold text-nude-900 text-4xl md:text-5xl lg:text-hero;
-    text-wrap: balance;
-  }
-  
-  h2 {
-    @apply font-display font-semibold text-nude-800 text-3xl md:text-4xl;
-    text-wrap: balance;
-  }
-  
-  h3 {
-    @apply font-display font-semibold text-nude-800 text-2xl md:text-3xl;
-  }
-  
-  h4 {
-    @apply font-primary font-semibold text-nude-800 text-xl md:text-2xl;
-  }
-  
-  h5 {
-    @apply font-primary font-semibold text-nude-700 text-lg md:text-xl;
-  }
-  
-  h6 {
-    @apply font-primary font-medium text-nude-700 text-base md:text-lg;
-  }
-  
-  p {
-    @apply text-nude-700 leading-relaxed;
-  }
-  
-  a {
-    @apply text-nude-600 hover:text-nude-700 transition-colors duration-200;
-  }
-}
-
-@layer components {
-  /* === EMOTIONAL BUTTON SYSTEM === */
+  /* Button Emotional Hierarchy */
   .btn-emotional-primary {
-    @apply bg-gradient-to-r from-nude-600 to-nude-700 text-white font-semibold px-6 py-3 rounded-xl;
-    @apply shadow-nude-medium hover:shadow-nude-strong transition-all duration-300;
-    @apply hover:from-nude-700 hover:to-nude-800 hover:-translate-y-0.5;
-    @apply focus:outline-none focus:ring-2 focus:ring-nude-600 focus:ring-offset-2;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-emotional-primary::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent;
-    transform: translateX(-100%);
-    transition: transform 0.6s;
-  }
-
-  .btn-emotional-primary:hover::before {
-    transform: translateX(100%);
+    @apply bg-gradient-to-r from-nude-600 to-nude-700
+           text-white hover:from-nude-700 hover:to-nude-800
+           shadow-nude-soft hover:shadow-nude-medium
+           transition-all duration-300 hover:-translate-y-1
+           px-6 py-3 rounded-full font-medium;
   }
 
   .btn-emotional-secondary {
-    @apply bg-white text-nude-700 font-semibold px-6 py-3 rounded-xl border-2 border-nude-400;
-    @apply hover:bg-nude-50 hover:border-nude-600 hover:text-nude-800 transition-all duration-300;
-    @apply hover:-translate-y-0.5 hover:shadow-nude-medium;
-    @apply focus:outline-none focus:ring-2 focus:ring-nude-400 focus:ring-offset-2;
+    @apply bg-nude-500 text-white hover:bg-nude-600
+           shadow-nude-soft hover:shadow-nude-medium
+           transition-all duration-300 hover:-translate-y-1
+           px-6 py-3 rounded-full font-medium;
   }
 
-  .btn-emotional-accent {
-    @apply bg-gradient-to-r from-luxury-champagne to-luxury-rose text-nude-800 font-semibold px-6 py-3 rounded-xl;
-    @apply hover:from-luxury-rose hover:to-luxury-bronze hover:text-white transition-all duration-300;
-    @apply hover:-translate-y-0.5 hover:shadow-nude-glow;
-    @apply focus:outline-none focus:ring-2 focus:ring-luxury-charlotte focus:ring-offset-2;
+  .btn-emotional-ghost {
+    @apply bg-transparent text-nude-600 hover:bg-nude-50
+           border border-nude-200 hover:border-nude-300
+           transition-all duration-300 hover:-translate-y-1
+           px-6 py-3 rounded-full font-medium;
   }
 
-  /* === HOSPITALITY CARDS === */
-  .hospitality-card {
-    @apply bg-white border border-nude-200 rounded-2xl shadow-nude-soft overflow-hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Card Layered Warmth */
+  .card-default {
+    @apply bg-nude-50 border border-nude-200 shadow-nude-soft
+           rounded-lg p-6 transition-all duration-300;
   }
 
-  .hospitality-card:hover {
-    @apply transform -translate-y-1 shadow-nude-medium border-nude-300;
+  .card-luxury {
+    @apply bg-luxury-champagne border border-luxury-charlotte 
+           shadow-luxury-soft rounded-lg p-6 transition-all duration-300;
   }
 
-  .hospitality-card-luxury {
-    @apply hospitality-card bg-gradient-to-br from-luxury-champagne/20 to-white border-luxury-bronze/30;
+  .card-interactive {
+    @apply hover:-translate-y-1 hover:shadow-luxury-medium
+           transition-all duration-300 cursor-pointer;
   }
 
-  .hospitality-card-spa {
-    @apply hospitality-card bg-gradient-to-br from-nude-50 to-nude-100/50 border-nude-300;
+  /* Typography Emotional Hierarchy */
+  .heading-hero {
+    @apply text-5xl md:text-6xl font-display font-bold text-nude-900
+           leading-tight tracking-tight;
   }
 
-  /* === FORM ELEMENTS WITH EMOTIONAL DESIGN === */
-  .form-input-emotional {
-    @apply bg-nude-50 border-2 border-nude-200 rounded-xl px-4 py-3 text-nude-800 placeholder-nude-400;
-    @apply focus:border-nude-600 focus:bg-white focus:shadow-nude-soft transition-all duration-200;
-    @apply focus:transform focus:-translate-y-0.5;
-    @apply hover:border-nude-300;
+  .heading-section {
+    @apply text-3xl md:text-4xl font-display font-semibold text-nude-800
+           leading-tight tracking-tight;
   }
 
-  .form-label-emotional {
-    @apply text-nude-800 font-semibold mb-2 block text-sm;
+  .heading-card {
+    @apply text-xl md:text-2xl font-display font-medium text-nude-800
+           leading-snug;
   }
 
-  .form-error-emotional {
-    @apply text-semantic-error text-sm mt-1 flex items-center gap-1;
+  .body-large {
+    @apply text-lg text-nude-700 leading-relaxed;
   }
 
-  /* === NAVIGATION WITH WARMTH === */
-  .nav-link-emotional {
-    @apply text-nude-700 hover:text-nude-600 font-medium px-4 py-2 rounded-lg transition-all duration-200;
-    @apply hover:bg-nude-100;
+  .body-regular {
+    @apply text-base text-nude-700 leading-relaxed;
   }
 
-  .nav-link-emotional-active {
-    @apply text-nude-600 bg-nude-200 font-semibold;
+  .body-small {
+    @apply text-sm text-nude-600 leading-relaxed;
   }
 
-  /* === LOADING STATES THAT FEEL LUXURIOUS === */
-  .nude-wave-loader {
-    @apply bg-gradient-nude-wave bg-[length:400%_400%] animate-nude-wave rounded-lg;
-    height: 3px;
-  }
-
-  .warm-glow-loader {
-    @apply animate-warm-glow rounded-full bg-nude-600;
-    width: 40px;
-    height: 40px;
-  }
-
-  /* === INTERACTIVE ELEMENTS === */
-  .warm-glow-hover {
-    @apply relative transition-all duration-300 ease-out;
-  }
-
-  .warm-glow-hover::before {
-    content: '';
-    @apply absolute -inset-2 bg-gradient-to-r from-luxury-champagne via-nude-600 to-luxury-rose rounded-2xl;
-    @apply opacity-0 -z-10 transition-opacity duration-300 blur-md;
-  }
-
-  .warm-glow-hover:hover::before {
-    @apply opacity-30;
-  }
-
-  .warm-glow-hover:hover {
-    @apply -translate-y-1 shadow-nude-glow;
-  }
-
-  /* === LAYERED CARD INTERACTIONS === */
-  .layered-nude-card {
-    @apply relative bg-white rounded-2xl transition-all duration-500 ease-out overflow-hidden;
-    transform-style: preserve-3d;
-  }
-
-  .layered-nude-card::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-transparent via-nude-200/5 to-transparent;
-    @apply opacity-0 transition-opacity duration-500;
-    transform: translateZ(-1px);
-  }
-
-  .layered-nude-card:hover {
-    @apply -translate-y-2 scale-[1.02] shadow-nude-strong;
-  }
-
-  .layered-nude-card:hover::before {
-    @apply opacity-100;
-  }
-
-  /* === ACCESSIBILITY FIRST === */
-  .focus-visible-emotional {
-    @apply focus:outline-none focus:ring-2 focus:ring-nude-600 focus:ring-offset-2;
-  }
-
-  .sr-only {
-    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
-  }
-
-  /* === RESPONSIVE CONTAINERS === */
-  .container-emotional {
+  /* Warm Professional Layout */
+  .container-warm {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  /* === STATUS INDICATORS === */
-  .status-indicator-success {
-    @apply bg-semantic-success/20 text-semantic-success px-3 py-1 rounded-full text-sm font-medium;
+  .section-warm {
+    @apply py-16 md:py-24;
   }
 
-  .status-indicator-warning {
-    @apply bg-semantic-warning/20 text-semantic-warning px-3 py-1 rounded-full text-sm font-medium;
+  .section-warm-sm {
+    @apply py-8 md:py-12;
   }
 
-  .status-indicator-error {
-    @apply bg-semantic-error/20 text-semantic-error px-3 py-1 rounded-full text-sm font-medium;
+  /* Emotional Micro-interactions */
+  .micro-interaction {
+    @apply transition-all duration-200 ease-out;
   }
 
-  .status-indicator-info {
-    @apply bg-semantic-info/20 text-semantic-info px-3 py-1 rounded-full text-sm font-medium;
+  .micro-interaction:hover {
+    @apply transform scale-105;
   }
 
-  /* === DASHBOARD COMPONENTS === */
-  .dashboard-card-emotional {
-    @apply bg-white border border-nude-200 rounded-2xl p-6 shadow-nude-soft;
-    @apply hover:shadow-nude-medium transition-all duration-300;
+  /* Luxury Accent Elements */
+  .luxury-accent {
+    @apply text-luxury-charlotte;
   }
 
-  .kpi-card-emotional {
-    @apply dashboard-card-emotional text-center p-4;
+  .luxury-bg {
+    @apply bg-luxury-champagne;
   }
 
-  .kpi-value-emotional {
-    @apply text-3xl font-bold text-nude-900 mb-1;
+  .luxury-border {
+    @apply border-luxury-charlotte;
   }
 
-  .kpi-label-emotional {
-    @apply text-nude-600 text-sm font-medium;
+  /* Semantic State Colors */
+  .state-success {
+    @apply text-semantic-success bg-green-50 border-green-200;
   }
 
-  .kpi-trend-emotional {
-    @apply text-semantic-success text-sm flex items-center justify-center gap-1;
+  .state-warning {
+    @apply text-semantic-warning bg-yellow-50 border-yellow-200;
   }
 
-  /* === DATA VISUALIZATION === */
-  .data-table-emotional {
-    @apply bg-white border border-nude-200 rounded-2xl overflow-hidden shadow-nude-soft;
+  .state-error {
+    @apply text-semantic-error bg-red-50 border-red-200;
   }
 
-  .data-table-emotional th {
-    @apply bg-nude-100 text-nude-800 font-semibold px-6 py-4 text-left border-b border-nude-200;
-  }
-
-  .data-table-emotional td {
-    @apply px-6 py-4 text-nude-700 border-b border-nude-100;
-  }
-
-  .data-table-emotional tr:hover {
-    @apply bg-nude-50;
-  }
-
-  /* === MODAL SYSTEM === */
-  .modal-overlay-emotional {
-    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4;
-  }
-
-  .modal-content-emotional {
-    @apply bg-white border border-nude-200 rounded-2xl shadow-nude-strong max-w-lg w-full p-6;
-    animation: smoothAppear 0.3s ease-out;
-  }
-
-  /* === TOAST NOTIFICATIONS === */
-  .toast-emotional-success {
-    @apply bg-semantic-success/10 border border-semantic-success/20 text-semantic-success rounded-xl p-4 shadow-nude-medium;
-  }
-
-  .toast-emotional-error {
-    @apply bg-semantic-error/10 border border-semantic-error/20 text-semantic-error rounded-xl p-4 shadow-nude-medium;
-  }
-
-  .toast-emotional-warning {
-    @apply bg-semantic-warning/10 border border-semantic-warning/20 text-semantic-warning rounded-xl p-4 shadow-nude-medium;
-  }
-
-  .toast-emotional-info {
-    @apply bg-semantic-info/10 border border-semantic-info/20 text-semantic-info rounded-xl p-4 shadow-nude-medium;
+  .state-info {
+    @apply text-semantic-info bg-blue-50 border-blue-200;
   }
 }
 
 @layer utilities {
-  /* === ANIMATION UTILITIES === */
-  .animate-hospitality-bounce {
-    animation: hospitalityBounce 2s ease-in-out infinite;
+  /* Custom utilities for emotional design */
+  .text-nude-600 {
+    color: var(--nude-600);
   }
 
-  .animate-smooth-appear {
-    animation: smoothAppear 0.6s ease-out;
+  .bg-nude-50 {
+    background-color: var(--nude-50);
   }
 
-  /* === GRADIENT TEXT === */
-  .text-gradient-nude {
-    @apply bg-gradient-to-r from-nude-600 to-nude-800 bg-clip-text text-transparent;
+  .border-nude-200 {
+    border-color: var(--nude-200);
   }
 
-  .text-gradient-luxury {
-    @apply bg-gradient-to-r from-luxury-bronze to-luxury-rose bg-clip-text text-transparent;
+  .shadow-nude-soft {
+    box-shadow: 0 4px 6px -1px rgba(184, 112, 74, 0.1), 0 2px 4px -1px rgba(184, 112, 74, 0.06);
   }
 
-  /* === BACKGROUND PATTERNS === */
-  .bg-nude-pattern {
-    background-image: radial-gradient(circle at 1px 1px, rgba(184, 112, 74, 0.15) 1px, transparent 0);
-    background-size: 20px 20px;
+  .shadow-luxury-medium {
+    box-shadow: 0 10px 15px -3px rgba(212, 165, 116, 0.1), 0 4px 6px -2px rgba(212, 165, 116, 0.05);
   }
 
-  /* === SCROLLBAR STYLING === */
-  .scrollbar-nude {
-    scrollbar-width: thin;
-    scrollbar-color: theme('colors.nude.400') theme('colors.nude.100');
+  .shadow-luxury-soft {
+    box-shadow: 0 4px 6px -1px rgba(212, 165, 116, 0.1), 0 2px 4px -1px rgba(212, 165, 116, 0.06);
   }
 
-  .scrollbar-nude::-webkit-scrollbar {
-    width: 6px;
+  .shadow-luxury-strong {
+    box-shadow: 0 20px 25px -5px rgba(212, 165, 116, 0.1), 0 10px 10px -5px rgba(212, 165, 116, 0.04);
   }
 
-  .scrollbar-nude::-webkit-scrollbar-track {
-    @apply bg-nude-100 rounded-full;
+  .shadow-nude-soft {
+    box-shadow: 0 4px 6px -1px rgba(184, 112, 74, 0.1), 0 2px 4px -1px rgba(184, 112, 74, 0.06);
   }
 
-  .scrollbar-nude::-webkit-scrollbar-thumb {
-    @apply bg-nude-400 rounded-full;
+  .container-emotional {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  .scrollbar-nude::-webkit-scrollbar-thumb:hover {
-    @apply bg-nude-600;
+  .font-primary {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .font-display {
+    font-family: 'Playfair Display', serif;
   }
 }
 
-/* === HIGH CONTRAST MODE SUPPORT === */
-@media (prefers-contrast: high) {
-  .hospitality-card {
-    border: 2px solid #000000;
+/* Keyframe animations */
+@keyframes warmGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(184, 112, 74, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(184, 112, 74, 0.3);
+  }
+}
+
+@keyframes nudeWave {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes smoothAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hoverLift {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-2px);
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .warm-glow,
+  .nude-wave,
+  .smooth-appear,
+  .hover-lift-emotional {
+    animation: none;
+  }
+}
+
+/* Focus states for accessibility */
+.btn-emotional-primary:focus,
+.btn-emotional-secondary:focus,
+.btn-emotional-ghost:focus {
+  @apply outline-none ring-2 ring-nude-600 ring-offset-2;
+}
+
+/* Print styles */
+@media print {
+  .warm-glow,
+  .nude-wave,
+  .smooth-appear {
+    animation: none;
   }
   
-  .btn-emotional-primary {
-    background: #000000;
-    color: #ffffff;
-    border: 2px solid #000000;
-  }
-}
-
-/* === REDUCED MOTION SUPPORT === */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* === DARK MODE SUPPORT === */
-@media (prefers-color-scheme: dark) {
-  .auto-dark {
-    --nude-50: #1a1a1a;
-    --nude-100: #2a2a2a;
-    --nude-200: #3a3a3a;
-    --nude-300: #4a4a4a;
-    --nude-400: #5a5a5a;
-    --nude-500: #6a6a6a;
-    --nude-600: #7a7a7a;
-    --nude-700: #8a8a8a;
-    --nude-800: #9a9a9a;
-    --nude-900: #ffffff;
+  .hover-lift-emotional:hover {
+    transform: none;
   }
 }

@@ -1,15 +1,37 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowRight, Menu, X } from "lucide-react";
+import {
+  Menu,
+  X,
+  CheckCircle,
+  Sparkles,
+  Home,
+  Building2,
+  Bed,
+  Users2,
+  Star,
+  Utensils,
+  Car,
+  Dumbbell,
+  Wine,
+  Settings,
+  Cpu,
+  DollarSign,
+  Globe,
+  Clock,
+  Zap,
+  BarChart3,
+  Smartphone
+} from "lucide-react";
 
-import { Button, Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, SmartWaitlist } from "@/components/ui";
 
-const NavLink = ({ href, children, onClick }) => (
+const NavLink = ({ href, children, onClick = () => {}, className = "" }) => (
   <a
     href={href}
     onClick={onClick}
-    className="text-nude-700 hover:text-nude-600 transition-colors duration-300 font-medium"
+    className={`text-nude-700 hover:text-nude-600 transition-colors duration-300 font-medium ${className}`}
   >
     {children}
   </a>
@@ -18,10 +40,10 @@ const NavLink = ({ href, children, onClick }) => (
 const FeatureCard = ({ title, description, features, icon: Icon, color }) => {
   const colorMap = {
     "nude-600": "bg-nude-600",
-    "nude-500": "bg-nude-500", 
+    "nude-500": "bg-nude-500",
     "nude-700": "bg-nude-700",
   };
-  
+
   return (
     <Card className="group hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1 h-full">
       <CardHeader>
@@ -322,7 +344,7 @@ export default function HomePage() {
             <div className="hidden md:flex items-center space-x-4">
               <Button
                 onClick={() => setShowWaitlistModal(true)}
-                className="bg-nude-600 hover:bg-nude-700 text-white px-6 py-2 rounded-full shadow-luxury-soft hover:shadow-luxury-medium transition-all duration-300"
+                className="bg-nude-600 hover:bg-nude-700 text-white px-6 py-2 shadow-luxury-soft hover:shadow-luxury-medium transition-all duration-300"
               >
                 Start Free Trial
               </Button>
@@ -358,7 +380,7 @@ export default function HomePage() {
                     setShowWaitlistModal(true);
                     setIsMenuOpen(false);
                   }}
-                  className="w-full bg-nude-600 hover:bg-nude-700 text-white rounded-full"
+                  className="w-full bg-nude-600 hover:bg-nude-700 text-white"
                 >
                   Start Free Trial
                 </Button>
@@ -387,10 +409,9 @@ export default function HomePage() {
                 <Button
                   onClick={() => setShowWaitlistModal(true)}
                   size="lg"
-                  className="bg-nude-600 hover:bg-nude-700 text-white px-12 py-4 text-xl font-semibold rounded-full shadow-luxury-soft hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1"
+                  className="bg-nude-600 hover:bg-nude-700 text-white px-12 py-4 text-xl font-semibold shadow-luxury-soft hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1"
                 >
                   Start 3-Month Free Trial
-                  <ArrowRight className="w-6 h-6 ml-3" />
                 </Button>
                 <p className="text-nude-500 text-sm mt-4">
                   No credit card required • Personalized for your business
@@ -492,7 +513,7 @@ export default function HomePage() {
                         className="flex-1 bg-nude-50 border border-nude-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nude-500"
                       />
                       <button className="bg-nude-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-nude-700 transition-colors">
-                        <ArrowRight className="w-4 h-4" />
+                        <span className="text-sm">→</span>
                       </button>
                     </div>
                   </div>
@@ -851,10 +872,9 @@ export default function HomePage() {
             <Button
               onClick={() => setShowWaitlistModal(true)}
               size="lg"
-              className="bg-white text-nude-700 hover:bg-nude-50 px-12 py-4 text-xl font-semibold rounded-full shadow-luxury-strong hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1"
+              className="bg-white text-nude-700 hover:bg-nude-50 px-12 py-4 text-xl font-semibold shadow-luxury-strong hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1"
             >
               Start Your Free Trial Today
-              <ArrowRight className="w-6 h-6 ml-3" />
             </Button>
             <p className="text-nude-200 text-sm mt-4">
               No credit card required • Cancel anytime

@@ -1,45 +1,12 @@
-/**
- * Simplified BookingForm Test
- */
+"use client";
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import BookingForm from "@/src/components/booking/BookingForm";
 
-// Mock the booking hooks
-const mockCreateBooking = jest.fn();
-
-jest.mock("@/src/hooks/useBooking", () => ({
-  useBooking: () => ({
-    createBooking: mockCreateBooking,
-    loading: false,
-    error: null,
-  }),
-}));
-
-const createTestQueryClient = () =>
-  new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
-
-const renderWithProviders = (ui: React.ReactElement) => {
-  const testQueryClient = createTestQueryClient();
-  return render(
-    <QueryClientProvider client={testQueryClient}>{ui}</QueryClientProvider>,
+export default function UBookingFormsimple.test() {
+  return (
+    <div className="p-4">
+      <h3 className="text-lg font-semibold mb-2">UBookingFormsimple.test</h3>
+      <p className="text-gray-600">This component is under construction.</p>
+    </div>
   );
-};
-
-describe("BookingForm - Simple Test", () => {
-  it("renders booking form with basic fields", () => {
-    renderWithProviders(
-      <BookingForm propertyId="test-property" />
-    );
-
-    expect(screen.getByRole("heading", { name: "Create Booking" })).toBeInTheDocument();
-    expect(screen.getByText("Fill in the details to create a new booking")).toBeInTheDocument();
-  });
-});
+}

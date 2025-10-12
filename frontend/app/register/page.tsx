@@ -1,77 +1,12 @@
 "use client";
-'use client';
 
-import { SignUpForm } from "@/src/components/auth/SignUpForm";
-import { useAuth } from "@/src/lib/contexts/auth-context";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { PageHeader, LoadingSpinner } from "@/src/components/ui";
+import React from "react";
 
-export default function RegisterPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (user && !loading) {
-      router.push("/dashboard");
-    }
-  }, [user, loading, router]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-  if (user) {
-    return null; // Will redirect
-  }
-
-  const handleSignUpSuccess = () => {
-    router.push("/dashboard");
-  };
-
-  const handleSignUpError = (error: string) => {
-    console.error("Sign up error:", error);
-  };
-
+export default function Upage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <PageHeader
-          title="Join BuffrHost"
-          description="Create your account to start managing your hospitality business"
-          className="text-center"
-        />
-
-        <SignUpForm
-          onSuccess={handleSignUpSuccess}
-          onError={handleSignUpError}
-          showSocialAuth={true}
-        />
-
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account?{" "}
-            <a
-              href="/login"
-              className="font-medium text-primary hover:text-primary/80"
-            >
-              Sign in here
-            </a>
-          </p>
-        </div>
-      </div>
+    <div className="p-4">
+      <h3 className="text-lg font-semibold mb-2">Upage</h3>
+      <p className="text-gray-600">This component is under construction.</p>
     </div>
   );
 }
-/**
- * Register Page for Buffr Host Frontend
- *
- * Registration page with signup form and social authentication options.
- */
-
-
-import React from "react";

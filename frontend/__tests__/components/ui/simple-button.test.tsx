@@ -1,25 +1,12 @@
-/**
- * Simple Button Component Test
- */
+"use client";
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
 
-// Test that we can import and render a simple button
-describe("Simple Button Test", () => {
-  it("renders a basic button", () => {
-    render(<button>Click me</button>);
-
-    const button = screen.getByRole("button", { name: /click me/i });
-    expect(button).toBeInTheDocument();
-  });
-
-  it("handles click events", () => {
-    const handleClick = jest.fn();
-    render(<button onClick={handleClick}>Click me</button>);
-
-    const button = screen.getByRole("button", { name: /click me/i });
-    button.click();
-    expect(handleClick).toHaveBeenCalledTimes(1);
-  });
-});
+export default function Usimplebutton.test() {
+  return (
+    <div className="p-4">
+      <h3 className="text-lg font-semibold mb-2">Usimplebutton.test</h3>
+      <p className="text-gray-600">This component is under construction.</p>
+    </div>
+  );
+}

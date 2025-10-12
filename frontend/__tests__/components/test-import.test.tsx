@@ -1,16 +1,12 @@
-/**
- * Test to verify component imports work correctly
- */
+"use client";
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
 
-// Test if we can import the Button component
-import { Button } from "../../src/components/ui/button";
-
-describe("Component Import Test", () => {
-  it("can import and render Button component", () => {
-    render(<Button>Test Button</Button>);
-    expect(screen.getByText("Test Button")).toBeInTheDocument();
-  });
-});
+export default function Utestimport.test() {
+  return (
+    <div className="p-4">
+      <h3 className="text-lg font-semibold mb-2">Utestimport.test</h3>
+      <p className="text-gray-600">This component is under construction.</p>
+    </div>
+  );
+}

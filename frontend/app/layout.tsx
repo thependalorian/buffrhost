@@ -1,42 +1,36 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import type { ReactNode } from "react";
+import { Inter, Playfair_Display, JetBrains_Mono, Dancing_Script } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./providers";
 
 const inter = Inter({ 
   subsets: ["latin"],
-  variable: "--font-primary",
+  variable: "--font-inter",
   display: "swap",
 });
 
 const playfair = Playfair_Display({ 
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+const jetbrains = JetBrains_Mono({ 
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
+
+const dancing = Dancing_Script({ 
+  subsets: ["latin"],
+  variable: "--font-dancing",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Buffr Host - Hospitality Ecosystem Management Platform",
-  description:
-    "Unified hospitality management platform for hotels and restaurants with AI-powered insights and next-gen loyalty",
-  keywords: [
-    "hospitality",
-    "hotel management",
-    "restaurant management",
-    "spa management",
-    "conference management",
-    "transportation",
-    "loyalty system",
-    "cross-business",
-    "ai insights",
-    "hospitality ecosystem",
-    "namibia",
-    "southern africa",
-    "pos system",
-    "inventory management",
-    "analytics",
-    "booking system",
-  ],
+  title: "Buffr Host - The Future of Hospitality, Today",
+  description: "One platform for every hospitality business. From hotels to standalone restaurants, we bring the sophisticated design language of five-star hotels to businesses of every size.",
+  keywords: "hospitality, hotel management, restaurant management, AI concierge, guest experience, booking system",
   authors: [{ name: "Buffr Host Team" }],
   creator: "Buffr Host",
   publisher: "Buffr Host",
@@ -45,21 +39,18 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-  ),
+  metadataBase: new URL("https://buffr.host"),
   openGraph: {
-    title: "Buffr Host - Hospitality Ecosystem Management Platform",
-    description:
-      "Unified hospitality management platform for hotels and restaurants with AI-powered insights and next-gen loyalty",
-    url: "/",
+    title: "Buffr Host - The Future of Hospitality, Today",
+    description: "One platform for every hospitality business. AI-powered guest experience management.",
+    url: "https://buffr.host",
     siteName: "Buffr Host",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Buffr Host Hospitality Ecosystem Management Platform",
+        alt: "Buffr Host - Hospitality Management Platform",
       },
     ],
     locale: "en_US",
@@ -67,10 +58,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Buffr Host - Hospitality Ecosystem Management Platform",
-    description:
-      "Unified hospitality management platform for hotels and restaurants with AI-powered insights and next-gen loyalty",
-    images: ["/og-image.png"],
+    title: "Buffr Host - The Future of Hospitality, Today",
+    description: "One platform for every hospitality business. AI-powered guest experience management.",
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
@@ -84,22 +74,20 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: process.env.GOOGLE_VERIFICATION,
+    google: "your-google-verification-code",
   },
 };
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
-      <body className="font-primary antialiased">
-        <Providers>{children}</Providers>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} ${jetbrains.variable} ${dancing.variable}`}>
+      <body className="font-body antialiased">
+        {children}
       </body>
     </html>
   );
 }
-
-import type { Metadata } from "next";

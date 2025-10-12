@@ -33,7 +33,12 @@
     "noUncheckedIndexedAccess": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*", "./*"]
+      "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/hooks/*": ["./hooks/*"],
+      "@/app/*": ["./app/*"],
+      "@/public/*": ["./public/*"]
     },
     "target": "es2017",
     "forceConsistentCasingInFileNames": true,
