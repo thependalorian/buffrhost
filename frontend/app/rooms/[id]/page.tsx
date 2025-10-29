@@ -14,9 +14,9 @@ export default function RoomDetailsPage() {
       <div className="bg-white border-b border-nude-200">
         <div className="container-warm py-4">
           <div className="flex items-center space-x-4">
-            <button className="btn-emotional-ghost p-2">
+            <BuffrButton variant="ghost" size="sm" className="p-2">
               <ArrowLeft className="h-5 w-5" />
-            </button>
+            </BuffrButton>
             <div>
               <h1 className="heading-card">Room Details</h1>
               <p className="body-small text-nude-600">Room ID: {id}</p>
@@ -36,15 +36,15 @@ export default function RoomDetailsPage() {
                 This is a dynamic route for room details with ID: {id}
               </p>
               <div className="flex flex-wrap gap-3">
-                <button className="btn-emotional-primary">
+                <BuffrButton variant="primary" size="md">
                   View Details
-                </button>
-                <button className="btn-emotional-secondary">
+                </BuffrButton>
+                <BuffrButton variant="secondary" size="md">
                   Edit
-                </button>
-                <button className="btn-emotional-ghost">
+                </BuffrButton>
+                <BuffrButton variant="ghost" size="md">
                   Book
-                </button>
+                </BuffrButton>
               </div>
             </div>
 

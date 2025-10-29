@@ -36,7 +36,6 @@ def main():
     
     # All 18 ML modules from backend.md
     ml_modules = [
-        "ai.credit_scoring_model",
         "ai.fraud_detection_system", 
         "ai.spending_analysis_nlp",
         "ai.financial_education_system",

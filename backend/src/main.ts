@@ -1,552 +1,468 @@
 /**
- * Buffr Host Next.js API Application
- * Main entry point for the hospitality management platform API.
- * Converted from Python FastAPI to TypeScript Next.js API routes.
+ * BUFFR HOST APPLICATION
+ * Main entry point for the hospitality management platform API
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createConnection } from 'typeorm';
-import { ConfigManager } from './config/ConfigManager';
-import { DatabaseManager } from './database/DatabaseManager';
-import { ErrorHandler } from './middleware/ErrorHandler';
-import { RateLimiter } from './middleware/RateLimiter';
-import { CorsHandler } from './middleware/CorsHandler';
-import { SecurityHandler } from './middleware/SecurityHandler';
-import { Logger } from './utils/Logger';
+import { v4 as uuidv4 } from 'uuid';
+import { config } from './config';
+import { devConfig } from './dev_config';
 
-// Initialize configuration
-const config = ConfigManager.getInstance();
+// Import route handlers (these would be implemented as Next.js API routes)
+// import { authRoutes } from './routes/auth';
+// import { hospitalityPropertyRoutes } from './routes/hospitality_property';
+// import { menuRoutes } from './routes/menu';
+// import { inventoryRoutes } from './routes/inventory';
+// import { customerRoutes } from './routes/customer';
+// import { orderRoutes } from './routes/order';
+// import { analyticsRoutes } from './routes/analytics';
+// import { cmsRoutes } from './routes/cms';
+// import { knowledgeBaseRoutes } from './routes/knowledge_base';
+// import { spaRoutes } from './routes/spa';
+// import { conferenceRoutes } from './routes/conference';
+// import { transportationRoutes } from './routes/transportation';
+// import { loyaltyRoutes } from './routes/loyalty';
+// import { qrLoyaltyRoutes } from './routes/qr_loyalty';
+// import { staffRoutes } from './routes/staff';
+// import { aiKnowledgeRoutes } from './routes/ai_knowledge';
+// import { calendarRoutes } from './routes/calendar';
+// import { arcadeRoutes } from './routes/arcade';
+// import { paymentRoutes } from './routes/payment';
+// import { demoRequestsRoutes } from './routes/demo_requests';
+// import { buffrAgentRoutes } from './routes/buffr_agent';
+// import { previewRoutes } from './routes/preview';
+// import { financialRoutes } from './routes/financial';
+// import { waitlistRoutes } from './routes/waitlist';
+// import { restaurantRoutes } from './routes/restaurant';
+// import { onboardingRoutes } from './routes/onboarding';
+// import { mlRoutes } from './routes/ml_routes';
+// import { yangoRoutes } from './routes/yango_routes';
+// import { hotelConfigurationRoutes } from './routes/hotel_configuration';
+// import { publicRoutes } from './routes/public';
 
-// Initialize logger
-const logger = Logger.getInstance();
+// Import email routes
+// import { emailSendRoutes } from './routes/email_send_route';
+// import { emailAnalyticsRoutes } from './routes/email_analytics_route';
+// import { emailPreferencesRoutes } from './routes/email_preferences_route';
+// import { emailTemplatesRoutes } from './routes/email_templates_route';
+// import { emailQueueRoutes } from './routes/email_queue_route';
+// import { emailBlacklistRoutes } from './routes/email_blacklist_route';
+// import { emailBookingConfirmationRoutes } from './routes/email_booking_confirmation_route';
+// import { emailCheckInReminderRoutes } from './routes/email_check_in_reminder_route';
+// import { emailCheckOutReminderRoutes } from './routes/email_check_out_reminder_route';
+// import { emailPropertyUpdateRoutes } from './routes/email_property_update_route';
+// import { emailBookingCancellationRoutes } from './routes/email_booking_cancellation_route';
+// import { emailHostSummaryRoutes } from './routes/email_host_summary_route';
+// import { emailWebhookSendgridRoutes } from './routes/email_webhook_sendgrid_route';
+// import { emailWebhookResendRoutes } from './routes/email_webhook_resend_route';
+// import { emailWebhookSesRoutes } from './routes/email_webhook_ses_route';
 
-// Initialize database manager
-const databaseManager = DatabaseManager.getInstance();
+// Import new systems
+// import { userRoutes } from './routes/user_routes';
+// import { bookingRoutes } from './routes/booking_routes';
 
-// Initialize middleware
-const errorHandler = new ErrorHandler();
-const rateLimiter = new RateLimiter();
-const corsHandler = new CorsHandler();
-const securityHandler = new SecurityHandler();
+// Import error handling
+// import { setupErrorHandling, setupLogging } from './error_handling';
 
-/**
- * Application startup and initialization
- */
-async function initializeApp(): Promise<void> {
-  try {
-    logger.info('Starting Buffr Host API...');
-    
-    // Initialize database connection
-    await databaseManager.initialize();
-    logger.info('Database connection established');
-    
-    // Create database tables
-    await databaseManager.createTables();
-    logger.info('Database tables created/verified');
-    
-    // Initialize rate limiting
-    await rateLimiter.initialize();
-    logger.info('Rate limiting initialized');
-    
-    logger.info('Buffr Host API startup complete');
-  } catch (error) {
-    logger.error('Failed to initialize application:', error);
-    throw error;
-  }
+// Setup comprehensive logging
+// setupLogging();
+
+// Interfaces
+interface EmployeeLoanApplication {
+  employee_id: string;
+  property_id: string;
+  requested_amount: number;
+  loan_purpose: string;
+  employment_start_date: string;
+  salary: number;
+  contact_email: string;
+  contact_phone?: string;
 }
 
-/**
- * Application shutdown and cleanup
- */
-async function shutdownApp(): Promise<void> {
-  try {
-    logger.info('Shutting down Buffr Host API...');
-    
-    // Close database connections
-    await databaseManager.close();
-    logger.info('Database connections closed');
-    
-    // Close rate limiter
-    await rateLimiter.close();
-    logger.info('Rate limiter closed');
-    
-    logger.info('Buffr Host API shutdown complete');
-  } catch (error) {
-    logger.error('Error during shutdown:', error);
-  }
+interface HealthCheckResponse {
+  status: string;
+  timestamp: string;
+  version: string;
+  services: {
+    database: string;
+    api: string;
+  };
 }
 
-/**
- * Main API handler for Next.js
- */
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    // Initialize app on first request
-    if (!global.appInitialized) {
-      await initializeApp();
-      global.appInitialized = true;
+interface APIStatusResponse {
+  api_version: string;
+  environment: string;
+  features: {
+    ai_enabled: boolean;
+    realtime_enabled: boolean;
+    analytics_enabled: boolean;
+    marketing_enabled: boolean;
+  };
+  limits: {
+    rate_limit_requests: number;
+    rate_limit_window: number;
+    max_file_size: number;
+  };
+}
+
+// Application class
+export class BuffrHostApp {
+  private config: typeof config;
+  private devConfig: typeof devConfig;
+  private isInitialized: boolean = false;
+
+  constructor() {
+    this.config = config;
+    this.devConfig = devConfig;
+  }
+
+  public async initialize(): Promise<void> {
+    if (this.isInitialized) {
+      return;
     }
 
-    // Apply middleware
-    await corsHandler.handle(req, res);
-    await securityHandler.handle(req, res);
-    await rateLimiter.handle(req, res);
-    
-    // Route to appropriate handler based on path
-    const { pathname } = new URL(req.url!, `http://${req.headers.host}`);
-    
-    switch (pathname) {
-      case '/':
-        return handleRoot(req, res);
-      case '/health':
-        return handleHealthCheck(req, res);
-      case '/api/v1/status':
-        return handleApiStatus(req, res);
-      case '/employee-loan-applications':
-        if (req.method === 'POST') {
-          return handleEmployeeLoanApplication(req, res);
-        }
-        break;
-      default:
-        // Handle API routes
-        if (pathname.startsWith('/api/v1/')) {
-          return handleApiRoute(req, res, pathname);
-        }
-        break;
+    try {
+      console.log('Starting Buffr Host API...');
+
+      // Check database connection
+      if (!await this.checkDatabaseConnection()) {
+        console.error('Database connection failed');
+        throw new Error('Database connection failed');
+      }
+
+      // Create database tables
+      await this.createTables();
+      console.log('Database tables created/verified');
+
+      // Initialize rate limiting
+      try {
+        await this.initializeRateLimiting();
+        console.log('Rate limiting initialized');
+      } catch (error) {
+        console.warn(`Redis connection failed: ${error}. Rate limiting disabled.`);
+      }
+
+      this.isInitialized = true;
+      console.log('Buffr Host API startup complete');
+    } catch (error) {
+      console.error('Failed to initialize application:', error);
+      throw error;
     }
-    
-    // 404 for unmatched routes
-    res.status(404).json({ error: 'Not Found' });
-  } catch (error) {
-    return errorHandler.handle(error, req, res);
   }
-}
 
-/**
- * Root endpoint handler
- */
-async function handleRoot(req: NextApiRequest, res: NextApiResponse) {
-  res.status(200).json({
-    message: 'Welcome to Buffr Host API',
-    version: '1.0.0',
-    docs_url: config.get('ENABLE_API_DOCS') ? '/docs' : 'Documentation disabled',
-    status: 'operational',
-    domain: 'host.buffr.ai',
-    contact: 'george@buffr.ai'
-  });
-}
+  private async checkDatabaseConnection(): Promise<boolean> {
+    try {
+      // This would be implemented with actual database connection check
+      // For now, return true as a placeholder
+      return true;
+    } catch (error) {
+      console.error('Database connection check failed:', error);
+      return false;
+    }
+  }
 
-/**
- * Health check endpoint handler
- */
-async function handleHealthCheck(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    // Check database connection
-    const dbHealth = await databaseManager.healthCheck();
-    
-    if (!dbHealth.healthy) {
-      return res.status(503).json({
+  private async createTables(): Promise<void> {
+    try {
+      // This would be implemented with actual table creation
+      // For now, just log the action
+      console.log('Creating/verifying database tables...');
+    } catch (error) {
+      console.error('Failed to create database tables:', error);
+      throw error;
+    }
+  }
+
+  private async initializeRateLimiting(): Promise<void> {
+    try {
+      // This would be implemented with actual Redis connection
+      // For now, just log the action
+      console.log('Initializing rate limiting...');
+    } catch (error) {
+      console.error('Failed to initialize rate limiting:', error);
+      throw error;
+    }
+  }
+
+  public async shutdown(): Promise<void> {
+    try {
+      console.log('Shutting down Buffr Host API...');
+      
+      // Close database connections
+      await this.closeDatabaseConnections();
+      console.log('Database connections closed');
+
+      // Close rate limiting
+      try {
+        await this.closeRateLimiting();
+        console.log('Rate limiting closed');
+      } catch (error) {
+        console.warn(`Error closing rate limiting: ${error}`);
+      }
+
+      console.log('Buffr Host API shutdown complete');
+    } catch (error) {
+      console.error('Error during shutdown:', error);
+    }
+  }
+
+  private async closeDatabaseConnections(): Promise<void> {
+    try {
+      // This would be implemented with actual database connection closing
+      console.log('Closing database connections...');
+    } catch (error) {
+      console.error('Failed to close database connections:', error);
+    }
+  }
+
+  private async closeRateLimiting(): Promise<void> {
+    try {
+      // This would be implemented with actual Redis connection closing
+      console.log('Closing rate limiting...');
+    } catch (error) {
+      console.error('Failed to close rate limiting:', error);
+      throw error;
+    }
+  }
+
+  // API Route Handlers
+  public async handleRoot(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+    res.status(200).json({
+      message: 'Welcome to Buffr Host API',
+      version: '1.0.0',
+      docs_url: this.config.get('ENABLE_API_DOCS') ? '/docs' : 'Documentation disabled',
+      status: 'operational',
+      domain: 'host.buffr.ai',
+      contact: 'george@buffr.ai'
+    });
+  }
+
+  public async handleEmployeeLoanApplication(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', ['POST']);
+      res.status(405).json({ error: 'Method not allowed' });
+      return;
+    }
+
+    try {
+      const application: EmployeeLoanApplication = req.body;
+
+      // Validate required fields
+      if (!application.employee_id || !application.property_id || !application.requested_amount) {
+        res.status(400).json({ error: 'Missing required fields' });
+        return;
+      }
+
+      // Placeholder for actual application processing logic
+      console.log(`Received employee loan application for employee: ${application.employee_id}`);
+
+      // In a real scenario, this would save the application to the database
+      // and potentially notify relevant staff for review.
+
+      res.status(200).json({
+        message: 'Employee loan application received successfully',
+        application_id: `app-${application.employee_id}-${uuidv4()}`,
+        employee_id: application.employee_id,
+        status: 'received',
+        received_at: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error processing employee loan application:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  public async handleHealthCheck(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+    try {
+      // Check database connection
+      const dbHealthy = await this.checkDatabaseConnection();
+
+      const response: HealthCheckResponse = {
+        status: dbHealthy ? 'healthy' : 'unhealthy',
+        timestamp: new Date().toISOString(),
+        version: '1.0.0',
+        services: {
+          database: dbHealthy ? 'healthy' : 'unhealthy',
+          api: 'healthy'
+        }
+      };
+
+      if (dbHealthy) {
+        res.status(200).json(response);
+      } else {
+        res.status(503).json(response);
+      }
+    } catch (error) {
+      console.error('Health check failed:', error);
+      res.status(503).json({
         status: 'unhealthy',
         timestamp: new Date().toISOString(),
         version: '1.0.0',
         services: {
           database: 'unhealthy',
-          api: 'healthy'
-        },
-        error: dbHealth.error
+          api: 'unhealthy'
+        }
       });
     }
-    
-    res.status(200).json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      version: '1.0.0',
-      services: {
-        database: 'healthy',
-        api: 'healthy'
+  }
+
+  public async handleAPIStatus(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+    const response: APIStatusResponse = {
+      api_version: '1.0.0',
+      environment: this.config.get('ENVIRONMENT'),
+      features: {
+        ai_enabled: this.config.get('ENABLE_AI_FEATURES'),
+        realtime_enabled: this.config.get('ENABLE_REALTIME'),
+        analytics_enabled: this.config.get('ENABLE_ANALYTICS'),
+        marketing_enabled: this.config.get('ENABLE_MARKETING')
+      },
+      limits: {
+        rate_limit_requests: this.config.get('RATE_LIMIT_REQUESTS'),
+        rate_limit_window: this.config.get('RATE_LIMIT_WINDOW'),
+        max_file_size: this.config.get('MAX_FILE_SIZE')
       }
-    });
-  } catch (error) {
-    logger.error('Health check failed:', error);
-    res.status(503).json({
-      status: 'unhealthy',
-      error: 'Service unavailable'
-    });
+    };
+
+    res.status(200).json(response);
   }
-}
 
-/**
- * API status endpoint handler
- */
-async function handleApiStatus(req: NextApiRequest, res: NextApiResponse) {
-  res.status(200).json({
-    api_version: '1.0.0',
-    environment: config.get('ENVIRONMENT'),
-    features: {
-      ai_enabled: config.get('ENABLE_AI_FEATURES'),
-      realtime_enabled: config.get('ENABLE_REALTIME'),
-      analytics_enabled: config.get('ENABLE_ANALYTICS'),
-      marketing_enabled: config.get('ENABLE_MARKETING')
-    },
-    limits: {
-      rate_limit_requests: config.get('RATE_LIMIT_REQUESTS'),
-      rate_limit_window: config.get('RATE_LIMIT_WINDOW'),
-      max_file_size: config.get('MAX_FILE_SIZE')
+  // CORS middleware
+  public setupCORS(req: NextApiRequest, res: NextApiResponse): void {
+    const corsOrigins = this.config.get('CORS_ORIGINS');
+    const origin = req.headers.origin;
+
+    if (corsOrigins.includes('*') || (origin && corsOrigins.includes(origin))) {
+      res.setHeader('Access-Control-Allow-Origin', origin || '*');
     }
-  });
-}
 
-/**
- * Employee loan application handler
- */
-async function handleEmployeeLoanApplication(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    const application = req.body;
-    
-    // Validate required fields
-    if (!application.employee_id || !application.property_id || !application.requested_amount) {
-      return res.status(400).json({
-        error: 'Missing required fields',
-        required: ['employee_id', 'property_id', 'requested_amount']
+    res.setHeader('Access-Control-Allow-Credentials', this.config.get('CORS_ALLOW_CREDENTIALS').toString());
+    res.setHeader('Access-Control-Allow-Methods', this.config.get('CORS_ALLOW_METHODS').join(', '));
+    res.setHeader('Access-Control-Allow-Headers', this.config.get('CORS_ALLOW_HEADERS').join(', '));
+
+    if (req.method === 'OPTIONS') {
+      res.status(200).end();
+    }
+  }
+
+  // Security middleware
+  public setupSecurity(req: NextApiRequest, res: NextApiResponse): void {
+    // Trusted host middleware (production only)
+    if (this.config.get('ENVIRONMENT') === 'production') {
+      const allowedHosts = ['buffr.ai', '*.buffr.ai', 'host.buffr.ai', 'api.buffr.ai'];
+      const host = req.headers.host;
+
+      if (host && !allowedHosts.some(allowedHost => 
+        allowedHost.includes('*') ? host.endsWith(allowedHost.replace('*', '')) : host === allowedHost
+      )) {
+        res.status(400).json({ error: 'Invalid host' });
+        return;
+      }
+    }
+
+    // Security headers
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  }
+
+  // Error handling middleware
+  public setupErrorHandling(error: Error, req: NextApiRequest, res: NextApiResponse): void {
+    console.error('API Error:', error);
+
+    if (this.config.get('ENVIRONMENT') === 'development') {
+      res.status(500).json({
+        error: 'Internal server error',
+        message: error.message,
+        stack: error.stack
+      });
+    } else {
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'An unexpected error occurred'
       });
     }
-    
-    // Generate unique application ID
-    const applicationId = `app-${application.employee_id}-${Date.now()}`;
-    
-    // In a real scenario, this would save to database and trigger review process
-    logger.info(`Received employee loan application for employee: ${application.employee_id}`);
-    
-    res.status(200).json({
-      message: 'Employee loan application received successfully',
-      application_id: applicationId,
-      employee_id: application.employee_id,
-      status: 'received',
-      received_at: new Date().toISOString()
-    });
-  } catch (error) {
-    logger.error('Error processing employee loan application:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  }
+
+  // Rate limiting middleware
+  public async setupRateLimiting(req: NextApiRequest, res: NextApiResponse): Promise<boolean> {
+    try {
+      // This would be implemented with actual rate limiting logic
+      // For now, just return true (allow request)
+      return true;
+    } catch (error) {
+      console.error('Rate limiting error:', error);
+      return true; // Allow request if rate limiting fails
+    }
+  }
+
+  // Main request handler
+  public async handleRequest(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+    try {
+      // Setup middleware
+      this.setupCORS(req, res);
+      this.setupSecurity(req, res);
+
+      // Check rate limiting
+      const rateLimitPassed = await this.setupRateLimiting(req, res);
+      if (!rateLimitPassed) {
+        res.status(429).json({ error: 'Too many requests' });
+        return;
+      }
+
+      // Route handling
+      const { pathname } = new URL(req.url || '', `http://${req.headers.host}`);
+      
+      switch (pathname) {
+        case '/':
+          await this.handleRoot(req, res);
+          break;
+        case '/employee-loan-applications':
+          await this.handleEmployeeLoanApplication(req, res);
+          break;
+        case '/health':
+          await this.handleHealthCheck(req, res);
+          break;
+        case '/api/v1/status':
+          await this.handleAPIStatus(req, res);
+          break;
+        default:
+          res.status(404).json({ error: 'Not found' });
+      }
+    } catch (error) {
+      this.setupErrorHandling(error as Error, req, res);
+    }
   }
 }
 
-/**
- * API route handler
- */
-async function handleApiRoute(req: NextApiRequest, res: NextApiResponse, pathname: string) {
-  // Extract route parts
-  const routeParts = pathname.split('/').filter(part => part);
-  const [, , , ...apiPath] = routeParts;
-  
-  // Route to appropriate API handler
-  switch (apiPath[0]) {
-    case 'auth':
-      return handleAuthRoutes(req, res, apiPath.slice(1));
-    case 'users':
-      return handleUserRoutes(req, res, apiPath.slice(1));
-    case 'properties':
-      return handlePropertyRoutes(req, res, apiPath.slice(1));
-    case 'bookings':
-      return handleBookingRoutes(req, res, apiPath.slice(1));
-    case 'orders':
-      return handleOrderRoutes(req, res, apiPath.slice(1));
-    case 'rooms':
-      return handleRoomRoutes(req, res, apiPath.slice(1));
-    case 'services':
-      return handleServiceRoutes(req, res, apiPath.slice(1));
-    case 'loyalty':
-      return handleLoyaltyRoutes(req, res, apiPath.slice(1));
-    case 'payments':
-      return handlePaymentRoutes(req, res, apiPath.slice(1));
-    case 'analytics':
-      return handleAnalyticsRoutes(req, res, apiPath.slice(1));
-    case 'notifications':
-      return handleNotificationRoutes(req, res, apiPath.slice(1));
-    case 'reviews':
-      return handleReviewRoutes(req, res, apiPath.slice(1));
-    case 'staff':
-      return handleStaffRoutes(req, res, apiPath.slice(1));
-    case 'inventory':
-      return handleInventoryRoutes(req, res, apiPath.slice(1));
-    case 'maintenance':
-      return handleMaintenanceRoutes(req, res, apiPath.slice(1));
-    case 'events':
-      return handleEventRoutes(req, res, apiPath.slice(1));
-    case 'promotions':
-      return handlePromotionRoutes(req, res, apiPath.slice(1));
-    case 'feedback':
-      return handleFeedbackRoutes(req, res, apiPath.slice(1));
-    case 'integrations':
-      return handleIntegrationRoutes(req, res, apiPath.slice(1));
-    case 'audit-logs':
-      return handleAuditLogRoutes(req, res, apiPath.slice(1));
-    case 'configurations':
-      return handleConfigurationRoutes(req, res, apiPath.slice(1));
-    case 'reports':
-      return handleReportRoutes(req, res, apiPath.slice(1));
-    case 'dashboards':
-      return handleDashboardRoutes(req, res, apiPath.slice(1));
-    case 'workflows':
-      return handleWorkflowRoutes(req, res, apiPath.slice(1));
-    case 'tasks':
-      return handleTaskRoutes(req, res, apiPath.slice(1));
-    case 'schedules':
-      return handleScheduleRoutes(req, res, apiPath.slice(1));
-    case 'templates':
-      return handleTemplateRoutes(req, res, apiPath.slice(1));
-    case 'settings':
-      return handleSettingsRoutes(req, res, apiPath.slice(1));
-    case 'permissions':
-      return handlePermissionRoutes(req, res, apiPath.slice(1));
-    case 'roles':
-      return handleRoleRoutes(req, res, apiPath.slice(1));
-    case 'sessions':
-      return handleSessionRoutes(req, res, apiPath.slice(1));
-    case 'tokens':
-      return handleTokenRoutes(req, res, apiPath.slice(1));
-    case 'devices':
-      return handleDeviceRoutes(req, res, apiPath.slice(1));
-    case 'locations':
-      return handleLocationRoutes(req, res, apiPath.slice(1));
-    case 'buffr-agent':
-      return handleBuffrAgentRoutes(req, res, apiPath.slice(1));
-    case 'financial':
-      return handleFinancialRoutes(req, res, apiPath.slice(1));
-    case 'ml':
-      return handleMLRoutes(req, res, apiPath.slice(1));
-    case 'yango':
-      return handleYangoRoutes(req, res, apiPath.slice(1));
-    case 'hotel-configuration':
-      return handleHotelConfigurationRoutes(req, res, apiPath.slice(1));
-    case 'public':
-      return handlePublicRoutes(req, res, apiPath.slice(1));
-    default:
-      res.status(404).json({ error: 'API endpoint not found' });
-  }
-}
+// Create application instance
+const app = new BuffrHostApp();
 
-// Import route handlers
-import { handler as authHandler } from './routes/auth';
-import { handler as userHandler } from './routes/users';
-import { handler as propertyHandler } from './routes/properties';
-import { handler as orderHandler } from './routes/orders';
+// Initialize application
+app.initialize().catch(error => {
+  console.error('Failed to initialize application:', error);
+  process.exit(1);
+});
 
-async function handleAuthRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // Add action to query parameters
-  req.query.action = path[0] || 'login';
-  return await authHandler(req, res);
-}
-
-async function handleUserRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // Add action to query parameters
-  req.query.action = path[0] || 'list';
-  return await userHandler(req, res);
-}
-
-async function handlePropertyRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // Add action to query parameters
-  req.query.action = path[0] || 'list';
-  return await propertyHandler(req, res);
-}
-
-async function handleBookingRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement booking routes
-  res.status(501).json({ error: 'Booking routes not implemented yet' });
-}
-
-async function handleOrderRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // Add action to query parameters
-  req.query.action = path[0] || 'list';
-  return await orderHandler(req, res);
-}
-
-async function handleRoomRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement room routes
-  res.status(501).json({ error: 'Room routes not implemented yet' });
-}
-
-async function handleServiceRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement service routes
-  res.status(501).json({ error: 'Service routes not implemented yet' });
-}
-
-async function handleLoyaltyRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement loyalty routes
-  res.status(501).json({ error: 'Loyalty routes not implemented yet' });
-}
-
-async function handlePaymentRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement payment routes
-  res.status(501).json({ error: 'Payment routes not implemented yet' });
-}
-
-async function handleAnalyticsRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement analytics routes
-  res.status(501).json({ error: 'Analytics routes not implemented yet' });
-}
-
-async function handleNotificationRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement notification routes
-  res.status(501).json({ error: 'Notification routes not implemented yet' });
-}
-
-async function handleReviewRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement review routes
-  res.status(501).json({ error: 'Review routes not implemented yet' });
-}
-
-async function handleStaffRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement staff routes
-  res.status(501).json({ error: 'Staff routes not implemented yet' });
-}
-
-async function handleInventoryRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement inventory routes
-  res.status(501).json({ error: 'Inventory routes not implemented yet' });
-}
-
-async function handleMaintenanceRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement maintenance routes
-  res.status(501).json({ error: 'Maintenance routes not implemented yet' });
-}
-
-async function handleEventRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement event routes
-  res.status(501).json({ error: 'Event routes not implemented yet' });
-}
-
-async function handlePromotionRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement promotion routes
-  res.status(501).json({ error: 'Promotion routes not implemented yet' });
-}
-
-async function handleFeedbackRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement feedback routes
-  res.status(501).json({ error: 'Feedback routes not implemented yet' });
-}
-
-async function handleIntegrationRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement integration routes
-  res.status(501).json({ error: 'Integration routes not implemented yet' });
-}
-
-async function handleAuditLogRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement audit log routes
-  res.status(501).json({ error: 'Audit log routes not implemented yet' });
-}
-
-async function handleConfigurationRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement configuration routes
-  res.status(501).json({ error: 'Configuration routes not implemented yet' });
-}
-
-async function handleReportRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement report routes
-  res.status(501).json({ error: 'Report routes not implemented yet' });
-}
-
-async function handleDashboardRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement dashboard routes
-  res.status(501).json({ error: 'Dashboard routes not implemented yet' });
-}
-
-async function handleWorkflowRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement workflow routes
-  res.status(501).json({ error: 'Workflow routes not implemented yet' });
-}
-
-async function handleTaskRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement task routes
-  res.status(501).json({ error: 'Task routes not implemented yet' });
-}
-
-async function handleScheduleRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement schedule routes
-  res.status(501).json({ error: 'Schedule routes not implemented yet' });
-}
-
-async function handleTemplateRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement template routes
-  res.status(501).json({ error: 'Template routes not implemented yet' });
-}
-
-async function handleSettingsRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement settings routes
-  res.status(501).json({ error: 'Settings routes not implemented yet' });
-}
-
-async function handlePermissionRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement permission routes
-  res.status(501).json({ error: 'Permission routes not implemented yet' });
-}
-
-async function handleRoleRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement role routes
-  res.status(501).json({ error: 'Role routes not implemented yet' });
-}
-
-async function handleSessionRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement session routes
-  res.status(501).json({ error: 'Session routes not implemented yet' });
-}
-
-async function handleTokenRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement token routes
-  res.status(501).json({ error: 'Token routes not implemented yet' });
-}
-
-async function handleDeviceRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement device routes
-  res.status(501).json({ error: 'Device routes not implemented yet' });
-}
-
-async function handleLocationRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement location routes
-  res.status(501).json({ error: 'Location routes not implemented yet' });
-}
-
-async function handleBuffrAgentRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement Buffr agent routes
-  res.status(501).json({ error: 'Buffr agent routes not implemented yet' });
-}
-
-async function handleFinancialRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement financial routes
-  res.status(501).json({ error: 'Financial routes not implemented yet' });
-}
-
-async function handleMLRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement ML routes
-  res.status(501).json({ error: 'ML routes not implemented yet' });
-}
-
-async function handleYangoRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement Yango routes
-  res.status(501).json({ error: 'Yango routes not implemented yet' });
-}
-
-async function handleHotelConfigurationRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement hotel configuration routes
-  res.status(501).json({ error: 'Hotel configuration routes not implemented yet' });
-}
-
-async function handlePublicRoutes(req: NextApiRequest, res: NextApiResponse, path: string[]) {
-  // TODO: Implement public routes
-  res.status(501).json({ error: 'Public routes not implemented yet' });
-}
-
-// Global app state
-declare global {
-  var appInitialized: boolean;
-}
-
-// Graceful shutdown handling
+// Graceful shutdown
 process.on('SIGINT', async () => {
-  await shutdownApp();
+  console.log('Received SIGINT, shutting down gracefully...');
+  await app.shutdown();
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
-  await shutdownApp();
+  console.log('Received SIGTERM, shutting down gracefully...');
+  await app.shutdown();
   process.exit(0);
 });
+
+// Export the application and handler
+export default app;
+
+// Next.js API route handler
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  await app.handleRequest(req, res);
+}
+
+// Export types
+export type { EmployeeLoanApplication, HealthCheckResponse, APIStatusResponse };

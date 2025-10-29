@@ -1,7 +1,7 @@
 {
   "dependencies": ["."],
   "graphs": {
-    "buffr_host_agent": "./backend/ai/buffr_host_agent_with_memory.py:buffr_agent"
+    "buffr_concierge": "./backend/ai/agent/graph.py:buffr_graph"
   },
   "env": ".env"
 }

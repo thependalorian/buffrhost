@@ -11,11 +11,9 @@ import asyncio
 
 # Import ML modules
 from ai.recommendation_engine import RecommendationEngine
-from ai.credit_scoring_model import CreditScoringModel
 from ai.fraud_detection_system import FraudDetectionSystem
 from ai.customer_segmentation_system import CustomerSegmentationSystem
 from ai.demand_forecasting_system import DemandForecastingSystem
-from ai.dynamic_pricing_system import DynamicPricingSystem
 from ai.churn_prediction_system import ChurnPredictionSystem
 from ai.model_monitoring_system import ModelMonitoringSystem
 
@@ -26,11 +24,9 @@ class MLService:
     
     def __init__(self, db_session=None):
         # Initialize ML systems (some require db_session, others don't)
-        self.credit_scoring = CreditScoringModel()
         self.fraud_detection = FraudDetectionSystem()
         self.customer_segmentation = CustomerSegmentationSystem()
         self.demand_forecasting = DemandForecastingSystem()
-        self.dynamic_pricing = DynamicPricingSystem()
         self.churn_prediction = ChurnPredictionSystem()
         self.model_monitoring = ModelMonitoringSystem()
         
@@ -199,38 +195,6 @@ class MLService:
                 "error": str(e)
             }
     
-    async def get_dynamic_pricing(self, property_id: str, request_data: Dict[str, Any], db: Session) -> Dict[str, Any]:
-        """Get dynamic pricing recommendations"""
-        try:
-            pricing_data = {
-                "property_id": property_id,
-                "base_price": request_data.get("base_price", 200),
-                "demand_factor": request_data.get("demand_factor", 1.0),
-                "seasonality": request_data.get("seasonality", "normal"),
-                "competitor_prices": request_data.get("competitor_prices", [])
-            }
-            
-            # Generate pricing recommendations
-            recommendations = {
-                "property_id": property_id,
-                "recommended_price": 230,
-                "price_range": {"min": 200, "max": 280},
-                "confidence": 0.89,
-                "factors": [
-                    "High demand period",
-                    "Competitor pricing",
-                    "Historical performance"
-                ],
-                "expected_revenue_impact": "+15%"
-            }
-            
-            return recommendations
-        except Exception as e:
-            logger.error(f"Error getting dynamic pricing: {str(e)}")
-            return {
-                "property_id": property_id,
-                "error": str(e)
-            }
     
     async def get_model_performance(self, property_id: str, db: Session) -> Dict[str, Any]:
         """Get ML model performance metrics"""
@@ -242,7 +206,6 @@ class MLService:
                 "uptime": 99.8,
                 "response_time": 145,
                 "models": [
-                    {"name": "Credit Scoring", "accuracy": 0.94, "status": "active"},
                     {"name": "Fraud Detection", "accuracy": 0.98, "status": "active"},
                     {"name": "Recommendation Engine", "accuracy": 0.89, "status": "active"},
                     {"name": "Customer Segmentation", "accuracy": 0.91, "status": "active"},
@@ -265,11 +228,9 @@ class MLService:
         try:
             health_status = {
                 "recommendation_engine": "healthy",
-                "credit_scoring": "healthy",
                 "fraud_detection": "healthy",
                 "customer_segmentation": "healthy",
                 "demand_forecasting": "healthy",
-                "dynamic_pricing": "healthy",
                 "churn_prediction": "healthy",
                 "model_monitoring": "healthy"
             }

@@ -8,17 +8,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-import { DatabaseManager } from '../database/DatabaseManager';
+import { databaseManager } from '../database/DatabaseManager';
 import { User } from '../entities/User';
 import { TenantProfile } from '../entities/TenantProfile';
-import { ConfigManager } from '../config/ConfigManager';
-import { Logger } from '../utils/Logger';
+import { config } from '../config/ConfigManager';
+import { logger } from '../utils/Logger';
 import { ValidationError, AuthenticationError, NotFoundError, ConflictError } from '../middleware/ErrorHandler';
-
-// Initialize services
-const config = ConfigManager.getInstance();
-const logger = Logger.getInstance();
-const databaseManager = DatabaseManager.getInstance();
 
 // Validation schemas with Buffr Host emotional design principles
 const UserCreateSchema = z.object({
@@ -51,11 +46,8 @@ const PasswordResetConfirmSchema = z.object({
 // JWT token utilities with Buffr Host emotional messaging
 export class AuthService {
   private static instance: AuthService;
-  private config: ConfigManager;
 
-  private constructor() {
-    this.config = ConfigManager.getInstance();
-  }
+  private constructor() {}
 
   public static getInstance(): AuthService {
     if (!AuthService.instance) {
@@ -96,10 +88,10 @@ export class AuthService {
 
     return jwt.sign(
       payload,
-      this.config.get('SECRET_KEY'),
+      config.get('SECRET_KEY'),
       {
-        algorithm: this.config.get('ALGORITHM') as jwt.Algorithm,
-        expiresIn: `${this.config.get('ACCESS_TOKEN_EXPIRE_MINUTES')}m`,
+        algorithm: config.get('ALGORITHM') as jwt.Algorithm,
+        expiresIn: `${config.get('ACCESS_TOKEN_EXPIRE_MINUTES')}m`,
       }
     );
   }
@@ -116,10 +108,10 @@ export class AuthService {
 
     return jwt.sign(
       payload,
-      this.config.get('SECRET_KEY'),
+      config.get('SECRET_KEY'),
       {
-        algorithm: this.config.get('ALGORITHM') as jwt.Algorithm,
-        expiresIn: `${this.config.get('REFRESH_TOKEN_EXPIRE_DAYS')}d`,
+        algorithm: config.get('ALGORITHM') as jwt.Algorithm,
+        expiresIn: `${config.get('REFRESH_TOKEN_EXPIRE_DAYS')}d`,
       }
     );
   }
@@ -129,8 +121,8 @@ export class AuthService {
    */
   public verifyToken(token: string): any {
     try {
-      return jwt.verify(token, this.config.get('SECRET_KEY'), {
-        algorithms: [this.config.get('ALGORITHM') as jwt.Algorithm],
+      return jwt.verify(token, config.get('SECRET_KEY'), {
+        algorithms: [config.get('ALGORITHM') as jwt.Algorithm],
       });
     } catch (error) {
       throw new AuthenticationError('Invalid or expired token');
@@ -197,9 +189,9 @@ export async function registerUser(req: NextApiRequest, res: NextApiResponse) {
     user.email = body.email;
     user.hashedPassword = hashedPassword;
     user.fullName = body.fullName;
-    user.phone = body.phone;
+    user.phone = body.phone!;
     user.role = 'guest';
-    user.tenantId = body.tenantId;
+    user.tenantId = body.tenantId!;
     user.isActive = true;
     user.emailVerified = false;
     user.phoneVerified = false;
@@ -229,7 +221,7 @@ export async function registerUser(req: NextApiRequest, res: NextApiResponse) {
     const refreshToken = authService.createRefreshToken(savedUser);
 
     // Log successful registration with Buffr Host emotional context
-    logger.logAuth('user_registered', savedUser.id, req.connection?.remoteAddress, true);
+    logger.info('user_registered', { userId: savedUser.id, ip: req.connection?.remoteAddress, success: true });
 
     // Return response with Buffr Host emotional messaging
     res.status(201).json({
@@ -259,7 +251,7 @@ export async function registerUser(req: NextApiRequest, res: NextApiResponse) {
     });
 
   } catch (error) {
-    logger.logAuth('user_registration_failed', undefined, req.connection?.remoteAddress, false);
+    logger.warn('user_registration_failed', { ip: req.connection?.remoteAddress, success: false, error: error.message });
     
     if (error instanceof z.ZodError) {
       throw new ValidationError('Invalid input data', error.errors);
@@ -321,7 +313,7 @@ export async function loginUser(req: NextApiRequest, res: NextApiResponse) {
     const refreshToken = authService.createRefreshToken(user);
 
     // Log successful login with Buffr Host emotional context
-    logger.logAuth('user_login', user.id, req.connection?.remoteAddress, true);
+    logger.info('user_login', { userId: user.id, ip: req.connection?.remoteAddress, success: true });
 
     // Return response with Buffr Host emotional messaging
     res.status(200).json({
@@ -354,7 +346,7 @@ export async function loginUser(req: NextApiRequest, res: NextApiResponse) {
     });
 
   } catch (error) {
-    logger.logAuth('user_login_failed', undefined, req.connection?.remoteAddress, false);
+    logger.warn('user_login_failed', { ip: req.connection?.remoteAddress, success: false, error: error.message });
     
     if (error instanceof z.ZodError) {
       throw new ValidationError('Invalid input data', error.errors);
@@ -400,7 +392,7 @@ export async function refreshToken(req: NextApiRequest, res: NextApiResponse) {
     const newRefreshToken = authService.createRefreshToken(user);
 
     // Log token refresh
-    logger.logAuth('token_refreshed', user.id, req.connection?.remoteAddress, true);
+    logger.info('token_refreshed', { userId: user.id, ip: req.connection?.remoteAddress, success: true });
 
     res.status(200).json({
       success: true,
@@ -419,7 +411,7 @@ export async function refreshToken(req: NextApiRequest, res: NextApiResponse) {
     });
 
   } catch (error) {
-    logger.logAuth('token_refresh_failed', undefined, req.connection?.remoteAddress, false);
+    logger.warn('token_refresh_failed', { ip: req.connection?.remoteAddress, success: false, error: error.message });
     throw error;
   }
 }
@@ -459,7 +451,7 @@ export async function changePassword(req: NextApiRequest, res: NextApiResponse) 
     await userRepository.save(currentUser);
 
     // Log password change
-    logger.logAuth('password_changed', currentUser.id, req.connection?.remoteAddress, true);
+    logger.info('password_changed', { userId: currentUser.id, ip: req.connection?.remoteAddress, success: true });
 
     res.status(200).json({
       success: true,
@@ -473,7 +465,7 @@ export async function changePassword(req: NextApiRequest, res: NextApiResponse) 
     });
 
   } catch (error) {
-    logger.logAuth('password_change_failed', undefined, req.connection?.remoteAddress, false);
+    logger.warn('password_change_failed', { ip: req.connection?.remoteAddress, success: false, error: error.message });
     
     if (error instanceof z.ZodError) {
       throw new ValidationError('Invalid input data', error.errors);
@@ -530,7 +522,7 @@ export async function getCurrentUser(req: NextApiRequest, res: NextApiResponse) 
     });
 
   } catch (error) {
-    logger.logAuth('profile_fetch_failed', undefined, req.connection?.remoteAddress, false);
+    logger.warn('profile_fetch_failed', { ip: req.connection?.remoteAddress, success: false, error: error.message });
     throw error;
   }
 }
@@ -550,7 +542,7 @@ export async function logoutUser(req: NextApiRequest, res: NextApiResponse) {
     const currentUser = await authService.getCurrentUser(token);
 
     // Log logout
-    logger.logAuth('user_logout', currentUser.id, req.connection?.remoteAddress, true);
+    logger.info('user_logout', { userId: currentUser.id, ip: req.connection?.remoteAddress, success: true });
 
     res.status(200).json({
       success: true,
@@ -565,7 +557,7 @@ export async function logoutUser(req: NextApiRequest, res: NextApiResponse) {
     });
 
   } catch (error) {
-    logger.logAuth('logout_failed', undefined, req.connection?.remoteAddress, false);
+    logger.warn('logout_failed', { ip: req.connection?.remoteAddress, success: false, error: error.message });
     throw error;
   }
 }
@@ -622,7 +614,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
   } catch (error) {
-    logger.logError(error as Error, { endpoint: '/api/v1/auth', method: req.method });
+    logger.error('API Error:', { error: error.message, stack: error.stack, endpoint: '/api/v1/auth', method: req.method });
     
     if (error instanceof ValidationError) {
       res.status(400).json({

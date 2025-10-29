@@ -96,23 +96,6 @@ class ChurnPredictionResponse(BaseModel):
     recommendations: List[str] = []
     confidence: float = Field(ge=0.0, le=1.0)
 
-class DynamicPricingRequest(BaseModel):
-    """Request model for dynamic pricing"""
-    property_id: str
-    base_price: float = Field(gt=0)
-    demand_factor: float = Field(ge=0.0, le=2.0)
-    seasonality: str = Field(..., pattern="^(low|normal|high|peak)$")
-    competitor_prices: List[float] = []
-    date_range: Optional[Dict[str, str]] = None
-
-class DynamicPricingResponse(BaseModel):
-    """Response model for dynamic pricing"""
-    property_id: str
-    recommended_price: float = Field(gt=0)
-    price_range: Dict[str, float]
-    confidence: float = Field(ge=0.0, le=1.0)
-    factors: List[str] = []
-    expected_revenue_impact: str
 
 class MLHealthCheck(BaseModel):
     """ML service health check response"""

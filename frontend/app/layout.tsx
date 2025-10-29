@@ -7,24 +7,28 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  preload: true,
 });
 
 const playfair = Playfair_Display({ 
   subsets: ["latin"],
   variable: "--font-playfair",
   display: "swap",
+  preload: false, // Only preload fonts that are immediately visible
 });
 
 const jetbrains = JetBrains_Mono({ 
   subsets: ["latin"],
   variable: "--font-jetbrains",
   display: "swap",
+  preload: false, // Only preload fonts that are immediately visible
 });
 
 const dancing = Dancing_Script({ 
   subsets: ["latin"],
   variable: "--font-dancing",
   display: "swap",
+  preload: false, // Only preload fonts that are immediately visible
 });
 
 export const metadata: Metadata = {

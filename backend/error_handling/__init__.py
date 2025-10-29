@@ -3,7 +3,7 @@ Error Handling Module
 Global error management, logging, and exception handling
 """
 
-from .global_error_manager import GlobalErrorManager
+from .global_error_manager import GlobalErrorManager, setup_error_handling
 from .custom_exceptions import (
     BuffrHostException,
     ValidationError,
@@ -19,6 +19,7 @@ from .logging_config import setup_logging
 
 __all__ = [
     "GlobalErrorManager",
+    "setup_error_handling",
     "BuffrHostException",
     "ValidationError", 
     "AuthenticationError",

@@ -2,6 +2,9 @@
 Types and enums for the RAG system.
 """
 from enum import Enum
+from dataclasses import dataclass
+from typing import Optional, Dict, Any
+from datetime import datetime
 
 
 class DocumentType(str, Enum):
@@ -35,3 +38,30 @@ class DocumentStatus(str, Enum):
     ACTIVE = "active"
     ARCHIVED = "archived"
     ERROR = "error"
+
+
+@dataclass
+class Document:
+    """Document structure for the knowledge base."""
+    
+    id: str
+    title: str
+    content: str
+    document_type: DocumentType
+    status: DocumentStatus
+    property_id: str
+    created_at: datetime
+    updated_at: datetime
+    metadata: Optional[Dict[str, Any]] = None
+    file_path: Optional[str] = None
+    file_size: Optional[int] = None
+    mime_type: Optional[str] = None
+
+
+@dataclass
+class SearchResult:
+    """Search result from vector store."""
+    
+    document: Document
+    score: float
+    metadata: Optional[Dict[str, Any]] = None

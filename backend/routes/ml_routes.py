@@ -136,27 +136,6 @@ async def get_churn_prediction(
             detail="Failed to generate churn prediction"
         )
 
-@router.post("/dynamic-pricing/{property_id}")
-async def get_dynamic_pricing(
-    property_id: str,
-    request_data: Dict[str, Any],
-    current_user = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Get dynamic pricing recommendations for a property"""
-    try:
-        pricing = await ml_service.get_dynamic_pricing(property_id, request_data, db)
-        return {
-            "success": True,
-            "data": pricing,
-            "message": "Dynamic pricing generated successfully"
-        }
-    except Exception as e:
-        logger.error(f"Error getting dynamic pricing: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to generate dynamic pricing"
-        )
 
 @router.get("/model-performance/{property_id}", response_model=ModelPerformanceResponse)
 async def get_model_performance(

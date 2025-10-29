@@ -19,13 +19,12 @@ import uuid # Added for unique ID generation
 
 from config import settings
 from database import create_tables, close_db, check_database_connection
-from routes import auth, hospitality_property, menu, inventory, customer, order, analytics, cms, knowledge_base, spa, conference, transportation, loyalty, qr_loyalty, staff, ai_knowledge, calendar, arcade, payment, demo_requests, buffr_agent, preview, financial, etuna_demo_ai, etuna_demo, waitlist, restaurant, onboarding, ml_routes, yango_routes, hotel_configuration
+from routes import auth, hospitality_property, menu, inventory, customer, order, analytics, cms, knowledge_base, spa, conference, transportation, loyalty, qr_loyalty, staff, ai_knowledge, calendar, arcade, payment, demo_requests, preview, financial, waitlist, restaurant, onboarding, ml_routes, yango_routes, hotel_configuration
 from routes import email_send_route, email_analytics_route, email_preferences_route, email_templates_route, email_queue_route, email_blacklist_route, email_booking_confirmation_route, email_check_in_reminder_route, email_check_out_reminder_route, email_property_update_route, email_booking_cancellation_route, email_host_summary_route, email_webhook_sendgrid_route, email_webhook_resend_route, email_webhook_ses_route
 
 # Import new systems
 from error_handling import setup_error_handling, setup_logging
 from routes import user_routes
-from routes import booking_routes
 
 
 # Setup comprehensive logging

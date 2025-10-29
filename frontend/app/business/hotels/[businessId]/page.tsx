@@ -14,7 +14,7 @@ export default function HotelBusinessPage() {
       <div className="bg-white border-b border-nude-200">
         <div className="container-warm py-4">
           <div className="flex items-center space-x-4">
-            <button className="btn-emotional-ghost p-2">
+            <BuffrButton variant="ghost" size="sm" className="p-2">
               <ArrowLeft className="h-5 w-5" />
             </button>
             <Building2 className="h-8 w-8 text-luxury-charlotte" />
@@ -61,22 +61,28 @@ export default function HotelBusinessPage() {
             <Building2 className="h-8 w-8 text-luxury-charlotte mb-4" />
             <h3 className="heading-card mb-2">Rooms & Accommodation</h3>
             <p className="body-regular text-nude-600 mb-4">Manage room inventory and bookings</p>
-            <button className="btn-emotional-primary w-full">Manage Rooms</button>
+            <BuffrButton variant="primary" size="lg" className="w-full">Manage Rooms</BuffrButton>
           </div>
           
           <div className="card-default card-interactive">
             <Users className="h-8 w-8 text-luxury-charlotte mb-4" />
             <h3 className="heading-card mb-2">Guest Services</h3>
             <p className="body-regular text-nude-600 mb-4">Guest management and services</p>
-            <button className="btn-emotional-primary w-full">Manage Guests</button>
+            <BuffrButton variant="primary" size="lg" className="w-full">Manage Guests</BuffrButton>
           </div>
           
           <div className="card-default card-interactive">
             <Calendar className="h-8 w-8 text-luxury-charlotte mb-4" />
             <h3 className="heading-card mb-2">Bookings & Reservations</h3>
             <p className="body-regular text-nude-600 mb-4">Reservation management system</p>
-            <button className="btn-emotional-primary w-full">View Bookings</button>
+            <BuffrButton variant="primary" size="lg" className="w-full">View Bookings</BuffrButton>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+div>
         </div>
       </div>
     </div>

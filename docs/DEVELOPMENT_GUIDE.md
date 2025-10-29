@@ -82,7 +82,6 @@ frontend/
 ```
 backend/
 ├── ai/                    # AI/ML Systems (18 systems)
-│   ├── credit_scoring_model.py
 │   ├── fraud_detection_system.py
 │   ├── recommendation_engine.py
 │   └── ... (15 more ML systems)

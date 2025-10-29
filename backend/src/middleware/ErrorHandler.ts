@@ -1,175 +1,113 @@
-/**
- * Error Handling Middleware
- * Centralized error handling for the API
- */
-
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Logger } from '../utils/Logger';
+import { logger } from '../utils/Logger';
 
-export interface ApiError extends Error {
-  statusCode?: number;
-  code?: string;
-  details?: any;
+export class ApiError extends Error {
+  public statusCode: number;
+  public code: string;
+  public details?: any;
+
+  constructor(statusCode: number, message: string, code: string = 'API_ERROR', details?: any) {
+    super(message);
+    this.name = 'ApiError';
+    this.statusCode = statusCode;
+    this.code = code;
+    this.details = details;
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
+export class ValidationError extends ApiError {
+  constructor(message: string, details?: any) {
+    super(400, message, 'VALIDATION_ERROR', details);
+    this.name = 'ValidationError';
+  }
+}
+
+export class AuthenticationError extends ApiError {
+  constructor(message: string = 'Authentication required') {
+    super(401, message, 'AUTHENTICATION_ERROR');
+    this.name = 'AuthenticationError';
+  }
+}
+
+export class AuthorizationError extends ApiError {
+  constructor(message: string = 'Access denied') {
+    super(403, message, 'AUTHORIZATION_ERROR');
+    this.name = 'AuthorizationError';
+  }
+}
+
+export class NotFoundError extends ApiError {
+  constructor(message: string = 'Resource not found') {
+    super(404, message, 'NOT_FOUND');
+    this.name = 'NotFoundError';
+  }
+}
+
+export class ConflictError extends ApiError {
+  constructor(message: string = 'Resource conflict') {
+    super(409, message, 'CONFLICT');
+    this.name = 'ConflictError';
+  }
+}
+
+export class RateLimitError extends ApiError {
+  constructor(message: string = 'Too many requests') {
+    super(429, message, 'RATE_LIMIT_EXCEEDED');
+    this.name = 'RateLimitError';
+  }
+}
+
+export class DatabaseError extends ApiError {
+  constructor(message: string = 'Database error') {
+    super(500, message, 'DATABASE_ERROR');
+    this.name = 'DatabaseError';
+  }
+}
+
+export class ExternalServiceError extends ApiError {
+  constructor(message: string = 'External service error') {
+    super(502, message, 'EXTERNAL_SERVICE_ERROR');
+    this.name = 'ExternalServiceError';
+  }
 }
 
 export class ErrorHandler {
-  private logger: Logger;
+  constructor() {}
 
-  constructor() {
-    this.logger = Logger.getInstance();
-  }
+  public handle(err: Error, req: NextApiRequest, res: NextApiResponse): void {
+    let error = err;
 
-  public handle(error: any, req: NextApiRequest, res: NextApiResponse): void {
-    this.logger.error('API Error:', {
-      error: error.message,
+    if (!(error instanceof ApiError)) {
+      // Convert to ApiError if it's a generic error
+      error = new ApiError(500, error.message || 'Something went wrong', 'INTERNAL_SERVER_ERROR', { stack: error.stack });
+    }
+
+    logger.error('API Error:', {
+      message: error.message,
+      code: (error as ApiError).code,
+      statusCode: (error as ApiError).statusCode,
+      details: (error as ApiError).details,
       stack: error.stack,
       url: req.url,
       method: req.method,
       body: req.body,
       query: req.query,
+      ip: req.socket.remoteAddress,
     });
 
-    // Default error response
-    let statusCode = 500;
-    let message = 'Internal Server Error';
-    let code = 'INTERNAL_ERROR';
-    let details = null;
-
-    // Handle different error types
-    if (error instanceof ValidationError) {
-      statusCode = 400;
-      message = 'Validation Error';
-      code = 'VALIDATION_ERROR';
-      details = error.details;
-    } else if (error instanceof AuthenticationError) {
-      statusCode = 401;
-      message = 'Authentication Required';
-      code = 'AUTHENTICATION_ERROR';
-    } else if (error instanceof AuthorizationError) {
-      statusCode = 403;
-      message = 'Access Denied';
-      code = 'AUTHORIZATION_ERROR';
-    } else if (error instanceof NotFoundError) {
-      statusCode = 404;
-      message = 'Resource Not Found';
-      code = 'NOT_FOUND';
-    } else if (error instanceof ConflictError) {
-      statusCode = 409;
-      message = 'Resource Conflict';
-      code = 'CONFLICT';
-    } else if (error instanceof RateLimitError) {
-      statusCode = 429;
-      message = 'Too Many Requests';
-      code = 'RATE_LIMIT_EXCEEDED';
-    } else if (error instanceof DatabaseError) {
-      statusCode = 500;
-      message = 'Database Error';
-      code = 'DATABASE_ERROR';
-    } else if (error instanceof ExternalServiceError) {
-      statusCode = 502;
-      message = 'External Service Error';
-      code = 'EXTERNAL_SERVICE_ERROR';
-    } else if (error instanceof ApiError) {
-      statusCode = error.statusCode || 500;
-      message = error.message;
-      code = error.code || 'API_ERROR';
-      details = error.details;
-    }
-
     // Send error response
-    res.status(statusCode).json({
+    res.status((error as ApiError).statusCode).json({
       error: {
-        message,
-        code,
-        statusCode,
-        details,
+        message: error.message,
+        code: (error as ApiError).code,
+        statusCode: (error as ApiError).statusCode,
+        details: (error as ApiError).details,
         timestamp: new Date().toISOString(),
         path: req.url,
         method: req.method,
+        ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
       },
     });
-  }
-}
-
-// Custom error classes
-export class ValidationError extends Error implements ApiError {
-  public statusCode = 400;
-  public code = 'VALIDATION_ERROR';
-  public details: any;
-
-  constructor(message: string, details?: any) {
-    super(message);
-    this.name = 'ValidationError';
-    this.details = details;
-  }
-}
-
-export class AuthenticationError extends Error implements ApiError {
-  public statusCode = 401;
-  public code = 'AUTHENTICATION_ERROR';
-
-  constructor(message: string = 'Authentication required') {
-    super(message);
-    this.name = 'AuthenticationError';
-  }
-}
-
-export class AuthorizationError extends Error implements ApiError {
-  public statusCode = 403;
-  public code = 'AUTHORIZATION_ERROR';
-
-  constructor(message: string = 'Access denied') {
-    super(message);
-    this.name = 'AuthorizationError';
-  }
-}
-
-export class NotFoundError extends Error implements ApiError {
-  public statusCode = 404;
-  public code = 'NOT_FOUND';
-
-  constructor(message: string = 'Resource not found') {
-    super(message);
-    this.name = 'NotFoundError';
-  }
-}
-
-export class ConflictError extends Error implements ApiError {
-  public statusCode = 409;
-  public code = 'CONFLICT';
-
-  constructor(message: string = 'Resource conflict') {
-    super(message);
-    this.name = 'ConflictError';
-  }
-}
-
-export class RateLimitError extends Error implements ApiError {
-  public statusCode = 429;
-  public code = 'RATE_LIMIT_EXCEEDED';
-
-  constructor(message: string = 'Too many requests') {
-    super(message);
-    this.name = 'RateLimitError';
-  }
-}
-
-export class DatabaseError extends Error implements ApiError {
-  public statusCode = 500;
-  public code = 'DATABASE_ERROR';
-
-  constructor(message: string = 'Database error') {
-    super(message);
-    this.name = 'DatabaseError';
-  }
-}
-
-export class ExternalServiceError extends Error implements ApiError {
-  public statusCode = 502;
-  public code = 'EXTERNAL_SERVICE_ERROR';
-
-  constructor(message: string = 'External service error') {
-    super(message);
-    this.name = 'ExternalServiceError';
   }
 }

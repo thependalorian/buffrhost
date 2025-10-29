@@ -26,7 +26,7 @@ class TransportationService(TransportationServiceBase):
     property_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TransportationBookingBase(BaseModel):
@@ -48,7 +48,7 @@ class TransportationBooking(TransportationBookingBase):
     vehicle_license: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TransportationVehicle(BaseModel):

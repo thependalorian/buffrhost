@@ -226,11 +226,11 @@
   }
 
   .font-primary {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-inter), sans-serif;
   }
 
   .font-display {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-playfair), serif;
   }
 }
 

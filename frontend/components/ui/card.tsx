@@ -5,7 +5,7 @@ import React from "react";
 interface CardProps {
   children: React.ReactNode;
   className?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const Card = ({ children, className, ...props }: CardProps) => (
@@ -17,7 +17,7 @@ export const Card = ({ children, className, ...props }: CardProps) => (
 interface CardHeaderProps {
   children: React.ReactNode;
   className?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const CardHeader = ({ children, className = "", ...props }: CardHeaderProps) => (
@@ -29,7 +29,7 @@ export const CardHeader = ({ children, className = "", ...props }: CardHeaderPro
 interface CardTitleProps {
   children: React.ReactNode;
   className?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const CardTitle = ({ children, className = "", ...props }: CardTitleProps) => (
@@ -41,7 +41,7 @@ export const CardTitle = ({ children, className = "", ...props }: CardTitleProps
 interface CardContentProps {
   children: React.ReactNode;
   className?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const CardContent = ({ children, className = "", ...props }: CardContentProps) => (

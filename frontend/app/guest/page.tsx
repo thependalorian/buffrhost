@@ -19,13 +19,13 @@ export default function GuestExperiencePage() {
               we're here to make your experience exceptional.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn-emotional-primary">
+              <BuffrButton variant="primary" size="lg" className="flex items-center">
                 Start Your Experience
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </button>
-              <button className="btn-emotional-ghost">
+              </BuffrButton>
+              <BuffrButton variant="ghost" size="lg">
                 View Services
-              </button>
+              </BuffrButton>
             </div>
           </div>
         </div>
@@ -66,9 +66,9 @@ export default function GuestExperiencePage() {
                   <span className="body-small">Spa & Wellness</span>
                 </div>
               </div>
-              <button className="btn-emotional-primary w-full">
+              <BuffrButton variant="primary" size="lg" className="w-full">
                 Access Hotel Services
-              </button>
+              </BuffrButton>
             </div>
 
             {/* Restaurant Experience */}
@@ -93,9 +93,9 @@ export default function GuestExperiencePage() {
                   <span className="body-small">Customer Service</span>
                 </div>
               </div>
-              <button className="btn-emotional-primary w-full">
+              <BuffrButton variant="primary" size="lg" className="w-full">
                 Access Restaurant Services
-              </button>
+              </BuffrButton>
             </div>
           </div>
         </div>

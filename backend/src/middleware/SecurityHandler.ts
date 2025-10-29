@@ -4,169 +4,110 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ConfigManager } from '../config/ConfigManager';
-import { Logger } from '../utils/Logger';
+import { config } from '../config/ConfigManager';
+import { logger } from '../utils/Logger';
 
 export class SecurityHandler {
-  private config: ConfigManager;
-  private logger: Logger;
+  constructor() {}
 
-  constructor() {
-    this.config = ConfigManager.getInstance();
-    this.logger = Logger.getInstance();
+  public handle(req: NextApiRequest, res: NextApiResponse, next: Function): void {
+    this.setSecurityHeaders(req, res);
+    this.preventClickjacking(res);
+    this.detectSQLInjection(req);
+    this.detectXSS(req);
+    this.checkSuspiciousPatterns(req, res);
+    next();
   }
 
-  /**
-   * Handle security for a request
-   */
-  public async handle(req: NextApiRequest, res: NextApiResponse): Promise<void> {
-    try {
-      // Set security headers
-      this.setSecurityHeaders(req, res);
-      
-      // Check for suspicious patterns
-      this.checkSuspiciousPatterns(req, res);
-      
-      // Validate request size
-      this.validateRequestSize(req, res);
-      
-    } catch (error) {
-      this.logger.error('Security handling error:', error);
-      // Don't throw error for security issues, just log them
-    }
-  }
-
-  /**
-   * Set security headers
-   */
   private setSecurityHeaders(req: NextApiRequest, res: NextApiResponse): void {
-    // Content Security Policy
-    res.setHeader('Content-Security-Policy', 
-      "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-      "style-src 'self' 'unsafe-inline'; " +
-      "img-src 'self' data: https:; " +
-      "font-src 'self' data:; " +
-      "connect-src 'self' https:; " +
-      "frame-ancestors 'none';"
-    );
-
-    // X-Frame-Options
-    res.setHeader('X-Frame-Options', 'DENY');
-
-    // X-Content-Type-Options
     res.setHeader('X-Content-Type-Options', 'nosniff');
-
-    // X-XSS-Protection
+    res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
-
-    // Referrer-Policy
-    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-
-    // Permissions-Policy
-    res.setHeader('Permissions-Policy', 
-      'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
-    );
-
-    // Strict-Transport-Security (only in production)
-    if (this.config.isProduction()) {
-      res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-    }
-
-    // X-Powered-By (remove to hide technology stack)
-    res.removeHeader('X-Powered-By');
-
-    // Server (hide server information)
-    res.setHeader('Server', 'Buffr Host API');
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+    res.setHeader('Content-Security-Policy', config.get('CSP_HEADER') || "default-src 'self'");
   }
 
-  /**
-   * Check for suspicious patterns in requests
-   */
+  private preventClickjacking(res: NextApiResponse): void {
+    res.setHeader('X-Frame-Options', 'DENY');
+  }
+
+  private detectSQLInjection(req: NextApiRequest): void {
+    const sqlRegex = /('|") OR (.*?)('|")=|('|") OR ('|")1/i;
+    const check = (value: string) => {
+      if (sqlRegex.test(value)) {
+        logger.warn('SQL Injection attempt detected', { ip: req.socket.remoteAddress, url: req.url, value });
+        throw new Error('SQL Injection attempt detected');
+      }
+    };
+
+    if (req.url) check(req.url);
+    if (req.body) {
+      for (const key in req.body) {
+        if (typeof req.body[key] === 'string') {
+          check(req.body[key]);
+        }
+      }
+    }
+    if (req.query) {
+      for (const key in req.query) {
+        if (typeof req.query[key] === 'string') {
+          check(req.query[key]);
+        }
+      }
+    }
+  }
+
+  private detectXSS(req: NextApiRequest): void {
+    const xssRegex = /<script>|<\/script>|javascript:|eval\(|expression\(|data:text\/html/i;
+    const check = (value: string) => {
+      if (xssRegex.test(value)) {
+        logger.warn('XSS attempt detected', { ip: req.socket.remoteAddress, url: req.url, value });
+        throw new Error('XSS attempt detected');
+      }
+    };
+
+    if (req.url) check(req.url);
+    if (req.body) {
+      for (const key in req.body) {
+        if (typeof req.body[key] === 'string') {
+          check(req.body[key]);
+        }
+      }
+    }
+    if (req.query) {
+      for (const key in req.query) {
+        if (typeof req.query[key] === 'string') {
+          check(req.query[key]);
+        }
+      }
+    }
+  }
+
   private checkSuspiciousPatterns(req: NextApiRequest, res: NextApiResponse): void {
-    const url = req.url || '';
     const userAgent = req.headers['user-agent'] || '';
+    const suspiciousUserAgents = ['sqlmap', 'nmap', 'nessus'];
+
+    if (suspiciousUserAgents.some(ua => userAgent.includes(ua))) {
+      logger.warn('Suspicious User-Agent detected', { ip: req.socket.remoteAddress, userAgent });
+      res.status(403).send('Forbidden');
+      return;
+    }
+
     const referer = req.headers.referer || '';
+    const allowedReferers = config.get('ALLOWED_REFERERS') || [];
 
-    // Check for SQL injection patterns
-    const sqlPatterns = [
-      /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)/i,
-      /(\b(OR|AND)\s+\d+\s*=\s*\d+)/i,
-      /(\b(OR|AND)\s+'.*'\s*=\s*'.*')/i,
-      /(\b(OR|AND)\s+".*"\s*=\s*".*")/i,
-      /(UNION\s+SELECT)/i,
-      /(DROP\s+TABLE)/i,
-      /(DELETE\s+FROM)/i,
-      /(INSERT\s+INTO)/i,
-      /(UPDATE\s+SET)/i,
-    ];
-
-    for (const pattern of sqlPatterns) {
-      if (pattern.test(url) || pattern.test(userAgent) || pattern.test(referer)) {
-        this.logger.warn('Potential SQL injection attempt detected:', {
-          url,
-          userAgent,
-          referer,
-          ip: req.connection?.remoteAddress,
-        });
-        break;
-      }
-    }
-
-    // Check for XSS patterns
-    const xssPatterns = [
-      /<script[^>]*>.*?<\/script>/gi,
-      /javascript:/gi,
-      /on\w+\s*=/gi,
-      /<iframe[^>]*>.*?<\/iframe>/gi,
-      /<object[^>]*>.*?<\/object>/gi,
-      /<embed[^>]*>.*?<\/embed>/gi,
-      /<link[^>]*>.*?<\/link>/gi,
-      /<meta[^>]*>.*?<\/meta>/gi,
-    ];
-
-    for (const pattern of xssPatterns) {
-      if (pattern.test(url) || pattern.test(userAgent) || pattern.test(referer)) {
-        this.logger.warn('Potential XSS attempt detected:', {
-          url,
-          userAgent,
-          referer,
-          ip: req.connection?.remoteAddress,
-        });
-        break;
-      }
-    }
-
-    // Check for path traversal patterns
-    const pathTraversalPatterns = [
-      /\.\.\//g,
-      /\.\.\\/g,
-      /%2e%2e%2f/gi,
-      /%2e%2e%5c/gi,
-      /\.\.%2f/gi,
-      /\.\.%5c/gi,
-    ];
-
-    for (const pattern of pathTraversalPatterns) {
-      if (pattern.test(url)) {
-        this.logger.warn('Potential path traversal attempt detected:', {
-          url,
-          ip: req.connection?.remoteAddress,
-        });
-        break;
-      }
+    if (allowedReferers.length > 0 && !allowedReferers.some(r => referer.includes(r))) {
+      logger.warn('Suspicious Referer detected', { ip: req.socket.remoteAddress, referer });
+      // res.status(403).send('Forbidden'); // Uncomment to block
     }
   }
 
-  /**
-   * Validate request size
-   */
   private validateRequestSize(req: NextApiRequest, res: NextApiResponse): void {
     const contentLength = parseInt(req.headers['content-length'] || '0');
-    const maxFileSize = this.config.get('MAX_FILE_SIZE');
+    const maxFileSize = config.get('MAX_FILE_SIZE');
 
     if (contentLength > maxFileSize) {
-      this.logger.warn('Request size exceeds limit:', {
+      logger.warn('Request size exceeds limit:', {
         contentLength,
         maxFileSize,
         ip: req.connection?.remoteAddress,
@@ -180,11 +121,8 @@ export class SecurityHandler {
     }
   }
 
-  /**
-   * Check if request is from a trusted host
-   */
   public isTrustedHost(req: NextApiRequest): boolean {
-    if (this.config.isProduction()) {
+    if (config.isProduction()) {
       const host = req.headers.host;
       const trustedHosts = ['buffr.ai', 'host.buffr.ai', 'api.buffr.ai'];
       
@@ -200,9 +138,6 @@ export class SecurityHandler {
     return true; // Allow all hosts in development
   }
 
-  /**
-   * Get security headers for debugging
-   */
   public getSecurityHeaders(): Record<string, string> {
     return {
       'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';",

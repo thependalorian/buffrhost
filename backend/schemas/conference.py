@@ -24,7 +24,7 @@ class ConferenceRoom(ConferenceRoomBase):
     property_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ConferenceBookingBase(BaseModel):
@@ -47,7 +47,7 @@ class ConferenceBooking(ConferenceBookingBase):
     total_cost: float
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ConferenceAmenity(BaseModel):

@@ -38,6 +38,8 @@ shandi/
 
 # Environment variables
 .env
+.env.*
+!.env.example
 .env.local
 .env.development.local
 .env.test.local
@@ -46,6 +48,7 @@ shandi/
 .env.production
 .env.buffr
 .env.staging
+.env.langfuse
 env.example
 .env.example
 
@@ -59,6 +62,41 @@ service_account.json
 *.pem
 *.p12
 *.pfx
+*.p8
+*.cer
+*.crt
+*.der
+
+# Common secret patterns
+*secret*
+*password*
+*token*
+*credential*
+*api_key*
+*access_key*
+*private_key*
+*oauth*
+*auth*
+
+# Specific service secrets
+*SENDGRID*
+*STRIPE*
+*TWILIO*
+*AWS*
+*GOOGLE*
+*FIREBASE*
+*SUPABASE*
+*NEON*
+*DEEPSEEK*
+*ARCADE*
+*LANGCHAIN*
+*LANGGRAPH*
+*LANGFUSE*
+
+# JWT and session secrets
+*jwt*
+*session*
+*cookie*
 
 # Sensitive files with specific patterns
 *SECRET*.md
@@ -130,80 +168,68 @@ service_account.json
 *AGENT*.md
 *README*.md
 
+# Additional security patterns
+*backup*
+*temp*
+*tmp*
+*cache*
+*lock*
+*pid*
+*seed*
+*coverage*
+*test-results*
+*debug*
+*verbose*
+
 # Documentation with secrets
 GOOGLE_OAUTH_SETUP.md
 GOOGLE_SIGNUP_IMPLEMENTATION_SUMMARY.md
 VERCEL_WORKLOAD_IDENTITY_SETUP.md
 
-# Markdown files that may contain secrets
-*SECRET*.md
-*API_KEY*.md
-*CREDENTIAL*.md
-*PASSWORD*.md
-*TOKEN*.md
-*OAUTH*.md
-*GOOGLE*.md
-*SENDGRID*.md
-*STRIPE*.md
-*TWILIO*.md
-*AWS*.md
-*SECURITY*.md
-*CONFIG*.md
-*SETUP*.md
-*IMPLEMENTATION*.md
-*SUMMARY*.md
-*UPDATE*.md
-*ANALYSIS*.md
-*REPORT*.md
-*DOCUMENTATION*.md
-*CONSOLIDATED*.md
-*UNIFIED*.md
-*BUFFR*.md
-*EMAIL*.md
-*HOST*.md
-*AGENT*.md
-*SYSTEM*.md
-*INTEGRATION*.md
-*DEPLOYMENT*.md
-*ENVIRONMENT*.md
-*PROCESS*.md
-*CRITICAL*.md
-*ENHANCED*.md
-*AUDIT*.md
-*CI_CD*.md
-*CMS*.md
-*PYTHON*.md
-*RAG*.md
-*AI*.md
-*ML*.md
-*TESTING*.md
-*BUSINESS*.md
-*STRATEGIC*.md
-*MARKET*.md
-*REVENUE*.md
-*LOYALTY*.md
-*FRONTEND*.md
-*BACKEND*.md
-*DATABASE*.md
-*MODEL*.md
-*SYNCHRONIZATION*.md
-*CURRENCY*.md
-*IMPROVEMENTS*.md
-*DEPENDENCY*.md
-*FIX*.md
-*PRIORITY*.md
-*GAP*.md
-*NAMIBIAN*.md
-*SOUTHERN*.md
-*AFRICAN*.md
-*MOCKS*.md
-*SIMULATIONS*.md
-*TODOS*.md
-*PIPELINE*.md
-*RECEPTIONIST*.md
-*HOST*.md
-*AGENT*.md
-*README*.md
+# Additional security patterns
+*backup*
+*temp*
+*tmp*
+*cache*
+*lock*
+*pid*
+*seed*
+*coverage*
+*test-results*
+*debug*
+*verbose*
+
+# Common secret file patterns
+config.json
+secrets.json
+credentials.json
+auth.json
+keys.json
+*.env.backup
+*.env.old
+*.env.bak
+.env.*.local
+.env.*.production
+.env.*.development
+
+# Database connection strings
+*connection*
+*connection_string*
+*database_url*
+*db_url*
+
+# Payment and financial data
+*payment*
+*financial*
+*bank*
+*account*
+*transaction*
+
+# User data and PII
+*user_data*
+*personal*
+*pii*
+*privacy*
 
 # IDE
 .vscode/

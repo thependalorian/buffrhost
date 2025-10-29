@@ -14,6 +14,7 @@ import logging
 import time
 
 from config import settings
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +44,11 @@ def create_database_engine() -> Engine:
             "connect_args": {"check_same_thread": False},
         })
     
+    # Get database URL from environment (Neon DB takes priority)
+    database_url = os.getenv("NEON_DATABASE_URL") or os.getenv("DATABASE_URL") or settings.DATABASE_URL
+    
     # Create engine
-    engine = create_engine(settings.DATABASE_URL, **engine_args)
+    engine = create_engine(database_url, **engine_args)
     
     # Add connection event listeners
     @event.listens_for(engine, "connect")

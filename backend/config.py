@@ -150,7 +150,6 @@ class Settings(BaseSettings):
     BOOKING_MAX_STAY: int = 30
     
     # Revenue Management
-    ENABLE_DYNAMIC_PRICING: bool = True
     PRICING_UPDATE_INTERVAL: int = 60  # minutes
     OCCUPANCY_THRESHOLD: float = 0.8
     

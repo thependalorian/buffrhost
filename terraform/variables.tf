@@ -14,13 +14,13 @@ variable "region" {
 variable "frontend_domain" {
   description = "Frontend domain name"
   type        = string
-  default     = "app.theshandi.ai"
+  default     = "host.buffr.ai"
 }
 
 variable "api_domain" {
   description = "API domain name"
   type        = string
-  default     = "api.theshandi.ai"
+  default     = "api.host.buffr.ai"
 }
 
 variable "backend_env" {

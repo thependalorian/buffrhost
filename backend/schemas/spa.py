@@ -25,7 +25,7 @@ class SpaService(SpaServiceBase):
     property_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SpaTherapist(BaseModel):
@@ -55,4 +55,4 @@ class SpaAppointment(SpaAppointmentBase):
     status: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
