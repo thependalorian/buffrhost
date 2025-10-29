@@ -5,6 +5,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Test files and scripts (exclude from repository)
+frontend/scripts/test-*.mjs
+frontend/scripts/test-*.js
+frontend/scripts/test-*.cjs
+**/test-*.mjs
+**/test-*.js
+**/test-*.cjs
+
 # Python
 __pycache__/
 *.py[cod]
