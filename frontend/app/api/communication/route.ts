@@ -248,13 +248,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Get communication history with advanced filtering
-    const history = await // communicationService.getCommunicationHistory(
-      propertyId,
-      channel || undefined,
-      limit,
-      startDate || undefined,
-      endDate || undefined
-    );
+    // TODO: Implement communicationService.getCommunicationHistory
+    const history: any[] = [];
 
     // Calculate analytics from history
     const totalCost = history.reduce((sum, comm) => sum + (comm.cost || 0), 0);
