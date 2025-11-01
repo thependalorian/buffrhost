@@ -49,10 +49,10 @@ jobs:
             exit 1
           fi
           if [ "${{ steps.check_backend.outputs.exists }}" == "true" ]; then
-            if ! docker image inspect shandi-backend:ci-test >/dev/null 2>&1; then
-              echo "❌ Backend image not found!"
-              exit 1
-            fi
+          if ! docker image inspect shandi-backend:ci-test >/dev/null 2>&1; then
+            echo "❌ Backend image not found!"
+            exit 1
+          fi
           else
             echo "⚠️ Backend directory not found - skipping backend image verification"
           fi

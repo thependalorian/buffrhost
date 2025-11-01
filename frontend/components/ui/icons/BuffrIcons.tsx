@@ -154,8 +154,9 @@ export type BuffrIconName =
   | 'globe'
   | 'landmark';
 
-interface BuffrIconProps extends Omit<LucideProps, 'name'> {
+interface BuffrIconProps extends Omit<LucideProps, 'name' | 'size'> {
   name: BuffrIconName;
+  size?: number | string;
 }
 
 const iconMap: Record<BuffrIconName, LucideIcon> = {
@@ -214,7 +215,16 @@ const iconMap: Record<BuffrIconName, LucideIcon> = {
   landmark: Landmark,
 };
 
-export const BuffrIcon: React.FC<BuffrIconProps> = ({ name, ...props }) => {
+const sizeMap: Record<string, number> = {
+  xs: 12,
+  sm: 16,
+  md: 20,
+  lg: 24,
+  xl: 32,
+  '2xl': 40,
+};
+
+export const BuffrIcon: React.FC<BuffrIconProps> = ({ name, size, ...props }) => {
   const IconComponent = iconMap[name];
 
   if (!IconComponent) {
@@ -222,5 +232,10 @@ export const BuffrIcon: React.FC<BuffrIconProps> = ({ name, ...props }) => {
     return <div className="w-4 h-4" />;
   }
 
-  return <IconComponent {...props} />;
+  // Convert size string to number if needed
+  const iconSize = typeof size === 'string' 
+    ? sizeMap[size] || parseInt(size, 10) || 20
+    : size || 20;
+
+  return <IconComponent size={iconSize} {...props} />;
 };

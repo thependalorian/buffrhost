@@ -9,7 +9,8 @@
 export * from './buffr-components';
 
 // Buffr Icons
-export { BuffrIcon, BuffrIconName } from './buffr-icons';
+export { BuffrIcon } from './icons/BuffrIcons';
+export type { BuffrIconName } from './icons/BuffrIcons';
 
 // Enhanced Components (updated to use Buffr components)
 export { StarRating } from './star-rating';
@@ -85,7 +86,7 @@ import {
   BuffrAlertDescription,
   // New Property Management Components
 } from './buffr-components';
-import { BuffrIcon } from './buffr-icons';
+import { BuffrIcon } from './icons/BuffrIcons';
 
 // DaisyUI namespace for backward compatibility
 export const DaisyUI = {

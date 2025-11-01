@@ -58,7 +58,7 @@ import React, { useState } from 'react';
  */
 
 import { cn } from '@/lib/utils';
-import { BuffrIcon } from '../buffr-icons';
+import { BuffrIcon } from '../icons/BuffrIcons';
 
 interface NavigationItem {
   label: string;

@@ -160,7 +160,8 @@ export {
 // ============================================================================
 // ICON COMPONENTS
 // ============================================================================
-export { BuffrIcon } from './buffr-icons';
+export { BuffrIcon } from './icons/BuffrIcons';
+export type { BuffrIconName } from './icons/BuffrIcons';
 
 // ============================================================================
 // UTILITY FUNCTIONS
