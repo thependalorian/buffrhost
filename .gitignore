@@ -328,6 +328,13 @@ temp/
 *.sqlite
 *.sqlite3
 
+# Configuration files with secrets (must use .example versions)
+environment.config
+terraform/secrets.tfvars
+*.tfvars
+!terraform/terraform.tfvars.example
+!terraform/secrets.tfvars.example
+
 # Docker
 .dockerignore
 
