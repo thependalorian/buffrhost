@@ -17,6 +17,49 @@
 'use client';
 
 import React from 'react';
+/**
+ * CustomerOverview React Component for Buffr Host Hospitality Platform
+ * @fileoverview CustomerOverview manages customer relationship and loyalty program interactions
+ * @location buffr-host/components/crm/customer-dashboard/CustomerOverview.tsx
+ * @purpose CustomerOverview manages customer relationship and loyalty program interactions
+ * @component CustomerOverview
+ * @category Crm
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {Customer} [customer] - customer prop description
+ *
+ * Methods:
+ * @method getTierColor - getTierColor method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { CustomerOverview } from './CustomerOverview';
+ *
+ * function App() {
+ *   return (
+ *     <CustomerOverview
+ *       prop1="value"
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered CustomerOverview component
+ */
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui';
 import { Mail, Phone, MapPin, Calendar } from 'lucide-react';

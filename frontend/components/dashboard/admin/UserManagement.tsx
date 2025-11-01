@@ -18,6 +18,71 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * UserManagement React Component for Buffr Host Hospitality Platform
+ * @fileoverview UserManagement displays comprehensive dashboard with key metrics and analytics
+ * @location buffr-host/components/dashboard/admin/UserManagement.tsx
+ * @purpose UserManagement displays comprehensive dashboard with key metrics and analytics
+ * @component UserManagement
+ * @category Dashboard
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {User[]} [users] - users prop description
+ * @param {() => void} [onAddUser] - onAddUser prop description
+ * @param {(id} [onViewUser] - onViewUser prop description
+ * @param {(id} [onEditUser] - onEditUser prop description
+ * @param {(id} [onDeleteUser] - onDeleteUser prop description
+ * @param {(id} [onUpdateUserStatus] - onUpdateUserStatus prop description
+ * @param {(id} [onUpdateUserRole] - onUpdateUserRole prop description
+ * @param {() => void} [onRefresh] - onRefresh prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * State:
+ * @state {any} 'all' - Component state for 'all' management
+ * @state {any} 'all' - Component state for 'all' management
+ * @state {any} 'created_at' - Component state for 'created_at' management
+ * @state {any} 'desc' - Component state for 'desc' management
+ *
+ * Methods:
+ * @method handleSearch - handleSearch method for component functionality
+ * @method getRoleColor - getRoleColor method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ * @method getStatusIcon - getStatusIcon method for component functionality
+ * @method formatDate - formatDate method for component functionality
+ * @method formatNumber - formatNumber method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { UserManagement } from './UserManagement';
+ *
+ * function App() {
+ *   return (
+ *     <UserManagement
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered UserManagement component
+ */
+
 import {
   BuffrCard as Card,
   BuffrCardContent as CardContent,

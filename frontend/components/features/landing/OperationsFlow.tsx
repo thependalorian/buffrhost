@@ -1,6 +1,40 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
+
+/**
+ * UOperationsFlow React Component for Buffr Host Hospitality Platform
+ * @fileoverview UOperationsFlow provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/landing/OperationsFlow.tsx
+ * @purpose UOperationsFlow provides specialized functionality for the Buffr Host platform
+ * @component UOperationsFlow
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Usage Example:
+ * @example
+ * import UOperationsFlow from './UOperationsFlow';
+ *
+ * function App() {
+ *   return (
+ *     <UOperationsFlow
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered UOperationsFlow component
+ */
 
 export default function UOperationsFlow() {
   return (

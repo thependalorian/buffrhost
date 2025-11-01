@@ -18,6 +18,59 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * PropertyAnalytics React Component for Buffr Host Hospitality Platform
+ * @fileoverview PropertyAnalytics displays comprehensive dashboard with key metrics and analytics
+ * @location buffr-host/components/dashboard/property-owner/PropertyAnalytics.tsx
+ * @purpose PropertyAnalytics displays comprehensive dashboard with key metrics and analytics
+ * @component PropertyAnalytics
+ * @category Dashboard
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {string} [propertyId] - propertyId prop description
+ * @param {AnalyticsData} [analytics] - analytics prop description
+ * @param {(period} [onPeriodChange] - onPeriodChange prop description
+ * @param {() => void} [onExportData] - onExportData prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * Methods:
+ * @method handlePeriodChange - handlePeriodChange method for component functionality
+ * @method handleRefresh - handleRefresh method for component functionality
+ * @method formatCurrency - formatCurrency method for component functionality
+ * @method formatPercentage - formatPercentage method for component functionality
+ * @method getChangeColor - getChangeColor method for component functionality
+ * @method getChangeIcon - getChangeIcon method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { PropertyAnalytics } from './PropertyAnalytics';
+ *
+ * function App() {
+ *   return (
+ *     <PropertyAnalytics
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered PropertyAnalytics component
+ */
+
 import {
   Card,
   CardContent,

@@ -1,6 +1,53 @@
 'use client';
 
 import React, { ReactNode } from 'react';
+/**
+ * PermissionGuard React Component for Buffr Host Hospitality Platform
+ * @fileoverview PermissionGuard provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/rbac/PermissionGuard.tsx
+ * @purpose PermissionGuard provides specialized functionality for the Buffr Host platform
+ * @component PermissionGuard
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @hooks_utilization usePermissions, useRoles for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {ReactNode} [children] - children prop description
+ * @param {} [permission] - permission prop description
+ * @param {} [resource] - resource prop description
+ * @param {} [resourceId] - resourceId prop description
+ * @param {} [fallback] - fallback prop description
+ * @param {} [requireAll] - requireAll prop description
+ * @param {} [permissions] - permissions prop description
+ *
+ * Usage Example:
+ * @example
+ * import { PermissionGuard } from './PermissionGuard';
+ *
+ * function App() {
+ *   return (
+ *     <PermissionGuard
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered PermissionGuard component
+ */
+
 import { usePermissions, useRoles } from '@/hooks/usePermissions';
 import { Permission } from '@/lib/types/rbac';
 

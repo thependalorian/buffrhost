@@ -18,6 +18,89 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+/**
+ * AdminDashboardModular React Component for Buffr Host Hospitality Platform
+ * @fileoverview AdminDashboardModular displays comprehensive dashboard with key metrics and analytics
+ * @location buffr-host/components/dashboard/admin/buffr-host-admin-dashboard.tsx
+ * @purpose AdminDashboardModular displays comprehensive dashboard with key metrics and analytics
+ * @component AdminDashboardModular
+ * @category Dashboard
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @database_connections Reads from relevant tables based on component functionality
+ * @api_integration RESTful API endpoints for data fetching and mutations
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState, useEffect for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Real-time data integration with backend services
+ * - API-driven functionality with error handling and loading states
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {string} [adminId] - adminId prop description
+ * @param {} [tenantId] - tenantId prop description
+ * @param {} [className] - className prop description
+ *
+ * State:
+ * @state {any} null - Component state for null management
+ * @state {any} [] - Component state for [] management
+ * @state {any} [] - Component state for [] management
+ * @state {any} [] - Component state for [] management
+ * @state {any} null - Component state for null management
+ * @state {any} [] - Component state for [] management
+ * @state {any} [] - Component state for [] management
+ * @state {any} 'overview' - Component state for 'overview' management
+ * @state {any} null - Component state for null management
+ * @state {any} null - Component state for null management
+ *
+ * Methods:
+ * @method handleTabChange - handleTabChange method for component functionality
+ * @method handleRefresh - handleRefresh method for component functionality
+ * @method handleAddProperty - handleAddProperty method for component functionality
+ * @method handleViewProperty - handleViewProperty method for component functionality
+ * @method handleEditProperty - handleEditProperty method for component functionality
+ * @method handleDeleteProperty - handleDeleteProperty method for component functionality
+ * @method handleAddUser - handleAddUser method for component functionality
+ * @method handleViewUser - handleViewUser method for component functionality
+ * @method handleEditUser - handleEditUser method for component functionality
+ * @method handleDeleteUser - handleDeleteUser method for component functionality
+ * @method handleUpdateUserStatus - handleUpdateUserStatus method for component functionality
+ * @method handleUpdateUserRole - handleUpdateUserRole method for component functionality
+ * @method handleResolveAlert - handleResolveAlert method for component functionality
+ * @method handleExportLogs - handleExportLogs method for component functionality
+ * @method handleViewLogs - handleViewLogs method for component functionality
+ * @method handleAddPropertyOverview - handleAddPropertyOverview method for component functionality
+ * @method handleManageUsersOverview - handleManageUsersOverview method for component functionality
+ * @method handleViewAnalyticsOverview - handleViewAnalyticsOverview method for component functionality
+ * @method handleSystemSettingsOverview - handleSystemSettingsOverview method for component functionality
+ * @method handleAIChatOverview - handleAIChatOverview method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { AdminDashboardModular } from './AdminDashboardModular';
+ *
+ * function App() {
+ *   return (
+ *     <AdminDashboardModular
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered AdminDashboardModular component
+ */
+
 import {
   Card,
   CardContent,

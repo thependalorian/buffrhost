@@ -6,11 +6,16 @@ import { BookingHeader } from '@/components/booking/BookingHeader';
 import { GuestInfo } from '@/components/booking/GuestInfo';
 import { PropertyDetails } from '@/components/booking/PropertyDetails';
 import { PaymentInfo } from '@/components/booking/PaymentInfo';
-import { BuffrTabs, BuffrTabsContent, BuffrTabsList, BuffrTabsTrigger } from '@/components/ui/tabs/BuffrTabs';
+import {
+  BuffrTabs,
+  BuffrTabsContent,
+  BuffrTabsList,
+  BuffrTabsTrigger,
+} from '@/components/ui/tabs/BuffrTabs';
 
 /**
  * Refactored Booking Details Page
- * 
+ *
  * Modular booking details using smaller, reusable components
  * Location: app/bookings/[id]/page-refactored.tsx
  */
@@ -57,8 +62,8 @@ export default function BookingDetailsPage() {
     const loadBooking = async () => {
       try {
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         // Mock booking data
         const mockBooking: Booking = {
           id: params.id as string,
@@ -78,8 +83,8 @@ export default function BookingDetailsPage() {
           checkOutTime: '11:00',
           adults: 2,
           children: 1,
-          totalAmount: 450.00,
-          paidAmount: 450.00,
+          totalAmount: 450.0,
+          paidAmount: 450.0,
           balance: 0,
           currency: 'USD',
           paymentStatus: 'paid',
@@ -87,9 +92,9 @@ export default function BookingDetailsPage() {
           specialRequests: 'High floor room, late checkout requested',
           roomNumber: '205',
           roomType: 'Deluxe Suite',
-          amenities: ['WiFi', 'Pool', 'Spa', 'Gym', 'Restaurant']
+          amenities: ['WiFi', 'Pool', 'Spa', 'Gym', 'Restaurant'],
         };
-        
+
         setBooking(mockBooking);
       } catch (error) {
         console.error('Error loading booking:', error);
@@ -163,8 +168,12 @@ export default function BookingDetailsPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Booking Not Found</h1>
-          <p className="text-gray-600 mb-6">The booking you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Booking Not Found
+          </h1>
+          <p className="text-gray-600 mb-6">
+            The booking you're looking for doesn't exist.
+          </p>
           <button
             onClick={() => router.push('/bookings')}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -178,32 +187,78 @@ export default function BookingDetailsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Booking Header */}
-        <BookingHeader
-          confirmationNumber={booking.confirmationNumber}
-          status={booking.status}
-          type={booking.type}
-          propertyName={booking.propertyName}
-          onEdit={handleEdit}
-          onCancel={handleCancel}
-          onCheckIn={handleCheckIn}
-          onCheckOut={handleCheckOut}
-          className="mb-6"
-        />
+      {/* Header - Sticky on Mobile */}
+      <header className="bg-white shadow-sm sticky top-0 z-10 border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 md:py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <button
+                onClick={() => router.push('/bookings')}
+                className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 mb-2 flex items-center gap-1"
+              >
+                [BuffrIcon name="arrow-left"] Back to Bookings
+              </button>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 truncate">
+                Booking Details
+              </h1>
+            </div>
+          </div>
+        </div>
+      </header>
 
-        {/* Tabs */}
-        <BuffrTabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <BuffrTabsList className="grid w-full grid-cols-4">
-            <BuffrTabsTrigger value="overview">Overview</BuffrTabsTrigger>
-            <BuffrTabsTrigger value="guest">Guest Info</BuffrTabsTrigger>
-            <BuffrTabsTrigger value="property">Property</BuffrTabsTrigger>
-            <BuffrTabsTrigger value="payment">Payment</BuffrTabsTrigger>
-          </BuffrTabsList>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+        {/* Booking Header */}
+        <div className="mb-4 sm:mb-6">
+          <BookingHeader
+            confirmationNumber={booking.confirmationNumber}
+            status={booking.status}
+            type={booking.type}
+            propertyName={booking.propertyName}
+            onEdit={handleEdit}
+            onCancel={handleCancel}
+            onCheckIn={handleCheckIn}
+            onCheckOut={handleCheckOut}
+          />
+        </div>
+
+        {/* Tabs - Horizontal Scroll on Mobile */}
+        <BuffrTabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-4 sm:space-y-6"
+        >
+          <div className="overflow-x-auto border-b">
+            <BuffrTabsList className="grid w-full grid-cols-4 min-w-max sm:min-w-0">
+              <BuffrTabsTrigger
+                value="overview"
+                className="text-xs sm:text-sm whitespace-nowrap"
+              >
+                Overview
+              </BuffrTabsTrigger>
+              <BuffrTabsTrigger
+                value="guest"
+                className="text-xs sm:text-sm whitespace-nowrap"
+              >
+                Guest Info
+              </BuffrTabsTrigger>
+              <BuffrTabsTrigger
+                value="property"
+                className="text-xs sm:text-sm whitespace-nowrap"
+              >
+                Property
+              </BuffrTabsTrigger>
+              <BuffrTabsTrigger
+                value="payment"
+                className="text-xs sm:text-sm whitespace-nowrap"
+              >
+                Payment
+              </BuffrTabsTrigger>
+            </BuffrTabsList>
+          </div>
 
           {/* Overview Tab */}
-          <BuffrTabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <BuffrTabsContent value="overview" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <GuestInfo
                 guestName={booking.guestName}
                 guestEmail={booking.guestEmail}

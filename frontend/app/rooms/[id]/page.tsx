@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useParams } from "next/navigation";
-import { ArrowLeft, Home, Calendar, Settings } from "lucide-react";
+import React from 'react';
+import { useParams } from 'next/navigation';
+import { ArrowLeft, Home, Calendar, Settings } from 'lucide-react';
 
 export default function RoomDetailsPage() {
   const params = useParams();
@@ -73,15 +73,21 @@ export default function RoomDetailsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-luxury-charlotte rounded-full"></div>
-                    <span className="body-small text-nude-600">Room cleaned</span>
+                    <span className="body-small text-nude-600">
+                      Room cleaned
+                    </span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-nude-400 rounded-full"></div>
-                    <span className="body-small text-nude-600">Maintenance completed</span>
+                    <span className="body-small text-nude-600">
+                      Maintenance completed
+                    </span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-semantic-success rounded-full"></div>
-                    <span className="body-small text-nude-600">Ready for booking</span>
+                    <span className="body-small text-nude-600">
+                      Ready for booking
+                    </span>
                   </div>
                 </div>
               </div>
@@ -94,16 +100,26 @@ export default function RoomDetailsPage() {
               <h3 className="heading-card mb-4">Information</h3>
               <div className="space-y-3">
                 <div>
-                  <span className="body-small font-medium text-nude-800">Room ID:</span>
+                  <span className="body-small font-medium text-nude-800">
+                    Room ID:
+                  </span>
                   <span className="body-small text-nude-600 ml-2">{id}</span>
                 </div>
                 <div>
-                  <span className="body-small font-medium text-nude-800">Status:</span>
-                  <span className="body-small text-semantic-success ml-2">Available</span>
+                  <span className="body-small font-medium text-nude-800">
+                    Status:
+                  </span>
+                  <span className="body-small text-semantic-success ml-2">
+                    Available
+                  </span>
                 </div>
                 <div>
-                  <span className="body-small font-medium text-nude-800">Type:</span>
-                  <span className="body-small text-nude-600 ml-2">Deluxe Suite</span>
+                  <span className="body-small font-medium text-nude-800">
+                    Type:
+                  </span>
+                  <span className="body-small text-nude-600 ml-2">
+                    Deluxe Suite
+                  </span>
                 </div>
               </div>
             </div>
@@ -113,15 +129,21 @@ export default function RoomDetailsPage() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="body-small text-nude-600">Capacity</span>
-                  <span className="body-small font-medium text-nude-800">4 guests</span>
+                  <span className="body-small font-medium text-nude-800">
+                    4 guests
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="body-small text-nude-600">Price</span>
-                  <span className="body-small font-medium text-nude-800">$500/night</span>
+                  <span className="body-small font-medium text-nude-800">
+                    $500/night
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="body-small text-nude-600">Rating</span>
-                  <span className="body-small font-medium text-semantic-success">4.8/5</span>
+                  <span className="body-small font-medium text-semantic-success">
+                    4.8/5
+                  </span>
                 </div>
               </div>
             </div>

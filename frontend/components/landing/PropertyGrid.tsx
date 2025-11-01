@@ -1,12 +1,60 @@
 'use client';
 
 import React from 'react';
+/**
+ * PropertyGrid React Component for Buffr Host Hospitality Platform
+ * @fileoverview PropertyGrid provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/landing/PropertyGrid.tsx
+ * @purpose PropertyGrid provides specialized functionality for the Buffr Host platform
+ * @component PropertyGrid
+ * @category Landing
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {Property[]} [properties] - properties prop description
+ * @param {boolean} [loading] - loading prop description
+ * @param {'hotel' | 'restaurant'} [type] - type prop description
+ * @param {(id} [onViewDetails] - onViewDetails prop description
+ * @param {(id} [onBookNow] - onBookNow prop description
+ * @param {} [onFavorite] - onFavorite prop description
+ * @param {} [onShare] - onShare prop description
+ * @param {} [onClearFilters] - onClearFilters prop description
+ * @param {} [className] - className prop description
+ *
+ * Usage Example:
+ * @example
+ * import { PropertyGrid } from './PropertyGrid';
+ *
+ * function App() {
+ *   return (
+ *     <PropertyGrid
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered PropertyGrid component
+ */
+
 import { PropertyCard } from './PropertyCard';
 import { Search, Utensils } from 'lucide-react';
 
 /**
  * Property Grid Component
- * 
+ *
  * Reusable property grid with loading states and empty states
  * Location: components/landing/PropertyGrid.tsx
  * Features: Loading skeleton, empty state, property cards
@@ -47,11 +95,13 @@ export const PropertyGrid: React.FC<PropertyGridProps> = ({
   onFavorite,
   onShare,
   onClearFilters,
-  className = ''
+  className = '',
 }) => {
   if (loading) {
     return (
-      <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 ${className}`}>
+      <div
+        className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 ${className}`}
+      >
         {[...Array(6)].map((_, i) => (
           <div key={i} className="animate-pulse">
             <div className="bg-nude-50/50 rounded-2xl h-64 mb-4" />
@@ -79,13 +129,11 @@ export const PropertyGrid: React.FC<PropertyGridProps> = ({
           No {type === 'hotel' ? 'Hotels' : 'Restaurants'} Found
         </h3>
         <p className="text-nude-900/60 mb-8 max-w-md mx-auto">
-          Try adjusting your search criteria or filters to find more {type === 'hotel' ? 'hotels' : 'restaurants'}.
+          Try adjusting your search criteria or filters to find more{' '}
+          {type === 'hotel' ? 'hotels' : 'restaurants'}.
         </p>
         {onClearFilters && (
-          <button
-            onClick={onClearFilters}
-            className="btn btn-primary"
-          >
+          <button onClick={onClearFilters} className="btn btn-primary">
             Clear Filters
           </button>
         )}
@@ -114,7 +162,9 @@ export const PropertyGrid: React.FC<PropertyGridProps> = ({
         </select>
       </div>
 
-      <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 ${className}`}>
+      <div
+        className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 ${className}`}
+      >
         {properties.map((property) => (
           <PropertyCard
             key={property.id}

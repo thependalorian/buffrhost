@@ -18,6 +18,64 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+/**
+ * AvailabilityCheckerModular React Component for Buffr Host Hospitality Platform
+ * @fileoverview AvailabilityCheckerModular provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/availability/AvailabilityChecker.tsx
+ * @purpose AvailabilityCheckerModular provides specialized functionality for the Buffr Host platform
+ * @component AvailabilityCheckerModular
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {string} [propertyId] - propertyId prop description
+ * @param {} [type] - type prop description
+ * @param {} [onAvailabilityChange] - onAvailabilityChange prop description
+ * @param {} [onError] - onError prop description
+ * @param {} [className] - className prop description
+ *
+ * State:
+ * @state {any} null - Component state for null management
+ * @state {any} null - Component state for null management
+ *
+ * Methods:
+ * @method handleTypeChange - handleTypeChange method for component functionality
+ * @method handleAvailabilityChange - handleAvailabilityChange method for component functionality
+ * @method handleError - handleError method for component functionality
+ * @method clearError - clearError method for component functionality
+ * @method handleRefresh - handleRefresh method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { AvailabilityCheckerModular } from './AvailabilityCheckerModular';
+ *
+ * function App() {
+ *   return (
+ *     <AvailabilityCheckerModular
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered AvailabilityCheckerModular component
+ */
+
 import {
   Card,
   CardContent,

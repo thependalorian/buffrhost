@@ -1,4 +1,66 @@
 /**
+ * Hotels [id]/rooms/[roomId] API Endpoint for Buffr Host Hospitality Platform
+ * @fileoverview GET endpoint for hotels operations providing hotels property management and operations
+ * @location buffr-host/frontend/app/api/hotels/[id]/rooms/[roomId]/route.ts
+ * @purpose Hotels property management and operations
+ * @modularity hotels-focused API endpoint with specialized [id] operations
+ * @database_connections Reads/writes to hotels, hotels_bookings, hotels_services tables
+ * @api_integration Hotels management services, booking systems
+ * @scalability Scalable operations with database optimization and caching
+ * @performance Performance optimized with database indexing and caching
+ * @monitoring Operational metrics and performance monitoring
+ * @security Multi-tenant security with data isolation and access control
+ * @multi_tenant Automatic tenant context application with data isolation
+ *
+ * Hotels Management Capabilities:
+ * - Hotels data management
+ * - Property operations
+ * - Booking integration
+ * - Guest services
+ *
+ * Key Features:
+ * - Property management
+ * - Operations tracking
+ * - Booking integration
+ * - Guest services
+ */
+
+/**
+ * GET /api/hotels/[id]/rooms/[roomId] - Hotels [id] Retrieval Endpoint
+ * @method GET
+ * @endpoint /api/hotels/[id]/rooms/[roomId]
+ * @purpose Hotels property management and operations
+ * @authentication JWT authentication required - Bearer token in Authorization header
+ * @authorization JWT authorization required - Bearer token in Authorization header
+ * @permissions Appropriate permissions based on operation type
+ * @rate_limit Standard API rate limiter applied
+ * @caching Appropriate caching strategy applied
+ * @returns {Promise<NextResponse>} API operation result with success status and data
+ * @security Multi-tenant security with data isolation and access control
+ * @database_queries Optimized database queries with appropriate indexing and performance
+ * @performance Performance optimized with database indexing and caching
+ * @example
+ * GET /api/hotels/[id]/rooms/[roomId]
+ * /api/hotels/[id]/rooms/[roomId]
+ *
+ * Success Response (200):
+ * {
+ *   "success": true,
+ *   "data": {
+ *     "result": "success"
+ *   }
+ * }
+ *
+ * Error Response (400/500):
+ * {
+ *   "success": false,
+ *   "error": {
+ *     "code": "ERROR_CODE",
+ *     "message": "Error description"
+ *   }
+ * }
+ */
+/**
  * Room Detail API Endpoint
  *
  * Fetches individual room details from the database

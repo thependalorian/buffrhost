@@ -1,9 +1,11 @@
 # 🏗️ **BUFFR HOST - SYSTEM ARCHITECTURE**
-*Production-Ready Multi-Tenant Hospitality Platform*
+
+_Production-Ready Multi-Tenant Hospitality Platform_
 
 ## 🎯 **ARCHITECTURE OVERVIEW**
 
 ### **System Design Principles**
+
 - **Microservices Architecture**: Scalable, maintainable service-oriented design
 - **Multi-Tenant**: Isolated data and configurations per property
 - **Type Safety**: End-to-end type safety from database to frontend
@@ -12,6 +14,7 @@
 - **Event-Driven**: Asynchronous processing and real-time updates
 
 ### **Technology Stack**
+
 - **Frontend**: Next.js 14, TypeScript, Tailwind CSS
 - **Backend**: FastAPI, Python 3.11+, SQLAlchemy
 - **Database**: PostgreSQL with Row-Level Security
@@ -26,6 +29,7 @@
 ## 🏛️ **SYSTEM ARCHITECTURE**
 
 ### **High-Level Architecture**
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        CLIENT LAYER                            │
@@ -72,6 +76,7 @@
 ### **Service Breakdown**
 
 #### **Core Business Services**
+
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Auth Service  │    │ Customer Service│    │ Property Service│
@@ -84,6 +89,7 @@
 ```
 
 #### **Operational Services**
+
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │ Booking Service │    │  Menu Service   │    │  Order Service  │
@@ -96,6 +102,7 @@
 ```
 
 #### **Support Services**
+
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │ Payment Service │    │Analytics Service│    │ ML/AI Service   │
@@ -110,11 +117,13 @@
 ### **Service Communication**
 
 #### **Synchronous Communication**
+
 - **HTTP/REST**: Direct service-to-service calls
 - **API Gateway**: Centralized routing and load balancing
 - **Service Discovery**: Consul for service registration
 
 #### **Asynchronous Communication**
+
 - **Message Queue**: Celery with Redis broker
 - **Event Streaming**: Apache Kafka for real-time events
 - **WebSockets**: Real-time updates to frontend
@@ -126,6 +135,7 @@
 ### **Database Design**
 
 #### **Primary Database (PostgreSQL)**
+
 ```sql
 -- Multi-tenant architecture with Row-Level Security
 CREATE TABLE properties (
@@ -146,6 +156,7 @@ CREATE POLICY property_access ON properties
 ```
 
 #### **Database Schema Structure**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    DATABASE SCHEMA                         │
@@ -160,11 +171,13 @@ CREATE POLICY property_access ON properties
 ```
 
 ### **Data Partitioning Strategy**
+
 - **Tenant-based Partitioning**: Data isolated by property/tenant
 - **Time-based Partitioning**: Historical data partitioned by date
 - **Geographic Partitioning**: Data partitioned by region
 
 ### **Caching Strategy**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    CACHING LAYER                           │
@@ -183,6 +196,7 @@ CREATE POLICY property_access ON properties
 ## 🤖 **AI/ML ARCHITECTURE**
 
 ### **ML Systems Overview**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    ML/AI SYSTEMS                           │
@@ -197,6 +211,7 @@ CREATE POLICY property_access ON properties
 ```
 
 ### **ML Pipeline Architecture**
+
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Data Ingestion│    │  Data Processing│    │  Model Training │
@@ -217,6 +232,7 @@ CREATE POLICY property_access ON properties
 ```
 
 ### **ML Model Management**
+
 - **Model Registry**: Centralized model storage and versioning
 - **Model Monitoring**: Real-time performance and drift detection
 - **A/B Testing**: Statistical testing framework
@@ -227,6 +243,7 @@ CREATE POLICY property_access ON properties
 ## 🔐 **SECURITY ARCHITECTURE**
 
 ### **Security Layers**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    SECURITY LAYERS                         │
@@ -242,6 +259,7 @@ CREATE POLICY property_access ON properties
 ```
 
 ### **Authentication & Authorization**
+
 - **JWT Tokens**: Stateless authentication
 - **OAuth2**: Third-party authentication
 - **RBAC**: Role-based access control
@@ -249,6 +267,7 @@ CREATE POLICY property_access ON properties
 - **Session Management**: Secure session handling
 
 ### **Data Protection**
+
 - **Encryption**: AES-256 encryption
 - **Key Management**: AWS KMS integration
 - **Data Masking**: PII protection
@@ -260,6 +279,7 @@ CREATE POLICY property_access ON properties
 ## 📊 **MONITORING & OBSERVABILITY**
 
 ### **Monitoring Stack**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                  MONITORING STACK                          │
@@ -274,12 +294,14 @@ CREATE POLICY property_access ON properties
 ```
 
 ### **Key Metrics**
+
 - **Application Metrics**: Response time, throughput, error rate
 - **Infrastructure Metrics**: CPU, memory, disk, network
 - **Business Metrics**: Revenue, bookings, customer satisfaction
 - **ML Metrics**: Model accuracy, prediction latency, drift
 
 ### **Alerting Strategy**
+
 - **Critical Alerts**: System down, data loss
 - **Warning Alerts**: Performance degradation, capacity issues
 - **Info Alerts**: Deployment notifications, maintenance windows
@@ -289,6 +311,7 @@ CREATE POLICY property_access ON properties
 ## 🚀 **DEPLOYMENT ARCHITECTURE**
 
 ### **Deployment Strategy**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                  DEPLOYMENT ARCHITECTURE                   │
@@ -303,12 +326,14 @@ CREATE POLICY property_access ON properties
 ```
 
 ### **Infrastructure as Code**
+
 - **Terraform**: Infrastructure provisioning
 - **Kubernetes**: Container orchestration
 - **Helm**: Package management
 - **GitOps**: Automated deployment
 
 ### **CI/CD Pipeline**
+
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Code Commit   │    │   Build & Test  │    │   Deploy        │
@@ -324,6 +349,7 @@ CREATE POLICY property_access ON properties
 ## 🔄 **DATA FLOW ARCHITECTURE**
 
 ### **Request Flow**
+
 ```
 Client Request → Load Balancer → API Gateway → Service → Database
      ↓              ↓              ↓           ↓         ↓
@@ -331,6 +357,7 @@ Response ←── JSON Response ←── Processing ←── Query ←── 
 ```
 
 ### **Event Flow**
+
 ```
 User Action → Service → Event Bus → Subscribers → Updates
      ↓          ↓         ↓           ↓           ↓
@@ -338,6 +365,7 @@ Database ←── Processing ←── Events ←── Services ←── Noti
 ```
 
 ### **ML Pipeline Flow**
+
 ```
 Data Source → Data Ingestion → Feature Engineering → Model Training
      ↓              ↓               ↓                    ↓
@@ -349,18 +377,21 @@ Prediction ←── Model Serving ←── Model Registry ←── Model Vali
 ## 📈 **SCALABILITY ARCHITECTURE**
 
 ### **Horizontal Scaling**
+
 - **Stateless Services**: Easy horizontal scaling
 - **Load Balancing**: Distribute traffic across instances
 - **Database Sharding**: Distribute data across multiple databases
 - **Caching**: Reduce database load
 
 ### **Vertical Scaling**
+
 - **Resource Optimization**: Efficient resource utilization
 - **Performance Tuning**: Database and application optimization
 - **Memory Management**: Efficient memory usage
 - **CPU Optimization**: Multi-threading and async processing
 
 ### **Auto-scaling Strategy**
+
 - **CPU-based**: Scale based on CPU utilization
 - **Memory-based**: Scale based on memory usage
 - **Custom Metrics**: Scale based on business metrics
@@ -371,6 +402,7 @@ Prediction ←── Model Serving ←── Model Registry ←── Model Vali
 ## 🔧 **DEVELOPMENT ARCHITECTURE**
 
 ### **Development Environment**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                DEVELOPMENT ENVIRONMENT                     │
@@ -385,6 +417,7 @@ Prediction ←── Model Serving ←── Model Registry ←── Model Vali
 ```
 
 ### **Code Organization**
+
 - **Monorepo**: Single repository for all services
 - **Shared Libraries**: Common utilities and types
 - **Service Templates**: Standardized service structure
@@ -395,6 +428,7 @@ Prediction ←── Model Serving ←── Model Registry ←── Model Vali
 ## 🎯 **PERFORMANCE ARCHITECTURE**
 
 ### **Performance Optimization**
+
 - **Caching Strategy**: Multi-layer caching
 - **Database Optimization**: Indexes, query optimization
 - **CDN**: Content delivery network
@@ -402,6 +436,7 @@ Prediction ←── Model Serving ←── Model Registry ←── Model Vali
 - **Minification**: JavaScript and CSS minification
 
 ### **Performance Monitoring**
+
 - **APM**: Application performance monitoring
 - **Database Monitoring**: Query performance tracking
 - **CDN Monitoring**: Cache hit rates
@@ -412,6 +447,7 @@ Prediction ←── Model Serving ←── Model Registry ←── Model Vali
 ## 🔮 **FUTURE ARCHITECTURE**
 
 ### **Planned Enhancements**
+
 - **GraphQL**: Unified API layer
 - **Event Sourcing**: Event-driven architecture
 - **CQRS**: Command Query Responsibility Segregation
@@ -419,6 +455,7 @@ Prediction ←── Model Serving ←── Model Registry ←── Model Vali
 - **Edge Computing**: Edge deployment for low latency
 
 ### **Technology Roadmap**
+
 - **Kubernetes**: Advanced orchestration features
 - **Service Mesh**: Istio for service communication
 - **Observability**: Advanced monitoring and tracing
@@ -430,6 +467,7 @@ Prediction ←── Model Serving ←── Model Registry ←── Model Vali
 ## 📚 **ARCHITECTURE DECISIONS**
 
 ### **Key Decisions**
+
 1. **Microservices over Monolith**: Better scalability and maintainability
 2. **PostgreSQL over NoSQL**: ACID compliance and complex queries
 3. **FastAPI over Django**: Better performance and type safety
@@ -437,6 +475,7 @@ Prediction ←── Model Serving ←── Model Registry ←── Model Vali
 5. **Docker over VMs**: Better resource utilization and portability
 
 ### **Trade-offs**
+
 - **Complexity vs Scalability**: Increased complexity for better scalability
 - **Consistency vs Availability**: Eventual consistency for high availability
 - **Performance vs Features**: Balanced approach to both
@@ -444,4 +483,4 @@ Prediction ←── Model Serving ←── Model Registry ←── Model Vali
 ---
 
 **Architecture Documentation v1.0**  
-*Last updated: October 10, 2025*
+_Last updated: October 10, 2025_

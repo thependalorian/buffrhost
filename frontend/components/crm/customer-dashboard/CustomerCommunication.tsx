@@ -17,6 +17,56 @@
 'use client';
 
 import React, { useState } from 'react';
+/**
+ * CustomerCommunication React Component for Buffr Host Hospitality Platform
+ * @fileoverview CustomerCommunication manages customer relationship and loyalty program interactions
+ * @location buffr-host/components/crm/customer-dashboard/CustomerCommunication.tsx
+ * @purpose CustomerCommunication manages customer relationship and loyalty program interactions
+ * @component CustomerCommunication
+ * @category Crm
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {CommunicationHistory[]} [communications] - communications prop description
+ * @param {string} [customerId] - customerId prop description
+ * @param {} [onSendMessage] - onSendMessage prop description
+ * @param {string} [content] - content prop description
+ * @param {} [subject] - subject prop description
+ *
+ * Methods:
+ * @method getCommunicationIcon - getCommunicationIcon method for component functionality
+ * @method getCommunicationTypeColor - getCommunicationTypeColor method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { CustomerCommunication } from './CustomerCommunication';
+ *
+ * function App() {
+ *   return (
+ *     <CustomerCommunication
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered CustomerCommunication component
+ */
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui';
 import { Button } from '@/components/ui';

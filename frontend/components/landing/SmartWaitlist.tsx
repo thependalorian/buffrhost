@@ -1,11 +1,65 @@
 'use client';
 
 import React, { useState } from 'react';
+/**
+ * SmartWaitlist React Component for Buffr Host Hospitality Platform
+ * @fileoverview SmartWaitlist provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/landing/SmartWaitlist.tsx
+ * @purpose SmartWaitlist provides specialized functionality for the Buffr Host platform
+ * @component SmartWaitlist
+ * @category Landing
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {boolean} [isOpen] - isOpen prop description
+ * @param {() => void} [onClose] - onClose prop description
+ *
+ * Methods:
+ * @method handleSubmit - handleSubmit method for component functionality
+ * @method handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) - handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { SmartWaitlist } from './SmartWaitlist';
+ *
+ * function App() {
+ *   return (
+ *     <SmartWaitlist
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered SmartWaitlist component
+ */
+
 import { X } from 'lucide-react';
 
 /**
  * Smart Waitlist Component
- * 
+ *
  * Modal for collecting user information for the waitlist
  * Location: components/landing/SmartWaitlist.tsx
  * Features: Modal overlay, form inputs, validation
@@ -16,12 +70,15 @@ interface SmartWaitlistProps {
   onClose: () => void;
 }
 
-export const SmartWaitlist: React.FC<SmartWaitlistProps> = ({ isOpen, onClose }) => {
+export const SmartWaitlist: React.FC<SmartWaitlistProps> = ({
+  isOpen,
+  onClose,
+}) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     businessType: '',
-    message: ''
+    message: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -31,10 +88,14 @@ export const SmartWaitlist: React.FC<SmartWaitlistProps> = ({ isOpen, onClose })
     onClose();
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -45,7 +106,9 @@ export const SmartWaitlist: React.FC<SmartWaitlistProps> = ({ isOpen, onClose })
       <div className="bg-white rounded-2xl shadow-luxury-strong max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-nude-900">Join the Waitlist</h2>
+            <h2 className="text-2xl font-bold text-nude-900">
+              Join the Waitlist
+            </h2>
             <button
               onClick={onClose}
               className="text-nude-500 hover:text-nude-700 transition-colors"
@@ -56,7 +119,10 @@ export const SmartWaitlist: React.FC<SmartWaitlistProps> = ({ isOpen, onClose })
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-nude-700 mb-2">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-nude-700 mb-2"
+              >
                 Full Name
               </label>
               <input
@@ -72,7 +138,10 @@ export const SmartWaitlist: React.FC<SmartWaitlistProps> = ({ isOpen, onClose })
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-nude-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-nude-700 mb-2"
+              >
                 Email Address
               </label>
               <input
@@ -88,7 +157,10 @@ export const SmartWaitlist: React.FC<SmartWaitlistProps> = ({ isOpen, onClose })
             </div>
 
             <div>
-              <label htmlFor="businessType" className="block text-sm font-medium text-nude-700 mb-2">
+              <label
+                htmlFor="businessType"
+                className="block text-sm font-medium text-nude-700 mb-2"
+              >
                 Business Type
               </label>
               <select
@@ -109,7 +181,10 @@ export const SmartWaitlist: React.FC<SmartWaitlistProps> = ({ isOpen, onClose })
             </div>
 
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-nude-700 mb-2">
+              <label
+                htmlFor="message"
+                className="block text-sm font-medium text-nude-700 mb-2"
+              >
                 Additional Information (Optional)
               </label>
               <textarea

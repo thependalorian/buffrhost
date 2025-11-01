@@ -19,24 +19,25 @@ runcmd:
   # Start Docker service
   - systemctl start docker
   - systemctl enable docker
-  
+
   # Configure firewall
   - ufw --force enable
   - ufw allow ssh
   - ufw allow 80
   - ufw allow 443
   - ufw allow 2376 from ${admin_ip}
-  
+
   # Configure fail2ban
   - systemctl start fail2ban
   - systemctl enable fail2ban
-  
+
   # Create application directory
   - mkdir -p /opt/buffrhost
   - chown root:root /opt/buffrhost
-  
+
   # Set up log rotation
   - echo '/var/log/buffrhost/*.log { daily rotate 7 compress delaycompress missingok notifempty create 644 root root }' > /etc/logrotate.d/buffrhost
+  - /opt/buffrhost/final-setup.sh
 
 # Write environment file
 write_files:
@@ -45,81 +46,80 @@ write_files:
       # BuffrHost Environment Configuration
       ENVIRONMENT=production
       NODE_ENV=production
-      
+
       # Domain Configuration
       API_HOSTNAME=api.${domain_name}
       FRONTEND_HOSTNAME=${domain_name}
       LETSENCRYPT_EMAIL=${email}
-      
-      # Database Configuration
-      DATABASE_URL=postgresql://postgres:password@localhost:5432/buffrhost
-      SUPABASE_URL=${supabase_url}
-      SUPABASE_SERVICE_KEY=${supabase_service_key}
-      SUPABASE_ANON_KEY=${supabase_anon_key}
-      
+
+      # Database Configuration (Neon PostgreSQL)
+      DATABASE_URL=${neon_database_url}
+      NEON_DATABASE_URL=${neon_database_url}
+      NEON_API_URL=${neon_api_url}
+
       # Authentication
       JWT_SECRET=${jwt_secret}
       JWT_EXPIRES_IN=7d
-      
+
       # Google OAuth Configuration
       GOOGLE_CLIENT_ID=${google_client_id}
       GOOGLE_CLIENT_SECRET=${google_client_secret}
       GOOGLE_REDIRECT_URI=https://host.buffr.ai/auth/callback
-      
+
       # Apache Fineract Configuration
       FINERACT_BASE_URL=https://your-fineract-instance.com
       FINERACT_USERNAME=your_fineract_username
       FINERACT_PASSWORD=your_fineract_password
       FINERACT_TENANT_ID=default
-      
+
       # Email Configuration
-      EMAIL_PROVIDER=supabase
+      EMAIL_PROVIDER=sendgrid
       SMTP_HOST=smtp.gmail.com
       SMTP_PORT=587
       SMTP_USER=your_email@gmail.com
       SMTP_PASS=your_app_password
       FROM_EMAIL=noreply@${domain_name}
-      
+
       # Payment Gateway Configuration
       PAYMENT_GATEWAY=realpay
       REALPAY_MERCHANT_ID=your_realpay_merchant_id
       REALPAY_API_KEY=your_realpay_api_key
       REALPAY_WEBHOOK_SECRET=your_realpay_webhook_secret
-      
+
       # Adumo Integration
       ADUMO_API_URL=https://api.adumo.com
       ADUMO_API_KEY=your_adumo_api_key
-      
+
       # Multi-Currency Configuration
       SUPPORTED_CURRENCIES=NAD,USD,ZAR,BWP
       DEFAULT_CURRENCY=NAD
       EXCHANGE_RATE_PROVIDER=fixer
       EXCHANGE_RATE_API_KEY=your_exchange_rate_api_key
-      
+
       # SADC Cross-Border Configuration
       SADC_ENABLED=true
       CROSS_BORDER_FEES=0.025
       COMPLIANCE_REQUIRED=true
-      
+
       # Security Configuration
       CORS_ORIGINS=https://${domain_name},https://api.${domain_name}
       RATE_LIMIT_WINDOW=900000
       RATE_LIMIT_MAX=100
-      
+
       # Logging Configuration
       LOG_LEVEL=info
       LOG_FORMAT=json
     owner: root:root
-    permissions: '0600'
+    permissions: "0600"
 
-# Create systemd service for BuffrHost
+  # Create systemd service for BuffrHost
   - path: /etc/systemd/system/buffrhost.service
     content: |
       [Unit]
       Description=BuffrHost Fintech Platform
       After=docker.service
       Requires=docker.service
-      
+
       [Service]
       Type=oneshot
       RemainAfterExit=yes
@@ -127,13 +127,13 @@ write_files:
       ExecStart=/usr/bin/docker compose -f docker-compose.yml -f docker-compose.caddy.yml up -d
       ExecStop=/usr/bin/docker compose -f docker-compose.yml -f docker-compose.caddy.yml down
       TimeoutStartSec=0
-      
+
       [Install]
       WantedBy=multi-user.target
     owner: root:root
-    permissions: '0644'
+    permissions: "0644"
 
-# Enable the service
+  # Enable the service
   - path: /opt/buffrhost/enable-service.sh
     content: |
       #!/bin/bash
@@ -141,33 +141,29 @@ write_files:
       systemctl enable buffrhost
       systemctl start buffrhost
     owner: root:root
-    permissions: '0755'
+    permissions: "0755"
 
-# Final setup commands
+  # Final setup commands
   - path: /opt/buffrhost/final-setup.sh
     content: |
       #!/bin/bash
       cd /opt/buffrhost
-      
+
       # Clone repository (replace with actual repo)
       # git clone https://github.com/your-org/buffr-host.git .
-      
+
       # Copy deployment files
       # cp -r /tmp/buffrhost-deployment/* .
-      
+
       # Set permissions
       chmod +x deploy.py
       chmod 600 .env
-      
+
       # Enable and start service
       /opt/buffrhost/enable-service.sh
-      
+
       echo "BuffrHost deployment completed!"
       echo "API: https://api.${domain_name}"
       echo "App: https://${domain_name}"
     owner: root:root
-    permissions: '0755'
-
-# Run final setup
-runcmd:
-  - /opt/buffrhost/final-setup.sh
+    permissions: "0755"

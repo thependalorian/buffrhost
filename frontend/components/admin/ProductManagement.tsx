@@ -6,6 +6,58 @@
 'use client';
 
 import React, { useState } from 'react';
+/**
+ * ProductManagement React Component for Buffr Host Hospitality Platform
+ * @fileoverview ProductManagement provides administrative interface and management capabilities
+ * @location buffr-host/components/admin/ProductManagement.tsx
+ * @purpose ProductManagement provides administrative interface and management capabilities
+ * @component ProductManagement
+ * @category Admin
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @database_connections Reads from relevant tables based on component functionality
+ * @api_integration RESTful API endpoints for data fetching and mutations
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState, useProducts, useDeleteDocument for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Interactive state management for dynamic user experiences
+ * - Real-time data integration with backend services
+ * - API-driven functionality with error handling and loading states
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * State:
+ * @state {any} null - Component state for null management
+ * @state {any} {
+    title: '' - Component state for {
+    title: '' management
+ *
+ * Methods:
+ * @method handleEdit - handleEdit method for component functionality
+ * @method formatPrice - formatPrice method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import ProductManagement from './ProductManagement';
+ *
+ * function App() {
+ *   return (
+ *     <ProductManagement
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered ProductManagement component
+ */
+
 import {
   BuffrCard,
   BuffrCardContent,

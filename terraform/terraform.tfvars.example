@@ -29,9 +29,8 @@ backend_env = {
   JWT_SECRET_KEY        = "your-jwt-secret-key"
   CORS_ORIGINS          = "https://app.theshandi.ai,https://www.app.theshandi.ai"
   ALLOWED_HOSTS         = "api.theshandi.ai"
-  SUPABASE_URL          = "https://your-project.supabase.co"
-  SUPABASE_ANON_KEY     = "your-supabase-anon-key"
-  SUPABASE_SERVICE_ROLE_KEY = "your-supabase-service-role-key"
+  NEON_DATABASE_URL    = "your-neon-database-url"
+  NEON_API_URL         = "your-neon-api-url"
   OPENAI_API_KEY        = "your-openai-api-key"
   GROQ_API_KEY          = "your-groq-api-key"
   TWILIO_ACCOUNT_SID    = "your-twilio-account-sid"
@@ -44,8 +43,8 @@ backend_env = {
 
 # Security Keys (sensitive)
 jwt_secret_key              = "your-jwt-secret-key"
-supabase_anon_key          = "your-supabase-anon-key"
-supabase_service_role_key  = "your-supabase-service-role-key"
+neon_database_url         = "your-neon-database-url"
+neon_api_url              = "your-neon-api-url"
 openai_api_key             = "your-openai-api-key"
 groq_api_key               = "your-groq-api-key"
 twilio_account_sid         = "your-twilio-account-sid"

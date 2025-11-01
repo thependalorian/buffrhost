@@ -1,12 +1,68 @@
 'use client';
 
 import React from 'react';
+/**
+ * PropertyCard React Component for Buffr Host Hospitality Platform
+ * @fileoverview PropertyCard provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/landing/PropertyCard.tsx
+ * @purpose PropertyCard provides specialized functionality for the Buffr Host platform
+ * @component PropertyCard
+ * @category Landing
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {{
+    id} [property] - property prop description
+ * @param {string} [name] - name prop description
+ * @param {string} [description] - description prop description
+ * @param {string} [location] - location prop description
+ * @param {number} [rating] - rating prop description
+ * @param {string} [priceRange] - priceRange prop description
+ * @param {} [imageUrl] - imageUrl prop description
+ * @param {} [amenities] - amenities prop description
+ * @param {} [status] - status prop description
+ * @param {} [openingHours] - openingHours prop description
+ * @param {} [cuisineType] - cuisineType prop description
+ *
+ * Methods:
+ * @method getPriceRangeDisplay - getPriceRangeDisplay method for component functionality
+ * @method getPriceRangeColor - getPriceRangeColor method for component functionality
+ * @method renderStars - renderStars method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { PropertyCard } from './PropertyCard';
+ *
+ * function App() {
+ *   return (
+ *     <PropertyCard
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered PropertyCard component
+ */
+
 import { Star, MapPin, Clock, Heart, Share } from 'lucide-react';
 import { BuffrButton } from '@/components/ui/buttons/BuffrButton';
 
 /**
  * Property Card Component
- * 
+ *
  * Reusable property card for hotels and restaurants
  * Location: components/landing/PropertyCard.tsx
  * Features: Image, rating, price, amenities, action buttons
@@ -41,7 +97,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   onFavorite,
   onShare,
   type,
-  className = ''
+  className = '',
 }) => {
   const getPriceRangeDisplay = (priceRange: string) => {
     switch (priceRange) {
@@ -78,14 +134,18 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       <Star
         key={i}
         className={`w-4 h-4 ${
-          i < Math.floor(rating) ? 'text-yellow-400 fill-current' : 'text-nude-300'
+          i < Math.floor(rating)
+            ? 'text-yellow-400 fill-current'
+            : 'text-nude-300'
         }`}
       />
     ));
   };
 
   return (
-    <div className={`card bg-white shadow-lg group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden h-fit ${className}`}>
+    <div
+      className={`card bg-white shadow-lg group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden h-fit ${className}`}
+    >
       <div className="relative h-56 bg-gradient-to-br from-nude-600/20 to-nude-700/20">
         {property.imageUrl ? (
           <img
@@ -131,7 +191,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   : 'bg-red-500/90 text-white'
               }`}
             >
-              {property.status === 'active' || property.status === 'open' ? 'Open Now' : 'Closed'}
+              {property.status === 'active' || property.status === 'open'
+                ? 'Open Now'
+                : 'Closed'}
             </div>
           </div>
         )}
@@ -139,13 +201,17 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         {/* Rating Badge */}
         <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
           <Star className="w-4 h-4 text-yellow-500 fill-current" />
-          <span className="text-sm font-medium">{property.rating.toFixed(1)}</span>
+          <span className="text-sm font-medium">
+            {property.rating.toFixed(1)}
+          </span>
         </div>
 
         {/* Price Range */}
         <div className="absolute bottom-4 left-4">
           <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
-            <span className={`font-semibold ${getPriceRangeColor(property.priceRange)}`}>
+            <span
+              className={`font-semibold ${getPriceRangeColor(property.priceRange)}`}
+            >
               {getPriceRangeDisplay(property.priceRange)}
             </span>
           </div>

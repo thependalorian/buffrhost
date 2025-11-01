@@ -15,6 +15,49 @@
 
 import * as React from 'react';
 
+/**
+ * HospitalityIcon React Component for Buffr Host Hospitality Platform
+ * @fileoverview HospitalityIcon provides reusable UI component for consistent design
+ * @location buffr-host/components/ui/icons/HospitalityIcons.tsx
+ * @purpose HospitalityIcon provides reusable UI component for consistent design
+ * @component HospitalityIcon
+ * @category Ui
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {HospitalityIconName} [name] - name prop description
+ * @param {} [size] - size prop description
+ * @param {} [className] - className prop description
+ * @param {} [color] - color prop description
+ *
+ * Usage Example:
+ * @example
+ * import { HospitalityIcon } from './HospitalityIcon';
+ *
+ * function App() {
+ *   return (
+ *     <HospitalityIcon
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered HospitalityIcon component
+ */
+
 export type HospitalityIconName =
   | 'bed'
   | 'hotel'

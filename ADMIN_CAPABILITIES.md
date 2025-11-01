@@ -7,6 +7,7 @@ Buffr Host implements a comprehensive two-tier administrative system with distin
 ## 👑 **SUPER ADMIN CAPABILITIES**
 
 ### **System-Wide Control**
+
 - **Multi-Tenant Management**: Full access to all tenants, billing, and usage analytics
 - **User Management**: Create, modify, suspend, and delete users across all tenants
 - **System Configuration**: Global system settings, feature flags, and maintenance controls
@@ -14,6 +15,7 @@ Buffr Host implements a comprehensive two-tier administrative system with distin
 - **Infrastructure Control**: Server health, database management, and system maintenance
 
 ### **Permission Matrix (100+ Permissions)**
+
 ```
 System Management:
 ├── users:* (Full user management)
@@ -39,18 +41,21 @@ AI/Automation:
 ```
 
 ### **System Health Monitoring**
+
 - **Real-time Metrics**: Server status, database connections, cache performance
 - **Performance Analytics**: Response times, error rates, system load
 - **Health Alerts**: Automated monitoring with severity-based notifications
 - **Infrastructure Status**: CPU, memory, disk usage, and network metrics
 
 ### **Multi-Tenant Management**
+
 - **Tenant Overview**: Active tenants, usage statistics, billing status
 - **Tenant Administration**: Create, modify, suspend, and delete tenants
 - **Usage Analytics**: Resource consumption, user activity, performance metrics
 - **Billing Management**: Subscription plans, payment processing, revenue tracking
 
 ### **Manual Override Capabilities**
+
 - **Pricing Overrides**: Manual pricing adjustments
 - **Availability Overrides**: Room availability forced changes
 - **Booking Overrides**: Booking rules bypass (min stay, advance booking)
@@ -63,6 +68,7 @@ AI/Automation:
 ## 🏢 **ADMIN CAPABILITIES (Tenant-Level)**
 
 ### **Tenant-Specific Control**
+
 - **User Management**: Manage users within own tenant only
 - **Property Management**: Full property, room, and amenity management
 - **Booking Management**: Complete booking and reservation control
@@ -71,6 +77,7 @@ AI/Automation:
 - **Analytics Access**: Tenant-specific analytics and reporting
 
 ### **Permission Matrix (80+ Permissions)**
+
 ```
 User Management (Limited):
 ├── users:read (View users)
@@ -104,6 +111,7 @@ Analytics (Full):
 ```
 
 ### **Restricted Capabilities**
+
 - **No System-Wide Access**: Cannot modify global system settings
 - **No Multi-Tenant Access**: Limited to own tenant only
 - **No Infrastructure Control**: Cannot access server health or system maintenance
@@ -113,6 +121,7 @@ Analytics (Full):
 ## 🛠️ **ADMIN DASHBOARD FEATURES**
 
 ### **Super Admin Dashboard**
+
 - **System Overview**: Real-time system health, metrics, and status
 - **Multi-Tenant Dashboard**: Tenant management, usage analytics, billing
 - **User Management**: Cross-tenant user administration
@@ -121,6 +130,7 @@ Analytics (Full):
 - **Quick Actions**: System maintenance, cache control, feature flags
 
 ### **Admin Dashboard (Tenant-Level)**
+
 - **Tenant Overview**: Property metrics, user activity, revenue
 - **User Management**: Tenant-specific user administration
 - **Property Management**: Room management, availability, pricing
@@ -131,6 +141,7 @@ Analytics (Full):
 ## 🔧 **MANUAL OVERRIDE SYSTEM**
 
 ### **Override Types**
+
 1. **Pricing Overrides**
    - Dynamic pricing manual adjustments
    - Room rate modifications
@@ -180,6 +191,7 @@ Analytics (Full):
    - Performance optimizations
 
 ### **Override Procedures**
+
 1. **Authorization**: Verify admin permissions for override type
 2. **Documentation**: Record reason, impact, and duration
 3. **Implementation**: Apply override with audit trail
@@ -190,6 +202,7 @@ Analytics (Full):
 ## 📊 **ANALYTICS & REPORTING**
 
 ### **System Analytics (Super Admin)**
+
 - **Infrastructure Metrics**: Server performance, database health, cache efficiency
 - **Usage Analytics**: API usage, user activity, system load
 - **Financial Analytics**: Revenue tracking, billing analytics, cost analysis
@@ -197,6 +210,7 @@ Analytics (Full):
 - **Multi-Tenant Analytics**: Cross-tenant usage, performance comparison
 
 ### **Tenant Analytics (Admin)**
+
 - **Property Analytics**: Occupancy rates, revenue per room, guest satisfaction
 - **User Analytics**: User activity, role distribution, login patterns
 - **Booking Analytics**: Reservation trends, cancellation rates, revenue analysis
@@ -204,6 +218,7 @@ Analytics (Full):
 - **Guest Analytics**: Guest behavior, preferences, loyalty metrics
 
 ### **Report Generation**
+
 - **Automated Reports**: Scheduled report generation and distribution
 - **Custom Reports**: Configurable report creation with filters
 - **Export Formats**: CSV, Excel, PDF, JSON export options
@@ -213,6 +228,7 @@ Analytics (Full):
 ## 🔒 **SECURITY & COMPLIANCE**
 
 ### **Access Control**
+
 - **Role-Based Permissions**: Granular permission system with 73+ permissions
 - **Tenant Isolation**: Complete data isolation between tenants
 - **Session Management**: Active session monitoring and control
@@ -220,6 +236,7 @@ Analytics (Full):
 - **Multi-Factor Authentication**: Enhanced security for admin accounts
 
 ### **Audit & Compliance**
+
 - **Complete Audit Trail**: All admin actions logged with full context
 - **Compliance Reporting**: GDPR, SOX, and industry compliance reports
 - **Security Monitoring**: Real-time security event detection
@@ -227,6 +244,7 @@ Analytics (Full):
 - **Backup & Recovery**: Automated backup and disaster recovery
 
 ### **Monitoring & Alerts**
+
 - **System Health**: Real-time system health monitoring
 - **Performance Alerts**: Automated performance threshold alerts
 - **Security Alerts**: Security event notifications
@@ -236,6 +254,7 @@ Analytics (Full):
 ## 🚀 **SYSTEM CONTROL FEATURES**
 
 ### **Feature Flag Management**
+
 - **Global Feature Flags**: System-wide feature toggles
 - **Tenant-Specific Flags**: Per-tenant feature control
 - **A/B Testing**: Statistical testing framework
@@ -243,18 +262,21 @@ Analytics (Full):
 - **Emergency Toggles**: Quick feature disable capabilities
 
 ### **Cache Management**
+
 - **Cache Control**: Manual cache clearing and invalidation
 - **Performance Tuning**: Cache optimization and monitoring
 - **Distributed Caching**: Multi-tier cache management
 - **Cache Analytics**: Hit rates, miss rates, and performance metrics
 
 ### **System Maintenance**
+
 - **Maintenance Mode**: System-wide maintenance control
 - **Database Maintenance**: Automated database optimization
 - **Backup Management**: Automated backup scheduling and management
 - **Update Management**: System update deployment and rollback
 
 ### **Monitoring & Diagnostics**
+
 - **Health Checks**: Automated system health monitoring
 - **Performance Metrics**: Real-time performance tracking
 - **Error Tracking**: Comprehensive error logging and analysis
@@ -263,18 +285,21 @@ Analytics (Full):
 ## 📈 **PERFORMANCE & SCALABILITY**
 
 ### **System Performance**
+
 - **Response Time Monitoring**: API response time tracking
 - **Throughput Analytics**: Request processing capacity
 - **Error Rate Tracking**: System reliability metrics
 - **Resource Utilization**: Server resource usage optimization
 
 ### **Scalability Features**
+
 - **Auto-Scaling**: Automatic resource scaling based on demand
 - **Load Balancing**: Distributed request processing
 - **Database Optimization**: Query optimization and indexing
 - **Caching Strategy**: Multi-tier caching for performance
 
 ### **Capacity Planning**
+
 - **Usage Forecasting**: Predictive capacity planning
 - **Resource Allocation**: Optimal resource distribution
 - **Performance Optimization**: Continuous performance improvement
@@ -283,6 +308,7 @@ Analytics (Full):
 ## 🔄 **INTEGRATION CAPABILITIES**
 
 ### **Third-Party Integrations**
+
 - **Payment Gateways**: Multiple payment processor support
 - **Analytics Platforms**: Google Analytics, Mixpanel integration
 - **Communication Services**: Email, SMS, push notification services
@@ -290,6 +316,7 @@ Analytics (Full):
 - **Accounting Systems**: QuickBooks, Xero integration
 
 ### **API Management**
+
 - **RESTful APIs**: Complete REST API coverage
 - **GraphQL Support**: Advanced query capabilities
 - **Webhook Integration**: Real-time event notifications
@@ -299,6 +326,7 @@ Analytics (Full):
 ## 📋 **ADMIN WORKFLOWS**
 
 ### **User Onboarding**
+
 1. **Account Creation**: Admin creates user account
 2. **Role Assignment**: Appropriate role and permissions assigned
 3. **Tenant Association**: User linked to correct tenant
@@ -306,6 +334,7 @@ Analytics (Full):
 5. **Training Resources**: Access to training materials and documentation
 
 ### **Tenant Management**
+
 1. **Tenant Creation**: New tenant setup and configuration
 2. **Service Provisioning**: Required services and features enabled
 3. **User Migration**: Existing users transferred to new tenant
@@ -313,6 +342,7 @@ Analytics (Full):
 5. **Go-Live**: Tenant activation and monitoring
 
 ### **System Maintenance**
+
 1. **Maintenance Planning**: Scheduled maintenance windows
 2. **User Notification**: Advance notice to affected users
 3. **System Shutdown**: Graceful system shutdown procedures
@@ -322,6 +352,7 @@ Analytics (Full):
 ## 🎯 **BEST PRACTICES**
 
 ### **Security Best Practices**
+
 - **Principle of Least Privilege**: Minimum required permissions
 - **Regular Access Reviews**: Periodic permission audits
 - **Strong Authentication**: Multi-factor authentication enforcement
@@ -329,6 +360,7 @@ Analytics (Full):
 - **Audit Logging**: Comprehensive activity logging
 
 ### **Operational Best Practices**
+
 - **Change Management**: Controlled change implementation
 - **Backup Procedures**: Regular backup and recovery testing
 - **Monitoring**: Proactive system monitoring and alerting
@@ -336,6 +368,7 @@ Analytics (Full):
 - **Training**: Regular admin training and updates
 
 ### **Compliance Best Practices**
+
 - **Data Protection**: GDPR and privacy compliance
 - **Audit Trails**: Complete audit trail maintenance
 - **Access Controls**: Role-based access control implementation
@@ -345,6 +378,7 @@ Analytics (Full):
 ## 📚 **ADMIN TRAINING & SUPPORT**
 
 ### **Training Resources**
+
 - **Admin Guides**: Comprehensive admin documentation
 - **Video Tutorials**: Step-by-step admin procedures
 - **Best Practices**: Industry best practices and recommendations
@@ -352,6 +386,7 @@ Analytics (Full):
 - **Updates**: Regular system updates and new features
 
 ### **Support Channels**
+
 - **Documentation**: Comprehensive online documentation
 - **Help Desk**: Technical support and assistance
 - **Community Forum**: Admin community and knowledge sharing

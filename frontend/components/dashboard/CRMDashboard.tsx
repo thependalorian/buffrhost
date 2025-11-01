@@ -1,6 +1,71 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+/**
+ * CRMDashboard React Component for Buffr Host Hospitality Platform
+ * @fileoverview CRMDashboard displays comprehensive dashboard with key metrics and analytics
+ * @location buffr-host/components/dashboard/CRMDashboard.tsx
+ * @purpose CRMDashboard displays comprehensive dashboard with key metrics and analytics
+ * @component CRMDashboard
+ * @category Dashboard
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @database_connections Reads from relevant tables based on component functionality
+ * @api_integration RESTful API endpoints for data fetching and mutations
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState, useEffect for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Real-time data integration with backend services
+ * - API-driven functionality with error handling and loading states
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {User} [user] - user prop description
+ *
+ * State:
+ * @state {any} [] - Component state for [] management
+ * @state {any} [] - Component state for [] management
+ * @state {any} [] - Component state for [] management
+ * @state {any} [] - Component state for [] management
+ * @state {any} [] - Component state for [] management
+ * @state {any} [] - Component state for [] management
+ *
+ * Methods:
+ * @method CRMDashboard - CRMDashboard method for component functionality
+ * @method MetricCard - MetricCard method for component functionality
+ * @method CustomerCard - CustomerCard method for component functionality
+ * @method CRMPropertyCard - CRMPropertyCard method for component functionality
+ * @method CampaignCard - CampaignCard method for component functionality
+ * @method CRMAnalyticsCard - CRMAnalyticsCard method for component functionality
+ * @method EventCard - EventCard method for component functionality
+ * @method WorkflowCard - WorkflowCard method for component functionality
+ * @method formatDate - formatDate method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { CRMDashboard } from './CRMDashboard';
+ *
+ * function App() {
+ *   return (
+ *     <CRMDashboard
+ *       prop1="value"
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered CRMDashboard component
+ */
+
 import type { User } from '@/payload-types';
 
 interface CRMDashboardProps {

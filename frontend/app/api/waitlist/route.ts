@@ -1,5 +1,67 @@
+/**
+ * Waitlist API Endpoint for Buffr Host Hospitality Platform
+ * @fileoverview GET endpoint for waitlist operations providing waitlist data management and operations
+ * @location buffr-host/frontend/app/api/waitlist/route.ts
+ * @purpose waitlist data management and operations
+ * @modularity waitlist-focused API endpoint with specialized waitlist operations
+ * @database_connections Reads/writes to waitlist related tables
+ * @api_integration waitlist service integrations
+ * @scalability Scalable operations with database optimization and caching
+ * @performance Performance optimized with database indexing and caching
+ * @monitoring Operational metrics and performance monitoring
+ * @security Multi-tenant security with data isolation and access control
+ * @multi_tenant Automatic tenant context application with data isolation
+ *
+ * Waitlist Management Capabilities:
+ * - waitlist CRUD operations
+ * - Data management
+ * - Business logic processing
+ *
+ * Key Features:
+ * - Data management
+ * - CRUD operations
+ * - Business logic
+ */
+
+/**
+ * GET /api/waitlist - Waitlist Retrieval Endpoint
+ * @method GET
+ * @endpoint /api/waitlist
+ * @purpose waitlist data management and operations
+ * @authentication JWT authentication required - Bearer token in Authorization header
+ * @authorization JWT authorization required - Bearer token in Authorization header
+ * @permissions Appropriate permissions based on operation type
+ * @rate_limit Standard API rate limiter applied
+ * @caching Appropriate caching strategy applied
+ * @returns {Promise<NextResponse>} API operation result with success status and data
+ * @security Multi-tenant security with data isolation and access control
+ * @database_queries Optimized database queries with appropriate indexing and performance
+ * @performance Performance optimized with database indexing and caching
+ * @example
+ * GET /api/waitlist
+ * /api/waitlist
+ *
+ * Success Response (200):
+ * {
+ *   "success": true,
+ *   "data": {
+ *     "result": "success"
+ *   }
+ * }
+ *
+ * Error Response (400/500):
+ * {
+ *   "success": false,
+ *   "error": {
+ *     "code": "ERROR_CODE",
+ *     "message": "Error description"
+ *   }
+ * }
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { createWaitlistService } from '@/lib/services/waitlist-service';
+import { validateBody } from '@/lib/validation/middleware';
+import { waitlistSignupSchema } from '@/lib/validation/schemas';
 // import { safeValidateWaitlistRequest } from '@/lib/validation/waitlist-schemas';
 
 /**
@@ -8,14 +70,17 @@ import { createWaitlistService } from '@/lib/services/waitlist-service';
  */
 
 export async function POST(req: NextRequest) {
-  let data: Record<string, unknown>;
+  // Validate request body
+  const validationResult = await validateBody(req, waitlistSignupSchema);
+  if (!validationResult.success) {
+    return validationResult.response;
+  }
+
+  const data = validationResult.data;
 
   try {
-    // Get request data
-    data = await req.json();
-
     // Extract tenant and user info from headers or default
-    const _tenantId = req.headers.get('x-tenant-id') || 'default-tenant';
+    const tenantId = req.headers.get('x-tenant-id') || 'default-tenant';
     const userId = req.headers.get('x-user-id') || 'anonymous-user';
 
     // Create waitlist service

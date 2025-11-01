@@ -18,6 +18,63 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * SegmentList React Component for Buffr Host Hospitality Platform
+ * @fileoverview SegmentList manages customer relationship and loyalty program interactions
+ * @location buffr-host/components/crm/customer-segmentation/SegmentList.tsx
+ * @purpose SegmentList manages customer relationship and loyalty program interactions
+ * @component SegmentList
+ * @category Crm
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {CustomerSegment[]} [segments] - segments prop description
+ * @param {() => void} [onSegmentCreate] - onSegmentCreate prop description
+ * @param {(segment} [onSegmentEdit] - onSegmentEdit prop description
+ * @param {(segmentId} [onSegmentDelete] - onSegmentDelete prop description
+ * @param {(segment} [onSegmentView] - onSegmentView prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * State:
+ * @state {any} 'all' - Component state for 'all' management
+ * @state {any} 'createdAt' - Component state for 'createdat' management
+ * @state {any} 'desc' - Component state for 'desc' management
+ *
+ * Methods:
+ * @method getSegmentColor - getSegmentColor method for component functionality
+ * @method formatDate - formatDate method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { SegmentList } from './SegmentList';
+ *
+ * function App() {
+ *   return (
+ *     <SegmentList
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered SegmentList component
+ */
+
 import {
   Card,
   CardContent,

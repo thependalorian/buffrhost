@@ -18,6 +18,57 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * OrderConfirmation React Component for Buffr Host Hospitality Platform
+ * @fileoverview OrderConfirmation provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/checkout/OrderConfirmation.tsx
+ * @purpose OrderConfirmation provides specialized functionality for the Buffr Host platform
+ * @component OrderConfirmation
+ * @category Checkout
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {OrderConfirmation} [confirmation] - confirmation prop description
+ * @param {() => void} [onDownloadReceipt] - onDownloadReceipt prop description
+ * @param {() => void} [onShareOrder] - onShareOrder prop description
+ * @param {() => void} [onContactSupport] - onContactSupport prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * Methods:
+ * @method formatCurrency - formatCurrency method for component functionality
+ * @method formatDate - formatDate method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ * @method getPaymentStatusColor - getPaymentStatusColor method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { OrderConfirmation } from './OrderConfirmation';
+ *
+ * function App() {
+ *   return (
+ *     <OrderConfirmation
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered OrderConfirmation component
+ */
+
 import {
   Card,
   CardContent,

@@ -1,4 +1,63 @@
 'use client';
+/**
+ * RoleManager React Component for Buffr Host Hospitality Platform
+ * @fileoverview RoleManager provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/rbac/RoleManager.tsx
+ * @purpose RoleManager provides specialized functionality for the Buffr Host platform
+ * @component RoleManager
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @database_connections Reads from relevant tables based on component functionality
+ * @api_integration RESTful API endpoints for data fetching and mutations
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization usePermissions, useRoles, useState, useCallback, useEffect for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Real-time data integration with backend services
+ * - API-driven functionality with error handling and loading states
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {} [propertyId] - propertyId prop description
+ * @param {} [tenantId] - tenantId prop description
+ *
+ * State:
+ * @state {any} [] - Component state for [] management
+ * @state {any} null - Component state for null management
+ * @state {any} UserRole.GUEST - Component state for userrole.guest management
+ * @state {any} [] - Component state for [] management
+ * @state {any} null - Component state for null management
+ * @state {any} null - Component state for null management
+ *
+ * Methods:
+ * @method handlePermissionToggle - handlePermissionToggle method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { RoleManager } from './RoleManager';
+ *
+ * function App() {
+ *   return (
+ *     <RoleManager
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered RoleManager component
+ */
+
 import {
   BuffrIcon,
   BuffrCard,

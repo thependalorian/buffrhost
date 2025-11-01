@@ -11,7 +11,15 @@
  * @framework Buffr Host Framework
  */
 
-import { Property, HotelDetails, RestaurantDetails, RoomType, RestaurantTable, Order, Booking } from '../../../lib/types/database';
+import {
+  Property,
+  HotelDetails,
+  RestaurantDetails,
+  RoomType,
+  RestaurantTable,
+  Order,
+  Booking,
+} from '../../../lib/types/database';
 
 /**
  * Property Hub Property Interface

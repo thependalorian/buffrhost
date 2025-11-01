@@ -1,8 +1,16 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useParams } from "next/navigation";
-import { ArrowLeft, Home, Calendar, Users, Utensils, Sparkles, Settings } from "lucide-react";
+import React from 'react';
+import { useParams } from 'next/navigation';
+import {
+  ArrowLeft,
+  Home,
+  Calendar,
+  Users,
+  Utensils,
+  Sparkles,
+  Settings,
+} from 'lucide-react';
 
 export default function HotelDashboardPage() {
   const params = useParams();
@@ -34,19 +42,19 @@ export default function HotelDashboardPage() {
             <div className="text-3xl font-bold text-nude-800 mb-2">45</div>
             <div className="text-sm text-nude-600">Total Rooms</div>
           </div>
-          
+
           <div className="card-default">
             <h3 className="heading-card mb-3">Bookings</h3>
             <div className="text-3xl font-bold text-nude-800 mb-2">23</div>
             <div className="text-sm text-nude-600">Today</div>
           </div>
-          
+
           <div className="card-default">
             <h3 className="heading-card mb-3">Guests</h3>
             <div className="text-3xl font-bold text-nude-800 mb-2">67</div>
             <div className="text-sm text-nude-600">Checked In</div>
           </div>
-          
+
           <div className="card-default">
             <h3 className="heading-card mb-3">Revenue</h3>
             <div className="text-3xl font-bold text-nude-800 mb-2">$12.5k</div>
@@ -59,22 +67,34 @@ export default function HotelDashboardPage() {
           <div className="card-default card-interactive">
             <Home className="h-8 w-8 text-luxury-charlotte mb-4" />
             <h3 className="heading-card mb-2">Rooms & Accommodation</h3>
-            <p className="body-regular text-nude-600 mb-4">Manage room inventory, availability, and maintenance</p>
-            <button className="btn-emotional-primary w-full">Manage Rooms</button>
+            <p className="body-regular text-nude-600 mb-4">
+              Manage room inventory, availability, and maintenance
+            </p>
+            <button className="btn-emotional-primary w-full">
+              Manage Rooms
+            </button>
           </div>
-          
+
           <div className="card-default card-interactive">
             <Calendar className="h-8 w-8 text-luxury-charlotte mb-4" />
             <h3 className="heading-card mb-2">Bookings & Reservations</h3>
-            <p className="body-regular text-nude-600 mb-4">View and manage guest reservations</p>
-            <button className="btn-emotional-primary w-full">View Bookings</button>
+            <p className="body-regular text-nude-600 mb-4">
+              View and manage guest reservations
+            </p>
+            <button className="btn-emotional-primary w-full">
+              View Bookings
+            </button>
           </div>
-          
+
           <div className="card-default card-interactive">
             <Users className="h-8 w-8 text-luxury-charlotte mb-4" />
             <h3 className="heading-card mb-2">Guests</h3>
-            <p className="body-regular text-nude-600 mb-4">Guest profiles and preferences</p>
-            <button className="btn-emotional-primary w-full">Manage Guests</button>
+            <p className="body-regular text-nude-600 mb-4">
+              Guest profiles and preferences
+            </p>
+            <button className="btn-emotional-primary w-full">
+              Manage Guests
+            </button>
           </div>
         </div>
 
@@ -85,22 +105,34 @@ export default function HotelDashboardPage() {
             <div className="card-default card-interactive">
               <Utensils className="h-8 w-8 text-luxury-charlotte mb-4" />
               <h3 className="heading-card mb-2">Main Restaurant</h3>
-              <p className="body-regular text-nude-600 mb-4">Fine dining restaurant</p>
-              <button className="btn-emotional-secondary w-full">Manage Restaurant</button>
+              <p className="body-regular text-nude-600 mb-4">
+                Fine dining restaurant
+              </p>
+              <button className="btn-emotional-secondary w-full">
+                Manage Restaurant
+              </button>
             </div>
-            
+
             <div className="card-default card-interactive">
               <Utensils className="h-8 w-8 text-luxury-charlotte mb-4" />
               <h3 className="heading-card mb-2">Pool Bar & Grill</h3>
-              <p className="body-regular text-nude-600 mb-4">Casual dining by the pool</p>
-              <button className="btn-emotional-secondary w-full">Manage Restaurant</button>
+              <p className="body-regular text-nude-600 mb-4">
+                Casual dining by the pool
+              </p>
+              <button className="btn-emotional-secondary w-full">
+                Manage Restaurant
+              </button>
             </div>
-            
+
             <div className="card-default card-interactive">
               <Sparkles className="h-8 w-8 text-luxury-charlotte mb-4" />
               <h3 className="heading-card mb-2">Spa & Wellness</h3>
-              <p className="body-regular text-nude-600 mb-4">Spa services and treatments</p>
-              <button className="btn-emotional-secondary w-full">Manage Spa</button>
+              <p className="body-regular text-nude-600 mb-4">
+                Spa services and treatments
+              </p>
+              <button className="btn-emotional-secondary w-full">
+                Manage Spa
+              </button>
             </div>
           </div>
         </div>
@@ -130,15 +162,21 @@ export default function HotelDashboardPage() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-luxury-charlotte rounded-full"></div>
-                <span className="body-small text-nude-600">New booking received</span>
+                <span className="body-small text-nude-600">
+                  New booking received
+                </span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-nude-400 rounded-full"></div>
-                <span className="body-small text-nude-600">Room service order</span>
+                <span className="body-small text-nude-600">
+                  Room service order
+                </span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-semantic-success rounded-full"></div>
-                <span className="body-small text-nude-600">Guest checked in</span>
+                <span className="body-small text-nude-600">
+                  Guest checked in
+                </span>
               </div>
             </div>
           </div>

@@ -1,12 +1,10 @@
-const React = require('react');
-
-const NextImage = ({ src, alt, ...props }) => {
-  return React.createElement('img', { src, alt, ...props });
+const Image = ({ src, alt, ...props }) => {
+  // eslint-disable-next-line @next/next/no-img-element
+  return React.createElement('img', {
+    src,
+    alt,
+    ...props,
+  });
 };
 
-NextImage.defaultProps = {
-  src: '',
-  alt: '',
-};
-
-module.exports = NextImage;
+module.exports = Image;

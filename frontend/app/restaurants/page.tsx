@@ -9,18 +9,21 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
+import {
   Navigation,
   Footer,
-  BottomCTA, 
+  BottomCTA,
   SmartWaitlist,
   PropertySearchHero,
   PropertyFilters,
   PropertyGrid,
-  SofiaAIAssistant
+  SofiaAIAssistant,
 } from '@/components/landing';
 import { PropertySearchLayout } from '@/components/layout';
-import { getRestaurants, PropertyFilters as ApiPropertyFilters } from '@/lib/api/properties-api';
+import {
+  getRestaurants,
+  PropertyFilters as ApiPropertyFilters,
+} from '@/lib/api/properties-api';
 import { Property } from '@/lib/types/database';
 import { BuffrButton } from '@/components/ui/buttons/BuffrButton';
 
@@ -59,7 +62,7 @@ export default function RestaurantsPage() {
   });
 
   const handleFilterChange = (key: string, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleViewDetails = (id: string) => {
@@ -108,23 +111,35 @@ export default function RestaurantsPage() {
     return () => clearTimeout(timeoutId);
   }, [searchQuery, filters.location]);
 
-  const transformPropertyToRestaurant = (property: Property): RestaurantDisplay => {
+  const transformPropertyToRestaurant = (
+    property: Property
+  ): RestaurantDisplay => {
     // Get first image URL or use placeholder
-    const imageUrl = property.images && typeof property.images === 'object' && 'url' in property.images 
-      ? (property.images as any).url 
-      : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+    const imageUrl =
+      property.images &&
+      typeof property.images === 'object' &&
+      'url' in property.images
+        ? (property.images as any).url
+        : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
 
     // Extract amenities from property amenities
-    const features = property.amenities && typeof property.amenities === 'object' 
-      ? Object.keys(property.amenities).filter(key => (property.amenities as any)[key] === true)
-      : [];
+    const features =
+      property.amenities && typeof property.amenities === 'object'
+        ? Object.keys(property.amenities).filter(
+            (key) => (property.amenities as any)[key] === true
+          )
+        : [];
 
     return {
       id: property.id,
       name: property.name,
-      location: `${property.city || ''}, ${property.region || ''}`.replace(/^,\s*|,\s*$/g, ''),
+      location: `${property.city || ''}, ${property.region || ''}`.replace(
+        /^,\s*|,\s*$/g,
+        ''
+      ),
       address: property.address,
-      description: property.description || 'A wonderful dining experience awaits you.',
+      description:
+        property.description || 'A wonderful dining experience awaits you.',
       cuisine: property.restaurant_details?.cuisine_type || 'International',
       rating: property.average_rating || 0,
       reviewCount: property.total_reviews || 0,
@@ -133,7 +148,9 @@ export default function RestaurantsPage() {
       phone: property.phone,
       email: property.email,
       website: property.website,
-      features: features.map(f => f.charAt(0).toUpperCase() + f.slice(1).replace(/_/g, ' ')),
+      features: features.map(
+        (f) => f.charAt(0).toUpperCase() + f.slice(1).replace(/_/g, ' ')
+      ),
       isOpen: true, // Would be calculated from opening hours
       openingHours: 'Mon-Sun: 11:00 AM - 10:00 PM', // Would come from restaurant_details table
     };
@@ -160,7 +177,9 @@ export default function RestaurantsPage() {
       const response = await getRestaurants(apiFilters);
 
       if (response.success && response.data) {
-        const transformedRestaurants = response.data.properties.map(transformPropertyToRestaurant);
+        const transformedRestaurants = response.data.properties.map(
+          transformPropertyToRestaurant
+        );
         setRestaurants(transformedRestaurants);
       } else {
         setError(response.error || 'Failed to load restaurants');
@@ -199,10 +218,7 @@ export default function RestaurantsPage() {
         <div className="flex-grow flex items-center justify-center">
           <div className="text-center">
             <p className="text-red-600 mb-4">{error}</p>
-            <button 
-              onClick={loadRestaurants}
-              className="btn btn-primary"
-            >
+            <button onClick={loadRestaurants} className="btn btn-primary">
               Try Again
             </button>
           </div>
@@ -215,7 +231,7 @@ export default function RestaurantsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-nude-50 via-white to-nude-50/30">
       <Navigation onStartTrial={() => setShowWaitlistModal(true)} />
-      
+
       <PropertySearchHero
         title="Savor Exceptional"
         subtitle="Restaurants"
@@ -247,11 +263,11 @@ export default function RestaurantsPage() {
       </div>
 
       <Footer />
-      
+
       <SmartWaitlist
         isOpen={showWaitlistModal}
         onClose={() => setShowWaitlistModal(false)}
       />
     </div>
   );
-  }
+}

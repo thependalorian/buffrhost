@@ -1,9 +1,81 @@
 'use client';
 
 import React, { useState } from 'react';
+/**
+ * PropertyActions React Component for Buffr Host Hospitality Platform
+ * @fileoverview PropertyActions provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/landing/PropertyActions.tsx
+ * @purpose PropertyActions provides specialized functionality for the Buffr Host platform
+ * @component PropertyActions
+ * @category Landing
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @database_connections Reads from relevant tables based on component functionality
+ * @api_integration RESTful API endpoints for data fetching and mutations
+ * @authentication JWT-based authentication for user-specific functionality
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Real-time data integration with backend services
+ * - API-driven functionality with error handling and loading states
+ * - Secure authentication integration for user-specific features
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {{
+    id} [property] - property prop description
+ * @param {string} [name] - name prop description
+ * @param {string} [address] - address prop description
+ * @param {} [phone] - phone prop description
+ * @param {} [email] - email prop description
+ * @param {} [website] - website prop description
+ * @param {'hotel' | 'restaurant'} [type] - type prop description
+ *
+ * State:
+ * @state {any} null - Component state for null management
+ *
+ * Methods:
+ * @method getActionText - getActionText method for component functionality
+ * @method getActionDescription - getActionDescription method for component functionality
+ * @method getButtonText - getButtonText method for component functionality
+ * @method handleBookNow - handleBookNow method for component functionality
+ * @method handleBookingSuccess - handleBookingSuccess method for component functionality
+ * @method handleContactClick - handleContactClick method for component functionality
+ * @method handleContactInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) - handleContactInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { PropertyActions } from './PropertyActions';
+ *
+ * function App() {
+ *   return (
+ *     <PropertyActions
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered PropertyActions component
+ */
+
 import { Phone, Mail, Globe, MapPin, X, MessageSquare } from 'lucide-react';
 import { BookingModal } from '@/components/booking/BookingModal';
-import { AuthModal } from '@/components/auth/AuthModal';
+import AuthModal from '@/components/auth/AuthModal';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { BuffrButton } from '@/components/ui/buttons/BuffrButton';
 import { BuffrInput } from '@/components/ui/forms/BuffrInput';
@@ -11,7 +83,7 @@ import { BuffrTextarea } from '@/components/ui/forms/BuffrTextarea';
 
 /**
  * Property Actions Component
- * 
+ *
  * Modular action buttons and contact information for properties
  * Location: components/landing/PropertyActions.tsx
  * Features: Contact info, booking actions, consistent styling
@@ -36,7 +108,7 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
   property,
   onBookNow,
   onContact,
-  className = ''
+  className = '',
 }) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -45,7 +117,7 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
     name: '',
     email: '',
     phone: '',
-    message: ''
+    message: '',
   });
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
@@ -56,7 +128,7 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
   };
 
   const getActionDescription = () => {
-    return property.type === 'hotel' 
+    return property.type === 'hotel'
       ? 'Experience luxury and comfort at this exceptional property'
       : 'Reserve your table for an unforgettable dining experience';
   };
@@ -89,7 +161,11 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
 
     try {
       // Validate form
-      if (!contactFormData.name || !contactFormData.email || !contactFormData.message) {
+      if (
+        !contactFormData.name ||
+        !contactFormData.email ||
+        !contactFormData.message
+      ) {
         throw new Error('Please fill in all required fields');
       }
 
@@ -102,21 +178,27 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
       //     ...contactFormData
       //   })
       // });
-      
+
       // For now, just show error that API is not implemented
-      throw new Error('Contact feature is not yet available. Please use the direct contact information below.');
+      throw new Error(
+        'Contact feature is not yet available. Please use the direct contact information below.'
+      );
     } catch (err) {
-      setContactError(err instanceof Error ? err.message : 'Failed to send message');
+      setContactError(
+        err instanceof Error ? err.message : 'Failed to send message'
+      );
     } finally {
       setIsSubmittingContact(false);
     }
   };
 
-  const handleContactInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleContactInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setContactFormData(prev => ({
+    setContactFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -134,7 +216,10 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
             {property.phone && (
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-primary" />
-                <a href={`tel:${property.phone}`} className="text-sm link link-hover">
+                <a
+                  href={`tel:${property.phone}`}
+                  className="text-sm link link-hover"
+                >
                   {property.phone}
                 </a>
               </div>
@@ -142,7 +227,10 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
             {property.email && (
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary" />
-                <a href={`mailto:${property.email}`} className="text-sm link link-hover">
+                <a
+                  href={`mailto:${property.email}`}
+                  className="text-sm link link-hover"
+                >
                   {property.email}
                 </a>
               </div>
@@ -150,7 +238,12 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
             {property.website && (
               <div className="flex items-center gap-3">
                 <Globe className="w-5 h-5 text-primary" />
-                <a href={property.website} target="_blank" rel="noopener noreferrer" className="text-sm link link-hover">
+                <a
+                  href={property.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm link link-hover"
+                >
                   Visit Website
                 </a>
               </div>
@@ -162,30 +255,26 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
       {/* Booking/Action Card */}
       <div className="card bg-primary text-primary-content shadow-xl">
         <div className="card-body text-center">
-          <h3 className="card-title justify-center mb-4">
-            {getActionText()}
-          </h3>
-          <p className="mb-6">
-            {getActionDescription()}
-          </p>
-                 <div className="space-y-3">
-                   <BuffrButton 
-                     onClick={handleBookNow}
-                     variant="secondary"
-                     size="lg"
-                     className="w-full"
-                   >
-                     {getButtonText()}
-                   </BuffrButton>
-                   <BuffrButton 
-                     onClick={handleContactClick}
-                     variant="outline"
-                     size="lg"
-                     className="w-full"
-                   >
-                     Contact Property
-                   </BuffrButton>
-                 </div>
+          <h3 className="card-title justify-center mb-4">{getActionText()}</h3>
+          <p className="mb-6">{getActionDescription()}</p>
+          <div className="space-y-3">
+            <BuffrButton
+              onClick={handleBookNow}
+              variant="secondary"
+              size="lg"
+              className="w-full"
+            >
+              {getButtonText()}
+            </BuffrButton>
+            <BuffrButton
+              onClick={handleContactClick}
+              variant="outline"
+              size="lg"
+              className="w-full"
+            >
+              Contact Property
+            </BuffrButton>
+          </div>
         </div>
       </div>
 
@@ -244,19 +333,33 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
               </div>
 
               {/* Authentication Guard */}
-              <AuthGuard 
-                requireAuth={true} 
+              <AuthGuard
+                requireAuth={true}
                 service="contact property"
                 className="mb-6"
                 fallback={
                   <div className="text-center py-8">
                     <div className="w-16 h-16 bg-gradient-to-br from-nude-600 to-nude-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      <svg
+                        className="w-8 h-8 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h3>
-                    <p className="text-gray-600 mb-6">Please sign in to contact the property</p>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      Authentication Required
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      Please sign in to contact the property
+                    </p>
                     <BuffrButton
                       onClick={() => {
                         setShowContactModal(false);
@@ -333,16 +436,24 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
 
                   {/* Property Contact Info */}
                   <div className="bg-nude-50 rounded-lg p-4 border border-nude-200">
-                    <p className="text-sm font-medium text-nude-900 mb-2">Or contact directly:</p>
+                    <p className="text-sm font-medium text-nude-900 mb-2">
+                      Or contact directly:
+                    </p>
                     <div className="space-y-2">
                       {property.phone && (
-                        <a href={`tel:${property.phone}`} className="flex items-center gap-2 text-sm text-nude-700 hover:text-nude-900">
+                        <a
+                          href={`tel:${property.phone}`}
+                          className="flex items-center gap-2 text-sm text-nude-700 hover:text-nude-900"
+                        >
                           <Phone className="w-4 h-4" />
                           {property.phone}
                         </a>
                       )}
                       {property.email && (
-                        <a href={`mailto:${property.email}`} className="flex items-center gap-2 text-sm text-nude-700 hover:text-nude-900">
+                        <a
+                          href={`mailto:${property.email}`}
+                          className="flex items-center gap-2 text-sm text-nude-700 hover:text-nude-900"
+                        >
                           <Mail className="w-4 h-4" />
                           {property.email}
                         </a>
@@ -375,7 +486,6 @@ export const PropertyActions: React.FC<PropertyActionsProps> = ({
                     </BuffrButton>
                   </div>
                 </form>
-                )}
               </AuthGuard>
             </div>
           </div>

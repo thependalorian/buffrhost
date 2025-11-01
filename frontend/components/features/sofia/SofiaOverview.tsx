@@ -18,6 +18,57 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * SofiaOverview React Component for Buffr Host Hospitality Platform
+ * @fileoverview SofiaOverview provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/sofia/SofiaOverview.tsx
+ * @purpose SofiaOverview provides specialized functionality for the Buffr Host platform
+ * @component SofiaOverview
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {SofiaStats} [stats] - stats prop description
+ * @param {() => void} [onRefresh] - onRefresh prop description
+ * @param {() => void} [onConfigure] - onConfigure prop description
+ * @param {() => void} [onStartLearning] - onStartLearning prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * Methods:
+ * @method handleRefresh - handleRefresh method for component functionality
+ * @method formatPercentage - formatPercentage method for component functionality
+ * @method getConfidenceColor - getConfidenceColor method for component functionality
+ * @method getConfidenceBadge - getConfidenceBadge method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { SofiaOverview } from './SofiaOverview';
+ *
+ * function App() {
+ *   return (
+ *     <SofiaOverview
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered SofiaOverview component
+ */
+
 import {
   Card,
   CardContent,

@@ -1,0 +1,10 @@
+
+> buffr-host-frontend@1.0.0 type-check
+> tsc --noEmit
+
+buffr-host/frontend/components/ai-chat/ai-agent-chat.tsx(108,18): error TS1005: ',' expected.
+buffr-host/frontend/components/ai-chat/ai-agent-chat.tsx(110,35): error TS1005: ',' expected.
+buffr-host/frontend/components/ai-chat/ai-agent-chat.tsx(111,7): error TS1109: Expression expected.
+buffr-host/frontend/components/ai-chat/ai-agent-chat.tsx(111,8): error TS1472: 'catch' or 'finally' expected.
+buffr-host/frontend/components/ai-chat/ai-agent-chat.tsx(149,7): error TS1005: ',' expected.
+buffr-host/frontend/components/ai-chat/ai-agent-chat.tsx(397,1): error TS1128: Declaration or statement expected.

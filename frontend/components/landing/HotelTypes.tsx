@@ -4,7 +4,7 @@ import React from 'react';
 
 /**
  * Hotel Types Component
- * 
+ *
  * Displays different types of accommodation that can use the platform
  * Location: components/landing/HotelTypes.tsx
  * Features: Hotel type cards with services, responsive grid
@@ -24,17 +24,29 @@ interface HotelTypeCardProps {
   imageUrl: string;
 }
 
-const HotelTypeCard: React.FC<HotelTypeCardProps> = ({ title, description, services, imageUrl }) => (
+const HotelTypeCard: React.FC<HotelTypeCardProps> = ({
+  title,
+  description,
+  services,
+  imageUrl,
+}) => (
   <div className="bg-white rounded-2xl shadow-luxury-soft border border-nude-200/50 hover:shadow-luxury-medium transition-all duration-300 hover:-translate-y-1 overflow-hidden">
     <div className="w-full h-48">
-      <img src={imageUrl} alt={title} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" />
+      <img
+        src={imageUrl}
+        alt={title}
+        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+      />
     </div>
     <div className="p-8">
       <h3 className="text-2xl font-semibold text-nude-900 mb-4">{title}</h3>
       <p className="text-nude-700 mb-6 leading-relaxed">{description}</p>
       <div className="space-y-2">
         {services.map((service, index) => (
-          <div key={index} className="flex items-center gap-2 text-sm text-nude-600">
+          <div
+            key={index}
+            className="flex items-center gap-2 text-sm text-nude-600"
+          >
             <div className="w-1.5 h-1.5 bg-nude-400 rounded-full"></div>
             {service}
           </div>
@@ -48,26 +60,77 @@ interface HotelTypesProps {
   className?: string;
 }
 
+/**
+ * HotelTypes React Component for Buffr Host Hospitality Platform
+ * @fileoverview HotelTypes provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/landing/HotelTypes.tsx
+ * @purpose HotelTypes provides specialized functionality for the Buffr Host platform
+ * @component HotelTypes
+ * @category Landing
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {string} [title] - title prop description
+ * @param {string} [description] - description prop description
+ * @param {string[]} [services] - services prop description
+ * @param {string} [imageUrl] - imageUrl prop description
+ *
+ * Usage Example:
+ * @example
+ * import { HotelTypes } from './HotelTypes';
+ *
+ * function App() {
+ *   return (
+ *     <HotelTypes
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered HotelTypes component
+ */
+
 export const HotelTypes: React.FC<HotelTypesProps> = ({ className = '' }) => {
   const hotelTypes: HotelType[] = [
     {
-      title: "Vacation Rentals",
-      description: "Airbnb, holiday homes, and short-term rentals", 
-      imageUrl: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      services: ["Self Check-in", "Cleaning", "Guest Communication", "Pricing"]
+      title: 'Vacation Rentals',
+      description: 'Airbnb, holiday homes, and short-term rentals',
+      imageUrl:
+        'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      services: ['Self Check-in', 'Cleaning', 'Guest Communication', 'Pricing'],
     },
     {
-      title: "Resorts & Lodges",
-      description: "Large properties with multiple amenities",
-      imageUrl: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      services: ["Multiple Restaurants", "Activities", "Spa", "Tours"]
+      title: 'Resorts & Lodges',
+      description: 'Large properties with multiple amenities',
+      imageUrl:
+        'https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      services: ['Multiple Restaurants', 'Activities', 'Spa', 'Tours'],
     },
     {
-      title: "Guest Houses",
-      description: "Smaller properties with intimate service",
-      imageUrl: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      services: ["Breakfast", "Housekeeping", "Local Tours", "Personal Service"]
-    }
+      title: 'Guest Houses',
+      description: 'Smaller properties with intimate service',
+      imageUrl:
+        'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      services: [
+        'Breakfast',
+        'Housekeeping',
+        'Local Tours',
+        'Personal Service',
+      ],
+    },
   ];
 
   return (
@@ -78,7 +141,8 @@ export const HotelTypes: React.FC<HotelTypesProps> = ({ className = '' }) => {
             Accommodation
           </h2>
           <p className="max-w-3xl mx-auto text-lg text-nude-700 leading-relaxed">
-            Comprehensive property management for every type of accommodation business.
+            Comprehensive property management for every type of accommodation
+            business.
           </p>
         </div>
 

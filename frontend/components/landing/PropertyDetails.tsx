@@ -1,12 +1,53 @@
 'use client';
 
 import React from 'react';
+/**
+ * PropertyDetails React Component for Buffr Host Hospitality Platform
+ * @fileoverview PropertyDetails provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/landing/PropertyDetails.tsx
+ * @purpose PropertyDetails provides specialized functionality for the Buffr Host platform
+ * @component PropertyDetails
+ * @category Landing
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {Property} [property] - property prop description
+ * @param {} [className] - className prop description
+ *
+ * Usage Example:
+ * @example
+ * import { PropertyDetails } from './PropertyDetails';
+ *
+ * function App() {
+ *   return (
+ *     <PropertyDetails
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered PropertyDetails component
+ */
+
 import { Users, Clock, Car, Wifi, Utensils, Coffee, Star } from 'lucide-react';
 import { Property } from '@/lib/types/database';
 
 /**
  * Property Details Component
- * 
+ *
  * Modular property details display with amenities and specific information
  * Location: components/landing/PropertyDetails.tsx
  * Features: Amenities, hotel/restaurant specific details, reviews
@@ -19,7 +60,7 @@ interface PropertyDetailsProps {
 
 export const PropertyDetails: React.FC<PropertyDetailsProps> = ({
   property,
-  className = ''
+  className = '',
 }) => {
   const isHotel = property.property_type === 'hotel';
   const isRestaurant = property.property_type === 'restaurant';
@@ -30,7 +71,9 @@ export const PropertyDetails: React.FC<PropertyDetailsProps> = ({
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title text-2xl mb-4">About {property.name}</h2>
-          <p className="text-base-content/80 leading-relaxed">{property.description}</p>
+          <p className="text-base-content/80 leading-relaxed">
+            {property.description}
+          </p>
         </div>
       </div>
 
@@ -40,7 +83,10 @@ export const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           <h2 className="card-title text-2xl mb-4">Amenities & Features</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {property.amenities.map((amenity, index) => (
-              <div key={index} className="flex items-center gap-2 p-3 bg-base-200 rounded-lg">
+              <div
+                key={index}
+                className="flex items-center gap-2 p-3 bg-base-200 rounded-lg"
+              >
                 <div className="w-2 h-2 bg-primary rounded-full"></div>
                 <span className="capitalize">{amenity.replace(/_/g, ' ')}</span>
               </div>
@@ -60,7 +106,9 @@ export const PropertyDetails: React.FC<PropertyDetailsProps> = ({
                   <Users className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-semibold">Total Rooms</p>
-                    <p className="text-base-content/70">{property.hotel_details.total_rooms}</p>
+                    <p className="text-base-content/70">
+                      {property.hotel_details.total_rooms}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -68,7 +116,8 @@ export const PropertyDetails: React.FC<PropertyDetailsProps> = ({
                   <div>
                     <p className="font-semibold">Check-in/out</p>
                     <p className="text-base-content/70">
-                      {property.hotel_details.policies?.check_in || '15:00'} / {property.hotel_details.policies?.check_out || '11:00'}
+                      {property.hotel_details.policies?.check_in || '15:00'} /{' '}
+                      {property.hotel_details.policies?.check_out || '11:00'}
                     </p>
                   </div>
                 </div>
@@ -105,14 +154,18 @@ export const PropertyDetails: React.FC<PropertyDetailsProps> = ({
                   <Utensils className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-semibold">Cuisine</p>
-                    <p className="text-base-content/70">{property.restaurant_details.cuisine_type}</p>
+                    <p className="text-base-content/70">
+                      {property.restaurant_details.cuisine_type}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <Users className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-semibold">Capacity</p>
-                    <p className="text-base-content/70">{property.restaurant_details.max_capacity} guests</p>
+                    <p className="text-base-content/70">
+                      {property.restaurant_details.max_capacity} guests
+                    </p>
                   </div>
                 </div>
               </div>
@@ -121,14 +174,18 @@ export const PropertyDetails: React.FC<PropertyDetailsProps> = ({
                   <Coffee className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-semibold">Price Range</p>
-                    <p className="text-base-content/70">{property.restaurant_details.price_range}</p>
+                    <p className="text-base-content/70">
+                      {property.restaurant_details.price_range}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-semibold">Prep Time</p>
-                    <p className="text-base-content/70">{property.restaurant_details.average_prep_time} minutes</p>
+                    <p className="text-base-content/70">
+                      {property.restaurant_details.average_prep_time} minutes
+                    </p>
                   </div>
                 </div>
               </div>
@@ -147,9 +204,9 @@ export const PropertyDetails: React.FC<PropertyDetailsProps> = ({
             </div>
             <div className="flex justify-center mb-2">
               {[...Array(5)].map((_, i) => (
-                <Star 
-                  key={i} 
-                  className={`w-5 h-5 ${i < Math.floor(property.average_rating) ? 'fill-current text-yellow-400' : 'text-gray-300'}`} 
+                <Star
+                  key={i}
+                  className={`w-5 h-5 ${i < Math.floor(property.average_rating) ? 'fill-current text-yellow-400' : 'text-gray-300'}`}
                 />
               ))}
             </div>

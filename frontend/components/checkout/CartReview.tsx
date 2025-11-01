@@ -18,6 +18,66 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * CartReview React Component for Buffr Host Hospitality Platform
+ * @fileoverview CartReview provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/checkout/CartReview.tsx
+ * @purpose CartReview provides specialized functionality for the Buffr Host platform
+ * @component CartReview
+ * @category Checkout
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {CartItem[]} [items] - items prop description
+ * @param {(itemId} [onUpdateQuantity] - onUpdateQuantity prop description
+ * @param {(itemId} [onRemoveItem] - onRemoveItem prop description
+ * @param {(code} [onApplyDiscount] - onApplyDiscount prop description
+ * @param {} [discountCode] - discountCode prop description
+ * @param {} [discountAmount] - discountAmount prop description
+ * @param {number} [subtotal] - subtotal prop description
+ * @param {number} [tax] - tax prop description
+ * @param {number} [total] - total prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * State:
+ * @state {any} null - Component state for null management
+ * @state {any} null - Component state for null management
+ *
+ * Methods:
+ * @method handleQuantityUpdate - handleQuantityUpdate method for component functionality
+ * @method formatCurrency - formatCurrency method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { CartReview } from './CartReview';
+ *
+ * function App() {
+ *   return (
+ *     <CartReview
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered CartReview component
+ */
+
 import {
   Card,
   CardContent,

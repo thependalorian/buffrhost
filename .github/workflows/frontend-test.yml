@@ -4,39 +4,39 @@ on:
   workflow_call:
     inputs:
       node-version:
-        description: 'Node.js version to use'
+        description: "Node.js version to use"
         required: false
-        default: '18'
+        default: "18"
         type: string
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:
   jest:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set up Node.js ${{ inputs.node-version || '18' }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ inputs.node-version || '18' }}
-        cache: 'npm'
-        cache-dependency-path: 'the-shandi/frontend/package-lock.json'
-        
-    - name: Install dependencies
-      run: |
-        cd the-shandi/frontend
-        npm ci
-      
-    - name: Run Jest tests
-      run: |
-        cd the-shandi/frontend
-        npm run test:ci
-      env:
-        CI: true
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ inputs.node-version || '18' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version || '18' }}
+          cache: "npm"
+          cache-dependency-path: "the-shandi/frontend/package-lock.json"
+
+      - name: Install dependencies
+        run: |
+          cd the-shandi/frontend
+          npm ci
+
+      - name: Run Jest tests
+        run: |
+          cd the-shandi/frontend
+          npm run test:ci
+        env:
+          CI: true

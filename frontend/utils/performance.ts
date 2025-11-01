@@ -7,10 +7,16 @@ export const trackPerformance = () => {
           console.log('LCP:', entry.startTime);
         }
         if (entry.entryType === 'first-input') {
-          console.log('FID:', entry.processingStart - entry.startTime);
+          const fidEntry = entry as any;
+          if (fidEntry.processingStart) {
+            console.log('FID:', fidEntry.processingStart - entry.startTime);
+          }
         }
         if (entry.entryType === 'layout-shift') {
-          console.log('CLS:', entry.value);
+          const clsEntry = entry as any;
+          if (clsEntry.value) {
+            console.log('CLS:', clsEntry.value);
+          }
         }
       }
     });
@@ -21,10 +27,17 @@ export const trackPerformance = () => {
   }
 };
 
+// Extend window interface for gtag
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
+
 // Track conversion events
 export const trackConversion = (eventName: string, variant?: string) => {
-  if (typeof window !== 'undefined' && 'gtag' in window) {
-    (window as unknown).gtag('event', eventName, {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', eventName, {
       event_category: 'conversion',
       event_label: variant,
       value: 1,
@@ -38,8 +51,8 @@ export const trackABTest = (
   variant: string,
   action: string
 ) => {
-  if (typeof window !== 'undefined' && 'gtag' in window) {
-    (window as unknown).gtag('event', 'ab_test', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'ab_test', {
       test_name: testName,
       variant: variant,
       action: action,
@@ -53,8 +66,8 @@ export const trackColorPsychology = (
   color: string,
   action: string
 ) => {
-  if (typeof window !== 'undefined' && 'gtag' in window) {
-    (window as unknown).gtag('event', 'color_psychology', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'color_psychology', {
       element: element,
       color: color,
       action: action,

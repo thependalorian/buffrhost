@@ -18,6 +18,75 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * InventoryAvailabilityChecker React Component for Buffr Host Hospitality Platform
+ * @fileoverview InventoryAvailabilityChecker provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/availability/InventoryAvailabilityChecker.tsx
+ * @purpose InventoryAvailabilityChecker provides specialized functionality for the Buffr Host platform
+ * @component InventoryAvailabilityChecker
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @database_connections Reads from relevant tables based on component functionality
+ * @api_integration RESTful API endpoints for data fetching and mutations
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Real-time data integration with backend services
+ * - API-driven functionality with error handling and loading states
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {string} [propertyId] - propertyId prop description
+ * @param {} [onAvailabilityChange] - onAvailabilityChange prop description
+ * @param {} [onError] - onError prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * State:
+ * @state {any} [] - Component state for [] management
+ * @state {any} null - Component state for null management
+ * @state {any} {} - Component state for {} management
+ *
+ * Methods:
+ * @method addItem - addItem method for component functionality
+ * @method removeItem - removeItem method for component functionality
+ * @method updateItem = (
+    index: number,
+    field: keyof InventoryItem,
+    value: unknown
+  ) - updateItem = (
+    index: number,
+    field: keyof InventoryItem,
+    value: unknown
+  ) method for component functionality
+ * @method validateItems - validateItems method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { InventoryAvailabilityChecker } from './InventoryAvailabilityChecker';
+ *
+ * function App() {
+ *   return (
+ *     <InventoryAvailabilityChecker
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered InventoryAvailabilityChecker component
+ */
+
 import {
   Card,
   CardContent,
@@ -107,7 +176,8 @@ export const InventoryAvailabilityChecker: React.FC<
   const updateItem = (
     index: number,
     field: keyof InventoryItem,
-    value: unknown) => {
+    value: unknown
+  ) => {
     const updatedItems = [...items];
     updatedItems[index] = { ...updatedItems[index], [field]: value };
     setItems(updatedItems);

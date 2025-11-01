@@ -1,6 +1,52 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+/**
+ * PrimeZone React Component for Buffr Host Hospitality Platform
+ * @fileoverview PrimeZone provides reusable UI component for consistent design
+ * @location buffr-host/components/ui/ProductPlacementComponents.tsx
+ * @purpose PrimeZone provides reusable UI component for consistent design
+ * @component PrimeZone
+ * @category Ui
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {React.ReactNode} [children] - children prop description
+ * @param {'hero' | 'navigation' | 'actions' | 'sidebar'} [zone] - zone prop description
+ * @param {} [className] - className prop description
+ *
+ * Methods:
+ * @method getStepClass - getStepClass method for component functionality
+ * @method handleInteraction - handleInteraction method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { PrimeZone } from './PrimeZone';
+ *
+ * function App() {
+ *   return (
+ *     <PrimeZone
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered PrimeZone component
+ */
+
 import {
   BuffrCard,
   BuffrCardContent,

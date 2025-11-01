@@ -1,4 +1,55 @@
 'use client';
+/**
+ * CrossProjectIntegration React Component for Buffr Host Hospitality Platform
+ * @fileoverview CrossProjectIntegration provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/cross-project/CrossProjectIntegration.tsx
+ * @purpose CrossProjectIntegration provides specialized functionality for the Buffr Host platform
+ * @component CrossProjectIntegration
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {} [onUserFound] - onUserFound prop description
+ * @param {} [onPropertyFound] - onPropertyFound prop description
+ * @param {} [onDashboardLoaded] - onDashboardLoaded prop description
+ * @param {} [className] - className prop description
+ *
+ * State:
+ * @state {any} 'user' - Component state for 'user' management
+ * @state {any} null - Component state for null management
+ * @state {any} {} - Component state for {} management
+ *
+ * Usage Example:
+ * @example
+ * import CrossProjectIntegration from './CrossProjectIntegration';
+ *
+ * function App() {
+ *   return (
+ *     <CrossProjectIntegration
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered CrossProjectIntegration component
+ */
+
 import {
   BuffrCard,
   BuffrCardBody,

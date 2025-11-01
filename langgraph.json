@@ -1,7 +1,16 @@
 {
   "dependencies": ["."],
   "graphs": {
-    "buffr_concierge": "./backend/ai/agent/graph.py:buffr_graph"
+    "sofia_concierge": "./backend/ai/agent/graph.py:sofia_graph",
+    "kyc_verification": "./backend/ai/agent/graph.py:kyc_graph",
+    "booking_assistant": "./backend/ai/agent/graph.py:booking_graph",
+    "property_manager": "./backend/ai/agent/graph.py:property_graph"
   },
-  "env": ".env"
+  "env": ".env",
+  "config": {
+    "max_concurrency": 10,
+    "timeout": 300,
+    "memory_limit": "1GB",
+    "log_level": "INFO"
+  }
 }

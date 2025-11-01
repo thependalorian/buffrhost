@@ -1,6 +1,45 @@
 'use client';
 
 import { useState } from 'react';
+/**
+ * DemoHotelShowcase React Component for Buffr Host Hospitality Platform
+ * @fileoverview DemoHotelShowcase provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/landing/DemoHotelShowcase.tsx
+ * @purpose DemoHotelShowcase provides specialized functionality for the Buffr Host platform
+ * @component DemoHotelShowcase
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * State:
+ * @state {any} demoHotels[0]! - Component state for demohotels[0]! management
+ *
+ * Usage Example:
+ * @example
+ * import DemoHotelShowcase from './DemoHotelShowcase';
+ *
+ * function App() {
+ *   return (
+ *     <DemoHotelShowcase
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered DemoHotelShowcase component
+ */
+
 import {
   Card,
   CardContent,

@@ -72,24 +72,16 @@ variable "jwt_secret_key" {
   sensitive   = true
 }
 
-variable "supabase_url" {
-  description = "Supabase project URL"
-  type        = string
-  default     = ""
-}
-
-variable "supabase_anon_key" {
-  description = "Supabase anonymous key"
+variable "neon_database_url" {
+  description = "Neon PostgreSQL database URL"
   type        = string
   sensitive   = true
-  default     = ""
 }
 
-variable "supabase_service_role_key" {
-  description = "Supabase service role key"
+variable "neon_api_url" {
+  description = "Neon Data API URL"
   type        = string
   sensitive   = true
-  default     = ""
 }
 
 variable "openai_api_key" {

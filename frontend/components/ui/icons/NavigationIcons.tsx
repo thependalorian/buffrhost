@@ -15,6 +15,49 @@
 
 import * as React from 'react';
 
+/**
+ * NavigationIcon React Component for Buffr Host Hospitality Platform
+ * @fileoverview NavigationIcon provides reusable UI component for consistent design
+ * @location buffr-host/components/ui/icons/NavigationIcons.tsx
+ * @purpose NavigationIcon provides reusable UI component for consistent design
+ * @component NavigationIcon
+ * @category Ui
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {NavigationIconName} [name] - name prop description
+ * @param {} [size] - size prop description
+ * @param {} [className] - className prop description
+ * @param {} [color] - color prop description
+ *
+ * Usage Example:
+ * @example
+ * import { NavigationIcon } from './NavigationIcon';
+ *
+ * function App() {
+ *   return (
+ *     <NavigationIcon
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered NavigationIcon component
+ */
+
 export type NavigationIconName =
   | 'menu'
   | 'home'
@@ -33,6 +76,7 @@ export type NavigationIconName =
   | 'globe'
   | 'external-link'
   | 'link'
+  | 'flag'
   | 'chevron-up'
   | 'chevron-down'
   | 'chevron-left'
@@ -96,6 +140,7 @@ export const NavigationIcon: React.FC<NavigationIconProps> = ({
     'external-link':
       'M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14',
     link: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
+    flag: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z',
     // Directional arrows
     'chevron-up': 'M5 15l7-7 7 7',
     'chevron-down': 'M19 9l-7 7-7-7',

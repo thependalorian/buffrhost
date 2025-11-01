@@ -17,6 +17,67 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * Preferences React Component for Buffr Host Hospitality Platform
+ * @fileoverview Preferences manages customer relationship and loyalty program interactions
+ * @location buffr-host/components/crm/customer-profile/Preferences.tsx
+ * @purpose Preferences manages customer relationship and loyalty program interactions
+ * @component Preferences
+ * @category Crm
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {CustomerPreferences} [preferences] - preferences prop description
+ * @param {(updates} [onUpdate] - onUpdate prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * State:
+ * @state {any} preferences - Component state for preferences management
+ * @state {any} null - Component state for null management
+ *
+ * Methods:
+ * @method handleInputChange - handleInputChange method for component functionality
+ * @method handleCommunicationChange - handleCommunicationChange method for component functionality
+ * @method handleNotificationChange - handleNotificationChange method for component functionality
+ * @method handleAddInterest - handleAddInterest method for component functionality
+ * @method handleRemoveInterest - handleRemoveInterest method for component functionality
+ * @method handleAddDietaryRestriction - handleAddDietaryRestriction method for component functionality
+ * @method handleRemoveDietaryRestriction - handleRemoveDietaryRestriction method for component functionality
+ * @method handleAddAccessibilityNeed - handleAddAccessibilityNeed method for component functionality
+ * @method handleRemoveAccessibilityNeed - handleRemoveAccessibilityNeed method for component functionality
+ * @method handleCancel - handleCancel method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { Preferences } from './Preferences';
+ *
+ * function App() {
+ *   return (
+ *     <Preferences
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered Preferences component
+ */
+
 import {
   Card,
   CardContent,

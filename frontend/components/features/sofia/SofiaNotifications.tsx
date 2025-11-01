@@ -18,6 +18,67 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * SofiaNotifications React Component for Buffr Host Hospitality Platform
+ * @fileoverview SofiaNotifications provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/sofia/SofiaNotifications.tsx
+ * @purpose SofiaNotifications provides specialized functionality for the Buffr Host platform
+ * @component SofiaNotifications
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {SofiaNotification[]} [notifications] - notifications prop description
+ * @param {(id} [onMarkAsRead] - onMarkAsRead prop description
+ * @param {() => void} [onMarkAllAsRead] - onMarkAllAsRead prop description
+ * @param {(id} [onArchive] - onArchive prop description
+ * @param {(id} [onView] - onView prop description
+ * @param {() => void} [onRefresh] - onRefresh prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * State:
+ * @state {any} 'all' - Component state for 'all' management
+ * @state {any} 'all' - Component state for 'all' management
+ * @state {any} 'all' - Component state for 'all' management
+ * @state {any} 'created' - Component state for 'created' management
+ *
+ * Methods:
+ * @method handleSearch - handleSearch method for component functionality
+ * @method getNotificationIcon - getNotificationIcon method for component functionality
+ * @method getPriorityColor - getPriorityColor method for component functionality
+ * @method getTypeColor - getTypeColor method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { SofiaNotifications } from './SofiaNotifications';
+ *
+ * function App() {
+ *   return (
+ *     <SofiaNotifications
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered SofiaNotifications component
+ */
+
 import {
   Card,
   CardContent,

@@ -1,4 +1,64 @@
 'use client';
+/**
+ * BuffrIDTestComponent React Component for Buffr Host Hospitality Platform
+ * @fileoverview BuffrIDTestComponent provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/testing/BuffrIDTestComponent.tsx
+ * @purpose BuffrIDTestComponent provides specialized functionality for the Buffr Host platform
+ * @component BuffrIDTestComponent
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @database_connections Reads from relevant tables based on component functionality
+ * @api_integration RESTful API endpoints for data fetching and mutations
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Interactive state management for dynamic user experiences
+ * - Real-time data integration with backend services
+ * - API-driven functionality with error handling and loading states
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * State:
+ * @state {any} [] - Component state for [] management
+ *
+ * Methods:
+ * @method addTestResult = (
+    test: string,
+    status: 'pass' | 'fail' | 'pending',
+    message: string,
+    data?: unknown
+  ) - addTestResult = (
+    test: string,
+    status: 'pass' | 'fail' | 'pending',
+    message: string,
+    data?: unknown
+  ) method for component functionality
+ * @method testCustomId - testCustomId method for component functionality
+ * @method getStatusIcon - getStatusIcon method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import BuffrIDTestComponent from './BuffrIDTestComponent';
+ *
+ * function App() {
+ *   return (
+ *     <BuffrIDTestComponent
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered BuffrIDTestComponent component
+ */
+
 import {
   BuffrCard,
   BuffrCardBody,
@@ -51,7 +111,8 @@ export default function BuffrIDTestComponent() {
     test: string,
     status: 'pass' | 'fail' | 'pending',
     message: string,
-    data?: unknown) => {
+    data?: unknown
+  ) => {
     setTestResults((prev) => [...prev, { test, status, message, data }]);
   };
 

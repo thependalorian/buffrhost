@@ -8,6 +8,63 @@
  */
 
 import { useState, useEffect } from 'react';
+/**
+ * ReviewAnalyticsDashboard React Component for Buffr Host Hospitality Platform
+ * @fileoverview ReviewAnalyticsDashboard manages customer relationship and loyalty program interactions
+ * @location buffr-host/components/crm/review-analytics-dashboard.tsx
+ * @purpose ReviewAnalyticsDashboard manages customer relationship and loyalty program interactions
+ * @component ReviewAnalyticsDashboard
+ * @category Crm
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @database_connections Reads from relevant tables based on component functionality
+ * @api_integration RESTful API endpoints for data fetching and mutations
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState, useEffect for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Real-time data integration with backend services
+ * - API-driven functionality with error handling and loading states
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {string} [propertyId] - propertyId prop description
+ * @param {} [tenantId] - tenantId prop description
+ * @param {} [period] - period prop description
+ *
+ * State:
+ * @state {any} null - Component state for null management
+ * @state {any} null - Component state for null management
+ *
+ * Methods:
+ * @method formatDate - formatDate method for component functionality
+ * @method getSentimentColor - getSentimentColor method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import ReviewAnalyticsDashboard from './ReviewAnalyticsDashboard';
+ *
+ * function App() {
+ *   return (
+ *     <ReviewAnalyticsDashboard
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered ReviewAnalyticsDashboard component
+ */
+
 import StarRating from '../reviews/star-rating';
 
 interface ReviewAnalytics {

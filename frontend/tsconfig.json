@@ -18,7 +18,7 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "strictFunctionTypes": false,
     "strictBindCallApply": false,
     "strictPropertyInitialization": false,

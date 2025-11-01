@@ -1,4 +1,68 @@
 'use client';
+/**
+ * LocationSearch React Component for Buffr Host Hospitality Platform
+ * @fileoverview LocationSearch handles form input and validation for user data collection
+ * @location buffr-host/components/forms/LocationSearch.tsx
+ * @purpose LocationSearch handles form input and validation for user data collection
+ * @component LocationSearch
+ * @category Forms
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState, useEffect, usedIndex for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {} [value] - value prop description
+ * @param {(location} [onChange] - onChange prop description
+ * @param {} [placeholder] - placeholder prop description
+ * @param {} [className] - className prop description
+ * @param {} [error] - error prop description
+ * @param {} [required] - required prop description
+ * @param {} [disabled] - disabled prop description
+ * @param {} [showRegion] - showRegion prop description
+ * @param {} [showPopulation] - showPopulation prop description
+ * @param {} [maxResults] - maxResults prop description
+ *
+ * State:
+ * @state {any} [] - Component state for [] management
+ * @state {any} null - Component state for null management
+ *
+ * Methods:
+ * @method handleInputChange - handleInputChange method for component functionality
+ * @method handleLocationSelect - handleLocationSelect method for component functionality
+ * @method handleKeyDown - handleKeyDown method for component functionality
+ * @method handleClickOutside - handleClickOutside method for component functionality
+ * @method getLocationTypeColor - getLocationTypeColor method for component functionality
+ * @method getLocationTypeIcon - getLocationTypeIcon method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import LocationSearch from './LocationSearch';
+ *
+ * function App() {
+ *   return (
+ *     <LocationSearch
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered LocationSearch component
+ */
+
 import { BuffrIcon } from '@/components/ui';
 /**
  * Location Search Component

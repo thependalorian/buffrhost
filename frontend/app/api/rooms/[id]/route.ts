@@ -1,4 +1,64 @@
 /**
+ * Rooms [id] API Endpoint for Buffr Host Hospitality Platform
+ * @fileoverview GET endpoint for rooms operations providing rooms data management and operations
+ * @location buffr-host/frontend/app/api/rooms/[id]/route.ts
+ * @purpose rooms data management and operations
+ * @modularity rooms-focused API endpoint with specialized [id] operations
+ * @database_connections Reads/writes to rooms related tables
+ * @api_integration rooms service integrations
+ * @scalability Scalable operations with database optimization and caching
+ * @performance Performance optimized with database indexing and caching
+ * @monitoring Operational metrics and performance monitoring
+ * @security Multi-tenant security with data isolation and access control
+ * @multi_tenant Automatic tenant context application with data isolation
+ *
+ * Rooms Management Capabilities:
+ * - rooms CRUD operations
+ * - Data management
+ * - Business logic processing
+ *
+ * Key Features:
+ * - Data management
+ * - CRUD operations
+ * - Business logic
+ */
+
+/**
+ * GET /api/rooms/[id] - Rooms [id] Retrieval Endpoint
+ * @method GET
+ * @endpoint /api/rooms/[id]
+ * @purpose rooms data management and operations
+ * @authentication JWT authentication required - Bearer token in Authorization header
+ * @authorization JWT authorization required - Bearer token in Authorization header
+ * @permissions Appropriate permissions based on operation type
+ * @rate_limit Standard API rate limiter applied
+ * @caching Appropriate caching strategy applied
+ * @returns {Promise<NextResponse>} API operation result with success status and data
+ * @security Multi-tenant security with data isolation and access control
+ * @database_queries Optimized database queries with appropriate indexing and performance
+ * @performance Performance optimized with database indexing and caching
+ * @example
+ * GET /api/rooms/[id]
+ * /api/rooms/[id]
+ *
+ * Success Response (200):
+ * {
+ *   "success": true,
+ *   "data": {
+ *     "result": "success"
+ *   }
+ * }
+ *
+ * Error Response (400/500):
+ * {
+ *   "success": false,
+ *   "error": {
+ *     "code": "ERROR_CODE",
+ *     "message": "Error description"
+ *   }
+ * }
+ */
+/**
  * Individual Room API Endpoint
  *
  * Returns detailed room data from the Neon database

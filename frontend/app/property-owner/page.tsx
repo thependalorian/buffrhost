@@ -7,10 +7,14 @@
  * Location: app/property-owner/page.tsx
  */
 
+// Force dynamic rendering - prevent static generation
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import {
   BuffrCard,
   BuffrCardBody,
+  BuffrCardContent,
   BuffrButton,
   BuffrBadge,
   BuffrIcon,

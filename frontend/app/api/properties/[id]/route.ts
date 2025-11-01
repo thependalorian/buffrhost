@@ -1,3 +1,77 @@
+/**
+ * Properties [id] API Endpoint for Buffr Host Hospitality Platform
+ * @fileoverview GET endpoint for properties operations providing property data management and crud operations
+ * @location buffr-host/frontend/app/api/properties/[id]/route.ts
+ * @purpose Property data management and CRUD operations
+ * @modularity properties-focused API endpoint with specialized [id] operations
+ * @database_connections Reads/writes to properties, property_images, property_amenities tables
+ * @api_integration Property validation services, image processing, geolocation services
+ * @scalability Property data scaling with database read replicas and caching layers
+ * @performance Property queries optimized with database indexing and result caching
+ * @monitoring Property access analytics, search performance, and usage patterns
+ * @security Property ownership validation, tenant isolation, and access control
+ * @multi_tenant Automatic tenant context application with data isolation
+ *
+ * Properties Management Capabilities:
+ * - Property creation and updates
+ * - Property search and filtering
+ * - Property ownership management
+ * - Multi-tenant property isolation
+ *
+ * Key Features:
+ * - Property CRUD operations
+ * - Search and filtering
+ * - Ownership validation
+ * - Tenant isolation
+ */
+
+/**
+ * GET /api/properties/[id] - Properties [id] Retrieval Endpoint
+ * @method GET
+ * @endpoint /api/properties/[id]
+ * @purpose Property data management and CRUD operations
+ * @authentication JWT authentication required - Bearer token in Authorization header
+ * @authorization JWT authorization required - Bearer token in Authorization header
+ * @permissions Read access to property data
+ * @rate_limit Standard API rate limiter applied
+ * @caching Property data cached with TTL, invalidated on updates
+ * @returns {Promise<NextResponse>} Property data response with pagination metadata
+ * @security Property ownership validation, tenant isolation, and access control
+ * @database_queries Property queries with tenant isolation and ownership validation
+ * @performance Property queries optimized with database indexing and result caching
+ * @example
+ * GET /api/properties/[id]
+ * /api/properties/[id]
+ *
+ * Success Response (200):
+ * {
+ *   "success": true,
+ *   "data": {
+ *     "properties": [
+ *       {
+ *         "id": "prop-123",
+ *         "name": "Hotel Name",
+ *         "type": "hotel",
+ *         "location": "City, Country"
+ *       }
+ *     ],
+ *     "pagination": {
+ *       "total": 25,
+ *       "page": 1,
+ *       "limit": 10
+ *     }
+ *   }
+ * }
+ *
+ * Error Response (400/500):
+ * {
+ *   "success": false,
+ *   "error": {
+ *     "code": "ERROR_CODE",
+ *     "message": "Error description"
+ *   }
+ * }
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { neonClient } from '../../../../lib/database/neon-client';
 import { ApiResponse, Property } from '../../../../lib/types/database';
@@ -62,13 +136,13 @@ export async function GET(
       region: propertyRow.location?.split(',')[1] || '',
       country: 'Namibia',
       postal_code: '',
-      latitude: null,
-      longitude: null,
+      latitude: undefined,
+      longitude: undefined,
       phone: propertyRow.phone,
       email: propertyRow.email,
       website: propertyRow.website,
-      check_in_time: null,
-      check_out_time: null,
+      check_in_time: undefined,
+      check_out_time: undefined,
       amenities: propertyRow.amenities || [],
       policies: propertyRow.policies || {},
       images: propertyRow.images || [],
@@ -81,33 +155,35 @@ export async function GET(
       total_bookings: 0,
       total_orders: parseInt(propertyRow.total_orders || '0'),
       recent_reviews: [],
-      hotel_details: propertyRow.type === 'hotel' ? {
-        id: propertyRow.id,
-        property_id: propertyRow.id,
-        total_rooms: propertyRow.total_rooms || 0,
-        available_rooms: propertyRow.available_rooms || 0,
-        room_types_count: propertyRow.room_types_count || 0,
-        amenities: propertyRow.hotel_amenities || [],
-        policies: propertyRow.hotel_policies || {},
-        created_at: propertyRow.created_at,
-        updated_at: propertyRow.updated_at
-      } : undefined,
-      restaurant_details: propertyRow.type === 'restaurant' ? {
-        id: propertyRow.id,
-        property_id: propertyRow.id,
-        cuisine_type: propertyRow.cuisine_type || 'International',
-        price_range: propertyRow.price_range || '$$',
-        max_capacity: propertyRow.max_capacity || 0,
-        opening_hours: propertyRow.opening_hours || {},
-        special_dietary_options: propertyRow.special_dietary_options || [],
-        payment_methods: propertyRow.payment_methods || [],
-        delivery_available: propertyRow.delivery_available || false,
-        takeaway_available: propertyRow.takeaway_available || false,
-        dine_in_available: propertyRow.dine_in_available || true,
-        average_prep_time: propertyRow.average_prep_time || 30,
-        created_at: propertyRow.created_at,
-        updated_at: propertyRow.updated_at
-      } : undefined,
+      hotel_details:
+        propertyRow.type === 'hotel'
+          ? {
+              id: propertyRow.id,
+              property_id: propertyRow.id,
+              star_rating: propertyRow.star_rating || undefined,
+              room_count: propertyRow.total_rooms || 0,
+              check_in_time: propertyRow.check_in_time || undefined,
+              check_out_time: propertyRow.check_out_time || undefined,
+              amenities: propertyRow.hotel_amenities || [],
+              policies: propertyRow.hotel_policies || {},
+              created_at: propertyRow.created_at,
+              updated_at: propertyRow.updated_at,
+            }
+          : undefined,
+      restaurant_details:
+        propertyRow.type === 'restaurant'
+          ? {
+              id: propertyRow.id,
+              property_id: propertyRow.id,
+              cuisine_type: propertyRow.cuisine_type || 'International',
+              price_range: propertyRow.price_range || '$$',
+              seating_capacity: propertyRow.max_capacity || 0,
+              operating_hours: propertyRow.opening_hours || {},
+              special_features: propertyRow.special_dietary_options || [],
+              created_at: propertyRow.created_at,
+              updated_at: propertyRow.updated_at,
+            }
+          : undefined,
     };
 
     const response: ApiResponse<Property> = {

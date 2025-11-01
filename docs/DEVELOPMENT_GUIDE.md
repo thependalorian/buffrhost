@@ -1,9 +1,11 @@
 # 🛠️ **BUFFR HOST - DEVELOPMENT GUIDE**
-*Production-Ready Development Environment with Complete Type Safety*
+
+_Production-Ready Development Environment with Complete Type Safety_
 
 ## 🚀 **GETTING STARTED**
 
 ### **Current Status**
+
 - **Frontend**: 95% Complete - Production-ready with full type safety
 - **Backend**: 90% Complete - Full API implementation with ML/AI integration
 - **Database**: 100% Complete - Complete schema with type alignment
@@ -11,6 +13,7 @@
 - **Overall**: 85% Complete - Production-ready hospitality platform
 
 ### **Prerequisites**
+
 - **Node.js**: 18.x or higher
 - **Python**: 3.11+ (required for ML libraries)
 - **PostgreSQL**: 14.x or higher
@@ -19,6 +22,7 @@
 - **Git**: Latest version
 
 ### **Quick Start**
+
 ```bash
 # Clone repository
 git clone https://github.com/your-org/buffr-host.git
@@ -55,6 +59,7 @@ npm run dev
 ## 🏗️ **PROJECT ARCHITECTURE**
 
 ### **Frontend Architecture**
+
 ```
 frontend/
 ├── app/                    # Next.js 14 App Router
@@ -79,6 +84,7 @@ frontend/
 ```
 
 ### **Backend Architecture**
+
 ```
 backend/
 ├── ai/                    # AI/ML Systems (18 systems)
@@ -111,6 +117,7 @@ backend/
 ```
 
 ### **Microservices Architecture**
+
 ```
 microservices/
 ├── api-gateway/           # API Gateway
@@ -139,24 +146,27 @@ microservices/
 ## 🔧 **DEVELOPMENT WORKFLOW**
 
 ### **Type Safety System**
+
 The project uses a comprehensive type safety system:
 
 #### **Frontend Type Safety**
+
 ```typescript
 // TypeScript interfaces
-import { Customer, Booking, Property } from '@/lib/types';
+import { Customer, Booking, Property } from "@/lib/types";
 
 // Zod validation schemas
-import { CustomerCreateSchema, BookingUpdateSchema } from '@/lib/schemas';
+import { CustomerCreateSchema, BookingUpdateSchema } from "@/lib/schemas";
 
 // API client with full type safety
-import { apiServices } from '@/lib/api-client';
+import { apiServices } from "@/lib/api-client";
 
 // React Query hooks with types
-import { useCustomers, useBookings } from '@/hooks/use-customers';
+import { useCustomers, useBookings } from "@/hooks/use-customers";
 ```
 
 #### **Backend Type Safety**
+
 ```python
 # Pydantic models
 from schemas.customer import CustomerCreate, CustomerUpdate
@@ -172,6 +182,7 @@ def create_customer(customer_data: CustomerCreate) -> Customer:
 ```
 
 ### **Database Development**
+
 ```bash
 # Create new migration
 cd backend
@@ -185,6 +196,7 @@ python -c "from database import create_tables; create_tables()"
 ```
 
 ### **API Development**
+
 ```python
 # Add new endpoint
 @router.post("/customers", response_model=CustomerResponse)
@@ -196,15 +208,16 @@ async def create_customer(
 ```
 
 ### **Frontend Development**
+
 ```typescript
 // Add new component
 export function CustomerForm({ onSubmit }: CustomerFormProps) {
   const { mutate: createCustomer } = useCreateCustomer();
-  
+
   const handleSubmit = (data: CustomerCreateInput) => {
     createCustomer(data);
   };
-  
+
   return (
     <form onSubmit={handleSubmit}>
       {/* Form implementation */}
@@ -218,6 +231,7 @@ export function CustomerForm({ onSubmit }: CustomerFormProps) {
 ## 🧪 **TESTING STRATEGY**
 
 ### **Frontend Testing**
+
 ```bash
 # Run all tests
 npm test
@@ -233,6 +247,7 @@ npm run test:e2e
 ```
 
 ### **Backend Testing**
+
 ```bash
 # Run all tests
 pytest
@@ -248,6 +263,7 @@ pytest tests/test_ml_systems.py
 ```
 
 ### **API Testing**
+
 ```bash
 # Test API endpoints
 curl -X POST http://localhost:8000/api/v1/customers \
@@ -264,17 +280,19 @@ curl -X GET http://localhost:8000/api/v1/customers \
 ## 🔍 **DEBUGGING GUIDE**
 
 ### **Frontend Debugging**
+
 ```typescript
 // Use React DevTools
 // Enable TypeScript strict mode
 // Use console.log for debugging
-console.log('Customer data:', customerData);
+console.log("Customer data:", customerData);
 
 // Use React Query DevTools
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 ```
 
 ### **Backend Debugging**
+
 ```python
 # Use Python debugger
 import pdb; pdb.set_trace()
@@ -288,6 +306,7 @@ uvicorn main:app --reload --log-level debug
 ```
 
 ### **Database Debugging**
+
 ```sql
 -- Check table structure
 \d table_name
@@ -304,18 +323,21 @@ SELECT * FROM table_name LIMIT 10;
 ## 📊 **PERFORMANCE OPTIMIZATION**
 
 ### **Frontend Optimization**
+
 - **Code Splitting**: Dynamic imports for large components
 - **Image Optimization**: Next.js Image component
 - **Caching**: React Query for API caching
 - **Bundle Analysis**: `npm run analyze`
 
 ### **Backend Optimization**
+
 - **Database Indexing**: Proper database indexes
 - **Query Optimization**: Efficient SQL queries
 - **Caching**: Redis for frequently accessed data
 - **Connection Pooling**: Database connection pooling
 
 ### **ML/AI Optimization**
+
 - **Model Caching**: Cache trained models
 - **Batch Processing**: Process multiple predictions
 - **Async Processing**: Non-blocking ML operations
@@ -326,11 +348,12 @@ SELECT * FROM table_name LIMIT 10;
 ## 🔒 **SECURITY BEST PRACTICES**
 
 ### **Authentication**
+
 ```typescript
 // Frontend: Secure token storage
-const token = localStorage.getItem('auth_token');
+const token = localStorage.getItem("auth_token");
 if (token) {
-  apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 }
 ```
 
@@ -342,6 +365,7 @@ async def protected_route(current_user: User = Depends(get_current_user)):
 ```
 
 ### **Data Validation**
+
 ```typescript
 // Frontend: Zod validation
 const result = CustomerCreateSchema.safeParse(formData);
@@ -359,6 +383,7 @@ async def create_customer(customer: CustomerCreate):
 ```
 
 ### **Database Security**
+
 ```python
 # Row Level Security (RLS)
 # Enable RLS on sensitive tables
@@ -375,6 +400,7 @@ CREATE POLICY customer_access ON customers
 ## 🚀 **DEPLOYMENT**
 
 ### **Development Deployment**
+
 ```bash
 # Start all services
 docker-compose up -d
@@ -387,6 +413,7 @@ docker-compose logs -f service_name
 ```
 
 ### **Production Deployment**
+
 ```bash
 # Build production images
 docker-compose -f docker-compose.prod.yml build
@@ -399,6 +426,7 @@ docker-compose exec backend alembic upgrade head
 ```
 
 ### **Microservices Deployment**
+
 ```bash
 # Deploy individual services
 cd microservices
@@ -414,6 +442,7 @@ cd microservices
 ## 📚 **DOCUMENTATION STANDARDS**
 
 ### **Code Documentation**
+
 ```typescript
 /**
  * Customer management hook
@@ -429,13 +458,13 @@ export function useCustomer(customerId: string) {
 def create_customer(customer_data: CustomerCreate) -> Customer:
     """
     Create a new customer
-    
+
     Args:
         customer_data: Customer creation data
-        
+
     Returns:
         Created customer object
-        
+
     Raises:
         ValidationError: If customer data is invalid
         DatabaseError: If database operation fails
@@ -444,6 +473,7 @@ def create_customer(customer_data: CustomerCreate) -> Customer:
 ```
 
 ### **API Documentation**
+
 ```python
 @router.post(
     "/customers",
@@ -462,12 +492,14 @@ async def create_customer(customer: CustomerCreate):
 ## 🎯 **BEST PRACTICES**
 
 ### **Code Organization**
+
 - **Single Responsibility**: Each function/component has one purpose
 - **DRY Principle**: Don't repeat yourself
 - **Consistent Naming**: Use clear, descriptive names
 - **Type Safety**: Always use TypeScript types
 
 ### **Git Workflow**
+
 ```bash
 # Create feature branch
 git checkout -b feature/customer-management
@@ -481,6 +513,7 @@ git push origin feature/customer-management
 ```
 
 ### **Code Review Checklist**
+
 - [ ] Code follows project standards
 - [ ] Tests are included and passing
 - [ ] Documentation is updated
@@ -495,6 +528,7 @@ git push origin feature/customer-management
 ### **Common Issues**
 
 #### **Frontend Issues**
+
 ```bash
 # Module not found
 npm install missing-package
@@ -507,6 +541,7 @@ npm run build
 ```
 
 #### **Backend Issues**
+
 ```bash
 # Import errors
 pip install -r requirements.txt
@@ -519,6 +554,7 @@ python test_all_ml_imports.py
 ```
 
 #### **Database Issues**
+
 ```bash
 # Connection issues
 docker-compose logs postgres
@@ -533,12 +569,14 @@ alembic history
 ## 📞 **SUPPORT**
 
 ### **Getting Help**
+
 - **Documentation**: Check this guide and other docs
 - **Issues**: Create GitHub issues for bugs
 - **Discussions**: Use GitHub discussions for questions
 - **Code Review**: Request code reviews for complex changes
 
 ### **Resources**
+
 - **TypeScript**: [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - **Next.js**: [Next.js Documentation](https://nextjs.org/docs)
 - **FastAPI**: [FastAPI Documentation](https://fastapi.tiangolo.com/)
@@ -548,4 +586,4 @@ alembic history
 
 **Happy Coding! 🚀**
 
-*Last updated: October 10, 2025*
+_Last updated: October 10, 2025_

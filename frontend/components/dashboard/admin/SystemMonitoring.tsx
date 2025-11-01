@@ -18,6 +18,65 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * SystemMonitoring React Component for Buffr Host Hospitality Platform
+ * @fileoverview SystemMonitoring displays comprehensive dashboard with key metrics and analytics
+ * @location buffr-host/components/dashboard/admin/SystemMonitoring.tsx
+ * @purpose SystemMonitoring displays comprehensive dashboard with key metrics and analytics
+ * @component SystemMonitoring
+ * @category Dashboard
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {SystemHealth} [systemHealth] - systemHealth prop description
+ * @param {SystemAlert[]} [alerts] - alerts prop description
+ * @param {SystemLog[]} [logs] - logs prop description
+ * @param {() => void} [onRefresh] - onRefresh prop description
+ * @param {() => void} [onExportLogs] - onExportLogs prop description
+ * @param {(id} [onResolveAlert] - onResolveAlert prop description
+ * @param {() => void} [onViewLogs] - onViewLogs prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * Methods:
+ * @method handleRefresh - handleRefresh method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ * @method getStatusIcon - getStatusIcon method for component functionality
+ * @method getAlertColor - getAlertColor method for component functionality
+ * @method getSeverityColor - getSeverityColor method for component functionality
+ * @method getLogLevelColor - getLogLevelColor method for component functionality
+ * @method formatDate - formatDate method for component functionality
+ * @method formatPercentage - formatPercentage method for component functionality
+ * @method formatBytes - formatBytes method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { SystemMonitoring } from './SystemMonitoring';
+ *
+ * function App() {
+ *   return (
+ *     <SystemMonitoring
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered SystemMonitoring component
+ */
+
 import {
   Card,
   CardContent,

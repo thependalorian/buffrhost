@@ -14,9 +14,9 @@ This document describes the strategy for monitoring, logging, and tracing for th
 
 - **Strategy**: Prometheus will be used for collecting and storing metrics. Each microservice will expose a `/metrics` endpoint for Prometheus to scrape.
 - **Key Metrics**:
-    - **RED Method**: Rate (requests/sec), Errors (error rate), Duration (request latency).
-    - **USE Method**: Utilization, Saturation, Errors for system resources (CPU, memory, disk).
-    - Business-specific metrics (e.g., orders created, payments processed).
+  - **RED Method**: Rate (requests/sec), Errors (error rate), Duration (request latency).
+  - **USE Method**: Utilization, Saturation, Errors for system resources (CPU, memory, disk).
+  - Business-specific metrics (e.g., orders created, payments processed).
 - **Dashboards**: Grafana will be used to create dashboards for visualizing metrics and setting up alerts.
 
 ## 3. Tracing

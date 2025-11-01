@@ -17,6 +17,47 @@
 'use client';
 
 import React from 'react';
+/**
+ * CustomerLoyalty React Component for Buffr Host Hospitality Platform
+ * @fileoverview CustomerLoyalty manages customer relationship and loyalty program interactions
+ * @location buffr-host/components/crm/customer-dashboard/CustomerLoyalty.tsx
+ * @purpose CustomerLoyalty manages customer relationship and loyalty program interactions
+ * @component CustomerLoyalty
+ * @category Crm
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {LoyaltyData | null} [loyaltyData] - loyaltyData prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * Usage Example:
+ * @example
+ * import { CustomerLoyalty } from './CustomerLoyalty';
+ *
+ * function App() {
+ *   return (
+ *     <CustomerLoyalty
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered CustomerLoyalty component
+ */
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, Gift } from 'lucide-react';
 

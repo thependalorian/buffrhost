@@ -4,12 +4,14 @@ import {
   BuffrCard,
   BuffrCardBody,
   BuffrCardHeader,
+  BuffrCardContent,
   BuffrCardTitle,
   BuffrButton,
   BuffrInput,
   BuffrLabel,
   BuffrSelect,
 } from '@/components/ui';
+
 /**
  * Property Owner Login Page
  *
@@ -17,6 +19,9 @@ import {
  * Features: Authentication, property selection, dashboard access
  * Location: app/property-owner/login/page.tsx
  */
+
+// Force dynamic rendering - prevent static generation
+export const dynamic = 'force-dynamic';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -92,15 +97,25 @@ export default function PropertyOwnerLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-nude-50 to-nude-100 flex items-center justify-center p-4">
-      <BuffrCard className="w-full max-w-md">
+    <main
+      className="min-h-screen bg-gradient-to-br from-nude-50 to-nude-100 flex items-center justify-center p-4"
+      role="main"
+    >
+      <BuffrCard
+        className="w-full max-w-md"
+        role="region"
+        aria-labelledby="login-heading"
+      >
         <BuffrCardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-nude-100 rounded-full">
               <BuffrIcon name="building-2" className="h-8 w-8 text-nude-600" />
             </div>
           </div>
-          <BuffrCardTitle className="text-2xl font-bold text-nude-900">
+          <BuffrCardTitle
+            id="login-heading"
+            className="text-2xl font-bold text-nude-900"
+          >
             Property Owner Login
           </BuffrCardTitle>
           <p className="text-nude-600 mt-2">
@@ -109,7 +124,13 @@ export default function PropertyOwnerLoginPage() {
         </BuffrCardHeader>
 
         <BuffrCardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4"
+            role="form"
+            aria-labelledby="login-heading"
+            noValidate
+          >
             <div className="space-y-2">
               <BuffrLabel htmlFor="email">Email Address</BuffrLabel>
               <div className="relative">
@@ -172,13 +193,31 @@ export default function PropertyOwnerLoginPage() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <div
+                className="bg-red-50 border border-red-200 rounded-lg p-3"
+                role="alert"
+                aria-live="polite"
+              >
                 <p className="text-red-800 text-sm">{error}</p>
               </div>
             )}
 
-            <BuffrButton type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing In...' : 'Access Dashboard'}
+            <BuffrButton
+              type="submit"
+              className="w-full"
+              disabled={isLoading}
+              aria-describedby={isLoading ? 'loading-status' : undefined}
+            >
+              {isLoading ? (
+                <>
+                  <span aria-hidden="true">Signing In...</span>
+                  <span id="loading-status" className="sr-only">
+                    Loading, please wait
+                  </span>
+                </>
+              ) : (
+                'Access Dashboard'
+              )}
             </BuffrButton>
           </form>
 
@@ -192,6 +231,6 @@ export default function PropertyOwnerLoginPage() {
           </div>
         </BuffrCardContent>
       </BuffrCard>
-    </div>
+    </main>
   );
 }

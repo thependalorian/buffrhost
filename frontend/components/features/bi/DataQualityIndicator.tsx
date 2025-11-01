@@ -1,3 +1,90 @@
+/**
+ * @file This file defines the DataQualityIndicator component, which displays a visual indicator of data quality.
+ * @location frontend/components/features/bi/DataQualityIndicator.tsx
+ * @description This component renders a card with a data quality score, status, and a progress bar.
+ * @modular
+ *
+ * @component
+ * @param {DataQualityIndicatorProps} props - The props for the component.
+ * @param {string} props.title - The title of the data quality metric.
+ * @param {QualityMetric[]} props.metrics - An array of individual quality metrics.
+ * @param {number} props.overallScore - The overall data quality score (0-100).
+ * @param {string} props.lastChecked - The timestamp when the data quality was last checked.
+ * @param {() => void} [props.onRefresh] - Callback function to refresh the data quality metrics.
+ *
+ * @example
+ * const metrics = [
+ *   { name: 'Completeness', value: 95, threshold: 90, status: 'good', description: 'Percentage of non-null values' },
+ *   { name: 'Accuracy', value: 88, threshold: 85, status: 'warning', description: 'Deviation from expected values' },
+ * ];
+ * <DataQualityIndicator
+ *   title="Customer Data Quality"
+ *   metrics={metrics}
+ *   overallScore={90}
+ *   lastChecked="2025-10-31T10:00:00Z"
+ *   onRefresh={() => console.log('Refreshing data quality')}
+ * />
+ *
+ * @see {@link BuffrCard}
+ * @see {@link BuffrIcon}
+ * @see {@link BuffrProgress}
+ * @see {@link Badge}
+ *
+ * @security This component does not handle any sensitive data directly.
+ * @accessibility The component uses semantic HTML.
+ * @performance The component is lightweight and has minimal performance impact.
+ *
+ * @buffr-icon-usage This component uses the 'database', 'check-circle', 'alert-triangle', and 'x-circle' icons.
+ */
+/**
+ * DataQualityIndicator React Component for Buffr Host Hospitality Platform
+ * @fileoverview DataQualityIndicator provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/bi/DataQualityIndicator.tsx
+ * @purpose DataQualityIndicator provides specialized functionality for the Buffr Host platform
+ * @component DataQualityIndicator
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {string} [title] - title prop description
+ * @param {QualityMetric[]} [metrics] - metrics prop description
+ * @param {number} [overallScore] - overallScore prop description
+ * @param {string} [lastChecked] - lastChecked prop description
+ * @param {} [onRefresh] - onRefresh prop description
+ *
+ * Methods:
+ * @method getStatusIcon - getStatusIcon method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ * @method getOverallStatus - getOverallStatus method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { DataQualityIndicator } from './DataQualityIndicator';
+ *
+ * function App() {
+ *   return (
+ *     <DataQualityIndicator
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered DataQualityIndicator component
+ */
+
 import {
   BuffrIcon,
   BuffrCard,

@@ -9,7 +9,7 @@ import { NotificationsWidget } from '@/components/dashboard/NotificationsWidget'
 
 /**
  * Refactored Dashboard Page
- * 
+ *
  * Modular dashboard using smaller, reusable components
  * Location: app/dashboard/page-refactored.tsx
  */
@@ -51,10 +51,12 @@ export default function DashboardPage() {
     occupancyRate: 0,
     pendingTasks: 0,
     averageRating: 0,
-    totalGuests: 0
+    totalGuests: 0,
   });
 
-  const [recentActivities, setRecentActivities] = useState<RecentActivityItem[]>([]);
+  const [recentActivities, setRecentActivities] = useState<
+    RecentActivityItem[]
+  >([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
@@ -62,7 +64,7 @@ export default function DashboardPage() {
     const updateTime = () => {
       setCurrentTime(new Date().toLocaleString());
     };
-    
+
     updateTime();
     const interval = setInterval(updateTime, 60000);
 
@@ -70,15 +72,15 @@ export default function DashboardPage() {
     const loadDashboardData = async () => {
       try {
         // Simulate API calls
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         setStats({
-          totalRevenue: 125430.50,
+          totalRevenue: 125430.5,
           totalBookings: 342,
           occupancyRate: 87.5,
           pendingTasks: 12,
           averageRating: 4.8,
-          totalGuests: 1284
+          totalGuests: 1284,
         });
 
         setRecentActivities([
@@ -89,7 +91,7 @@ export default function DashboardPage() {
             description: 'Room 205 - 2 nights',
             timestamp: new Date(Date.now() - 1000 * 60 * 15),
             status: 'completed',
-            amount: 450
+            amount: 450,
           },
           {
             id: '2',
@@ -98,7 +100,7 @@ export default function DashboardPage() {
             description: 'Table 12 - Dinner service',
             timestamp: new Date(Date.now() - 1000 * 60 * 30),
             status: 'pending',
-            amount: 125
+            amount: 125,
           },
           {
             id: '3',
@@ -106,8 +108,8 @@ export default function DashboardPage() {
             title: 'New Review',
             description: '5-star rating received',
             timestamp: new Date(Date.now() - 1000 * 60 * 45),
-            status: 'completed'
-          }
+            status: 'completed',
+          },
         ]);
 
         setNotifications([
@@ -117,7 +119,7 @@ export default function DashboardPage() {
             title: 'System Update',
             message: 'New features available in your dashboard',
             timestamp: new Date(Date.now() - 1000 * 60 * 10),
-            isRead: false
+            isRead: false,
           },
           {
             id: '2',
@@ -125,7 +127,7 @@ export default function DashboardPage() {
             title: 'Low Inventory',
             message: 'Room cleaning supplies running low',
             timestamp: new Date(Date.now() - 1000 * 60 * 60),
-            isRead: false
+            isRead: false,
           },
           {
             id: '3',
@@ -133,10 +135,9 @@ export default function DashboardPage() {
             title: 'Payment Received',
             message: 'Payment of $450.00 processed successfully',
             timestamp: new Date(Date.now() - 1000 * 60 * 90),
-            isRead: true
-          }
+            isRead: true,
+          },
         ]);
-
       } catch (error) {
         console.error('Error loading dashboard data:', error);
       } finally {
@@ -158,7 +159,7 @@ export default function DashboardPage() {
       changeType: 'increase' as const,
       icon: 'dollar-sign' as const,
       color: 'success' as const,
-      format: 'currency' as const
+      format: 'currency' as const,
     },
     {
       id: 'bookings',
@@ -168,7 +169,7 @@ export default function DashboardPage() {
       changeType: 'increase' as const,
       icon: 'calendar' as const,
       color: 'primary' as const,
-      format: 'number' as const
+      format: 'number' as const,
     },
     {
       id: 'occupancy',
@@ -178,7 +179,7 @@ export default function DashboardPage() {
       changeType: 'decrease' as const,
       icon: 'trending-up' as const,
       color: 'warning' as const,
-      format: 'percentage' as const
+      format: 'percentage' as const,
     },
     {
       id: 'tasks',
@@ -188,7 +189,7 @@ export default function DashboardPage() {
       changeType: 'neutral' as const,
       icon: 'checklist' as const,
       color: 'info' as const,
-      format: 'number' as const
+      format: 'number' as const,
     },
     {
       id: 'rating',
@@ -198,7 +199,7 @@ export default function DashboardPage() {
       changeType: 'increase' as const,
       icon: 'star' as const,
       color: 'success' as const,
-      format: 'number' as const
+      format: 'number' as const,
     },
     {
       id: 'guests',
@@ -208,8 +209,8 @@ export default function DashboardPage() {
       changeType: 'increase' as const,
       icon: 'users' as const,
       color: 'primary' as const,
-      format: 'number' as const
-    }
+      format: 'number' as const,
+    },
   ];
 
   const quickActions = [
@@ -220,7 +221,7 @@ export default function DashboardPage() {
       icon: 'plus' as const,
       href: '/bookings/new',
       variant: 'primary' as const,
-      color: 'primary' as const
+      color: 'primary' as const,
     },
     {
       id: 'manage-rooms',
@@ -229,7 +230,7 @@ export default function DashboardPage() {
       icon: 'home' as const,
       href: '/rooms',
       variant: 'outline' as const,
-      color: 'info' as const
+      color: 'info' as const,
     },
     {
       id: 'view-reports',
@@ -238,7 +239,7 @@ export default function DashboardPage() {
       icon: 'bar-chart' as const,
       href: '/analytics',
       variant: 'outline' as const,
-      color: 'success' as const
+      color: 'success' as const,
     },
     {
       id: 'settings',
@@ -247,8 +248,8 @@ export default function DashboardPage() {
       icon: 'settings' as const,
       href: '/settings',
       variant: 'outline' as const,
-      color: 'warning' as const
-    }
+      color: 'warning' as const,
+    },
   ];
 
   if (loading) {
@@ -264,43 +265,77 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <WelcomeSection
-          userName="John Doe"
-          userRole="Property Manager"
-          currentTime={currentTime}
-        />
+      {/* Header - Sticky on Mobile */}
+      <header className="bg-white shadow-sm sticky top-0 z-10 border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 md:py-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 truncate flex-1 mr-2">
+              Dashboard
+            </h1>
+            <button className="md:hidden p-2 text-gray-600 hover:text-gray-900 flex-shrink-0">
+              {/* Hamburger Menu Icon */}
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
 
-        {/* Stats Cards */}
-        <StatsCards stats={statsCards} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+        {/* Welcome Section - Responsive */}
+        <div className="mb-4 sm:mb-6 md:mb-8">
+          <WelcomeSection
+            userName="John Doe"
+            userRole="Property Manager"
+            currentTime={currentTime}
+          />
+        </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
+        {/* Stats Cards - Responsive Grid */}
+        <div className="mb-4 sm:mb-6 md:mb-8">
+          <StatsCards stats={statsCards} />
+        </div>
+
+        {/* Main Content Grid - Stack on Mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* Left Column - Full Width on Mobile */}
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Recent Activity */}
-            <RecentActivity
-              activities={recentActivities}
-              maxItems={5}
-              showViewAll={true}
-            />
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <RecentActivity
+                activities={recentActivities}
+                maxItems={5}
+                showViewAll={true}
+              />
+            </div>
 
-            {/* Quick Actions */}
-            <QuickActions
-              actions={quickActions}
-              columns={4}
-            />
+            {/* Quick Actions - Responsive Grid */}
+            <div className="bg-white rounded-lg shadow overflow-hidden p-4 sm:p-6">
+              <QuickActions actions={quickActions} columns={4} />
+            </div>
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-6">
+          {/* Right Column - Full Width on Mobile */}
+          <div className="space-y-4 sm:space-y-6">
             {/* Notifications */}
-            <NotificationsWidget
-              notifications={notifications}
-              maxItems={5}
-              showMarkAllRead={true}
-            />
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <NotificationsWidget
+                notifications={notifications}
+                maxItems={5}
+                showMarkAllRead={true}
+              />
+            </div>
           </div>
         </div>
       </div>

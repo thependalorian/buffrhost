@@ -18,6 +18,64 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * PlatformOverview React Component for Buffr Host Hospitality Platform
+ * @fileoverview PlatformOverview displays comprehensive dashboard with key metrics and analytics
+ * @location buffr-host/components/dashboard/admin/PlatformOverview.tsx
+ * @purpose PlatformOverview displays comprehensive dashboard with key metrics and analytics
+ * @component PlatformOverview
+ * @category Dashboard
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {PlatformStats} [platformStats] - platformStats prop description
+ * @param {RecentActivity[]} [recentActivity] - recentActivity prop description
+ * @param {() => void} [onAddProperty] - onAddProperty prop description
+ * @param {() => void} [onManageUsers] - onManageUsers prop description
+ * @param {() => void} [onViewAnalytics] - onViewAnalytics prop description
+ * @param {() => void} [onSystemSettings] - onSystemSettings prop description
+ * @param {() => void} [onAIChat] - onAIChat prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * Methods:
+ * @method handleRefresh - handleRefresh method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ * @method getStatusIcon - getStatusIcon method for component functionality
+ * @method getActivityIcon - getActivityIcon method for component functionality
+ * @method getSeverityColor - getSeverityColor method for component functionality
+ * @method formatCurrency - formatCurrency method for component functionality
+ * @method formatDate - formatDate method for component functionality
+ * @method formatNumber - formatNumber method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { PlatformOverview } from './PlatformOverview';
+ *
+ * function App() {
+ *   return (
+ *     <PlatformOverview
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered PlatformOverview component
+ */
+
 import {
   Card,
   CardContent,

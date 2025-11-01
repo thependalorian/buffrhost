@@ -59,10 +59,12 @@ export default function AdminDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen px-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-nude-600 mx-auto mb-4"></div>
-          <p className="text-nude-600">Verifying admin access...</p>
+          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-nude-600 mx-auto mb-4"></div>
+          <p className="text-sm sm:text-base text-nude-600 break-words">
+            Verifying admin access...
+          </p>
         </div>
       </div>
     );
@@ -70,33 +72,31 @@ export default function AdminDashboardPage() {
 
   if (error || !isAuthenticated) {
     return (
-      <div className="min-h-screen bg-nude-50 flex items-center justify-center">
-        <div className="max-w-md w-full bg-nude-50 shadow-luxury-strong rounded-lg p-8">
+      <div className="min-h-screen bg-nude-50 flex items-center justify-center px-4 py-8">
+        <div className="max-w-md w-full bg-nude-50 shadow-luxury-strong rounded-lg p-6 sm:p-8">
           <div className="text-center">
-            <div className="text-semantic-error text-6xl mb-4">🔒</div>
-            <h2 className="text-2xl font-bold text-nude-900 mb-2">
+            <div className="text-semantic-error text-4xl sm:text-6xl mb-4">
+              🔒
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-nude-900 mb-2 truncate">
               Access Denied
             </h2>
-            <p className="text-nude-600 mb-6">
+            <p className="text-sm sm:text-base text-nude-600 mb-6 break-words px-2">
               {error || 'Admin privileges required to access this dashboard.'}
             </p>
             <div className="space-y-3">
-              <BuffrButton
+              <button
                 onClick={checkAuthenticationAndAccess}
-                variant="primary"
-                size="lg"
-                className="w-full"
+                className="w-full bg-blue-600 text-white px-4 sm:px-6 py-3 text-sm sm:text-base rounded-md hover:bg-blue-700 font-medium min-h-[44px]"
               >
                 Try Again
-              </BuffrButton>
-              <BuffrButton
+              </button>
+              <button
                 onClick={() => (window.location.href = '/')}
-                variant="outline"
-                size="lg"
-                className="w-full"
+                className="w-full bg-gray-200 text-gray-800 px-4 sm:px-6 py-3 text-sm sm:text-base rounded-md hover:bg-gray-300 font-medium min-h-[44px]"
               >
                 Return to Home
-              </BuffrButton>
+              </button>
             </div>
           </div>
         </div>

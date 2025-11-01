@@ -21,7 +21,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import MainNavigation from '@/components/layout/MainNavigation';
+import MainNavigation from '@/components/layouts/MainNavigation';
 
 interface RoomImage {
   id: string;

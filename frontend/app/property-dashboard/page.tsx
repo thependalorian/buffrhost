@@ -223,28 +223,31 @@ export default function PropertySelectionPage() {
 
   return (
     <div className="min-h-screen bg-nude-50">
-      {/* Header */}
-      <div className="bg-nude-50 shadow-nude-soft border-b">
+      {/* Header - Responsive */}
+      <header className="bg-nude-50 shadow-nude-soft border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-nude-900">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 py-4 sm:py-6">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-nude-900 truncate">
                 My Properties
               </h1>
-              <p className="text-nude-600">Select a property to manage</p>
+              <p className="text-xs sm:text-sm md:text-base text-nude-600 mt-1 break-words">
+                Select a property to manage
+              </p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-wrap gap-2 sm:gap-4">
               <BuffrButton
                 onClick={loadUserProperties}
                 variant="outline"
                 size="md"
+                className="flex-1 sm:flex-initial min-h-[44px] sm:min-h-0 whitespace-nowrap"
               >
                 Refresh
               </BuffrButton>
               <BuffrButton
                 variant="primary"
                 size="md"
-                className="flex items-center space-x-2"
+                className="flex-1 sm:flex-initial flex items-center justify-center space-x-2 min-h-[44px] sm:min-h-0 whitespace-nowrap"
               >
                 <PlusIcon className="w-4 h-4" />
                 <span>Add Property</span>
@@ -252,93 +255,101 @@ export default function PropertySelectionPage() {
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Properties Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Properties Grid - Responsive */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         {properties.length === 0 ? (
-          <div className="text-center py-12">
-            <BuildingOfficeIcon className="mx-auto h-12 w-12 text-nude-400" />
-            <h3 className="mt-2 text-sm font-medium text-nude-900">
+          <div className="text-center py-8 sm:py-12">
+            <BuildingOfficeIcon className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-nude-400" />
+            <h3 className="mt-2 text-sm sm:text-base font-medium text-nude-900 truncate">
               No properties
             </h3>
-            <p className="mt-1 text-sm text-nude-500">
+            <p className="mt-1 text-xs sm:text-sm text-nude-500 break-words px-4">
               Get started by adding your first property.
             </p>
-            <div className="mt-6">
-              <BuffrButton variant="primary" size="md" className="flex items-center">
+            <div className="mt-4 sm:mt-6">
+              <BuffrButton
+                variant="primary"
+                size="md"
+                className="flex items-center justify-center mx-auto min-h-[44px] sm:min-h-0"
+              >
                 <PlusIcon className="w-4 h-4 mr-2" />
                 Add Property
               </BuffrButton>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {properties.map((property) => (
               <div
                 key={property.id}
                 onClick={() => handlePropertySelect(property.id)}
-                className="bg-nude-50 rounded-lg shadow-luxury-medium hover:shadow-luxury-strong transition-shadow duration-300 cursor-pointer border border-nude-200 hover:border-nude-300"
+                className="bg-nude-50 rounded-lg shadow-luxury-medium hover:shadow-luxury-strong transition-shadow duration-300 cursor-pointer border border-nude-200 hover:border-nude-300 overflow-hidden"
               >
-                <div className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-2xl">
+                <div className="p-4 sm:p-6">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                      <div className="text-xl sm:text-2xl flex-shrink-0">
                         {getPropertyTypeIcon(property.type)}
                       </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-nude-900">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg font-semibold text-nude-900 truncate">
                           {property.name}
                         </h3>
-                        <p className="text-sm text-nude-500 capitalize">
+                        <p className="text-xs sm:text-sm text-nude-500 capitalize truncate">
                           {property.type}
                         </p>
                       </div>
                     </div>
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(property.status)}`}
+                      className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 ${getStatusColor(property.status)}`}
                     >
                       {property.status}
                     </span>
                   </div>
 
-                  <div className="mt-4">
-                    <div className="flex items-center text-sm text-nude-500">
-                      <MapPinIcon className="w-4 h-4 mr-1" />
-                      <span>
+                  <div className="mt-3 sm:mt-4">
+                    <div className="flex items-center text-xs sm:text-sm text-nude-500">
+                      <MapPinIcon className="w-4 h-4 mr-1 flex-shrink-0" />
+                      <span className="truncate">
                         {property.address}, {property.city}
                       </span>
                     </div>
                   </div>
 
-                  <div className="mt-6 grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-nude-500">Total Orders</p>
-                      <p className="text-lg font-semibold text-nude-900">
+                  <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
+                    <div className="min-w-0">
+                      <p className="text-xs sm:text-sm text-nude-500 truncate">
+                        Total Orders
+                      </p>
+                      <p className="text-base sm:text-lg font-semibold text-nude-900 truncate">
                         {property.totalOrders.toLocaleString()}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-sm text-nude-500">Monthly Revenue</p>
-                      <p className="text-lg font-semibold text-semantic-success">
+                    <div className="min-w-0">
+                      <p className="text-xs sm:text-sm text-nude-500 truncate">
+                        Monthly Revenue
+                      </p>
+                      <p className="text-base sm:text-lg font-semibold text-semantic-success truncate">
                         {formatCurrency(property.monthlyRevenue)}
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between">
+                  <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                     <div className="flex items-center">
-                      <StarIcon className="w-4 h-4 text-yellow-400 mr-1" />
-                      <span className="text-sm font-medium text-nude-900">
+                      <StarIcon className="w-4 h-4 text-yellow-400 mr-1 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm font-medium text-nude-900">
                         {property.averageRating.toFixed(1)}
                       </span>
                     </div>
-                    <div className="text-sm text-nude-500">
+                    <div className="text-xs sm:text-sm text-nude-500 truncate">
                       Last order: {formatDate(property.lastOrderDate)}
                     </div>
                   </div>
 
-                  <div className="mt-4 flex items-center justify-end">
+                  <div className="mt-3 sm:mt-4 flex items-center justify-end">
                     <ArrowRightIcon className="w-5 h-5 text-nude-600" />
                   </div>
                 </div>

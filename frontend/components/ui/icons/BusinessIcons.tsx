@@ -15,6 +15,49 @@
 
 import * as React from 'react';
 
+/**
+ * BusinessIcon React Component for Buffr Host Hospitality Platform
+ * @fileoverview BusinessIcon provides reusable UI component for consistent design
+ * @location buffr-host/components/ui/icons/BusinessIcons.tsx
+ * @purpose BusinessIcon provides reusable UI component for consistent design
+ * @component BusinessIcon
+ * @category Ui
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {BusinessIconName} [name] - name prop description
+ * @param {} [size] - size prop description
+ * @param {} [className] - className prop description
+ * @param {} [color] - color prop description
+ *
+ * Usage Example:
+ * @example
+ * import { BusinessIcon } from './BusinessIcon';
+ *
+ * function App() {
+ *   return (
+ *     <BusinessIcon
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered BusinessIcon component
+ */
+
 export type BusinessIconName =
   | 'dollar-sign'
   | 'credit-card'

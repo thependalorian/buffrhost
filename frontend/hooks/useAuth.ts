@@ -17,7 +17,7 @@ export const useAuth = () => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     loading: true,
-    error: null
+    error: null,
   });
 
   useEffect(() => {
@@ -30,20 +30,20 @@ export const useAuth = () => {
           setAuthState({
             user: userData.user,
             loading: false,
-            error: null
+            error: null,
           });
         } else {
           setAuthState({
             user: null,
             loading: false,
-            error: null
+            error: null,
           });
         }
       } catch (error) {
         setAuthState({
           user: null,
           loading: false,
-          error: 'Authentication check failed'
+          error: 'Authentication check failed',
         });
       }
     };
@@ -52,13 +52,13 @@ export const useAuth = () => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    setAuthState(prev => ({ ...prev, loading: true, error: null }));
-    
+    setAuthState((prev) => ({ ...prev, loading: true, error: null }));
+
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
@@ -66,23 +66,23 @@ export const useAuth = () => {
         setAuthState({
           user: data.user,
           loading: false,
-          error: null
+          error: null,
         });
         return { success: true, user: data.user };
       } else {
         const error = await response.json();
-        setAuthState(prev => ({
+        setAuthState((prev) => ({
           ...prev,
           loading: false,
-          error: error.message || 'Login failed'
+          error: error.message || 'Login failed',
         }));
         return { success: false, error: error.message };
       }
     } catch (error) {
-      setAuthState(prev => ({
+      setAuthState((prev) => ({
         ...prev,
         loading: false,
-        error: 'Network error'
+        error: 'Network error',
       }));
       return { success: false, error: 'Network error' };
     }
@@ -94,18 +94,18 @@ export const useAuth = () => {
     } catch (error) {
       console.error('Logout error:', error);
     }
-    
+
     setAuthState({
       user: null,
       loading: false,
-      error: null
+      error: null,
     });
   };
 
   return {
     ...authState,
     login,
-    logout
+    logout,
   };
 };
 

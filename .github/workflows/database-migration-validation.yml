@@ -3,196 +3,196 @@ name: Database Migration Validation
 on:
   workflow_call:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   workflow_dispatch:
     inputs:
       validate_schema:
-        description: 'Validate database schema'
+        description: "Validate database schema"
         required: false
-        default: 'true'
+        default: "true"
         type: boolean
       run_migrations:
-        description: 'Run test migrations'
+        description: "Run test migrations"
         required: false
-        default: 'false'
+        default: "false"
         type: boolean
 
 jobs:
   database-validation:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install psycopg2-binary python-dotenv
-        
-    - name: Validate database schema
-      if: ${{ inputs.validate_schema == 'true' }}
-      run: |
-        echo "🔍 Validating database schema..."
-        python -c "
-        import os
-        import psycopg2
-        from dotenv import load_dotenv
-        
-        load_dotenv()
-        
-        # Connect to database
-        conn = psycopg2.connect(os.getenv('NEON_DATABASE_URL'))
-        cur = conn.cursor()
-        
-        # Check if all required tables exist
-        required_tables = [
-            'tenants', 'users', 'properties', 'orders', 'payments',
-            'reviews', 'staff', 'inventory_items', 'menu_items',
-            'room_types', 'bookings', 'disbursements'
-        ]
-        
-        missing_tables = []
-        for table in required_tables:
-            cur.execute(\"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = %s)\", (table,))
-            if not cur.fetchone()[0]:
-                missing_tables.append(table)
-        
-        if missing_tables:
-            print(f'❌ Missing tables: {missing_tables}')
-            exit(1)
-        else:
-            print('✅ All required tables exist')
-        
-        # Check if AI knowledge base tables exist
-        ai_tables = [
-            'strategic_frameworks', 'customer_value_analysis',
-            'marketing_math_concepts', 'market_analysis_methods'
-        ]
-        
-        ai_missing = []
-        for table in ai_tables:
-            cur.execute(\"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = %s)\", (table,))
-            if not cur.fetchone()[0]:
-                ai_missing.append(table)
-        
-        if ai_missing:
-            print(f'⚠️ Missing AI knowledge base tables: {ai_missing}')
-        else:
-            print('✅ AI knowledge base tables exist')
-        
-        # Check user roles enum
-        cur.execute(\"SELECT unnest(enum_range(NULL::user_role_enum))\")
-        roles = [row[0] for row in cur.fetchall()]
-        
-        required_roles = ['property_owner', 'customer', 'guest', 'admin', 'staff']
-        missing_roles = [role for role in required_roles if role not in roles]
-        
-        if missing_roles:
-            print(f'❌ Missing user roles: {missing_roles}')
-            exit(1)
-        else:
-            print('✅ All required user roles exist')
-        
-        cur.close()
-        conn.close()
-        print('✅ Database schema validation completed')
-        "
-      
-    - name: Test database connection
-      run: |
-        echo "🔍 Testing database connection..."
-        python -c "
-        import os
-        import psycopg2
-        from dotenv import load_dotenv
-        
-        load_dotenv()
-        
-        try:
-            conn = psycopg2.connect(os.getenv('NEON_DATABASE_URL'))
-            cur = conn.cursor()
-            cur.execute('SELECT 1')
-            result = cur.fetchone()
-            cur.close()
-            conn.close()
-            print('✅ Database connection successful')
-        except Exception as e:
-            print(f'❌ Database connection failed: {e}')
-            exit(1)
-        "
-      
-    - name: Validate migration files
-      run: |
-        echo "🔍 Validating migration files..."
-        
-        # Check if consolidated migrations exist
-        if [ ! -d "migrations/consolidated" ]; then
-          echo "❌ Consolidated migrations directory not found"
-          exit 1
-        fi
-        
-        # Check if migration files exist
-        migration_files=(
-          "migrations/consolidated/00_initial_setup.sql"
-          "migrations/consolidated/01_properties_system.sql"
-          "migrations/consolidated/02_restaurant_system.sql"
-          "migrations/consolidated/03_hotel_system.sql"
-          "migrations/consolidated/04_payment_system.sql"
-          "migrations/consolidated/05_ai_knowledge_base.sql"
-        )
-        
-        missing_files=()
-        for file in "${migration_files[@]}"; do
-          if [ ! -f "$file" ]; then
-            missing_files+=("$file")
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install psycopg2-binary python-dotenv
+
+      - name: Validate database schema
+        if: ${{ inputs.validate_schema == 'true' }}
+        run: |
+          echo "🔍 Validating database schema..."
+          python -c "
+          import os
+          import psycopg2
+          from dotenv import load_dotenv
+
+          load_dotenv()
+
+          # Connect to database
+          conn = psycopg2.connect(os.getenv('NEON_DATABASE_URL'))
+          cur = conn.cursor()
+
+          # Check if all required tables exist
+          required_tables = [
+              'tenants', 'users', 'properties', 'orders', 'payments',
+              'reviews', 'staff', 'inventory_items', 'menu_items',
+              'room_types', 'bookings', 'disbursements'
+          ]
+
+          missing_tables = []
+          for table in required_tables:
+              cur.execute(\"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = %s)\", (table,))
+              if not cur.fetchone()[0]:
+                  missing_tables.append(table)
+
+          if missing_tables:
+              print(f'❌ Missing tables: {missing_tables}')
+              exit(1)
+          else:
+              print('✅ All required tables exist')
+
+          # Check if AI knowledge base tables exist
+          ai_tables = [
+              'strategic_frameworks', 'customer_value_analysis',
+              'marketing_math_concepts', 'market_analysis_methods'
+          ]
+
+          ai_missing = []
+          for table in ai_tables:
+              cur.execute(\"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = %s)\", (table,))
+              if not cur.fetchone()[0]:
+                  ai_missing.append(table)
+
+          if ai_missing:
+              print(f'⚠️ Missing AI knowledge base tables: {ai_missing}')
+          else:
+              print('✅ AI knowledge base tables exist')
+
+          # Check user roles enum
+          cur.execute(\"SELECT unnest(enum_range(NULL::user_role_enum))\")
+          roles = [row[0] for row in cur.fetchall()]
+
+          required_roles = ['property_owner', 'customer', 'guest', 'admin', 'staff']
+          missing_roles = [role for role in required_roles if role not in roles]
+
+          if missing_roles:
+              print(f'❌ Missing user roles: {missing_roles}')
+              exit(1)
+          else:
+              print('✅ All required user roles exist')
+
+          cur.close()
+          conn.close()
+          print('✅ Database schema validation completed')
+          "
+
+      - name: Test database connection
+        run: |
+          echo "🔍 Testing database connection..."
+          python -c "
+          import os
+          import psycopg2
+          from dotenv import load_dotenv
+
+          load_dotenv()
+
+          try:
+              conn = psycopg2.connect(os.getenv('NEON_DATABASE_URL'))
+              cur = conn.cursor()
+              cur.execute('SELECT 1')
+              result = cur.fetchone()
+              cur.close()
+              conn.close()
+              print('✅ Database connection successful')
+          except Exception as e:
+              print(f'❌ Database connection failed: {e}')
+              exit(1)
+          "
+
+      - name: Validate migration files
+        run: |
+          echo "🔍 Validating migration files..."
+
+          # Check if consolidated migrations exist
+          if [ ! -d "migrations/consolidated" ]; then
+            echo "❌ Consolidated migrations directory not found"
+            exit 1
           fi
-        done
-        
-        if [ ${#missing_files[@]} -gt 0 ]; then
-          echo "❌ Missing migration files:"
-          printf '%s\n' "${missing_files[@]}"
-          exit 1
-        else
-          echo "✅ All migration files exist"
-        fi
-        
-        # Check if migration runner exists
-        if [ ! -f "migrations/run_consolidated_migrations.py" ]; then
-          echo "❌ Migration runner script not found"
-          exit 1
-        else
-          echo "✅ Migration runner script exists"
-        fi
-      
-    - name: Test migration runner
-      if: ${{ inputs.run_migrations == 'true' }}
-      run: |
-        echo "🔍 Testing migration runner..."
-        cd migrations
-        python run_consolidated_migrations.py --dry-run
-        echo "✅ Migration runner test completed"
-      
-    - name: Database validation summary
-      run: |
-        echo "🗄️ Database Validation Summary"
-        echo "=============================="
-        echo "✅ Database connection validated"
-        echo "✅ Schema validation completed"
-        echo "✅ Migration files validated"
-        echo "✅ AI knowledge base verified"
-        echo "✅ User roles enum validated"
-        echo ""
-        echo "📊 Database Status:"
-        echo "- Total Tables: 109+"
-        echo "- Migration System: Consolidated"
-        echo "- AI Knowledge Base: 21 records"
-        echo "- Multi-tenant: Complete isolation"
-        echo "- Security: RLS policies active"
+
+          # Check if migration files exist
+          migration_files=(
+            "migrations/consolidated/00_initial_setup.sql"
+            "migrations/consolidated/01_properties_system.sql"
+            "migrations/consolidated/02_restaurant_system.sql"
+            "migrations/consolidated/03_hotel_system.sql"
+            "migrations/consolidated/04_payment_system.sql"
+            "migrations/consolidated/05_ai_knowledge_base.sql"
+          )
+
+          missing_files=()
+          for file in "${migration_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              missing_files+=("$file")
+            fi
+          done
+
+          if [ ${#missing_files[@]} -gt 0 ]; then
+            echo "❌ Missing migration files:"
+            printf '%s\n' "${missing_files[@]}"
+            exit 1
+          else
+            echo "✅ All migration files exist"
+          fi
+
+          # Check if migration runner exists
+          if [ ! -f "migrations/run_consolidated_migrations.py" ]; then
+            echo "❌ Migration runner script not found"
+            exit 1
+          else
+            echo "✅ Migration runner script exists"
+          fi
+
+      - name: Test migration runner
+        if: ${{ inputs.run_migrations == 'true' }}
+        run: |
+          echo "🔍 Testing migration runner..."
+          cd migrations
+          python run_consolidated_migrations.py --dry-run
+          echo "✅ Migration runner test completed"
+
+      - name: Database validation summary
+        run: |
+          echo "🗄️ Database Validation Summary"
+          echo "=============================="
+          echo "✅ Database connection validated"
+          echo "✅ Schema validation completed"
+          echo "✅ Migration files validated"
+          echo "✅ AI knowledge base verified"
+          echo "✅ User roles enum validated"
+          echo ""
+          echo "📊 Database Status:"
+          echo "- Total Tables: 109+"
+          echo "- Migration System: Consolidated"
+          echo "- AI Knowledge Base: 21 records"
+          echo "- Multi-tenant: Complete isolation"
+          echo "- Security: RLS policies active"

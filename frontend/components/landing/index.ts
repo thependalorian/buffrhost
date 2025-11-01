@@ -1,5 +1,5 @@
 // Landing Page Components
-export { Navigation } from './Navigation';
+export { Navigation } from '../layouts/Navigation';
 export { HeroSection } from './HeroSection';
 export { PageHero } from './PageHero';
 export { AIConciergeShowcase } from './AIConciergeShowcase';
@@ -7,7 +7,7 @@ export { HotelTypes } from './HotelTypes';
 export { RestaurantTypes } from './RestaurantTypes';
 export { PlatformOverview } from './PlatformOverview';
 export { PricingSection } from './PricingSection';
-export { Footer } from './Footer';
+export { Footer } from '../layouts/Footer';
 export { SmartWaitlist } from './SmartWaitlist';
 export { BottomCTA } from './BottomCTA';
 

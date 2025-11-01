@@ -2,23 +2,23 @@ name: Langfuse Integration Testing
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
-      - 'microservices/ai-service/**'
-      - 'frontend/src/lib/langfuse*'
-      - '.github/workflows/langfuse-integration-test.yml'
+      - "microservices/ai-service/**"
+      - "frontend/src/lib/langfuse*"
+      - ".github/workflows/langfuse-integration-test.yml"
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
-      - 'microservices/ai-service/**'
-      - 'frontend/src/lib/langfuse*'
-      - '.github/workflows/langfuse-integration-test.yml'
+      - "microservices/ai-service/**"
+      - "frontend/src/lib/langfuse*"
+      - ".github/workflows/langfuse-integration-test.yml"
 
 jobs:
   langfuse-backend-test:
     name: Langfuse Backend Integration Test
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -30,7 +30,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      
+
       redis:
         image: redis:7
         options: >-
@@ -40,274 +40,280 @@ jobs:
           --health-retries 5
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        
-    - name: Install Python dependencies
-      run: |
-        cd microservices/ai-service
-        pip install -r requirements.txt
-        
-    - name: Test Langfuse configuration
-      run: |
-        cd microservices/ai-service
-        python -c "
-        from langfuse_config import verify_langfuse_connection, check_langfuse_config
-        print('Testing Langfuse configuration...')
-        check_langfuse_config()
-        "
-        
-    - name: Test Langfuse integration
-      run: |
-        cd microservices/ai-service
-        python -c "
-        from langfuse_integration import BuffrHostAIAgent, ConversationIntent
-        print('Testing Langfuse AI integration...')
-        
-        # Test AI agent initialization
-        agent = BuffrHostAIAgent()
-        print('✅ AI agent initialized successfully')
-        
-        # Test conversation intent detection
-        intent = ConversationIntent.BOOKING
-        print(f'✅ Conversation intent: {intent}')
-        "
-        
-    - name: Test Langfuse tracing
-      run: |
-        cd microservices/ai-service
-        python -c "
-        from langfuse_integration import trace_conversation
-        import asyncio
-        
-        async def test_tracing():
-            # Test conversation tracing
-            result = await trace_conversation(
-                message='Hello, I want to make a booking',
-                user_id='test-user',
-                property_id='test-property'
-            )
-            print(f'✅ Conversation traced: {result}')
-        
-        asyncio.run(test_tracing())
-        "
-        
-    - name: Run Langfuse integration tests
-      run: |
-        cd microservices/ai-service
-        pytest tests/test_langfuse_integration.py -v --cov=. --cov-report=xml
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-          REDIS_URL: redis://localhost:6379
-          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
-          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
-          LANGFUSE_HOST: ${{ secrets.LANGFUSE_HOST }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          cd microservices/ai-service
+          pip install -r requirements.txt
+
+      - name: Test Langfuse configuration
+        run: |
+          cd microservices/ai-service
+          python -c "
+          from langfuse_config import verify_langfuse_connection, check_langfuse_config
+          print('Testing Langfuse configuration...')
+          check_langfuse_config()
+          "
+
+      - name: Test Langfuse integration
+        run: |
+          cd microservices/ai-service
+          python -c "
+          from langfuse_integration import BuffrHostAIAgent, ConversationIntent
+          print('Testing Langfuse AI integration...')
+
+          # Test AI agent initialization
+          agent = BuffrHostAIAgent()
+          print('✅ AI agent initialized successfully')
+
+          # Test conversation intent detection
+          intent = ConversationIntent.BOOKING
+          print(f'✅ Conversation intent: {intent}')
+          "
+
+      - name: Test Langfuse tracing
+        run: |
+          cd microservices/ai-service
+          python -c "
+          from langfuse_integration import trace_conversation
+          import asyncio
+
+          async def test_tracing():
+              # Test conversation tracing
+              result = await trace_conversation(
+                  message='Hello, I want to make a booking',
+                  user_id='test-user',
+                  property_id='test-property'
+              )
+              print(f'✅ Conversation traced: {result}')
+
+          asyncio.run(test_tracing())
+          "
+
+      - name: Run Langfuse integration tests
+        run: |
+          cd microservices/ai-service
+          pytest tests/test_langfuse_integration.py -v --cov=. --cov-report=xml
+          env:
+            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+            REDIS_URL: redis://localhost:6379
+            LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+            LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+            LANGFUSE_HOST: ${{ secrets.LANGFUSE_HOST }}
 
   langfuse-frontend-test:
     name: Langfuse Frontend Integration Test
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set up Node.js 18
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: 'frontend/package-lock.json'
-        
-    - name: Install dependencies
-      run: |
-        cd frontend
-        npm ci
-        
-    - name: Test Langfuse frontend configuration
-      run: |
-        cd frontend
-        npm test -- --testPathPattern="langfuse" --verbose
-        
-    - name: Test Langfuse tracing hooks
-      run: |
-        cd frontend
-        npm test -- --testPathPattern="useLangfuseTrace" --verbose
-        
-    - name: Test Langfuse AI integration
-      run: |
-        cd frontend
-        npm test -- --testPathPattern="ai.*langfuse" --verbose
-        
-    - name: Test Langfuse error handling
-      run: |
-        cd frontend
-        npm test -- --testPathPattern="langfuse.*error" --verbose
-        
-    - name: Generate Langfuse test coverage
-      run: |
-        cd frontend
-        npm test -- --coverage --coverageReporters=html --testPathPattern="langfuse"
-        
-    - name: Upload Langfuse test coverage
-      uses: codecov/codecov-action@v3
-      with:
-        file: frontend/coverage/lcov.info
-        flags: langfuse-integration
-        name: langfuse-integration-coverage
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: "frontend/package-lock.json"
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Test Langfuse frontend configuration
+        run: |
+          cd frontend
+          npm test -- --testPathPattern="langfuse" --verbose
+
+      - name: Test Langfuse tracing hooks
+        run: |
+          cd frontend
+          npm test -- --testPathPattern="useLangfuseTrace" --verbose
+
+      - name: Test Langfuse AI integration
+        run: |
+          cd frontend
+          npm test -- --testPathPattern="ai.*langfuse" --verbose
+
+      - name: Test Langfuse error handling
+        run: |
+          cd frontend
+          npm test -- --testPathPattern="langfuse.*error" --verbose
+
+      - name: Generate Langfuse test coverage
+        run: |
+          cd frontend
+          npm test -- --coverage --coverageReporters=html --testPathPattern="langfuse"
+
+      - name: Upload Langfuse test coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: frontend/coverage/lcov.info
+          flags: langfuse-integration
+          name: langfuse-integration-coverage
 
   langfuse-e2e-test:
     name: Langfuse End-to-End Integration Test
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set up Node.js 18
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: 'frontend/package-lock.json'
-        
-    - name: Install dependencies
-      run: |
-        cd frontend
-        npm ci
-        
-    - name: Start services for E2E testing
-      run: |
-        docker-compose -f docker-compose.langfuse.yml up -d
-        
-    - name: Wait for services to be ready
-      run: |
-        sleep 30
-        
-    - name: Test Langfuse E2E integration
-      run: |
-        cd frontend
-        npm run test:e2e -- --testPathPattern="langfuse"
-        
-    - name: Test AI conversation tracing
-      run: |
-        cd frontend
-        npm run test:e2e -- --testPathPattern="ai.*conversation"
-        
-    - name: Test Langfuse dashboard integration
-      run: |
-        cd frontend
-        npm run test:e2e -- --testPathPattern="dashboard.*langfuse"
-        
-    - name: Cleanup services
-      if: always()
-      run: |
-        docker-compose -f docker-compose.langfuse.yml down
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: "frontend/package-lock.json"
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Start services for E2E testing
+        run: |
+          docker-compose -f docker-compose.langfuse.yml up -d
+
+      - name: Wait for services to be ready
+        run: |
+          sleep 30
+
+      - name: Test Langfuse E2E integration
+        run: |
+          cd frontend
+          npm run test:e2e -- --testPathPattern="langfuse"
+
+      - name: Test AI conversation tracing
+        run: |
+          cd frontend
+          npm run test:e2e -- --testPathPattern="ai.*conversation"
+
+      - name: Test Langfuse dashboard integration
+        run: |
+          cd frontend
+          npm run test:e2e -- --testPathPattern="dashboard.*langfuse"
+
+      - name: Cleanup services
+        if: always()
+        run: |
+          docker-compose -f docker-compose.langfuse.yml down
 
   langfuse-performance-test:
     name: Langfuse Performance Testing
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        
-    - name: Install performance testing dependencies
-      run: |
-        pip install locust pytest-benchmark
-        
-    - name: Test Langfuse performance
-      run: |
-        cd microservices/ai-service
-        python -c "
-        import time
-        from langfuse_integration import BuffrHostAIAgent
-        
-        # Test AI agent performance
-        agent = BuffrHostAIAgent()
-        
-        start_time = time.time()
-        # Simulate multiple conversations
-        for i in range(10):
-            result = agent.process_message('Test message ' + str(i))
-        end_time = time.time()
-        
-        avg_time = (end_time - start_time) / 10
-        print(f'Average response time: {avg_time:.3f} seconds')
-        
-        if avg_time < 2.0:
-            print('✅ Performance test passed')
-        else:
-            print('❌ Performance test failed')
-            exit(1)
-        "
-        
-    - name: Test Langfuse tracing performance
-      run: |
-        cd microservices/ai-service
-        python -c "
-        import time
-        from langfuse_integration import trace_conversation
-        import asyncio
-        
-        async def test_tracing_performance():
-            start_time = time.time()
-            
-            # Test multiple traces
-            tasks = []
-            for i in range(5):
-                task = trace_conversation(
-                    message=f'Test message {i}',
-                    user_id=f'test-user-{i}',
-                    property_id='test-property'
-                )
-                tasks.append(task)
-            
-            await asyncio.gather(*tasks)
-            end_time = time.time()
-            
-            avg_time = (end_time - start_time) / 5
-            print(f'Average tracing time: {avg_time:.3f} seconds')
-            
-            if avg_time < 1.0:
-                print('✅ Tracing performance test passed')
-            else:
-                print('❌ Tracing performance test failed')
-                exit(1)
-        
-        asyncio.run(test_tracing_performance())
-        "
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install performance testing dependencies
+        run: |
+          pip install locust pytest-benchmark
+
+      - name: Test Langfuse performance
+        run: |
+          cd microservices/ai-service
+          python -c "
+          import time
+          from langfuse_integration import BuffrHostAIAgent
+
+          # Test AI agent performance
+          agent = BuffrHostAIAgent()
+
+          start_time = time.time()
+          # Simulate multiple conversations
+          for i in range(10):
+              result = agent.process_message('Test message ' + str(i))
+          end_time = time.time()
+
+          avg_time = (end_time - start_time) / 10
+          print(f'Average response time: {avg_time:.3f} seconds')
+
+          if avg_time < 2.0:
+              print('✅ Performance test passed')
+          else:
+              print('❌ Performance test failed')
+              exit(1)
+          "
+
+      - name: Test Langfuse tracing performance
+        run: |
+          cd microservices/ai-service
+          python -c "
+          import time
+          from langfuse_integration import trace_conversation
+          import asyncio
+
+          async def test_tracing_performance():
+              start_time = time.time()
+              
+              # Test multiple traces
+              tasks = []
+              for i in range(5):
+                  task = trace_conversation(
+                      message=f'Test message {i}',
+                      user_id=f'test-user-{i}',
+                      property_id='test-property'
+                  )
+                  tasks.append(task)
+              
+              await asyncio.gather(*tasks)
+              end_time = time.time()
+              
+              avg_time = (end_time - start_time) / 5
+              print(f'Average tracing time: {avg_time:.3f} seconds')
+              
+              if avg_time < 1.0:
+                  print('✅ Tracing performance test passed')
+              else:
+                  print('❌ Tracing performance test failed')
+                  exit(1)
+
+          asyncio.run(test_tracing_performance())
+          "
 
   langfuse-summary:
     name: Langfuse Integration Summary
     runs-on: ubuntu-latest
-    needs: [langfuse-backend-test, langfuse-frontend-test, langfuse-e2e-test, langfuse-performance-test]
+    needs:
+      [
+        langfuse-backend-test,
+        langfuse-frontend-test,
+        langfuse-e2e-test,
+        langfuse-performance-test,
+      ]
     if: always()
-    
+
     steps:
-    - name: Langfuse Integration Summary
-      run: |
-        echo "🎉 Langfuse Integration Test Summary"
-        echo "Backend Tests: ${{ needs.langfuse-backend-test.result }}"
-        echo "Frontend Tests: ${{ needs.langfuse-frontend-test.result }}"
-        echo "E2E Tests: ${{ needs.langfuse-e2e-test.result }}"
-        echo "Performance Tests: ${{ needs.langfuse-performance-test.result }}"
-        
-        if [[ "${{ needs.langfuse-backend-test.result }}" == "success" && 
-              "${{ needs.langfuse-frontend-test.result }}" == "success" && 
-              "${{ needs.langfuse-e2e-test.result }}" == "success" && 
-              "${{ needs.langfuse-performance-test.result }}" == "success" ]]; then
-          echo "✅ All Langfuse integration tests passed!"
-        else
-          echo "❌ Some Langfuse integration tests failed"
-          exit 1
-        fi
+      - name: Langfuse Integration Summary
+        run: |
+          echo "🎉 Langfuse Integration Test Summary"
+          echo "Backend Tests: ${{ needs.langfuse-backend-test.result }}"
+          echo "Frontend Tests: ${{ needs.langfuse-frontend-test.result }}"
+          echo "E2E Tests: ${{ needs.langfuse-e2e-test.result }}"
+          echo "Performance Tests: ${{ needs.langfuse-performance-test.result }}"
+
+          if [[ "${{ needs.langfuse-backend-test.result }}" == "success" && 
+                "${{ needs.langfuse-frontend-test.result }}" == "success" && 
+                "${{ needs.langfuse-e2e-test.result }}" == "success" && 
+                "${{ needs.langfuse-performance-test.result }}" == "success" ]]; then
+            echo "✅ All Langfuse integration tests passed!"
+          else
+            echo "❌ Some Langfuse integration tests failed"
+            exit 1
+          fi

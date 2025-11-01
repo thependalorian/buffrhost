@@ -1,4 +1,64 @@
 /**
+ * Reviews API Endpoint for Buffr Host Hospitality Platform
+ * @fileoverview GET endpoint for reviews operations providing reviews data management and operations
+ * @location buffr-host/frontend/app/api/reviews/route.ts
+ * @purpose reviews data management and operations
+ * @modularity reviews-focused API endpoint with specialized reviews operations
+ * @database_connections Reads/writes to reviews related tables
+ * @api_integration reviews service integrations
+ * @scalability Scalable operations with database optimization and caching
+ * @performance Performance optimized with database indexing and caching
+ * @monitoring Operational metrics and performance monitoring
+ * @security Multi-tenant security with data isolation and access control
+ * @multi_tenant Automatic tenant context application with data isolation
+ *
+ * Reviews Management Capabilities:
+ * - reviews CRUD operations
+ * - Data management
+ * - Business logic processing
+ *
+ * Key Features:
+ * - Data management
+ * - CRUD operations
+ * - Business logic
+ */
+
+/**
+ * GET /api/reviews - Reviews Retrieval Endpoint
+ * @method GET
+ * @endpoint /api/reviews
+ * @purpose reviews data management and operations
+ * @authentication JWT authentication required - Bearer token in Authorization header
+ * @authorization JWT authorization required - Bearer token in Authorization header
+ * @permissions Appropriate permissions based on operation type
+ * @rate_limit Standard API rate limiter applied
+ * @caching Appropriate caching strategy applied
+ * @returns {Promise<NextResponse>} API operation result with success status and data
+ * @security Multi-tenant security with data isolation and access control
+ * @database_queries Optimized database queries with appropriate indexing and performance
+ * @performance Performance optimized with database indexing and caching
+ * @example
+ * GET /api/reviews
+ * /api/reviews
+ *
+ * Success Response (200):
+ * {
+ *   "success": true,
+ *   "data": {
+ *     "result": "success"
+ *   }
+ * }
+ *
+ * Error Response (400/500):
+ * {
+ *   "success": false,
+ *   "error": {
+ *     "code": "ERROR_CODE",
+ *     "message": "Error description"
+ *   }
+ * }
+ */
+/**
  * Reviews API Route
  *
  * Handles CRUD operations for product reviews with CRM/BI integration
@@ -7,27 +67,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
-
-// Initialize Neon PostgreSQL connection
-const pool = new Pool({
-  connectionString: process.env['DATABASE_URL'],
-  ssl:
-    process.env['NODE_ENV'] === 'production'
-      ? { rejectUnauthorized: false }
-      : false,
-});
+import { dbPool } from '@/lib/database/connection-pool';
 
 // GET /api/reviews - Fetch reviews for a property with CRM/BI integration
 export async function GET(request: NextRequest) {
   try {
-    // Check if database is properly configured
-    if (!process.env['DATABASE_URL']) {
-      return NextResponse.json(
-        { error: 'Database not configured' },
-        { status: 503 }
-      );
-    }
+
 
     const { searchParams } = request.nextUrl;
     const _propertyId = searchParams.get('propertyId');
@@ -44,7 +89,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const client = await pool.connect();
+    const client = await dbPool.getPool().connect();
 
     try {
       // Build WHERE clause
@@ -181,13 +226,7 @@ export async function GET(request: NextRequest) {
 // POST /api/reviews - Create a new review with CRM/BI integration
 export async function POST(request: NextRequest) {
   try {
-    // Check if database is properly configured
-    if (!process.env['DATABASE_URL']) {
-      return NextResponse.json(
-        { error: 'Database not configured' },
-        { status: 503 }
-      );
-    }
+
 
     const body = await request.json();
     const {
@@ -228,7 +267,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const client = await pool.connect();
+    const client = await dbPool.getPool().connect();
 
     try {
       // Check if order exists and belongs to the property

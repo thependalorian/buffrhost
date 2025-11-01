@@ -6,6 +6,54 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+/**
+ * PayloadAdminDashboard React Component for Buffr Host Hospitality Platform
+ * @fileoverview PayloadAdminDashboard provides administrative interface and management capabilities
+ * @location buffr-host/components/admin/PayloadAdminDashboard.tsx
+ * @purpose PayloadAdminDashboard provides administrative interface and management capabilities
+ * @component PayloadAdminDashboard
+ * @category Admin
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @authentication JWT-based authentication for user-specific functionality
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useUsers, useProducts, useProperties, useBookings, useOrders, useMedia, usePages, useCategories, useAIAgents, useEffect for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Interactive state management for dynamic user experiences
+ * - Secure authentication integration for user-specific features
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * State:
+ * @state {any} {
+    totalUsers: 0 - Component state for {
+    totalusers: 0 management
+ *
+ * Methods:
+ * @method formatDate - formatDate method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import PayloadAdminDashboard from './PayloadAdminDashboard';
+ *
+ * function App() {
+ *   return (
+ *     <PayloadAdminDashboard
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered PayloadAdminDashboard component
+ */
+
 import {
   BuffrCard,
   BuffrCardContent,

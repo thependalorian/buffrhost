@@ -18,6 +18,78 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+/**
+ * SofiaDashboardModular React Component for Buffr Host Hospitality Platform
+ * @fileoverview SofiaDashboardModular provides specialized functionality for the Buffr Host platform
+ * @location buffr-host/components/features/sofia/SofiaDashboard.tsx
+ * @purpose SofiaDashboardModular provides specialized functionality for the Buffr Host platform
+ * @component SofiaDashboardModular
+ * @category Features
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @database_connections Reads from relevant tables based on component functionality
+ * @api_integration RESTful API endpoints for data fetching and mutations
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState, useEffect for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Real-time data integration with backend services
+ * - API-driven functionality with error handling and loading states
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {string} [propertyId] - propertyId prop description
+ * @param {} [guestId] - guestId prop description
+ * @param {} [className] - className prop description
+ *
+ * State:
+ * @state {any} null - Component state for null management
+ * @state {any} [] - Component state for [] management
+ * @state {any} null - Component state for null management
+ * @state {any} [] - Component state for [] management
+ * @state {any} 'overview' - Component state for 'overview' management
+ * @state {any} null - Component state for null management
+ * @state {any} null - Component state for null management
+ *
+ * Methods:
+ * @method handleTabChange - handleTabChange method for component functionality
+ * @method handleRefresh - handleRefresh method for component functionality
+ * @method handleAcceptRecommendation - handleAcceptRecommendation method for component functionality
+ * @method handleRejectRecommendation - handleRejectRecommendation method for component functionality
+ * @method handleViewRecommendation - handleViewRecommendation method for component functionality
+ * @method handleMarkAsRead - handleMarkAsRead method for component functionality
+ * @method handleMarkAllAsRead - handleMarkAllAsRead method for component functionality
+ * @method handleArchiveNotification - handleArchiveNotification method for component functionality
+ * @method handleViewNotification - handleViewNotification method for component functionality
+ * @method handleAnalyticsExport - handleAnalyticsExport method for component functionality
+ * @method handleConfigure - handleConfigure method for component functionality
+ * @method handleStartLearning - handleStartLearning method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { SofiaDashboardModular } from './SofiaDashboardModular';
+ *
+ * function App() {
+ *   return (
+ *     <SofiaDashboardModular
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered SofiaDashboardModular component
+ */
+
 import {
   Card,
   CardContent,

@@ -17,6 +17,57 @@
 'use client';
 
 import React, { useRef } from 'react';
+/**
+ * CustomerList React Component for Buffr Host Hospitality Platform
+ * @fileoverview CustomerList manages customer relationship and loyalty program interactions
+ * @location buffr-host/components/crm/customer-dashboard/CustomerList.tsx
+ * @purpose CustomerList manages customer relationship and loyalty program interactions
+ * @component CustomerList
+ * @category Crm
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {Customer[]} [customers] - customers prop description
+ * @param {Customer | null} [selectedCustomer] - selectedCustomer prop description
+ * @param {(customer} [onCustomerSelect] - onCustomerSelect prop description
+ * @param {string} [searchTerm] - searchTerm prop description
+ * @param {(term} [onSearchChange] - onSearchChange prop description
+ * @param {string} [filterTier] - filterTier prop description
+ * @param {(tier} [onFilterTierChange] - onFilterTierChange prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * Methods:
+ * @method getTierColor - getTierColor method for component functionality
+ * @method getStatusColor - getStatusColor method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { CustomerList } from './CustomerList';
+ *
+ * function App() {
+ *   return (
+ *     <CustomerList
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered CustomerList component
+ */
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui';
 import { Users, Search, Filter } from 'lucide-react';

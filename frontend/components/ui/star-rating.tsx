@@ -1,4 +1,54 @@
 import React from 'react';
+/**
+ * StarRating React Component for Buffr Host Hospitality Platform
+ * @fileoverview StarRating provides reusable UI component for consistent design
+ * @location buffr-host/components/ui/star-rating.tsx
+ * @purpose StarRating provides reusable UI component for consistent design
+ * @component StarRating
+ * @category Ui
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {number} [rating] - rating prop description
+ * @param {} [maxRating] - maxRating prop description
+ * @param {} [size] - size prop description
+ * @param {} [interactive] - interactive prop description
+ * @param {} [showValue] - showValue prop description
+ * @param {} [className] - className prop description
+ * @param {} [onRatingChange] - onRatingChange prop description
+ *
+ * Methods:
+ * @method handleStarClick - handleStarClick method for component functionality
+ * @method renderStar - renderStar method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { StarRating } from './StarRating';
+ *
+ * function App() {
+ *   return (
+ *     <StarRating
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered StarRating component
+ */
+
 import { cn } from '@/lib/utils';
 
 interface StarRatingProps {

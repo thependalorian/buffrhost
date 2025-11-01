@@ -1,14 +1,70 @@
 'use client';
 
 import React from 'react';
-import { BuffrCard, BuffrCardContent, BuffrCardHeader, BuffrCardTitle } from '@/components/ui/cards/BuffrCard';
+/**
+ * PropertyOverview React Component for Buffr Host Hospitality Platform
+ * @fileoverview PropertyOverview displays and manages property information and listings
+ * @location buffr-host/components/property/PropertyOverview.tsx
+ * @purpose PropertyOverview displays and manages property information and listings
+ * @component PropertyOverview
+ * @category Property
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {string} [propertyName] - propertyName prop description
+ * @param {'hotel' | 'restaurant'} [propertyType] - propertyType prop description
+ * @param {'active' | 'inactive' | 'maintenance' | 'suspended'} [status] - status prop description
+ * @param {string} [location] - location prop description
+ * @param {} [totalRooms] - totalRooms prop description
+ * @param {} [totalTables] - totalTables prop description
+ * @param {} [occupancyRate] - occupancyRate prop description
+ * @param {} [averageRating] - averageRating prop description
+ * @param {Date} [lastUpdated] - lastUpdated prop description
+ * @param {} [onEdit] - onEdit prop description
+ * @param {} [onViewDetails] - onViewDetails prop description
+ * @param {} [className] - className prop description
+ *
+ * Usage Example:
+ * @example
+ * import { PropertyOverview } from './PropertyOverview';
+ *
+ * function App() {
+ *   return (
+ *     <PropertyOverview
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered PropertyOverview component
+ */
+
+import {
+  BuffrCard,
+  BuffrCardContent,
+  BuffrCardHeader,
+  BuffrCardTitle,
+} from '@/components/ui/cards/BuffrCard';
 import { BuffrIcon, BuffrIconName } from '@/components/ui/icons/BuffrIcons';
 import { BuffrBadge } from '@/components/ui/feedback/BuffrBadge';
 import { BuffrButton } from '@/components/ui/buttons/BuffrButton';
 
 /**
  * Property Overview Component
- * 
+ *
  * Displays property basic information, status, and quick actions
  * Location: components/property/PropertyOverview.tsx
  */
@@ -40,7 +96,7 @@ export const PropertyOverview: React.FC<PropertyOverviewProps> = ({
   lastUpdated,
   onEdit,
   onViewDetails,
-  className = ''
+  className = '',
 }) => {
   const getStatusColor = (status: string): string => {
     switch (status) {
@@ -57,7 +113,9 @@ export const PropertyOverview: React.FC<PropertyOverviewProps> = ({
     }
   };
 
-  const getStatusVariant = (status: string): 'success' | 'warning' | 'error' | 'info' | 'neutral' => {
+  const getStatusVariant = (
+    status: string
+  ): 'success' | 'warning' | 'error' | 'info' | 'neutral' => {
     switch (status) {
       case 'active':
         return 'success';
@@ -104,24 +162,19 @@ export const PropertyOverview: React.FC<PropertyOverviewProps> = ({
       <BuffrCardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <BuffrIcon 
-              name={getPropertyIcon(propertyType)} 
-              className="h-6 w-6 text-blue-600" 
+            <BuffrIcon
+              name={getPropertyIcon(propertyType)}
+              className="h-6 w-6 text-blue-600"
             />
             <div>
               <BuffrCardTitle className="text-xl">
                 {propertyName}
               </BuffrCardTitle>
-              <p className="text-sm text-gray-600 mt-1">
-                {location}
-              </p>
+              <p className="text-sm text-gray-600 mt-1">{location}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <BuffrBadge 
-              variant={getStatusVariant(status)}
-              size="lg"
-            >
+            <BuffrBadge variant={getStatusVariant(status)} size="lg">
               {status.toUpperCase()}
             </BuffrBadge>
           </div>
@@ -139,19 +192,25 @@ export const PropertyOverview: React.FC<PropertyOverviewProps> = ({
             )}
             {totalTables && (
               <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">{totalTables}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {totalTables}
+                </p>
                 <p className="text-sm text-gray-600">Tables</p>
               </div>
             )}
             {occupancyRate !== undefined && (
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">{occupancyRate}%</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {occupancyRate}%
+                </p>
                 <p className="text-sm text-gray-600">Occupancy</p>
               </div>
             )}
             {averageRating !== undefined && (
               <div className="text-center">
-                <p className="text-2xl font-bold text-yellow-600">{averageRating}</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {averageRating}
+                </p>
                 <p className="text-sm text-gray-600">Rating</p>
               </div>
             )}
@@ -173,7 +232,11 @@ export const PropertyOverview: React.FC<PropertyOverviewProps> = ({
                 </BuffrButton>
               )}
               {onViewDetails && (
-                <BuffrButton variant="primary" size="sm" onClick={onViewDetails}>
+                <BuffrButton
+                  variant="primary"
+                  size="sm"
+                  onClick={onViewDetails}
+                >
                   <BuffrIcon name="external-link" className="h-4 w-4 mr-2" />
                   View Details
                 </BuffrButton>

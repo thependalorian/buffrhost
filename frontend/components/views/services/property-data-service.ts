@@ -34,14 +34,17 @@ export class PropertyDataService {
   async fetchMultiFunctionalData(
     propertyId: string
   ): Promise<PropertyHubState> {
-    console.log('📊 Fetching multi-functional property data for:', propertyId);
+    console.log(
+      '[BuffrIcon name="chart"] Fetching multi-functional property data for:',
+      propertyId
+    );
 
     try {
       const cacheKey = `property_${propertyId}`;
       const cachedData = this.getCachedData(cacheKey);
 
       if (cachedData) {
-        console.log('✅ Using cached property data');
+        console.log('[BuffrIcon name="check"] Using cached property data');
         return cachedData;
       }
 
@@ -104,10 +107,15 @@ export class PropertyDataService {
       // Cache the data
       this.setCachedData(cacheKey, state);
 
-      console.log('✅ Multi-functional property data fetched successfully');
+      console.log(
+        '[BuffrIcon name="check"] Multi-functional property data fetched successfully'
+      );
       return state;
     } catch (error) {
-      console.error('❌ Error fetching multi-functional property data:', error);
+      console.error(
+        '[BuffrIcon name="alert"] Error fetching multi-functional property data:',
+        error
+      );
       return {
         property: null,
         hotelData: { bookings: [], roomTypes: [], roomAvailability: [] },
@@ -240,7 +248,7 @@ export class PropertyDataService {
    */
   clearCache(): void {
     this.cache.clear();
-    console.log('🗑️ Property data cache cleared');
+    console.log('[BuffrIcon name="trash"] Property data cache cleared');
   }
 
   /**

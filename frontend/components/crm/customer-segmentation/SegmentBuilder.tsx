@@ -18,6 +18,77 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * SegmentBuilder React Component for Buffr Host Hospitality Platform
+ * @fileoverview SegmentBuilder manages customer relationship and loyalty program interactions
+ * @location buffr-host/components/crm/customer-segmentation/SegmentBuilder.tsx
+ * @purpose SegmentBuilder manages customer relationship and loyalty program interactions
+ * @component SegmentBuilder
+ * @category Crm
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {} [segment] - segment prop description
+ * @param {(segment} [onSave] - onSave prop description
+ * @param {() => void} [onCancel] - onCancel prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * State:
+ * @state {any} {
+    id: segment?.id - Component state for {
+    id: segment?.id management
+ * @state {any} {} - Component state for {} management
+ * @state {any} null - Component state for null management
+ *
+ * Methods:
+ * @method addCriteria - addCriteria method for component functionality
+ * @method removeCriteria - removeCriteria method for component functionality
+ * @method updateCriteria = (
+    criteriaId: string,
+    field: keyof SegmentCriteria,
+    value: unknown
+  ) - updateCriteria = (
+    criteriaId: string,
+    field: keyof SegmentCriteria,
+    value: unknown
+  ) method for component functionality
+ * @method addTag - addTag method for component functionality
+ * @method removeTag - removeTag method for component functionality
+ * @method getFieldType - getFieldType method for component functionality
+ * @method getOperators - getOperators method for component functionality
+ * @method validateForm - validateForm method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { SegmentBuilder } from './SegmentBuilder';
+ *
+ * function App() {
+ *   return (
+ *     <SegmentBuilder
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered SegmentBuilder component
+ */
+
 import {
   Card,
   CardContent,
@@ -181,7 +252,8 @@ export const SegmentBuilder: React.FC<SegmentBuilderProps> = ({
   const updateCriteria = (
     criteriaId: string,
     field: keyof SegmentCriteria,
-    value: unknown) => {
+    value: unknown
+  ) => {
     setFormData((prev) => ({
       ...prev,
       criteria: prev.criteria.map((c) =>

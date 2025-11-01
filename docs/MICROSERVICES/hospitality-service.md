@@ -15,4 +15,3 @@ Environment variables and configuration options.
 ## Database Schema
 
 See `microservices/hospitality-service/schemas/` for database schema.
-

@@ -18,6 +18,63 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+/**
+ * BasicInformation React Component for Buffr Host Hospitality Platform
+ * @fileoverview BasicInformation handles form input and validation for user data collection
+ * @location buffr-host/components/forms/property-creation/BasicInformation.tsx
+ * @purpose BasicInformation handles form input and validation for user data collection
+ * @component BasicInformation
+ * @category Forms
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @state_management Local component state for UI interactions and data management
+ * @hooks_utilization useState for state management and side effects
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Configurable props for flexible component usage
+ * - Interactive state management for dynamic user experiences
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Props:
+ * @param {PropertyFormData} [formData] - formData prop description
+ * @param {(field} [onUpdate] - onUpdate prop description
+ * @param {() => void} [onNext] - onNext prop description
+ * @param {} [onCancel] - onCancel prop description
+ * @param {} [isLoading] - isLoading prop description
+ *
+ * State:
+ * @state {any} {} - Component state for {} management
+ *
+ * Methods:
+ * @method generatePropertyCode - generatePropertyCode method for component functionality
+ * @method validateForm - validateForm method for component functionality
+ * @method handleNext - handleNext method for component functionality
+ * @method handleInputChange - handleInputChange method for component functionality
+ * @method getPropertyIcon - getPropertyIcon method for component functionality
+ *
+ * Usage Example:
+ * @example
+ * import { BasicInformation } from './BasicInformation';
+ *
+ * function App() {
+ *   return (
+ *     <BasicInformation
+ *       prop1="value"
+ *       prop2={value}
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered BasicInformation component
+ */
+
 import {
   Card,
   CardContent,

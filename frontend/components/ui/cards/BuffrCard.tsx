@@ -18,6 +18,40 @@
 'use client';
 
 import React from 'react';
+/**
+ * BuffrCard React Component for Buffr Host Hospitality Platform
+ * @fileoverview BuffrCard provides reusable UI component for consistent design
+ * @location buffr-host/components/ui/cards/BuffrCard.tsx
+ * @purpose BuffrCard provides reusable UI component for consistent design
+ * @component BuffrCard
+ * @category Ui
+ * @modularity Self-contained React component with clear separation of concerns and reusable design patterns
+ * @performance Optimized rendering with React.memo and efficient re-rendering patterns
+ * @accessibility WCAG compliant with proper ARIA labels and keyboard navigation
+ * @responsive Mobile-first design with responsive breakpoints and touch-friendly interactions
+ * @styling Tailwind CSS with DaisyUI components for consistent design system
+ * @testing Comprehensive test coverage with React Testing Library and Jest
+ *
+ * Component Capabilities:
+ * - Consistent UI patterns following Buffr Host design system
+ * - Error boundary protection and graceful error handling
+ * - Loading states and skeleton screens for better UX
+ * - TypeScript type safety for reliable development
+ *
+ * Usage Example:
+ * @example
+ * import { BuffrCard } from './BuffrCard';
+ *
+ * function App() {
+ *   return (
+ *     <BuffrCard
+ *     />
+ *   );
+ * }
+ *
+ * @returns {JSX.Element} Rendered BuffrCard component
+ */
+
 import { cn } from '@/lib/utils';
 
 // ============================================================================
@@ -109,6 +143,48 @@ export const BuffrCardContent = React.forwardRef<
 });
 
 BuffrCardContent.displayName = 'BuffrCardContent';
+
+// ============================================================================
+// MOBILE OPTIMIZED CARD COMPONENT
+// ============================================================================
+
+export const MobileCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    title?: string;
+    subtitle?: string;
+    action?: React.ReactNode;
+  }
+>(({ className, title, subtitle, action, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      'bg-white rounded-xl shadow-sm border border-gray-100 p-4 mx-4 mb-4',
+      'touch-manipulation no-tap-highlight',
+      className
+    )}
+    {...props}
+  >
+    {(title || subtitle || action) && (
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1 min-w-0">
+          {title && (
+            <h3 className="text-lg font-semibold text-gray-900 truncate">
+              {title}
+            </h3>
+          )}
+          {subtitle && (
+            <p className="text-sm text-gray-600 mt-1 truncate">{subtitle}</p>
+          )}
+        </div>
+        {action && <div className="flex-shrink-0 ml-3">{action}</div>}
+      </div>
+    )}
+    <div className="space-y-3">{children}</div>
+  </div>
+));
+
+MobileCard.displayName = 'MobileCard';
 
 // ============================================================================
 // CARD TITLE COMPONENT

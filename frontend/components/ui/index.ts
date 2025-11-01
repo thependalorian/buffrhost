@@ -1,24 +1,40 @@
 // Core UI Components
-export { Button } from "./button";
-export { Card, CardHeader, CardTitle, CardContent } from "./card";
+export { Button } from './button';
+export { Card, CardHeader, CardTitle, CardContent } from './card';
 
 // Buffr UI Components
-export { BuffrButton } from "./buttons/BuffrButton";
-export { BuffrIconButton } from "./buttons/BuffrIconButton";
-export { BuffrActionButton } from "./buttons/BuffrActionButton";
+export { BuffrButton } from './buttons/BuffrButton';
+export { BuffrIconButton } from './buttons/BuffrIconButton';
+export { BuffrActionButton } from './buttons/BuffrActionButton';
 
-export { BuffrCard, BuffrCardHeader, BuffrCardTitle, BuffrCardContent } from "./cards/BuffrCard";
-export { BuffrBadge } from "./feedback/BuffrBadge";
+export {
+  BuffrCard,
+  BuffrCardHeader,
+  BuffrCardTitle,
+  BuffrCardContent,
+} from './cards/BuffrCard';
+export { BuffrBadge } from './feedback/BuffrBadge';
 
-export { BuffrIcon } from "./icons/BuffrIcons";
-export type { BuffrIconName } from "./icons/BuffrIcons";
+export { BuffrIcon } from './icons/BuffrIcons';
+export type { BuffrIconName } from './icons/BuffrIcons';
 
-export { BuffrTabs, BuffrTabsList, BuffrTabsTrigger, BuffrTabsContent } from "./tabs/BuffrTabs";
+export {
+  BuffrTabs,
+  BuffrTabsList,
+  BuffrTabsTrigger,
+  BuffrTabsContent,
+} from './tabs/BuffrTabs';
 
 // Form Components
 export { BuffrInput } from './forms/BuffrInput';
 export { BuffrTextarea } from './forms/BuffrTextarea';
-export { BuffrSelect, BuffrSelectTrigger, BuffrSelectValue, BuffrSelectContent, BuffrSelectItem } from './forms/BuffrSelect';
+export {
+  BuffrSelect,
+  BuffrSelectTrigger,
+  BuffrSelectValue,
+  BuffrSelectContent,
+  BuffrSelectItem,
+} from './forms/BuffrSelect';
 
 // Card Components
 export { BuffrCardBody } from './cards/BuffrCard';
@@ -42,4 +58,11 @@ export const TabsTrigger = 'button';
 export const TabsContent = 'div';
 
 // Legacy exports for backward compatibility
-export { SmartWaitlist } from "./smart-waitlist";
+export { SmartWaitlist } from './smart-waitlist';
+
+// Performance optimization components
+export * from './performance/LazyImage';
+export * from './performance/MobileSkeleton';
+
+// Mobile navigation components
+export * from './navigation/MobileNavigation';

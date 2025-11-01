@@ -2,7 +2,7 @@
     email {$LETSENCRYPT_EMAIL}
 }
 
-# BuffrHost API reverse proxy
+# Buffr Host API reverse proxy
 {$API_HOSTNAME} {
     # Request body size limit (10MB)
     request_body {
@@ -25,7 +25,7 @@
     reverse_proxy buffrhost-api:8001
 }
 
-# BuffrHost Frontend reverse proxy
+# Buffr Host Frontend reverse proxy
 {$FRONTEND_HOSTNAME} {
     # Request body size limit (10MB)
     request_body {

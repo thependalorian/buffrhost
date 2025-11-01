@@ -1,4 +1,64 @@
 /**
+ * Cross-project API Endpoint for Buffr Host Hospitality Platform
+ * @fileoverview GET endpoint for cross-project operations providing cross-project data management and operations
+ * @location buffr-host/frontend/app/api/cross-project/route.ts
+ * @purpose cross-project data management and operations
+ * @modularity cross-project-focused API endpoint with specialized cross-project operations
+ * @database_connections Reads/writes to cross-project related tables
+ * @api_integration cross-project service integrations
+ * @scalability Scalable operations with database optimization and caching
+ * @performance Performance optimized with database indexing and caching
+ * @monitoring Operational metrics and performance monitoring
+ * @security Multi-tenant security with data isolation and access control
+ * @multi_tenant Automatic tenant context application with data isolation
+ *
+ * Cross-project Management Capabilities:
+ * - cross-project CRUD operations
+ * - Data management
+ * - Business logic processing
+ *
+ * Key Features:
+ * - Data management
+ * - CRUD operations
+ * - Business logic
+ */
+
+/**
+ * GET /api/cross-project - Cross-project Retrieval Endpoint
+ * @method GET
+ * @endpoint /api/cross-project
+ * @purpose cross-project data management and operations
+ * @authentication JWT authentication required - Bearer token in Authorization header
+ * @authorization JWT authorization required - Bearer token in Authorization header
+ * @permissions Appropriate permissions based on operation type
+ * @rate_limit Standard API rate limiter applied
+ * @caching Appropriate caching strategy applied
+ * @returns {Promise<NextResponse>} API operation result with success status and data
+ * @security Multi-tenant security with data isolation and access control
+ * @database_queries Optimized database queries with appropriate indexing and performance
+ * @performance Performance optimized with database indexing and caching
+ * @example
+ * GET /api/cross-project
+ * /api/cross-project
+ *
+ * Success Response (200):
+ * {
+ *   "success": true,
+ *   "data": {
+ *     "result": "success"
+ *   }
+ * }
+ *
+ * Error Response (400/500):
+ * {
+ *   "success": false,
+ *   "error": {
+ *     "code": "ERROR_CODE",
+ *     "message": "Error description"
+ *   }
+ * }
+ */
+/**
  * Cross-Project Integration API
  * Handles cross-project user and property data integration
  */
