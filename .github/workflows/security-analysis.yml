@@ -43,11 +43,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install bandit[toml]
 
+      - name: Check if backend exists
+        id: check_backend
+        run: |
+          if [ -d "backend" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Run Bandit security scan
+        if: steps.check_backend.outputs.exists == 'true'
         run: |
           cd backend
           bandit -r . -f json -o bandit-results.json || true
           bandit -r . -f txt | tee bandit-results.txt || true
+      
+      - name: Skip security scan
+        if: steps.check_backend.outputs.exists == 'false'
+        run: |
+          echo "⚠️ Backend directory not found - skipping security scan"
 
   # Critical Security Checks
   critical-security-checks:

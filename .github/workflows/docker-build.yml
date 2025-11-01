@@ -25,7 +25,17 @@ jobs:
           docker build --no-cache --tag shandi-frontend:ci-test .
           echo "✅ Frontend container built successfully"
 
+      - name: Check if backend exists
+        id: check_backend
+        run: |
+          if [ -d "backend" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build Backend container
+        if: steps.check_backend.outputs.exists == 'true'
         run: |
           cd backend
           docker build --no-cache --tag shandi-backend:ci-test .
@@ -38,11 +48,15 @@ jobs:
             echo "❌ Frontend image not found!"
             exit 1
           fi
-          if ! docker image inspect shandi-backend:ci-test >/dev/null 2>&1; then
-            echo "❌ Backend image not found!"
-            exit 1
+          if [ "${{ steps.check_backend.outputs.exists }}" == "true" ]; then
+            if ! docker image inspect shandi-backend:ci-test >/dev/null 2>&1; then
+              echo "❌ Backend image not found!"
+              exit 1
+            fi
+          else
+            echo "⚠️ Backend directory not found - skipping backend image verification"
           fi
-          echo "✅ All container images built and verified successfully"
+          echo "✅ Container images built and verified successfully"
 
       - name: Cleanup
         if: always()

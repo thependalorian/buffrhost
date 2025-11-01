@@ -13,10 +13,10 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ErrorBoundary from '../ErrorBoundary';
-import { BuffrIcon } from '../../icons/BuffrIcons';
+import { BuffrIcon } from '../icons/BuffrIcons';
 
 // Mock BuffrIcon component
-jest.mock('../../icons/BuffrIcons', () => ({
+jest.mock('../icons/BuffrIcons', () => ({
   BuffrIcon: ({ name, className }: { name: string; className?: string }) => (
     <span data-testid={`buffr-icon-${name}`} className={className}>
       Icon: {name}
